@@ -4,5 +4,43 @@
 // Exporta todos os componentes UI para fácil importação
 // ============================================
 
-export { Button, ButtonVariant, ButtonSize } from './Button/Button.js';
-export { Input, InputType, InputSize } from './Input/Input.js';
+// ============================================
+// DIA 16 - Componentes Básicos
+// ============================================
+
+// Button
+export { 
+  Button, 
+  ButtonVariant, 
+  ButtonSize 
+} from './Button/Button.js';
+
+// Input
+export { 
+  Input, 
+  InputType, 
+  InputSize 
+} from './Input/Input.js';
+
+// ============================================
+// DIA 17 - Componentes de Feedback
+// ============================================
+
+// Spinner
+export { 
+  Spinner, 
+  SpinnerSize, 
+  SpinnerColor,
+  SpinnerOverlay,
+  SpinnerInline 
+} from './Spinner/Spinner.js';
+
+// Notification
+export {
+  Notification,
+  NotificationType,
+  NotificationPosition,
+  NotificationProvider,
+  NotificationContainer,
+  useNotification
+} from './Notification/Notification.js';
