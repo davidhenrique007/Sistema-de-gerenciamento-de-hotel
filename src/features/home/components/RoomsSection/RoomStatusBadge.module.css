@@ -1,0 +1,140 @@
+/* ============================================
+   ROOM STATUS BADGE MODULE CSS
+   ============================================
+   Estilos para o badge de status de quarto
+   ============================================ */
+
+@import '../../../../shared/styles/variables.css';
+
+/* ============================================
+   BADGE BASE
+   ============================================ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-full);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+/* ============================================
+   TAMANHOS
+   ============================================ */
+
+.small {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  gap: var(--spacing-xs);
+}
+
+.small .icon {
+  font-size: var(--font-size-sm);
+}
+
+.medium {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  gap: var(--spacing-sm);
+}
+
+.medium .icon {
+  font-size: var(--font-size-md);
+}
+
+.large {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-md);
+  gap: var(--spacing-md);
+}
+
+.large .icon {
+  font-size: var(--font-size-lg);
+}
+
+/* ============================================
+   VARIANTES DE STATUS
+   ============================================ */
+
+.available {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+  border: 1px solid var(--color-success);
+}
+
+.occupied {
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+}
+
+.maintenance {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning);
+  border: 1px solid var(--color-warning);
+}
+
+.reserved {
+  background-color: var(--color-info-light);
+  color: var(--color-info);
+  border: 1px solid var(--color-info);
+}
+
+.cleaning {
+  background-color: var(--color-background-dark);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-text-muted);
+}
+
+/* ============================================
+   ÍCONE
+   ============================================ */
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* ============================================
+   LABEL
+   ============================================ */
+
+.label {
+  line-height: 1;
+}
+
+/* ============================================
+   VERSÃO COMPACT
+   ============================================ */
+
+.compact {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: var(--border-radius-full);
+}
+
+.compact .icon {
+  font-size: var(--font-size-sm);
+}
+
+/* ============================================
+   ACESSIBILIDADE
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .badge {
+    border-width: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge {
+    transition: none;
+  }
+}

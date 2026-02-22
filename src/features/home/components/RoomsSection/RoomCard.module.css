@@ -1,0 +1,407 @@
+/* ============================================
+   ROOM CARD MODULE CSS
+   ============================================
+   Estilos para o card individual de quarto
+   ============================================ */
+
+@import '../../../../shared/styles/variables.css';
+
+/* ============================================
+   CARD BASE
+   ============================================ */
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+  height: 100%;
+  border: 2px solid transparent;
+}
+
+.card.hovered {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card.selected {
+  border-color: var(--color-secondary);
+  box-shadow: var(--shadow-md);
+}
+
+.card.unavailable {
+  opacity: 0.8;
+  filter: grayscale(0.3);
+}
+
+.card.unavailable .image {
+  filter: brightness(0.9);
+}
+
+/* ============================================
+   CONTAINER DE IMAGEM
+   ============================================ */
+
+.imageContainer {
+  position: relative;
+  width: 100%;
+  padding-top: 66.67%; /* Proporção 3:2 */
+  overflow: hidden;
+  background-color: var(--color-background-dark);
+}
+
+.image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-normal);
+}
+
+.card.hovered .image {
+  transform: scale(1.05);
+}
+
+.imagePlaceholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-background-dark);
+  color: var(--color-text-muted);
+}
+
+.loadingIndicator {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+
+.statusBadge {
+  position: absolute;
+  top: var(--spacing-sm);
+  left: var(--spacing-sm);
+  z-index: 2;
+}
+
+.capacityBadge {
+  position: absolute;
+  bottom: var(--spacing-sm);
+  right: var(--spacing-sm);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: var(--color-text-light);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  z-index: 2;
+  backdrop-filter: blur(4px);
+}
+
+.capacityIcon {
+  font-size: var(--font-size-sm);
+}
+
+.capacityText {
+  font-weight: var(--font-weight-medium);
+}
+
+/* ============================================
+   CONTEÚDO
+   ============================================ */
+
+.content {
+  padding: var(--spacing-md);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-sm);
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: var(--line-height-tight);
+}
+
+.price {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.priceValue {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+  display: block;
+  line-height: 1.2;
+}
+
+.pricePeriod {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  display: block;
+}
+
+/* ============================================
+   AMENITIES
+   ============================================ */
+
+.amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  flex: 1;
+}
+
+.amenity {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background-color: var(--color-background);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.amenityIcon {
+  font-size: var(--font-size-sm);
+}
+
+.amenityName {
+  white-space: nowrap;
+}
+
+.amenityMore {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ============================================
+   AÇÃO
+   ============================================ */
+
+.action {
+  margin-top: auto;
+}
+
+/* ============================================
+   OVERLAY DE LOADING
+   ============================================ */
+
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  backdrop-filter: blur(2px);
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-background-dark);
+  border-top-color: var(--color-secondary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   SKELETON LOADING
+   ============================================ */
+
+.skeleton {
+  pointer-events: none;
+}
+
+.skeleton .imagePlaceholder {
+  background: linear-gradient(
+    90deg,
+    var(--color-background-dark) 25%,
+    var(--color-background) 50%,
+    var(--color-background-dark) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonTitle {
+  width: 60%;
+  height: 20px;
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-xs);
+}
+
+.skeletonPrice {
+  width: 80px;
+  height: 20px;
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius-sm);
+}
+
+.skeletonAmenity {
+  width: 60px;
+  height: 24px;
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius-sm);
+}
+
+.skeletonButton {
+  width: 100%;
+  height: 40px;
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius-md);
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+
+/* Tablet */
+@media (max-width: 768px) {
+  .content {
+    padding: var(--spacing-sm);
+  }
+
+  .title {
+    font-size: var(--font-size-md);
+  }
+
+  .priceValue {
+    font-size: var(--font-size-md);
+  }
+
+  .amenity {
+    padding: var(--spacing-xs) var(--spacing-xs);
+  }
+
+  .amenityName {
+    display: none;
+  }
+
+  .amenityIcon {
+    font-size: var(--font-size-md);
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .card.hovered {
+    transform: none;
+  }
+
+  .statusBadge {
+    top: var(--spacing-xs);
+    left: var(--spacing-xs);
+  }
+
+  .capacityBadge {
+    bottom: var(--spacing-xs);
+    right: var(--spacing-xs);
+    padding: 2px var(--spacing-xs);
+  }
+}
+
+/* ============================================
+   ACESSIBILIDADE
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .card.selected {
+    border-width: 3px;
+  }
+
+  .statusBadge {
+    border: 1px solid currentColor;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .image,
+  .loadingSpinner,
+  .skeleton .imagePlaceholder {
+    animation: none;
+    transition: none;
+  }
+
+  .card.hovered {
+    transform: none;
+  }
+}
+
+/* ============================================
+   IMPRESSÃO
+   ============================================ */
+
+@media print {
+  .card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
+
+  .statusBadge,
+  .capacityBadge,
+  .action {
+    display: none;
+  }
+
+  .image {
+    filter: grayscale(100%);
+  }
+}
