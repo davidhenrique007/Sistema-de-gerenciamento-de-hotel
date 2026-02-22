@@ -1,11 +1,11 @@
 // ============================================
 // HOOK: useHomeData
 // ============================================
-// Responsabilidade: Hook customizado para a HomePage que combina
-// dependências e lógica de dados
+// Responsabilidade: Gerenciar dados da HomePage
+// Integra hooks de DI com lógica de estado
 // ============================================
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   useListAvailableRooms,
   useListServices,
@@ -17,13 +17,21 @@ import { createLogger } from '../../../core/utils.js';
 
 const logger = createLogger('useHomeData');
 
-/**
- * Hook que gerencia os dados da HomePage
- * @returns {Object} Estado e funções da Home
- */
-export const useHomeData = () => {
+// ============================================
+// HOOK PRINCIPAL
+// ============================================
+
+export const useHomeData = ({
+  // Configurações
+  autoLoad = true,
+  enableCache = true,
+  
+  // Callbacks
+  onError,
+  onSuccess
+} = {}) => {
   // ==========================================
-  // OBTER DEPENDÊNCIAS VIA HOOKS ESPECÍFICOS
+  // OBTER DEPENDÊNCIAS VIA HOOKS DE DI
   // ==========================================
   const listAvailableRooms = useListAvailableRooms();
   const listServices = useListServices();
@@ -36,8 +44,29 @@ export const useHomeData = () => {
   // ==========================================
   const [rooms, setRooms] = useState([]);
   const [services, setServices] = useState({ categories: {} });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [initialized, setInitialized] = useState(false);
   const [error, setError] = useState(null);
+
+  // ==========================================
+  // DADOS DERIVADOS
+  // ==========================================
+  
+  const availableRooms = useMemo(() => {
+    return rooms.filter(room => room.available);
+  }, [rooms]);
+
+  const featuredRooms = useMemo(() => {
+    return rooms.slice(0, 3);
+  }, [rooms]);
+
+  const stats = useMemo(() => {
+    return {
+      totalRooms: rooms.length,
+      availableRooms: availableRooms.length,
+      totalServices: Object.keys(services.categories || {}).length
+    };
+  }, [rooms.length, availableRooms.length, services.categories]);
 
   // ==========================================
   // FUNÇÕES DE CARREGAMENTO
@@ -48,26 +77,68 @@ export const useHomeData = () => {
       logger.debug('Carregando quartos...');
       const availableRooms = await listAvailableRooms.execute();
       setRooms(availableRooms);
+      
+      if (onSuccess) onSuccess('rooms', availableRooms);
+      
       return availableRooms;
     } catch (err) {
       logger.error('Erro ao carregar quartos:', err);
       setError(err);
+      
+      if (onError) onError('rooms', err);
+      
       return [];
     }
-  }, [listAvailableRooms]);
+  }, [listAvailableRooms, onSuccess, onError]);
 
   const loadServices = useCallback(async () => {
     try {
       logger.debug('Carregando serviços...');
       const servicesData = await listServices.execute();
       setServices(servicesData);
+      
+      if (onSuccess) onSuccess('services', servicesData);
+      
       return servicesData;
     } catch (err) {
       logger.error('Erro ao carregar serviços:', err);
       setError(err);
+      
+      if (onError) onError('services', err);
+      
       return { categories: {} };
     }
-  }, [listServices]);
+  }, [listServices, onSuccess, onError]);
+
+  const loadAll = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      await Promise.all([loadRooms(), loadServices()]);
+      setInitialized(true);
+    } catch (err) {
+      // Erros já são tratados individualmente
+    } finally {
+      setLoading(false);
+    }
+  }, [loadRooms, loadServices]);
+
+  // ==========================================
+  // FUNÇÕES DE REFRESH
+  // ==========================================
+
+  const refresh = useCallback(() => {
+    loadAll();
+  }, [loadAll]);
+
+  const refreshRooms = useCallback(() => {
+    loadRooms();
+  }, [loadRooms]);
+
+  const refreshServices = useCallback(() => {
+    loadServices();
+  }, [loadServices]);
 
   // ==========================================
   // FUNÇÕES DE CÁLCULO
@@ -122,17 +193,10 @@ export const useHomeData = () => {
   // ==========================================
 
   useEffect(() => {
-    const loadInitialData = async () => {
-      setLoading(true);
-      try {
-        await Promise.all([loadRooms(), loadServices()]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadInitialData();
-  }, [loadRooms, loadServices]);
+    if (autoLoad) {
+      loadAll();
+    }
+  }, [autoLoad, loadAll]);
 
   // ==========================================
   // RETORNO
@@ -141,19 +205,49 @@ export const useHomeData = () => {
   return {
     // Dados
     rooms,
+    availableRooms,
+    featuredRooms,
     services,
+    stats,
+    
+    // Estados
     loading,
+    initialized,
     error,
-
+    
     // Funções de carregamento
     loadRooms,
     loadServices,
-
+    loadAll,
+    
+    // Funções de refresh
+    refresh,
+    refreshRooms,
+    refreshServices,
+    
     // Funções de cálculo
     calculateReservationPrice,
     calculateServicesTotal,
-
+    
     // Funções de disponibilidade
     checkAvailability
+  };
+};
+
+// ============================================
+// HOOK: useHomePageData (versão específica)
+// ============================================
+
+export const useHomePageData = (options = {}) => {
+  const homeData = useHomeData(options);
+  
+  // Dados específicos para a HomePage
+  const heroRooms = homeData.featuredRooms;
+  const heroServices = homeData.services?.categories?.featured || [];
+  
+  return {
+    ...homeData,
+    heroRooms,
+    heroServices
   };
 };
