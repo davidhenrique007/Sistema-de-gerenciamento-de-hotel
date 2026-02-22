@@ -1,0 +1,274 @@
+/* ============================================
+   SERVICES SECTION MODULE CSS
+   ============================================ */
+
+@import '../../../../shared/styles/variables.css';
+
+/* ============================================
+   SEÇÃO PRINCIPAL
+   ============================================ */
+
+.section {
+  padding: var(--spacing-2xl) 0;
+  background-color: var(--color-background-light);
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+.header {
+  margin-bottom: var(--spacing-xl);
+  text-align: center;
+}
+
+.title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-sm);
+}
+
+.subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-md);
+}
+
+.selectionInfo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.selectedCount {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  background-color: var(--color-background);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-full);
+}
+
+.warning {
+  font-size: var(--font-size-sm);
+  color: var(--color-warning);
+  background-color: var(--color-warning-light);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-full);
+}
+
+/* ============================================
+   GRID DE SERVIÇOS
+   ============================================ */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+/* ============================================
+   SERVICE CARD
+   ============================================ */
+
+.serviceCard {
+  display: flex;
+  background-color: var(--color-background-light);
+  border: 2px solid var(--color-background-dark);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.serviceCard:hover:not(.disabled) {
+  border-color: var(--color-secondary-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.serviceCard.selected {
+  border-color: var(--color-secondary);
+  background-color: var(--color-secondary-light);
+}
+
+.serviceCard.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.serviceCard:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   CONTEÚDO DO CARD
+   ============================================ */
+
+.serviceContent {
+  flex: 1;
+  padding-right: var(--spacing-md);
+}
+
+.serviceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-xs);
+}
+
+.serviceName {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.servicePrice {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+  white-space: nowrap;
+}
+
+.serviceDescription {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-sm);
+  line-height: var(--line-height-normal);
+}
+
+.serviceMeta {
+  display: flex;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-xs);
+}
+
+.serviceType {
+  color: var(--color-text-muted);
+  background-color: var(--color-background);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+}
+
+.serviceQuantity {
+  color: var(--color-text-muted);
+  background-color: var(--color-background);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+}
+
+/* ============================================
+   CHECKBOX
+   ============================================ */
+
+.serviceCheckbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkbox {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-text-muted);
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  background-color: var(--color-background-light);
+}
+
+.checkbox.checked {
+  background-color: var(--color-secondary);
+  border-color: var(--color-secondary);
+}
+
+.checkmark {
+  color: var(--color-text-light);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+}
+
+/* ============================================
+   LOADING E EMPTY STATES
+   ============================================ */
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
+  gap: var(--spacing-md);
+  color: var(--color-text-muted);
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-background-dark);
+  border-top-color: var(--color-secondary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.empty {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-lg);
+}
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .title {
+    font-size: var(--font-size-xl);
+  }
+
+  .subtitle {
+    font-size: var(--font-size-md);
+  }
+
+  .serviceName {
+    font-size: var(--font-size-md);
+  }
+
+  .servicePrice {
+    font-size: var(--font-size-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .serviceCard {
+    flex-direction: column;
+  }
+
+  .serviceContent {
+    padding-right: 0;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .selectionInfo {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+}

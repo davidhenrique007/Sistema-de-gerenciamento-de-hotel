@@ -1,0 +1,263 @@
+/* ============================================
+   PRICE SUMMARY MODULE CSS
+   ============================================ */
+
+@import '../../../../shared/styles/variables.css';
+
+/* ============================================
+   SUMMARY PRINCIPAL
+   ============================================ */
+
+.summary {
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-background-dark);
+  transition: all var(--transition-normal);
+}
+
+.title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--color-secondary);
+}
+
+/* ============================================
+   CONTEÚDO
+   ============================================ */
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+/* ============================================
+   INFORMAÇÕES DO PERÍODO
+   ============================================ */
+
+.period,
+.guests {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  background-color: var(--color-background);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+}
+
+.periodLabel,
+.guestsLabel {
+  font-weight: var(--font-weight-medium);
+}
+
+.periodValue,
+.guestsValue {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ============================================
+   DIVISOR
+   ============================================ */
+
+.divider {
+  height: 1px;
+  background-color: var(--color-background-dark);
+  margin: var(--spacing-xs) 0;
+}
+
+/* ============================================
+   PRICE ROW
+   ============================================ */
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs) 0;
+  font-size: var(--font-size-md);
+}
+
+.rowLabel {
+  color: var(--color-text-secondary);
+}
+
+.rowValue {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.rowValue.highlight {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+.totalRow {
+  margin-top: var(--spacing-xs);
+  padding-top: var(--spacing-sm);
+  border-top: 2px solid var(--color-background-dark);
+}
+
+/* ============================================
+   LISTA DE SERVIÇOS
+   ============================================ */
+
+.servicesList {
+  margin-left: var(--spacing-lg);
+  padding-left: var(--spacing-sm);
+  border-left: 2px solid var(--color-secondary-light);
+}
+
+.serviceItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs) 0;
+  font-size: var(--font-size-sm);
+}
+
+.serviceName {
+  color: var(--color-text-secondary);
+}
+
+.servicePrice {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ============================================
+   NOTAS
+   ============================================ */
+
+.notes {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-sm);
+  border-top: 1px dashed var(--color-background-dark);
+}
+
+.note {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+  font-style: italic;
+}
+
+/* ============================================
+   ESTADOS
+   ============================================ */
+
+/* Loading */
+.summary.loading {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skeleton {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.skeletonRow {
+  height: 24px;
+  background: linear-gradient(
+    90deg,
+    var(--color-background-dark) 25%,
+    var(--color-background) 50%,
+    var(--color-background-dark) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--border-radius-sm);
+}
+
+.skeletonTotal {
+  height: 32px;
+  background: linear-gradient(
+    90deg,
+    var(--color-background-dark) 25%,
+    var(--color-background) 50%,
+    var(--color-background-dark) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--border-radius-sm);
+  margin-top: var(--spacing-sm);
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Empty state */
+.summary.empty {
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.emptyMessage {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+  margin: 0;
+  line-height: var(--line-height-relaxed);
+}
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .summary {
+    padding: var(--spacing-md);
+  }
+
+  .title {
+    font-size: var(--font-size-lg);
+  }
+
+  .priceRow {
+    font-size: var(--font-size-sm);
+  }
+
+  .rowValue.highlight {
+    font-size: var(--font-size-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .summary {
+    padding: var(--spacing-sm);
+  }
+
+  .period,
+  .guests {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  .servicesList {
+    margin-left: var(--spacing-md);
+  }
+
+  .serviceItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+}
