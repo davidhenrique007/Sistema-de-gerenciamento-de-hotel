@@ -44,3 +44,14 @@ export {
   NotificationContainer,
   useNotification
 } from './Notification/Notification.js';
+
+// ============================================
+// DIA 18 - Componentes Estruturais
+// ============================================
+
+// Modal
+export {
+  Modal,
+  ModalSize,
+  useModal
+} from './Modal/Modal.js';

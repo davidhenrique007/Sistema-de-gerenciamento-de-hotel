@@ -1,0 +1,201 @@
+/* ============================================
+   CONTAINER MODULE CSS
+   ============================================
+   Estilos isolados para o componente Container
+   ============================================ */
+
+@import '../../../styles/variables.css';
+
+/* ============================================
+   CONTAINER BASE
+   ============================================ */
+
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+  box-sizing: border-box;
+}
+
+.container.centered {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ============================================
+   TAMANHOS DE CONTAINER
+   ============================================ */
+
+.small {
+  max-width: 640px;
+}
+
+.medium {
+  max-width: 768px;
+}
+
+.large {
+  max-width: 1024px;
+}
+
+.xlarge {
+  max-width: 1280px;
+}
+
+.full {
+  max-width: 100%;
+}
+
+/* ============================================
+   ESPAÇAMENTO INTERNO (PADDING)
+   ============================================ */
+
+/* Padding uniforme */
+.padding-none {
+  padding: 0;
+}
+
+.padding-small {
+  padding: var(--spacing-sm);
+}
+
+.padding-medium {
+  padding: var(--spacing-md);
+}
+
+.padding-large {
+  padding: var(--spacing-lg);
+}
+
+/* Padding específico */
+.paddingTop-small {
+  padding-top: var(--spacing-sm);
+}
+.paddingTop-medium {
+  padding-top: var(--spacing-md);
+}
+.paddingTop-large {
+  padding-top: var(--spacing-lg);
+}
+
+.paddingBottom-small {
+  padding-bottom: var(--spacing-sm);
+}
+.paddingBottom-medium {
+  padding-bottom: var(--spacing-md);
+}
+.paddingBottom-large {
+  padding-bottom: var(--spacing-lg);
+}
+
+.paddingLeft-small {
+  padding-left: var(--spacing-sm);
+}
+.paddingLeft-medium {
+  padding-left: var(--spacing-md);
+}
+.paddingLeft-large {
+  padding-left: var(--spacing-lg);
+}
+
+.paddingRight-small {
+  padding-right: var(--spacing-sm);
+}
+.paddingRight-medium {
+  padding-right: var(--spacing-md);
+}
+.paddingRight-large {
+  padding-right: var(--spacing-lg);
+}
+
+/* ============================================
+   MARGENS EXTERNAS
+   ============================================ */
+
+.marginTop-small {
+  margin-top: var(--spacing-sm);
+}
+.marginTop-medium {
+  margin-top: var(--spacing-md);
+}
+.marginTop-large {
+  margin-top: var(--spacing-lg);
+}
+
+.marginBottom-small {
+  margin-bottom: var(--spacing-sm);
+}
+.marginBottom-medium {
+  margin-bottom: var(--spacing-md);
+}
+.marginBottom-large {
+  margin-bottom: var(--spacing-lg);
+}
+
+/* ============================================
+   INNER CONTAINER
+   ============================================ */
+
+.inner {
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+
+/* Tablet */
+@media (max-width: 768px) {
+  .small,
+  .medium,
+  .large,
+  .xlarge {
+    max-width: 100%;
+  }
+  
+  .padding-small {
+    padding: var(--spacing-xs);
+  }
+  
+  .padding-medium {
+    padding: var(--spacing-sm);
+  }
+  
+  .padding-large {
+    padding: var(--spacing-md);
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .container {
+    padding-left: var(--spacing-sm);
+    padding-right: var(--spacing-sm);
+  }
+  
+  .padding-small {
+    padding: var(--spacing-xs);
+  }
+  
+  .padding-medium {
+    padding: var(--spacing-xs);
+  }
+  
+  .padding-large {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* ============================================
+   IMPRESSÃO
+   ============================================ */
+
+@media print {
+  .container {
+    max-width: 100%;
+    padding: 0;
+  }
+}
