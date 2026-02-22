@@ -35,6 +35,10 @@ import { useRoomOccupancy } from '../hooks/useRoomOccupancy.js';
 // Estilos
 import './home.css';
 
+// ... resto do código permanece igual
+// Estilos
+import './home.css';
+
 // ============================================
 // CONSTANTES
 // ============================================

@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { DIContainerProvider } from './di/providers.jsx';
 import { NotificationProvider } from './shared/components/ui/Notification/Notification.jsx';
 import { HomeProvider } from './di/homeDependencies.jsx'; // <-- IMPORTAÇÃO ADICIONADA
-import { HomePage } from './features/home/pages/HomePage.jsx';
+import { HomePageDebug } from './features/home/pages/HomePageDebug.jsx';
 import './shared/styles/global.css';
 
 function App() {
@@ -13,7 +13,7 @@ function App() {
         <NotificationProvider>
           <HomeProvider> {/* <-- PROVIDER ADICIONADO ENVOLVENDO A ROTA */}
             <Routes>
-              <Route path="/" element={<HomePage />} />
+              <Route path="/" element={<HomePageDebug />} />
               {/* Adicione outras rotas aqui se necessário */}
             </Routes>
           </HomeProvider>
