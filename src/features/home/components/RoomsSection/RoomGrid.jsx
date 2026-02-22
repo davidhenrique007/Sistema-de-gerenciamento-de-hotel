@@ -6,7 +6,7 @@
 // ============================================
 
 import React, { memo, useMemo } from 'react';
-import { RoomCard } from './RoomCard.js';
+import { RoomCard } from './RoomCard.jsx';
 import styles from './RoomsSection.module.css';
 
 // ============================================

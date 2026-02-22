@@ -7,7 +7,7 @@
 
 import React, { useState, useCallback, memo } from 'react';
 import { Button, ButtonVariant, ButtonSize } from '../../../../shared/components/ui';
-import { RoomStatusBadge, RoomStatus } from './RoomStatusBadge.js';
+import { RoomStatusBadge, RoomStatus } from "./RoomStatusBadge.jsx";
 import styles from './RoomCard.module.css';
 
 // ============================================

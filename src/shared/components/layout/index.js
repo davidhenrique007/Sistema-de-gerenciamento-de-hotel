@@ -5,10 +5,10 @@
 // ============================================
 
 // Header
-export { Header } from './Header/Header.js';
+export { Header } from './Header/Header.jsx'; 
 
 // Footer
-export { Footer } from './Footer/Footer.js';
+export { Footer } from './Footer/Footer.jsx';  
 
 // Container
 export { 
@@ -17,4 +17,4 @@ export {
   ContainerSpacing,
   Section,
   Wrapper 
-} from './Container/Container.js';
+} from './Container/Container.jsx'; 

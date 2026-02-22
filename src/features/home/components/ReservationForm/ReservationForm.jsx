@@ -7,9 +7,9 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Button, ButtonSize } from '../../../../shared/components/ui';
-import { DatePicker } from './DatePicker.js';
-import { GuestSelector } from './GuestSelector.js';
-import { PriceSummary } from '../Summary/PriceSummary.js';
+import { DatePicker } from './DatePicker.jsx';
+import { GuestSelector } from './GuestSelector.jsx';
+import { PriceSummary } from "../Summary/PriceSummary.jsx";
 import styles from './ReservationForm.module.css';
 
 // ============================================

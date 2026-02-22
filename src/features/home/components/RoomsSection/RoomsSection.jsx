@@ -7,8 +7,8 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Container, ContainerSize } from '../../../../shared/components/layout';
-import { RoomGrid, RoomGridHeader } from './RoomGrid.js';
-import { RoomStatus } from './RoomStatusBadge.js';
+import { RoomGrid } from './RoomGrid.jsx';
+import { RoomStatus } from "./RoomStatusBadge.jsx";
 import styles from './RoomsSection.module.css';
 
 // ============================================

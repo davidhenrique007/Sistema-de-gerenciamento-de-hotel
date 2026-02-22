@@ -6,7 +6,7 @@
 // ============================================
 
 import React, { useState, useCallback, useMemo, memo } from 'react';
-import { ServiceCard } from './ServiceCard.js';
+import { ServiceCard } from './ServiceCard.jsx';
 import styles from './ServicesSection.module.css';
 
 // ============================================

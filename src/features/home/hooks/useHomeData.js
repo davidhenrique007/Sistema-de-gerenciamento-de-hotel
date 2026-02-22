@@ -189,14 +189,41 @@ export const useHomeData = ({
   }, [availabilityService]);
 
   // ==========================================
-  // CARREGAMENTO INICIAL
+  // CARREGAMENTO INICIAL - CORRIGIDO!
   // ==========================================
 
   useEffect(() => {
-    if (autoLoad) {
-      loadAll();
-    }
-  }, [autoLoad, loadAll]);
+    let isMounted = true;
+
+    const initialize = async () => {
+      if (!autoLoad) return;
+      
+      setLoading(true);
+      try {
+        // Carregar quartos e serviços em paralelo
+        await Promise.all([
+          loadRooms(),
+          loadServices()
+        ]);
+        if (isMounted) setInitialized(true);
+      } catch (err) {
+        if (isMounted) {
+          logger.error('Erro na inicialização:', err);
+          setError(err);
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    initialize();
+
+    return () => {
+      isMounted = false;
+    };
+    // ⚠️ IMPORTANTE: Executa apenas UMA VEZ na montagem
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoLoad]); // Apenas autoLoad como dependência
 
   // ==========================================
   // RETORNO

@@ -13,14 +13,14 @@ export {
   Button, 
   ButtonVariant, 
   ButtonSize 
-} from './Button/Button.js';
+} from './Button/Button.jsx';  // ← mudou para .jsx
 
 // Input
 export { 
   Input, 
   InputType, 
   InputSize 
-} from './Input/Input.js';
+} from './Input/Input.jsx';  // ← mudou para .jsx
 
 // ============================================
 // DIA 17 - Componentes de Feedback
@@ -33,7 +33,7 @@ export {
   SpinnerColor,
   SpinnerOverlay,
   SpinnerInline 
-} from './Spinner/Spinner.js';
+} from './Spinner/Spinner.jsx';  // ← mudou para .jsx
 
 // Notification
 export {
@@ -43,7 +43,7 @@ export {
   NotificationProvider,
   NotificationContainer,
   useNotification
-} from './Notification/Notification.js';
+} from './Notification/Notification.jsx';  // ← mudou para .jsx
 
 // ============================================
 // DIA 18 - Componentes Estruturais
@@ -54,4 +54,4 @@ export {
   Modal,
   ModalSize,
   useModal
-} from './Modal/Modal.js';
+} from './Modal/Modal.jsx';  // ← mudou para .jsx

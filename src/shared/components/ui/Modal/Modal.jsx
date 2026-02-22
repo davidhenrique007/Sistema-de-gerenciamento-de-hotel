@@ -6,7 +6,7 @@
 // ============================================
 
 import React, { useEffect, useRef, useCallback } from 'react';
-import { Button } from '../Button/Button.js';
+import { Button } from '../Button/Button.jsx';
 import styles from './Modal.module.css';
 
 // ============================================

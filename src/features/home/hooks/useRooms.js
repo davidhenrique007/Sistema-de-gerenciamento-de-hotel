@@ -308,7 +308,7 @@ export const useRooms = ({
   }, []);
 
   // ========================================
-  // EFEITOS
+  // EFEITOS - CORRIGIDOS!
   // ========================================
   
   // Carregamento inicial
@@ -326,14 +326,12 @@ export const useRooms = ({
         abortControllerRef.current.abort();
       }
     };
-  }, [autoLoad, loadRooms]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Array vazio = executa apenas UMA vez na montagem!
 
-  // Recarregar quando filtros mudam (opcional - pode ser desabilitado)
-  useEffect(() => {
-    if (autoLoad && filters !== initialFilters) {
-      loadRooms();
-    }
-  }, [filters, autoLoad, loadRooms, initialFilters]);
+  // ⚠️ EFEITO PERIGOSO REMOVIDO!
+  // O efeito que recarregava quando filtros mudavam foi removido
+  // Agora o usuário deve chamar loadRooms() manualmente após aplicar filtros
 
   // ========================================
   // RETORNO
