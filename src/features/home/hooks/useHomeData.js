@@ -12,7 +12,7 @@ import {
   useCalculatePrice,
   usePricingService,
   useAvailabilityService
-} from '../../../di/homeDependencies.js';
+} from '../../../di/homeDependencies.jsx';
 import { createLogger } from '../../../core/utils.js';
 
 const logger = createLogger('useHomeData');

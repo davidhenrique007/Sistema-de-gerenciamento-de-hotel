@@ -9,21 +9,21 @@ import React, { useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Componentes de layout
-import { Header } from '../../../shared/components/layout/Header/Header.js';
-import { Footer } from '../../../shared/components/layout/Footer/Footer.js';
-import { Container, ContainerSize } from '../../../shared/components/layout/Container/Container.js';
+import { Header } from '../../../shared/components/layout/Header/Header.jsx';
+import { Footer } from '../../../shared/components/layout/Footer/Footer.jsx';
+import { Container, ContainerSize } from '../../../shared/components/layout/Container/Container.jsx';
 
 // Componentes de UI
-import { Spinner, SpinnerSize } from '../../../shared/components/ui/Spinner/Spinner.js';
-import { Button, ButtonVariant } from '../../../shared/components/ui/Button/Button.js';
-import { useNotification } from '../../../shared/components/ui/Notification/Notification.js';
+import { Spinner, SpinnerSize } from '../../../shared/components/ui/Spinner/Spinner.jsx';
+import { Button, ButtonVariant } from '../../../shared/components/ui/Button/Button.jsx';
+import { useNotification } from '../../../shared/components/ui/Notification/Notification.jsx';
 
 // Componentes da Home
-import { Hero } from '../components/Hero/Hero.js';
-import { RoomsSection } from '../components/RoomsSection/RoomsSection.js';
-import { ReservationForm } from '../components/ReservationForm/ReservationForm.js';
-import { ServicesSection } from '../components/ServicesSection/ServicesSection.js';
-import { PriceSummary } from '../components/Summary/PriceSummary.js';
+import { Hero } from '../components/Hero/Hero.jsx';
+import { RoomsSection } from '../components/RoomsSection/RoomsSection.jsx';
+import { ReservationForm } from '../components/ReservationForm/ReservationForm.jsx';
+import { ServicesSection } from '../components/ServicesSection/ServicesSection.jsx';
+import { PriceSummary } from '../components/Summary/PriceSummary.jsx';
 
 // Hooks da Home
 import { useHomeData } from '../hooks/useHomeData.js';
