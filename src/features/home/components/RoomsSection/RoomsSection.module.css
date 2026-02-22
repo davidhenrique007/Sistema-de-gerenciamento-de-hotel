@@ -1,0 +1,462 @@
+/* ============================================
+   ROOMS SECTION MODULE CSS
+   ============================================
+   Estilos para a seção de quartos
+   ============================================ */
+
+@import '../../../../shared/styles/variables.css';
+
+/* ============================================
+   SEÇÃO PRINCIPAL
+   ============================================ */
+
+.section {
+  padding: var(--spacing-3xl) 0;
+  background-color: var(--color-background-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--color-secondary) 0%,
+    var(--color-primary) 50%,
+    var(--color-secondary) 100%
+  );
+  opacity: 0.3;
+}
+
+/* ============================================
+   GRID HEADER
+   ============================================ */
+
+.gridHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: var(--spacing-2xl);
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
+}
+
+.headerContent {
+  flex: 1;
+  min-width: 300px;
+}
+
+.gridTitle {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-sm);
+  line-height: var(--line-height-tight);
+  position: relative;
+}
+
+.gridTitle::after {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 4px;
+  background-color: var(--color-secondary);
+  margin-top: var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+}
+
+.gridSubtitle {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: var(--line-height-normal);
+}
+
+.gridStats {
+  text-align: right;
+  padding-bottom: var(--spacing-xs);
+}
+
+.totalRooms {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  background-color: var(--color-background);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius-full);
+  display: inline-block;
+}
+
+/* ============================================
+   GRID DE QUARTOS
+   ============================================ */
+
+.gridContainer {
+  width: 100%;
+  overflow: hidden;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-xl);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gridItem {
+  width: 100%;
+  height: 100%;
+}
+
+/* Layout compact */
+.layout-compact .grid {
+  gap: var(--spacing-md);
+}
+
+.layout-compact .gridItem {
+  transform: scale(0.98);
+  transition: transform var(--transition-fast);
+}
+
+.layout-compact .gridItem:hover {
+  transform: scale(1);
+}
+
+/* Layout expanded */
+.layout-expanded .grid {
+  gap: var(--spacing-2xl);
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+
+.empty {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyState {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--spacing-3xl) 0;
+}
+
+.emptyStateText {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* ============================================
+   ERROR STATE
+   ============================================ */
+
+.errorState {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  background-color: var(--color-danger-light);
+  border-radius: var(--border-radius-lg);
+  margin-top: var(--spacing-xl);
+}
+
+.errorMessage {
+  color: var(--color-danger);
+  font-size: var(--font-size-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.retryButton {
+  background-color: var(--color-danger);
+  color: var(--color-text-light);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-xl);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.retryButton:hover {
+  background-color: var(--color-danger-dark);
+  transform: translateY(-2px);
+}
+
+.retryButton:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   SELECTION FEEDBACK
+   ============================================ */
+
+.selectionFeedback {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-md);
+  background-color: var(--color-success-light);
+  border: 1px solid var(--color-success);
+  border-radius: var(--border-radius-md);
+  animation: slideUp var(--transition-normal);
+}
+
+.selectionMessage {
+  color: var(--color-success);
+  font-size: var(--font-size-md);
+  margin: 0;
+  text-align: center;
+}
+
+/* ============================================
+   SKELETON LOADING
+   ============================================ */
+
+.skeleton {
+  pointer-events: none;
+}
+
+.skeletonCard {
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.skeletonImage {
+  width: 100%;
+  padding-top: 66.67%;
+  background: linear-gradient(
+    90deg,
+    var(--color-background-dark) 25%,
+    var(--color-background) 50%,
+    var(--color-background-dark) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonContent {
+  padding: var(--spacing-md);
+}
+
+.skeletonTitle {
+  width: 60%;
+  height: 24px;
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-sm);
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonPrice {
+  width: 100px;
+  height: 24px;
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-md);
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonAmenities {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.skeletonAmenity {
+  width: 60px;
+  height: 24px;
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius-sm);
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonButton {
+  width: 100%;
+  height: 40px;
+  background-color: var(--color-background-dark);
+  border-radius: var(--border-radius-md);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ============================================
+   ANIMAÇÕES
+   ============================================ */
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+
+/* Desktop large */
+@media (min-width: 1400px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Desktop */
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+  }
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .section {
+    padding: var(--spacing-2xl) 0;
+  }
+
+  .gridHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .gridStats {
+    text-align: left;
+    width: 100%;
+  }
+
+  .gridTitle {
+    font-size: var(--font-size-2xl);
+  }
+
+  .gridTitle::after {
+    width: 60px;
+  }
+
+  .gridSubtitle {
+    font-size: var(--font-size-md);
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .section {
+    padding: var(--spacing-xl) 0;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .gridTitle {
+    font-size: var(--font-size-xl);
+  }
+
+  .totalRooms {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-xs) var(--spacing-md);
+  }
+
+  .selectionFeedback {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-sm);
+  }
+}
+
+/* Mobile pequeno */
+@media (max-width: 360px) {
+  .gridTitle {
+    font-size: var(--font-size-lg);
+  }
+
+  .gridSubtitle {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* ============================================
+   ACESSIBILIDADE
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .gridTitle::after {
+    background-color: currentColor;
+  }
+
+  .totalRooms {
+    border: 1px solid currentColor;
+  }
+
+  .selectionFeedback {
+    border-width: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section::before,
+  .selectionFeedback,
+  .retryButton,
+  .skeletonImage,
+  .skeletonTitle,
+  .skeletonPrice,
+  .skeletonAmenity,
+  .skeletonButton {
+    animation: none;
+    transition: none;
+  }
+
+  .selectionFeedback {
+    animation: none;
+  }
+}
+
+/* ============================================
+   IMPRESSÃO
+   ============================================ */
+
+@media print {
+  .section {
+    padding: var(--spacing-md) 0;
+    background: none;
+  }
+
+  .section::before {
+    display: none;
+  }
+
+  .gridStats,
+  .selectionFeedback,
+  .retryButton {
+    display: none;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+  }
+}

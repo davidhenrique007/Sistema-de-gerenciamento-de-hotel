@@ -1,0 +1,314 @@
+/* ============================================
+   RESERVATION FORM MODULE CSS
+   ============================================
+   Estilos para o formulário de reserva
+   ============================================ */
+
+@import '../../../../shared/styles/variables.css';
+
+/* ============================================
+   FORM PRINCIPAL
+   ============================================ */
+
+.form {
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-lg);
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+  transition: all var(--transition-normal);
+}
+
+.form.disabled {
+  opacity: 0.7;
+  pointer-events: none;
+  filter: grayscale(0.3);
+}
+
+.formTitle {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-lg);
+  text-align: center;
+}
+
+/* ============================================
+   GRUPOS DE FORMULÁRIO
+   ============================================ */
+
+.formGroup {
+  margin-bottom: var(--spacing-lg);
+}
+
+.formGroup:last-of-type {
+  margin-bottom: var(--spacing-xl);
+}
+
+/* ============================================
+   DATE PICKER
+   ============================================ */
+
+.datePicker {
+  width: 100%;
+}
+
+.dateInputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+}
+
+.dateField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.dateLabel {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.dateInput {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: var(--border-width-thin) solid var(--color-text-muted);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-md);
+  font-family: var(--font-family-primary);
+  color: var(--color-text-primary);
+  background-color: var(--color-background-light);
+  transition: all var(--transition-fast);
+  width: 100%;
+}
+
+.dateInput:focus {
+  outline: none;
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+}
+
+.dateInput.focused {
+  border-color: var(--color-secondary);
+}
+
+.dateInput.error {
+  border-color: var(--color-danger);
+  background-color: var(--color-danger-light);
+}
+
+.dateInput:disabled {
+  background-color: var(--color-background-dark);
+  cursor: not-allowed;
+}
+
+.dateInfo {
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--spacing-xs);
+}
+
+.nightsCount {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+/* ============================================
+   GUEST SELECTOR
+   ============================================ */
+
+.guestSelector {
+  width: 100%;
+}
+
+.guestSelector.disabled {
+  opacity: 0.6;
+}
+
+.guestLabel {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.guestControls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.guestButton {
+  width: 40px;
+  height: 40px;
+  border: var(--border-width-thin) solid var(--color-text-muted);
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-background-light);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guestButton:hover:not(:disabled) {
+  background-color: var(--color-secondary);
+  border-color: var(--color-secondary);
+  color: var(--color-text-light);
+}
+
+.guestButton:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.guestButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.guestValue {
+  flex: 1;
+  text-align: center;
+}
+
+.guestInput {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: var(--border-width-thin) solid var(--color-text-muted);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-md);
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.guestInput::-webkit-outer-spin-button,
+.guestInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.guestInput:focus {
+  outline: none;
+  border-color: var(--color-secondary);
+}
+
+.guestHint {
+  text-align: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--spacing-xs);
+}
+
+.guestError {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+  margin-top: var(--spacing-xs);
+}
+
+/* ============================================
+   AÇÕES DO FORMULÁRIO
+   ============================================ */
+
+.formActions {
+  margin-top: var(--spacing-xl);
+}
+
+/* ============================================
+   MENSAGENS DE ERRO
+   ============================================ */
+
+.errorMessage {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+  margin-top: var(--spacing-xs);
+}
+
+.formError {
+  padding: var(--spacing-sm);
+  background-color: var(--color-danger-light);
+  border: var(--border-width-thin) solid var(--color-danger);
+  border-radius: var(--border-radius-md);
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  margin-top: var(--spacing-md);
+}
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+
+/* Tablet */
+@media (max-width: 768px) {
+  .form {
+    max-width: 100%;
+    padding: var(--spacing-lg);
+  }
+
+  .formTitle {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .dateInputs {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .form {
+    padding: var(--spacing-md);
+  }
+
+  .formTitle {
+    font-size: var(--font-size-md);
+  }
+
+  .guestControls {
+    gap: var(--spacing-xs);
+  }
+
+  .guestButton {
+    width: 36px;
+    height: 36px;
+    font-size: var(--font-size-lg);
+  }
+}
+
+/* ============================================
+   ACESSIBILIDADE
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .dateInput,
+  .guestButton,
+  .guestInput {
+    border-width: 2px;
+  }
+
+  .formError {
+    border-width: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form,
+  .dateInput,
+  .guestButton {
+    transition: none;
+  }
+}
