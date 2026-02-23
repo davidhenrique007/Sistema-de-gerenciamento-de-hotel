@@ -14,7 +14,7 @@ import styles from './Hero.module.css';
 // ============================================
 
 const DEFAULT_IMAGE = '/assets/images/hero/hotel-paradise-hero.jpg';
-const PLACEHOLDER_IMAGE = '/assets/images/placeholder-hero.jpg';
+const PLACEHOLDER_IMAGE = '/assets/images/default-room.jpg';
 const DEFAULT_TITLE = 'Hotel Paradise';
 const DEFAULT_SUBTITLE = 'O paraíso perfeito para suas férias dos sonhos';
 const DEFAULT_CTA_TEXT = 'Reservar Agora';
