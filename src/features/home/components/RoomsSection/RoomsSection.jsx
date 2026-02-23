@@ -1,26 +1,14 @@
 // ============================================
 // COMPONENT: RoomsSection
 // ============================================
-// Responsabilidade: Seção principal de quartos da Home
-// Integração: Hooks de estado e use cases
+// Responsabilidade: Seção principal de quartos com integração de use cases
 // ============================================
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Container, ContainerSize } from '../../../../shared/components/layout';
-import { RoomGrid } from './RoomGrid.jsx';
-import { RoomStatus } from "./RoomStatusBadge.jsx";
+import { RoomGrid, RoomGridHeader } from './RoomGrid.jsx';
+import { RoomStatus } from './RoomStatusBadge.jsx';
 import styles from './RoomsSection.module.css';
-
-// ============================================
-// CONSTANTES
-// ============================================
-
-const DEFAULT_TITLE = 'Nossos Quartos';
-const DEFAULT_SUBTITLE = 'Conforto e sofisticação para todos os momentos';
-
-// ============================================
-// COMPONENTE PRINCIPAL
-// ============================================
 
 export const RoomsSection = ({
   // Dados
@@ -31,13 +19,13 @@ export const RoomsSection = ({
   isLoading = false,
   error = null,
   
-  // Callbacks
+  // Callbacks e hooks
   onSelectRoom,
-  onRetry,
+  occupancyHook,
   
   // Configuração
-  title = DEFAULT_TITLE,
-  subtitle = DEFAULT_SUBTITLE,
+  title = 'Nossos Quartos',
+  subtitle = 'Conforto e sofisticação para todos os momentos',
   showHeader = true,
   layout = 'auto',
   
@@ -50,49 +38,57 @@ export const RoomsSection = ({
   // ========================================
   
   const [selectedRoomId, setSelectedRoomId] = useState(null);
-  const [selectedRoomStatus, setSelectedRoomStatus] = useState(null);
+
+  // ========================================
+  // DADOS DERIVADOS COM ESTADO DE OCUPAÇÃO
+  // ========================================
+  
+  const roomsWithOccupancy = useMemo(() => {
+    return rooms.map(room => {
+      // Obter status atualizado do hook de ocupação
+      const currentStatus = occupancyHook?.getRoomStatus?.(room.id) || room.status;
+      const isOccupied = currentStatus === RoomStatus.OCCUPIED;
+      const isLoading = occupancyHook?.loadingMap?.get(room.id) || false;
+
+      return {
+        ...room,
+        status: currentStatus,
+        isAvailable: !isOccupied,
+        isLoading,
+        occupancyError: occupancyHook?.errorMap?.get(room.id)
+      };
+    });
+  }, [rooms, occupancyHook]);
+
+  const availableRoomsCount = useMemo(() => {
+    return roomsWithOccupancy.filter(room => room.isAvailable).length;
+  }, [roomsWithOccupancy]);
 
   // ========================================
   // HANDLERS
   // ========================================
   
   const handleSelectRoom = useCallback((room) => {
-    // Atualizar estado local
-    setSelectedRoomId(room.id);
-    setSelectedRoomStatus(room.status);
+    // Verificar se o quarto está disponível via hook
+    const isAvailable = occupancyHook?.isRoomAvailable?.(room.id) ?? room.isAvailable;
     
-    // Chamar callback externo
+    if (!isAvailable) {
+      console.warn(`Quarto ${room.number} não está disponível para seleção`);
+      return;
+    }
+
+    setSelectedRoomId(room.id);
+    
     if (onSelectRoom) {
       onSelectRoom(room);
     }
-    
-    // Log para desenvolvimento
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Quarto selecionado:', room);
-    }
-  }, [onSelectRoom]);
+  }, [occupancyHook, onSelectRoom]);
 
   const handleRetry = useCallback(() => {
-    if (onRetry) {
-      onRetry();
+    if (props.onRetry) {
+      props.onRetry();
     }
-  }, [onRetry]);
-
-  // ========================================
-  // MEMOIZAR DADOS
-  // ========================================
-  
-  const availableRoomsCount = useMemo(() => {
-    return rooms.filter(room => room.status === RoomStatus.AVAILABLE).length;
-  }, [rooms]);
-
-  const roomsWithStatus = useMemo(() => {
-    return rooms.map(room => ({
-      ...room,
-      isAvailable: room.status === RoomStatus.AVAILABLE,
-      statusLabel: room.statusLabel || (room.status === RoomStatus.AVAILABLE ? 'Disponível' : 'Ocupado')
-    }));
-  }, [rooms]);
+  }, [props.onRetry]);
 
   // ========================================
   // RENDER
@@ -118,17 +114,19 @@ export const RoomsSection = ({
             title={title}
             subtitle={subtitle}
             totalRooms={totalRooms || rooms.length}
+            availableRooms={availableRoomsCount}
           />
         )}
 
         {/* Grid de quartos */}
         <div className={styles.gridContainer}>
           <RoomGrid
-            rooms={roomsWithStatus}
+            rooms={roomsWithOccupancy}
             onSelect={handleSelectRoom}
             selectedRoomId={selectedRoomId}
             isLoading={isLoading}
             layout={layout}
+            occupancyHook={occupancyHook}
           />
         </div>
 
@@ -136,7 +134,7 @@ export const RoomsSection = ({
         {error && (
           <div className={styles.errorState} role="alert">
             <p className={styles.errorMessage}>{error}</p>
-            {onRetry && (
+            {props.onRetry && (
               <button 
                 className={styles.retryButton}
                 onClick={handleRetry}
@@ -147,60 +145,7 @@ export const RoomsSection = ({
             )}
           </div>
         )}
-
-        {/* Feedback de seleção */}
-        {selectedRoomId && selectedRoomStatus === RoomStatus.AVAILABLE && (
-          <div className={styles.selectionFeedback} aria-live="polite">
-            <p className={styles.selectionMessage}>
-              Quarto selecionado. Prossiga com a reserva.
-            </p>
-          </div>
-        )}
       </Container>
     </section>
   );
 };
-
-RoomsSection.displayName = 'RoomsSection';
-
-// ============================================
-// COMPONENTE: RoomsSectionSkeleton
-// ============================================
-// Versão skeleton para carregamento
-// ============================================
-
-export const RoomsSectionSkeleton = () => {
-  return (
-    <section className={`${styles.section} ${styles.skeleton}`} aria-hidden="true">
-      <Container size={ContainerSize.LARGE}>
-        <div className={styles.gridHeader}>
-          <div className={styles.skeletonTitle} />
-          <div className={styles.skeletonSubtitle} />
-        </div>
-        <div className={styles.gridContainer}>
-          <div className={styles.grid}>
-            {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className={styles.gridItem}>
-                <div className={styles.skeletonCard}>
-                  <div className={styles.skeletonImage} />
-                  <div className={styles.skeletonContent}>
-                    <div className={styles.skeletonTitle} />
-                    <div className={styles.skeletonPrice} />
-                    <div className={styles.skeletonAmenities}>
-                      {[1, 2, 3, 4].map(j => (
-                        <div key={j} className={styles.skeletonAmenity} />
-                      ))}
-                    </div>
-                    <div className={styles.skeletonButton} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Container>
-    </section>
-  );
-};
-
-RoomsSectionSkeleton.displayName = 'RoomsSectionSkeleton';

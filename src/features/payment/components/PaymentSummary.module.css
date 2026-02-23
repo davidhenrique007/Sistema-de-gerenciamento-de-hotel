@@ -1,0 +1,304 @@
+/* ============================================
+   PAYMENT SUMMARY MODULE CSS
+   ============================================ */
+   
+@import '../../../shared/styles/variables.css';
+
+/* ============================================
+   SUMMARY PRINCIPAL
+   ============================================ */
+
+.summary {
+  background-color: var(--color-background-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-background-dark);
+  transition: all var(--transition-normal);
+}
+
+.title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-lg);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--color-secondary);
+}
+
+/* ============================================
+   INFORMAÇÕES DO QUARTO
+   ============================================ */
+
+.roomInfo {
+  margin-bottom: var(--spacing-lg);
+}
+
+.roomTitle {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-xs);
+}
+
+.roomDetails {
+  display: flex;
+  gap: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ============================================
+   PERÍODO
+   ============================================ */
+
+.period {
+  background-color: var(--color-background);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.periodRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs) 0;
+}
+
+.periodRow:not(:last-child) {
+  border-bottom: 1px dashed var(--color-background-dark);
+}
+
+.periodLabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.periodValue {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+/* ============================================
+   SERVIÇOS
+   ============================================ */
+
+.services {
+  margin-bottom: var(--spacing-lg);
+}
+
+.servicesTitle {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-sm);
+}
+
+.servicesList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.serviceItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs) 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  border-bottom: 1px dashed var(--color-background-dark);
+}
+
+.serviceItem:last-child {
+  border-bottom: none;
+}
+
+.serviceName {
+  flex: 1;
+}
+
+.servicePrice {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-left: var(--spacing-md);
+}
+
+/* ============================================
+   BREAKDOWN DE PREÇOS
+   ============================================ */
+
+.breakdown {
+  margin-bottom: var(--spacing-lg);
+}
+
+.breakdownRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs) 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.breakdownRow.totalRow {
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 2px solid var(--color-background-dark);
+  font-size: var(--font-size-lg);
+}
+
+.totalLabel {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.totalValue {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--color-background-dark);
+  margin: var(--spacing-sm) 0;
+}
+
+/* ============================================
+   VERSÃO COMPACT (APENAS TOTAL)
+   ============================================ */
+
+.totalCompact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.totalCompactLabel {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.totalCompactValue {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+/* ============================================
+   NOTAS
+   ============================================ */
+
+.notes {
+  border-top: 1px dashed var(--color-background-dark);
+  padding-top: var(--spacing-md);
+}
+
+.note {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 0 0 var(--spacing-xs);
+  font-style: italic;
+}
+
+.note:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================
+   ESTADOS
+   ============================================ */
+
+/* Empty state */
+.summary.empty {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: var(--color-background);
+}
+
+.emptyMessage {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+  margin: 0;
+  line-height: var(--line-height-relaxed);
+}
+
+/* Versão compacta do componente inteiro */
+.summary.compact {
+  padding: var(--spacing-md);
+}
+
+.summary.compact .title {
+  font-size: var(--font-size-md);
+  margin-bottom: var(--spacing-sm);
+}
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .summary {
+    padding: var(--spacing-lg);
+  }
+
+  .title {
+    font-size: var(--font-size-lg);
+  }
+
+  .roomTitle {
+    font-size: var(--font-size-md);
+  }
+
+  .periodValue {
+    font-size: var(--font-size-sm);
+  }
+
+  .breakdownRow.totalRow {
+    font-size: var(--font-size-md);
+  }
+
+  .totalCompactValue {
+    font-size: var(--font-size-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .summary {
+    padding: var(--spacing-md);
+  }
+
+  .title {
+    font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .roomDetails {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .period {
+    padding: var(--spacing-sm);
+  }
+
+  .serviceItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  .servicePrice {
+    margin-left: 0;
+  }
+}

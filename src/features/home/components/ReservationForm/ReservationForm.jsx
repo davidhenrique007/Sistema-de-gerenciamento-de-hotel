@@ -1,33 +1,32 @@
 // ============================================
 // COMPONENT: ReservationForm
 // ============================================
-// Responsabilidade: Formulário principal de reserva
-// Integração: DatePicker, GuestSelector, PriceSummary
+// Responsabilidade: Formulário de reserva integrado com calculatePriceUseCase
 // ============================================
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Button, ButtonSize } from '../../../../shared/components/ui';
 import { DatePicker } from './DatePicker.jsx';
 import { GuestSelector } from './GuestSelector.jsx';
-import { PriceSummary } from "../Summary/PriceSummary.jsx";
+import { PriceSummary } from '../Summary/PriceSummary.jsx';
 import styles from './ReservationForm.module.css';
-
-// ============================================
-// COMPONENTE PRINCIPAL
-// ============================================
 
 export const ReservationForm = ({
   // Dados do quarto selecionado
   selectedRoom = null,
   
+  // Use cases injetados
+  calculatePriceUseCase,
+  
   // Callbacks
-  onCalculatePrice,
   onSubmit,
   
   // Estados
-  isCalculating = false,
   isSubmitting = false,
-  priceBreakdown = null,
+  priceBreakdown: externalPriceBreakdown,
+  
+  // Hook de reserva (para integração)
+  reservationHook,
   
   // Configurações
   minNights = 1,
@@ -45,8 +44,31 @@ export const ReservationForm = ({
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState(1);
   const [nights, setNights] = useState(0);
+  const [isCalculating, setIsCalculating] = useState(false);
+  const [internalPriceBreakdown, setInternalPriceBreakdown] = useState(null);
   const [formErrors, setFormErrors] = useState({});
   const [touched, setTouched] = useState({});
+
+  // Usar breakdown externo se fornecido, senão usar interno
+  const priceBreakdown = externalPriceBreakdown || internalPriceBreakdown;
+
+  // ========================================
+  // INTEGRAÇÃO COM HOOK DE RESERVA
+  // ========================================
+  
+  useEffect(() => {
+    if (reservationHook) {
+      // Sincronizar datas com o hook
+      if (checkIn !== reservationHook.checkIn) {
+        reservationHook.setDates(checkIn, checkOut);
+      }
+      
+      // Sincronizar número de hóspedes
+      if (guests !== reservationHook.guests) {
+        reservationHook.setGuests(guests);
+      }
+    }
+  }, [checkIn, checkOut, guests, reservationHook]);
 
   // ========================================
   // VALIDAÇÕES
@@ -79,26 +101,64 @@ export const ReservationForm = ({
   }, [checkIn, checkOut, guests, nights, selectedRoom, minNights, maxNights]);
 
   // ========================================
-  // EFFECTS
+  // CÁLCULO DE PREÇOS VIA USE CASE
   // ========================================
   
-  useEffect(() => {
-    const errors = validateForm();
-    setFormErrors(errors);
-  }, [validateForm]);
-
-  // Calcular preço automaticamente quando dados mudam
-  useEffect(() => {
-    if (selectedRoom && checkIn && checkOut && guests && Object.keys(formErrors).length === 0) {
-      onCalculatePrice?.({
-        roomId: selectedRoom.id,
-        checkIn,
-        checkOut,
-        guests,
-        nights
-      });
+  const calculatePrice = useCallback(async () => {
+    if (!selectedRoom || !checkIn || !checkOut || !guests || nights === 0) {
+      setInternalPriceBreakdown(null);
+      return;
     }
-  }, [selectedRoom, checkIn, checkOut, guests, nights, formErrors, onCalculatePrice]);
+
+    setIsCalculating(true);
+    
+    try {
+      let breakdown;
+      
+      if (calculatePriceUseCase) {
+        // Usar o use case injetado
+        breakdown = await calculatePriceUseCase.execute({
+          roomId: selectedRoom.id,
+          checkIn,
+          checkOut,
+          guestsCount: guests,
+          serviceIds: reservationHook?.selectedServices || []
+        });
+      } else {
+        // Fallback para cálculo local (apenas para desenvolvimento)
+        const roomTotal = selectedRoom.pricePerNight * nights;
+        breakdown = {
+          roomId: selectedRoom.id,
+          roomNumber: selectedRoom.number,
+          nights,
+          guestsCount: guests,
+          roomPrice: { subtotal: roomTotal },
+          services: [],
+          taxes: { total: 0 },
+          total: { amount: roomTotal }
+        };
+      }
+      
+      setInternalPriceBreakdown(breakdown);
+    } catch (error) {
+      console.error('Erro ao calcular preço:', error);
+      setFormErrors(prev => ({
+        ...prev,
+        calculate: 'Erro ao calcular preço. Tente novamente.'
+      }));
+    } finally {
+      setIsCalculating(false);
+    }
+  }, [selectedRoom, checkIn, checkOut, guests, nights, calculatePriceUseCase, reservationHook]);
+
+  // Efeito para recalcular quando dados mudarem
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      calculatePrice();
+    }, 300); // Debounce para evitar múltiplas chamadas
+
+    return () => clearTimeout(timer);
+  }, [calculatePrice, checkIn, checkOut, guests, selectedRoom, reservationHook?.selectedServices]);
 
   // ========================================
   // HANDLERS
@@ -119,7 +179,6 @@ export const ReservationForm = ({
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     
-    // Marcar todos os campos como tocados
     setTouched({
       dates: true,
       guests: true
@@ -127,6 +186,7 @@ export const ReservationForm = ({
 
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
       return;
     }
 
@@ -137,7 +197,7 @@ export const ReservationForm = ({
         checkOut,
         guests,
         nights,
-        totalPrice: priceBreakdown?.total
+        totalPrice: priceBreakdown?.total?.amount
       });
     }
   }, [selectedRoom, checkIn, checkOut, guests, nights, priceBreakdown, onSubmit, validateForm]);
@@ -175,7 +235,6 @@ export const ReservationForm = ({
           checkOut={checkOut}
           onChange={handleDateChange}
           disabled={!selectedRoom || isSubmitting}
-          error={touched.dates ? formErrors : {}}
         />
       </div>
 
@@ -193,11 +252,12 @@ export const ReservationForm = ({
       </div>
 
       {/* Resumo de preços */}
-      {selectedRoom && priceBreakdown && (
+      {selectedRoom && (
         <div className={styles.formGroup}>
           <PriceSummary
             breakdown={priceBreakdown}
             isLoading={isCalculating}
+            aria-live="polite"
           />
         </div>
       )}
@@ -230,5 +290,3 @@ export const ReservationForm = ({
     </form>
   );
 };
-
-ReservationForm.displayName = 'ReservationForm';

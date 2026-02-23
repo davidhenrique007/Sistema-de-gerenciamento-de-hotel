@@ -1,8 +1,8 @@
 // ============================================
-// PAGE: HomePage
+// PAGE: HomePage (Versão Final com Integração Completa)
 // ============================================
 // Responsabilidade: Orquestrar componentes e hooks da Home Feature
-// Arquitetura: Camada de composição, sem lógica de negócio
+// Integração: Use cases via DI, hooks de dados, reserva e pagamento
 // ============================================
 
 import React, { useEffect, useCallback } from 'react';
@@ -25,6 +25,9 @@ import { ReservationForm } from '../components/ReservationForm/ReservationForm.j
 import { ServicesSection } from '../components/ServicesSection/ServicesSection.jsx';
 import { PriceSummary } from '../components/Summary/PriceSummary.jsx';
 
+// Componentes de Pagamento
+import { PaymentButton, PaymentSummary } from '../../../payment/components/index.js';
+
 // Hooks da Home
 import { useHomeData } from '../hooks/useHomeData.js';
 import { useHomeReservation } from '../hooks/useHomeReservation.js';
@@ -32,10 +35,11 @@ import { useReservationForm } from '../hooks/useReservationForm.js';
 import { useReservationValidation } from '../hooks/useReservationValidation.js';
 import { useRoomOccupancy } from '../hooks/useRoomOccupancy.js';
 
-// Estilos
-import './home.css';
+// Use cases (via DI) - COMENTE ESTAS LINHAS SE NÃO TIVER OS HOOKS
+// import { useListAvailableRooms, useGetRoomDetails } from '../../../di/homeDependencies.jsx';
+// import { useUpdateRoomOccupancy } from '../../../di/homeDependencies.jsx';
+// import { useCalculatePrice } from '../../../di/homeDependencies.jsx';
 
-// ... resto do código permanece igual
 // Estilos
 import './home.css';
 
@@ -104,26 +108,49 @@ export const HomePage = () => {
   const notification = useNotification();
 
   // ========================================
+  // USE CASES (via DI) - DESCOMENTE QUANDO TIVER OS HOOKS
+  // ========================================
+  
+  // const listAvailableRooms = useListAvailableRooms();
+  // const getRoomDetails = useGetRoomDetails();
+  // const updateRoomOccupancy = useUpdateRoomOccupancy();
+  // const calculatePrice = useCalculatePrice();
+
+  // ========================================
   // HOOKS DE DADOS
   // ========================================
   
   const {
-    // Dados
     rooms,
     services,
     loading: dataLoading,
     error: dataError,
     initialized,
-    
-    // Funções
     refresh,
-    refreshRooms,
-    refreshServices,
     loadRoomDetails,
     calculateReservationPrice
   } = useHomeData({
+    // listAvailableRoomsUseCase: listAvailableRooms, // Descomente quando tiver
+    // getRoomDetailsUseCase: getRoomDetails, // Descomente quando tiver
     onError: (type, error) => {
       notification.error(`Erro ao carregar ${type}: ${error.message}`);
+    }
+  });
+
+  // ========================================
+  // HOOKS DE OCUPAÇÃO
+  // ========================================
+  
+  const occupancy = useRoomOccupancy({
+    // updateRoomOccupancyUseCase: updateRoomOccupancy, // Descomente quando tiver
+    onOccupancyChanged: (roomId, status) => {
+      if (status === 'occupied') {
+        notification.success(`Quarto reservado com sucesso!`);
+      }
+      refresh(); // Atualizar lista de quartos
+    },
+    onError: (roomId, error) => {
+      notification.error(`Erro ao processar quarto: ${error.message}`);
     }
   });
 
@@ -135,9 +162,6 @@ export const HomePage = () => {
     calculatePriceUseCase: { execute: calculateReservationPrice },
     onPriceCalculated: (breakdown) => {
       console.log('Preço calculado:', breakdown);
-    },
-    onReservationChange: (state) => {
-      console.log('Reserva atualizada:', state);
     }
   });
 
@@ -156,21 +180,12 @@ export const HomePage = () => {
     selectedServices: reservation.selectedServices,
     validateAvailability: true,
     checkAvailability: async ({ roomId, checkIn, checkOut, guests }) => {
-      // Integrar com serviço de disponibilidade
-      return { isAvailable: true, reason: null };
+      // Usar o hook de ocupação para verificar disponibilidade
+      const isAvailable = occupancy.isRoomAvailable(roomId);
+      return { isAvailable, reason: isAvailable ? null : 'Quarto ocupado' };
     },
     onValidationChange: (validationState) => {
       console.log('Validação atualizada:', validationState);
-    }
-  });
-
-  const occupancy = useRoomOccupancy({
-    onOccupancyChanged: (roomId, status, data) => {
-      notification.success(`Quarto ${roomId} ${status === 'occupied' ? 'reservado' : 'liberado'} com sucesso!`);
-      refreshRooms(); // Atualizar lista de quartos
-    },
-    onError: (roomId, error) => {
-      notification.error(`Erro ao processar quarto ${roomId}: ${error.message}`);
     }
   });
 
@@ -178,10 +193,18 @@ export const HomePage = () => {
   // HANDLERS
   // ========================================
   
-  const handleRoomSelect = useCallback((room) => {
+  const handleRoomSelect = useCallback(async (room) => {
+    // Verificar disponibilidade via hook de ocupação
+    const isAvailable = occupancy.isRoomAvailable(room.id);
+    
+    if (!isAvailable) {
+      notification.warning('Este quarto não está disponível no momento');
+      return;
+    }
+
     reservation.selectRoom(room);
-    loadRoomDetails(room.id);
-  }, [reservation, loadRoomDetails]);
+    await loadRoomDetails(room.id);
+  }, [reservation, loadRoomDetails, occupancy, notification]);
 
   const handleServiceToggle = useCallback((serviceId, isSelected) => {
     reservation.toggleService(serviceId);
@@ -194,7 +217,7 @@ export const HomePage = () => {
     }
 
     try {
-      // Ocupar o quarto
+      // Ocupar o quarto via hook de ocupação
       const success = await occupancy.occupyRoom(state.room.id, {
         guestsCount: state.guests,
         reservationId: `RES-${Date.now()}`,
@@ -221,6 +244,28 @@ export const HomePage = () => {
   const handleRefresh = useCallback(() => {
     refresh();
   }, [refresh]);
+
+  const handleProceedToPayment = useCallback(() => {
+    console.log('Prosseguir para pagamento', {
+      room: reservation.room,
+      dates: { 
+        checkIn: reservation.checkIn, 
+        checkOut: reservation.checkOut 
+      },
+      guests: reservation.guests,
+      services: reservation.selectedServices,
+      total: reservation.total
+    });
+    
+    notification.info('Redirecionando para página de pagamento...');
+    
+    // Navegar para página de checkout (quando implementada)
+    // navigate('/checkout', { 
+    //   state: { 
+    //     reservation: reservation.reservationState 
+    //   } 
+    // });
+  }, [reservation, notification, navigate]);
 
   // ========================================
   // RENDERIZAÇÃO CONDICIONAL
@@ -259,13 +304,14 @@ export const HomePage = () => {
         />
 
         <Container size={ContainerSize.LARGE}>
-          {/* Rooms Section */}
+          {/* Rooms Section com integração de ocupação */}
           <RoomsSection
             rooms={rooms}
             onSelectRoom={handleRoomSelect}
             selectedRoomId={reservation.room?.id}
             title="Nossos Quartos"
             subtitle="Escolha o quarto perfeito para sua estadia"
+            occupancyHook={occupancy}
           />
 
           {/* Reservation Section */}
@@ -279,13 +325,36 @@ export const HomePage = () => {
                   onSubmit={form.handleSubmit}
                   priceBreakdown={reservation.priceBreakdown}
                   isCalculating={reservation.isCalculating}
+                  reservationHook={reservation}
                 />
               </div>
 
               <div className="reservation-summary-wrapper">
-                <PriceSummary
-                  breakdown={reservation.priceBreakdown}
-                  isLoading={reservation.isCalculating}
+                {/* Payment Summary - Resumo detalhado para pagamento */}
+                <PaymentSummary
+                  room={reservation.room}
+                  checkIn={reservation.checkIn}
+                  checkOut={reservation.checkOut}
+                  guests={reservation.guests}
+                  nights={reservation.nights}
+                  services={reservation.selectedServices.map(id => ({
+                    id,
+                    name: `Serviço ${id}`,
+                    price: 50 // Placeholder - substituir por preço real
+                  }))}
+                  roomPrice={reservation.priceBreakdown?.roomPrice?.subtotal || 0}
+                  servicesPrice={reservation.servicesTotal}
+                  taxes={reservation.taxesTotal}
+                  total={reservation.total}
+                  showBreakdown={true}
+                />
+                
+                {/* Payment Button - Controlado por estado de validação */}
+                <PaymentButton
+                  isEnabled={validation.isReady && reservation.room && !reservation.isCalculating}
+                  total={reservation.total}
+                  onProceed={handleProceedToPayment}
+                  loading={reservation.isCalculating}
                 />
                 
                 {/* Status de validação */}
@@ -324,9 +393,5 @@ export const HomePage = () => {
 };
 
 HomePage.displayName = 'HomePage';
-
-// ============================================
-// EXPORTS
-// ============================================
 
 export default HomePage;

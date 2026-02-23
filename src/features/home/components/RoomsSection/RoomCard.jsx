@@ -1,19 +1,16 @@
 // ============================================
 // COMPONENT: RoomCard
 // ============================================
-// Responsabilidade: Card individual de quarto
-// Integração: Hooks para atualização em tempo real
+// Responsabilidade: Card individual de quarto com integração de ocupação
+// Integração: useRoomOccupancy para status em tempo real
 // ============================================
 
 import React, { useState, useCallback, memo } from 'react';
 import { Button, ButtonVariant, ButtonSize } from '../../../../shared/components/ui';
-import { RoomStatusBadge, RoomStatus } from "./RoomStatusBadge.jsx";
+import { RoomStatusBadge, RoomStatus } from './RoomStatusBadge.jsx';
 import styles from './RoomCard.module.css';
 
-// ============================================
-// ÍCONES (simulados - em produção usar biblioteca de ícones)
-// ============================================
-
+// Ícones (simulados)
 const icons = {
   wifi: '📶',
   tv: '📺',
@@ -26,10 +23,6 @@ const icons = {
   calendar: '📅'
 };
 
-// ============================================
-// COMPONENTE PRINCIPAL
-// ============================================
-
 export const RoomCard = memo(({
   // Dados do quarto
   id,
@@ -39,15 +32,14 @@ export const RoomCard = memo(({
   capacity,
   pricePerNight,
   pricePerNightFormatted,
-  status,
-  statusLabel,
+  status: initialStatus,
+  statusLabel: initialStatusLabel,
   mainImage,
   amenities = [],
-  available = true,
   
-  // Callbacks
+  // Callbacks e hooks
   onSelect,
-  onStatusChange,
+  occupancyHook, // Hook de ocupação injetado
   
   // Estado de loading
   isLoading = false,
@@ -60,12 +52,19 @@ export const RoomCard = memo(({
   ...props
 }) => {
   // ========================================
-  // ESTADOS
+  // ESTADO LOCAL E HOOKS
   // ========================================
   
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+
+  // Obter status atualizado do hook de ocupação
+  const currentStatus = occupancyHook?.getRoomStatus?.(id) || initialStatus;
+  const isOccupied = currentStatus === RoomStatus.OCCUPIED;
+  const isAvailable = currentStatus === RoomStatus.AVAILABLE;
+  const isLoadingStatus = occupancyHook?.loadingMap?.get(id) || false;
+  const error = occupancyHook?.errorMap?.get(id);
 
   // ========================================
   // HANDLERS
@@ -81,10 +80,29 @@ export const RoomCard = memo(({
   }, [number]);
 
   const handleSelect = useCallback(() => {
-    if (onSelect && available && !isLoading) {
-      onSelect({ id, number, type, pricePerNight });
+    // Bloquear seleção se quarto estiver ocupado
+    if (isOccupied) {
+      console.warn(`Quarto ${number} está ocupado e não pode ser selecionado`);
+      return;
     }
-  }, [onSelect, available, isLoading, id, number, type, pricePerNight]);
+
+    // Bloquear se já estiver selecionado ou em loading
+    if (selected || isLoading || isLoadingStatus) {
+      return;
+    }
+
+    if (onSelect) {
+      onSelect({
+        id,
+        number,
+        type,
+        typeLabel,
+        capacity,
+        pricePerNight,
+        status: currentStatus
+      });
+    }
+  }, [onSelect, id, number, type, typeLabel, capacity, pricePerNight, currentStatus, isOccupied, selected, isLoading, isLoadingStatus]);
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
@@ -100,12 +118,15 @@ export const RoomCard = memo(({
   
   const cardClasses = [
     styles.card,
-    !available && styles.unavailable,
+    !isAvailable && styles.unavailable,
     selected && styles.selected,
     isHovered && styles.hovered,
-    isLoading && styles.loading,
+    (isLoading || isLoadingStatus) && styles.loading,
     className
   ].filter(Boolean).join(' ');
+
+  // Determinar label de status para acessibilidade
+  const statusLabel = isOccupied ? 'Quarto ocupado' : 'Quarto disponível';
 
   // ========================================
   // RENDER
@@ -118,6 +139,7 @@ export const RoomCard = memo(({
       onMouseLeave={handleMouseLeave}
       aria-labelledby={`room-title-${id}`}
       aria-describedby={`room-desc-${id}`}
+      aria-disabled={!isAvailable}
       {...props}
     >
       {/* Imagem do quarto */}
@@ -137,10 +159,10 @@ export const RoomCard = memo(({
           loading="lazy"
         />
         
-        {/* Badge de status */}
+        {/* Badge de status com estado atualizado */}
         <div className={styles.statusBadge}>
           <RoomStatusBadge
-            status={status}
+            status={currentStatus}
             size="small"
           />
         </div>
@@ -169,7 +191,7 @@ export const RoomCard = memo(({
           </div>
         </div>
 
-        {/* Amenities (limitado a 4) */}
+        {/* Amenities */}
         <div className={styles.amenities} id={`room-desc-${id}`}>
           {amenities.slice(0, 4).map((amenity, index) => (
             <div key={index} className={styles.amenity}>
@@ -189,24 +211,24 @@ export const RoomCard = memo(({
         {/* Botão de ação */}
         <div className={styles.action}>
           <Button
-            variant={available ? ButtonVariant.PRIMARY : ButtonVariant.SECONDARY}
+            variant={isAvailable ? ButtonVariant.PRIMARY : ButtonVariant.SECONDARY}
             size={ButtonSize.MEDIUM}
             fullWidth
             onClick={handleSelect}
-            disabled={!available || isLoading}
-            loading={isLoading}
-            aria-label={available 
+            disabled={!isAvailable || isLoading || isLoadingStatus}
+            loading={isLoading || isLoadingStatus}
+            aria-label={isAvailable 
               ? `Selecionar quarto ${number}` 
-              : `Quarto ${number} indisponível`
+              : `Quarto ${number} indisponível - ${statusLabel}`
             }
           >
-            {available ? 'Selecionar Quarto' : 'Indisponível'}
+            {isAvailable ? 'Selecionar Quarto' : 'Indisponível'}
           </Button>
         </div>
       </div>
 
       {/* Overlay de loading */}
-      {isLoading && (
+      {(isLoading || isLoadingStatus) && (
         <div className={styles.loadingOverlay} aria-hidden="true">
           <div className={styles.loadingSpinner}></div>
         </div>
@@ -216,35 +238,3 @@ export const RoomCard = memo(({
 });
 
 RoomCard.displayName = 'RoomCard';
-
-// ============================================
-// COMPONENTE: RoomCardSkeleton
-// ============================================
-// Versão skeleton para estado de carregamento
-// ============================================
-
-export const RoomCardSkeleton = () => {
-  return (
-    <div className={`${styles.card} ${styles.skeleton}`} aria-hidden="true">
-      <div className={styles.imageContainer}>
-        <div className={styles.imagePlaceholder}></div>
-      </div>
-      <div className={styles.content}>
-        <div className={styles.header}>
-          <div className={styles.skeletonTitle}></div>
-          <div className={styles.skeletonPrice}></div>
-        </div>
-        <div className={styles.amenities}>
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className={styles.skeletonAmenity}></div>
-          ))}
-        </div>
-        <div className={styles.action}>
-          <div className={styles.skeletonButton}></div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-RoomCardSkeleton.displayName = 'RoomCardSkeleton';

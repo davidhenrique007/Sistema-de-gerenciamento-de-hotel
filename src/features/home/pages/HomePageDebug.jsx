@@ -1,5 +1,5 @@
 // ============================================
-// PAGE: HomePageDebug (ISOLAMENTO DE HOOKS)
+// PAGE: HomePageDebug (VERSÃO CORRIGIDA - HOOKS INCONDICIONAIS)
 // ============================================
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +9,7 @@ import { Header } from '../../../shared/components/layout/Header/Header.jsx';
 import { Footer } from '../../../shared/components/layout/Footer/Footer.jsx';
 import { useNotification } from '../../../shared/components/ui/Notification/Notification.jsx';
 
-// Hooks para testar individualmente
+// Hooks - TODOS chamados incondicionalmente!
 import { useHomeData } from '../hooks/useHomeData.js';
 import { useHomeReservation } from '../hooks/useHomeReservation.js';
 import { useReservationForm } from '../hooks/useReservationForm.js';
@@ -22,7 +22,31 @@ export const HomePageDebug = () => {
   const notification = useNotification();
   const [activeHook, setActiveHook] = useState('data'); // 'data', 'reservation', 'form'
 
-  // Hook 1: useHomeData (sempre ativo, é a base)
+  // ========================================
+  // TODOS OS HOOKS SÃO CHAMADOS INCONDICIONALMENTE
+  // ========================================
+  
+  // Hook 1: useHomeData (sempre necessário)
+  const homeData = useHomeData({
+    onError: (type, err) => notification.error(`Erro: ${err.message}`)
+  });
+
+  // Hook 2: useHomeReservation (sempre chamado, mesmo se não usado)
+  const reservation = useHomeReservation({
+    calculatePriceUseCase: null,
+    onPriceCalculated: (bd) => console.log('Preço calculado:', bd)
+  });
+
+  // Hook 3: useReservationForm (sempre chamado, mesmo se não usado)
+  const form = useReservationForm({
+    reservationState: reservation.reservationState
+  });
+
+  // ========================================
+  // DESTRUTURAÇÃO CONDICIONAL (só afeta o retorno, não os hooks)
+  // ========================================
+  
+  // Dados base (sempre disponíveis)
   const {
     rooms,
     services,
@@ -30,20 +54,7 @@ export const HomePageDebug = () => {
     error,
     initialized,
     refresh
-  } = useHomeData({
-    onError: (type, err) => notification.error(`Erro: ${err.message}`)
-  });
-
-  // Hook 2: useHomeReservation (ativado por botão)
-  const reservation = activeHook === 'reservation' || activeHook === 'form' ? useHomeReservation({
-    calculatePriceUseCase: null, // Mock
-    onPriceCalculated: (bd) => console.log('Preço calculado:', bd)
-  }) : null;
-
-  // Hook 3: useReservationForm (ativado por botão)
-  const form = activeHook === 'form' ? useReservationForm({
-    reservationState: reservation?.reservationState || {}
-  }) : null;
+  } = homeData;
 
   if (loading && !initialized) {
     return <div className="home-loading">Carregando...</div>;
@@ -91,20 +102,29 @@ export const HomePageDebug = () => {
           <p>Quartos: {rooms.length}</p>
           <p>Serviços: {services?.categories ? Object.keys(services.categories).length : 0}</p>
           <p>Hook Ativo: <strong>{activeHook}</strong></p>
-          {reservation && <p>Reserva: {reservation.room ? 'Quarto selecionado' : 'Nenhum quarto'}</p>}
+          
+          {/* Renderização condicional apenas para exibição */}
+          {activeHook !== 'data' && (
+            <>
+              <p>Reserva: {reservation.room ? 'Quarto selecionado' : 'Nenhum quarto'}</p>
+              {activeHook === 'form' && (
+                <p>Formulário: {form.isValid ? 'Válido' : 'Inválido'}</p>
+              )}
+            </>
+          )}
         </div>
 
-        {/* Simulador de seleção de quarto para testar reserva */}
+        {/* Simulador de seleção de quarto - só aparece se o hook de reserva estiver "ativo" para UI */}
         {activeHook !== 'data' && rooms.length > 0 && (
           <div style={{ marginTop: '30px' }}>
             <h3>🛏️ Simular Seleção de Quarto</h3>
             <button 
-              onClick={() => reservation?.selectRoom(rooms[0])}
+              onClick={() => reservation.selectRoom(rooms[0])}
               style={{ padding: '10px', marginRight: '10px' }}
             >
               Selecionar Primeiro Quarto
             </button>
-            {reservation?.room && (
+            {reservation.room && (
               <button onClick={() => reservation.clearReservation()}>
                 Limpar Seleção
               </button>

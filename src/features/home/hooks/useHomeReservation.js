@@ -2,10 +2,10 @@
 // HOOK: useHomeReservation
 // ============================================
 // Responsabilidade: Gerenciar estado central da reserva na Home
-// Fonte única de verdade para dados da reserva
+// VERSÃO CORRIGIDA - SEM VIOLAÇÃO DAS REGRAS DOS HOOKS
 // ============================================
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 
 // ============================================
 // CONSTANTES
@@ -15,29 +15,6 @@ const TAX_CONFIG = {
   serviceTax: 0.10, // 10% de taxa de serviço
   cityTax: 0.05,    // 5% de taxa municipal
   vat: 0.23         // 23% de IVA
-};
-
-// ============================================
-// ESTADO INICIAL
-// ============================================
-
-const initialReservationState = {
-  // Dados de seleção
-  room: null,
-  checkIn: null,
-  checkOut: null,
-  guests: 1,
-  selectedServices: [],
-  
-  // Metadados
-  nights: 0,
-  isValid: false,
-  
-  // Preços (serão calculados)
-  roomPrice: 0,
-  servicesPrice: 0,
-  taxes: 0,
-  totalPrice: 0
 };
 
 // ============================================
@@ -94,8 +71,6 @@ export const useHomeReservation = ({
   
   const selectRoom = useCallback((selectedRoom) => {
     setRoom(selectedRoom);
-    
-    // Resetar serviços ao mudar de quarto (opcional)
     setSelectedServices([]);
     
     if (onReservationChange) {
@@ -125,7 +100,6 @@ export const useHomeReservation = ({
   }, [room, guests, selectedServices, onReservationChange]);
 
   const setGuestsCount = useCallback((newGuests) => {
-    // Validar limite máximo
     if (room && newGuests > room.capacity) {
       console.warn(`Número de hóspedes excede a capacidade do quarto (${room.capacity})`);
       return;
@@ -201,7 +175,6 @@ export const useHomeReservation = ({
     try {
       let breakdown;
       
-      // Usar use case se disponível, senão calcular localmente
       if (calculatePriceUseCase) {
         breakdown = await calculatePriceUseCase.execute({
           roomId: room.id,
@@ -211,13 +184,8 @@ export const useHomeReservation = ({
           serviceIds: selectedServices
         });
       } else if (pricingService) {
-        // Cálculo local simplificado
         const roomTotal = room.pricePerNight * nights;
-        const servicesTotal = selectedServices.reduce((sum, id) => {
-          // Simulação - em produção, buscaria o serviço
-          return sum + 50; // Valor fixo para exemplo
-        }, 0);
-        
+        const servicesTotal = selectedServices.reduce((sum) => sum + 50, 0);
         const subtotal = roomTotal + servicesTotal;
         const taxes = applyTaxes ? {
           serviceTax: subtotal * TAX_CONFIG.serviceTax,
@@ -225,7 +193,6 @@ export const useHomeReservation = ({
           vat: subtotal * TAX_CONFIG.vat,
           total: subtotal * (TAX_CONFIG.serviceTax + TAX_CONFIG.cityTax + TAX_CONFIG.vat)
         } : { total: 0 };
-        
         const total = subtotal + (taxes.total || 0);
         
         breakdown = {
@@ -257,38 +224,44 @@ export const useHomeReservation = ({
     }
   }, [room, checkIn, checkOut, guests, selectedServices, nights, canCalculate, calculatePriceUseCase, pricingService, applyTaxes, onPriceCalculated]);
 
-  // Calcular automaticamente quando os dados mudarem
-  useMemo(() => {
-    if (canCalculate) {
-      calculatePrice();
-    } else {
-      setPriceBreakdown(null);
-    }
-  }, [canCalculate, room, checkIn, checkOut, guests, selectedServices, calculatePrice]);
+  // ========================================
+  // EFEITO PARA CÁLCULO AUTOMÁTICO - CORRIGIDO!
+  // ========================================
+  
+  useEffect(() => {
+    let isMounted = true;
+
+    const autoCalculate = async () => {
+      if (canCalculate) {
+        await calculatePrice();
+      } else {
+        if (isMounted) setPriceBreakdown(null);
+      }
+    };
+
+    autoCalculate();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [canCalculate, calculatePrice]);
 
   // ========================================
   // ESTADO CONSOLIDADO
   // ========================================
   
   const reservationState = useMemo(() => ({
-    // Dados de seleção
     room,
     checkIn,
     checkOut,
     guests,
     selectedServices,
-    
-    // Metadados
     nights,
     hasRoom: !!room,
     hasDates: !!(checkIn && checkOut),
     isValid: canCalculate,
-    
-    // Preços
     priceBreakdown,
     isCalculating,
-    
-    // Totais simplificados
     roomTotal: priceBreakdown?.roomPrice?.subtotal || 0,
     servicesTotal: priceBreakdown?.services?.reduce((sum, s) => sum + s.subtotal, 0) || 0,
     taxesTotal: priceBreakdown?.taxes?.total || 0,
@@ -300,36 +273,23 @@ export const useHomeReservation = ({
   // ========================================
   
   return {
-    // Estado
     reservationState,
-    
-    // Dados brutos
     room,
     checkIn,
     checkOut,
     guests,
     selectedServices,
-    
-    // Metadados
     nights,
     hasRoom: !!room,
     hasDates: !!(checkIn && checkOut),
     isValid: canCalculate,
-    
-    // Preços
     priceBreakdown,
     isCalculating,
-    
-    // Ações de seleção
     selectRoom,
     setDates,
     setGuests: setGuestsCount,
     toggleService,
-    
-    // Cálculo
     calculatePrice,
-    
-    // Reset
     clearReservation
   };
 };
