@@ -245,27 +245,80 @@ export const HomePage = () => {
     refresh();
   }, [refresh]);
 
+  // ========================================
+  // HANDLER DE PAGAMENTO - ATUALIZADO
+  // ========================================
+
   const handleProceedToPayment = useCallback(() => {
-    console.log('Prosseguir para pagamento', {
-      room: reservation.room,
-      dates: { 
-        checkIn: reservation.checkIn, 
-        checkOut: reservation.checkOut 
+    // Validação final antes de prosseguir
+    if (!validation.isReady) {
+      notification.warning('Por favor, corrija os erros antes de prosseguir');
+      return;
+    }
+
+    if (!reservation.room) {
+      notification.warning('Selecione um quarto para continuar');
+      return;
+    }
+
+    if (!reservation.checkIn || !reservation.checkOut) {
+      notification.warning('Selecione as datas da reserva');
+      return;
+    }
+
+    if (reservation.nights < 1) {
+      notification.warning('Período de reserva inválido');
+      return;
+    }
+
+    // Preparar dados completos para o checkout
+    const checkoutData = {
+      // Informações do quarto
+      room: {
+        id: reservation.room.id,
+        number: reservation.room.number,
+        type: reservation.room.type,
+        typeLabel: reservation.room.typeLabel,
+        capacity: reservation.room.capacity,
+        pricePerNight: reservation.room.pricePerNight
       },
+      // Datas
+      checkIn: reservation.checkIn,
+      checkOut: reservation.checkOut,
+      nights: reservation.nights,
+      // Hóspedes
       guests: reservation.guests,
-      services: reservation.selectedServices,
-      total: reservation.total
-    });
+      // Serviços selecionados
+      services: reservation.selectedServices.map(id => {
+        // Buscar detalhes do serviço (se disponível)
+        // Por enquanto, placeholder
+        return {
+          id,
+          name: `Serviço ${id}`,
+          price: 50
+        };
+      }),
+      // Preços
+      roomPrice: reservation.priceBreakdown?.roomPrice?.subtotal || 0,
+      servicesPrice: reservation.servicesTotal,
+      taxes: reservation.taxesTotal,
+      total: reservation.total,
+      // Metadados
+      timestamp: new Date().toISOString(),
+      reservationId: `RES-${Date.now()}`
+    };
+
+    console.log('📋 Dados completos para checkout:', checkoutData);
     
     notification.info('Redirecionando para página de pagamento...');
     
-    // Navegar para página de checkout (quando implementada)
-    // navigate('/checkout', { 
-    //   state: { 
-    //     reservation: reservation.reservationState 
-    //   } 
-    // });
-  }, [reservation, notification, navigate]);
+    // Navegar para página de checkout com os dados da reserva
+    navigate('/checkout', { 
+      state: { 
+        reservation: checkoutData 
+      } 
+    });
+  }, [reservation, validation, notification, navigate]);
 
   // ========================================
   // RENDERIZAÇÃO CONDICIONAL
