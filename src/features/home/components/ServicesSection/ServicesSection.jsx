@@ -13,162 +13,160 @@ import styles from './ServicesSection.module.css';
 // COMPONENTE PRINCIPAL
 // ============================================
 
-export const ServicesSection = memo(({
-  services = [],
-  selectedServiceIds = [],
-  onServiceToggle,
-  maxSelections = 10,
-  title = 'Serviços Adicionais',
-  subtitle = 'Personalize sua estadia com nossos serviços exclusivos',
-  isLoading = false,
-  disabled = false,
-  className = '',
-  ...props
-}) => {
-  // ========================================
-  // ESTADOS
-  // ========================================
-  
-  const [focusedIndex, setFocusedIndex] = useState(-1);
+export const ServicesSection = memo(
+  ({
+    services = [],
+    selectedServiceIds = [],
+    onServiceToggle,
+    maxSelections = 10,
+    title = 'Serviços Adicionais',
+    subtitle = 'Personalize sua estadia com nossos serviços exclusivos',
+    isLoading = false,
+    disabled = false,
+    className = '',
+    ...props
+  }) => {
+    // ========================================
+    // ESTADOS
+    // ========================================
 
-  // ========================================
-  // HANDLERS
-  // ========================================
-  
-  const handleToggle = useCallback((serviceId, isSelected) => {
-    if (disabled) return;
+    const [focusedIndex, setFocusedIndex] = useState(-1);
 
-    // Verificar limite máximo de seleções
-    if (isSelected && selectedServiceIds.length >= maxSelections) {
-      // Pode emitir um aviso ou notificação
-      console.warn(`Máximo de ${maxSelections} serviços selecionados`);
-      return;
-    }
+    // ========================================
+    // HANDLERS
+    // ========================================
 
-    onServiceToggle(serviceId, isSelected);
-  }, [selectedServiceIds.length, maxSelections, onServiceToggle, disabled]);
+    const handleToggle = useCallback(
+      (serviceId, isSelected) => {
+        if (disabled) return;
 
-  const handleKeyDown = useCallback((e) => {
-    // Navegação por teclado entre os cards
-    const cards = document.querySelectorAll(`.${styles.serviceCard}`);
-    
-    switch (e.key) {
-      case 'ArrowDown':
-      case 'ArrowRight':
-        e.preventDefault();
-        setFocusedIndex(prev => 
-          prev < services.length - 1 ? prev + 1 : 0
-        );
-        break;
-      case 'ArrowUp':
-      case 'ArrowLeft':
-        e.preventDefault();
-        setFocusedIndex(prev => 
-          prev > 0 ? prev - 1 : services.length - 1
-        );
-        break;
-      case 'Home':
-        e.preventDefault();
-        setFocusedIndex(0);
-        break;
-      case 'End':
-        e.preventDefault();
-        setFocusedIndex(services.length - 1);
-        break;
-    }
-  }, [services.length]);
+        // Verificar limite máximo de seleções
+        if (isSelected && selectedServiceIds.length >= maxSelections) {
+          // Pode emitir um aviso ou notificação
+          console.warn(`Máximo de ${maxSelections} serviços selecionados`);
+          return;
+        }
 
-  // Focar no card apropriado quando o índice muda
-  React.useEffect(() => {
-    if (focusedIndex >= 0) {
-      const cards = document.querySelectorAll(`.${styles.serviceCard}`);
-      if (cards[focusedIndex]) {
-        cards[focusedIndex].focus();
+        onServiceToggle(serviceId, isSelected);
+      },
+      [selectedServiceIds.length, maxSelections, onServiceToggle, disabled]
+    );
+
+    const handleKeyDown = useCallback(
+      (e) => {
+        // Navegação por teclado entre os cards
+        const cards = document.querySelectorAll(`.${styles.serviceCard}`);
+
+        switch (e.key) {
+          case 'ArrowDown':
+          case 'ArrowRight':
+            e.preventDefault();
+            setFocusedIndex((prev) => (prev < services.length - 1 ? prev + 1 : 0));
+            break;
+          case 'ArrowUp':
+          case 'ArrowLeft':
+            e.preventDefault();
+            setFocusedIndex((prev) => (prev > 0 ? prev - 1 : services.length - 1));
+            break;
+          case 'Home':
+            e.preventDefault();
+            setFocusedIndex(0);
+            break;
+          case 'End':
+            e.preventDefault();
+            setFocusedIndex(services.length - 1);
+            break;
+        }
+      },
+      [services.length]
+    );
+
+    // Focar no card apropriado quando o índice muda
+    React.useEffect(() => {
+      if (focusedIndex >= 0) {
+        const cards = document.querySelectorAll(`.${styles.serviceCard}`);
+        if (cards[focusedIndex]) {
+          cards[focusedIndex].focus();
+        }
       }
-    }
-  }, [focusedIndex]);
+    }, [focusedIndex]);
 
-  // ========================================
-  // MEMOIZAÇÃO
-  // ========================================
-  
-  const groupedServices = useMemo(() => {
-    const groups = {};
-    
-    services.forEach(service => {
-      const type = service.type;
-      if (!groups[type]) {
-        groups[type] = [];
+    // ========================================
+    // AGRUPAMENTO DE SERVIÇOS - 
+    // ========================================
+    const groupedServices = useMemo(() => {
+      if (!services || !Array.isArray(services)) {
+        console.warn('Services não é um array:', services);
+        return {};
       }
-      groups[type].push(service);
-    });
 
-    return groups;
-  }, [services]);
+      const groups = {};
+      services.forEach((service) => {
+        const type = service.type || 'other';
+        if (!groups[type]) {
+          groups[type] = [];
+        }
+        groups[type].push(service);
+      });
+      return groups;
+    }, [services]);
 
-  // ========================================
-  // RENDER
-  // ========================================
-  
-  const selectedCount = selectedServiceIds.length;
-  const canSelectMore = selectedCount < maxSelections;
+    // ========================================
+    // RENDER
+    // ========================================
 
-  return (
-    <section 
-      className={`${styles.section} ${className}`}
-      aria-labelledby="services-title"
-      onKeyDown={handleKeyDown}
-      {...props}
-    >
-      <div className={styles.header}>
-        <h2 id="services-title" className={styles.title}>
-          {title}
-        </h2>
-        {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
-        
-        <div className={styles.selectionInfo} aria-live="polite">
-          <span className={styles.selectedCount}>
-            {selectedCount} de {maxSelections} serviços selecionados
-          </span>
-          {!canSelectMore && (
-            <span className={styles.warning}>
-              Limite máximo atingido
-            </span>
-          )}
-        </div>
-      </div>
+    const selectedCount = selectedServiceIds.length;
+    const canSelectMore = selectedCount < maxSelections;
 
-      <div 
-        className={styles.grid}
-        role="group"
-        aria-label="Lista de serviços disponíveis"
+    return (
+      <section
+        className={`${styles.section} ${className}`}
+        aria-labelledby="services-title"
+        onKeyDown={handleKeyDown}
+        {...props}
       >
-        {services.map((service, index) => (
-          <ServiceCard
-            key={service.id}
-            service={service}
-            isSelected={selectedServiceIds.includes(service.id)}
-            onToggle={handleToggle}
-            disabled={disabled || (!canSelectMore && !selectedServiceIds.includes(service.id))}
-            tabIndex={focusedIndex === index ? 0 : -1}
-          />
-        ))}
-      </div>
+        <div className={styles.header}>
+          <h2 id="services-title" className={styles.title}>
+            {title}
+          </h2>
+          {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
 
-      {isLoading && (
-        <div className={styles.loading}>
-          <div className={styles.loadingSpinner} />
-          <span>Carregando serviços...</span>
+          <div className={styles.selectionInfo} aria-live="polite">
+            <span className={styles.selectedCount}>
+              {selectedCount} de {maxSelections} serviços selecionados
+            </span>
+            {!canSelectMore && <span className={styles.warning}>Limite máximo atingido</span>}
+          </div>
         </div>
-      )}
 
-      {!isLoading && services.length === 0 && (
-        <div className={styles.empty}>
-          <p>Nenhum serviço disponível no momento.</p>
+        <div className={styles.grid} role="group" aria-label="Lista de serviços disponíveis">
+          {services.map((service, index) => (
+            <ServiceCard
+              key={service.id}
+              service={service}
+              isSelected={selectedServiceIds.includes(service.id)}
+              onToggle={handleToggle}
+              disabled={disabled || (!canSelectMore && !selectedServiceIds.includes(service.id))}
+              tabIndex={focusedIndex === index ? 0 : -1}
+            />
+          ))}
         </div>
-      )}
-    </section>
-  );
-});
+
+        {isLoading && (
+          <div className={styles.loading}>
+            <div className={styles.loadingSpinner} />
+            <span>Carregando serviços...</span>
+          </div>
+        )}
+
+        {!isLoading && services.length === 0 && (
+          <div className={styles.empty}>
+            <p>Nenhum serviço disponível no momento.</p>
+          </div>
+        )}
+      </section>
+    );
+  }
+);
 
 ServicesSection.displayName = 'ServicesSection';

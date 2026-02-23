@@ -26,7 +26,7 @@ import { ServicesSection } from '../components/ServicesSection/ServicesSection.j
 import { PriceSummary } from '../components/Summary/PriceSummary.jsx';
 
 // Componentes de Pagamento
-import { PaymentButton, PaymentSummary } from '../../../payment/components/index.js';
+import { PaymentButton, PaymentSummary } from "../../../features/payment/components/index.js";
 
 // Hooks da Home
 import { useHomeData } from '../hooks/useHomeData.js';

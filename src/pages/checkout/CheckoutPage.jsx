@@ -12,7 +12,7 @@ import { Footer } from '../../shared/components/layout/Footer/Footer.jsx';
 import { Container, ContainerSize } from '../../shared/components/layout/Container/Container.jsx';
 import { Button, ButtonVariant, ButtonSize } from '../../shared/components/ui/Button/Button.jsx';
 import { useNotification } from '../../shared/components/ui/Notification/Notification.jsx';
-import { PaymentSummary } from '../../features/payment/components/PaymentSummary.js';
+import { PaymentSummary } from "../../features/payment/components/PaymentSummary.jsx";
 import styles from './CheckoutPage.module.css';
 
 export const CheckoutPage = () => {
