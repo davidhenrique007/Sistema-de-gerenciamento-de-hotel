@@ -30,31 +30,31 @@ export const Hero = ({
   subtitle = DEFAULT_SUBTITLE,
   ctaText = DEFAULT_CTA_TEXT,
   ctaAction = DEFAULT_CTA_ACTION,
-  
+
   // Imagem
   imageSrc = DEFAULT_IMAGE,
   imageAlt = 'Vista paradisíaca do Hotel Paradise com piscina e mar ao fundo',
-  
+
   // Overlay
   overlayOpacity = 0.4,
   overlayColor = 'dark',
-  
+
   // Alinhamento
   align = 'center',
-  
+
   // Ações
   onCtaClick,
-  
+
   // Classes adicionais
   className = '',
-  
+
   // Props adicionais
   ...props
 }) => {
   // ========================================
   // ESTADOS
   // ========================================
-  
+
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [currentImage, setCurrentImage] = useState(imageSrc);
@@ -62,7 +62,7 @@ export const Hero = ({
   // ========================================
   // HANDLERS DE IMAGEM
   // ========================================
-  
+
   const handleImageLoad = () => {
     setImageLoaded(true);
   };
@@ -70,13 +70,12 @@ export const Hero = ({
   const handleImageError = () => {
     setImageError(true);
     setCurrentImage(PLACEHOLDER_IMAGE);
-    console.warn('Usando imagem placeholder para o Hero');
   };
 
   // ========================================
   // HANDLER DO CTA
   // ========================================
-  
+
   const handleCtaClick = (e) => {
     if (onCtaClick) {
       e.preventDefault();
@@ -87,30 +86,27 @@ export const Hero = ({
   // ========================================
   // CLASSES CSS
   // ========================================
-  
+
   const heroClasses = [
     styles.hero,
     styles[`align-${align}`],
     imageLoaded ? styles.imageLoaded : styles.imageLoading,
     imageError && styles.imageError,
     className
-  ].filter(Boolean).join(' ');
+  ]
+    .filter(Boolean)
+    .join(' ');
 
-  const overlayClasses = [
-    styles.overlay,
-    styles[`overlay-${overlayColor}`]
-  ].filter(Boolean).join(' ');
+  const overlayClasses = [styles.overlay, styles[`overlay-${overlayColor}`]]
+    .filter(Boolean)
+    .join(' ');
 
   // ========================================
   // RENDER
   // ========================================
-  
+
   return (
-    <section 
-      className={heroClasses}
-      aria-label="Seção principal de boas-vindas"
-      {...props}
-    >
+    <section className={heroClasses} aria-label="Seção principal de boas-vindas" {...props}>
       {/* Imagem de fundo com lazy loading */}
       <div className={styles.imageContainer}>
         {!imageLoaded && !imageError && (
@@ -118,7 +114,7 @@ export const Hero = ({
             <span className={styles.loadingIndicator}>Carregando...</span>
           </div>
         )}
-        
+
         <img
           src={currentImage}
           alt={imageAlt}
@@ -131,23 +127,15 @@ export const Hero = ({
       </div>
 
       {/* Overlay para melhorar contraste */}
-      <div 
-        className={overlayClasses}
-        style={{ opacity: overlayOpacity }}
-        aria-hidden="true"
-      />
+      <div className={overlayClasses} style={{ opacity: overlayOpacity }} aria-hidden="true" />
 
       {/* Conteúdo */}
       <div className={styles.content}>
         <div className={styles.contentInner}>
-          <h1 className={styles.title}>
-            {title}
-          </h1>
-          
-          <p className={styles.subtitle}>
-            {subtitle}
-          </p>
-          
+          <h1 className={styles.title}>{title}</h1>
+
+          <p className={styles.subtitle}>{subtitle}</p>
+
           <div className={styles.ctaContainer}>
             <Button
               as="a"
@@ -179,27 +167,14 @@ Hero.displayName = 'Hero';
 // ============================================
 
 export const HeroCompact = (props) => {
-  return (
-    <Hero
-      {...props}
-      overlayOpacity={0.3}
-      className={styles.compact}
-    />
-  );
+  return <Hero {...props} overlayOpacity={0.3} className={styles.compact} />;
 };
 
 HeroCompact.displayName = 'HeroCompact';
 
-export const HeroWithVideo = ({
-  videoSrc,
-  videoPoster,
-  ...props
-}) => {
+export const HeroWithVideo = ({ videoSrc, videoPoster, ...props }) => {
   return (
-    <Hero
-      {...props}
-      className={styles.withVideo}
-    >
+    <Hero {...props} className={styles.withVideo}>
       <video
         autoPlay
         muted
