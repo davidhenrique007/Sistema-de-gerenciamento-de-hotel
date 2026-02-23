@@ -3,9 +3,10 @@
 // ============================================
 // Responsabilidade: Seleção de datas de check-in e check-out
 // Acessibilidade: Navegação por teclado, ARIA labels
+// VERSÃO CORRIGIDA - SEM LOOP INFINITO
 // ============================================
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import styles from './ReservationForm.module.css';
 
 // ============================================
@@ -46,19 +47,23 @@ export const DatePicker = ({
   const [checkOut, setCheckOut] = useState(externalCheckOut || '');
   const [touched, setTouched] = useState({ checkIn: false, checkOut: false });
   const [focused, setFocused] = useState({ checkIn: false, checkOut: false });
-  const [validationErrors, setValidationErrors] = useState({});
+
+  // Use ref para evitar loops no useEffect
+  const initialMount = useRef(true);
+  const prevCheckIn = useRef(checkIn);
+  const prevCheckOut = useRef(checkOut);
 
   // ========================================
-  // VALIDAÇÕES
+  // VALIDAÇÕES - USANDO useMemo EM VEZ DE useEffect
   // ========================================
   
-  const validateDates = useCallback((inDate, outDate) => {
+  const validationErrors = useMemo(() => {
     const errors = {};
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    if (inDate) {
-      const checkInDate = new Date(inDate);
+    if (checkIn) {
+      const checkInDate = new Date(checkIn);
       
       if (checkInDate < today) {
         errors.checkIn = 'A data de check-in não pode ser no passado';
@@ -67,9 +72,9 @@ export const DatePicker = ({
       }
     }
 
-    if (outDate && inDate) {
-      const checkInDate = new Date(inDate);
-      const checkOutDate = new Date(outDate);
+    if (checkOut && checkIn) {
+      const checkInDate = new Date(checkIn);
+      const checkOutDate = new Date(checkOut);
       
       const diffTime = checkOutDate - checkInDate;
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -81,42 +86,64 @@ export const DatePicker = ({
       }
     }
 
-    if (outDate && inDate && new Date(outDate) <= new Date(inDate)) {
+    if (checkOut && checkIn && new Date(checkOut) <= new Date(checkIn)) {
       errors.checkOut = 'Check-out deve ser após o check-in';
     }
 
     return errors;
-  }, [maxDate]);
+  }, [checkIn, checkOut, maxDate]);
 
   // ========================================
-  // EFFECTS
+  // SYNC COM PROPS EXTERNAS
   // ========================================
   
   useEffect(() => {
-    if (externalCheckIn !== undefined) {
+    if (externalCheckIn !== undefined && externalCheckIn !== checkIn) {
       setCheckIn(externalCheckIn);
     }
-  }, [externalCheckIn]);
+  }, [externalCheckIn, checkIn]);
 
   useEffect(() => {
-    if (externalCheckOut !== undefined) {
+    if (externalCheckOut !== undefined && externalCheckOut !== checkOut) {
       setCheckOut(externalCheckOut);
     }
-  }, [externalCheckOut]);
+  }, [externalCheckOut, checkOut]);
 
+  // ========================================
+  // NOTIFICAR COMPONENTE PAI - CORRIGIDO!
+  // ========================================
+  
   useEffect(() => {
-    const errors = validateDates(checkIn, checkOut);
-    setValidationErrors(errors);
+    // Ignorar a primeira montagem para evitar notificação desnecessária
+    if (initialMount.current) {
+      initialMount.current = false;
+      prevCheckIn.current = checkIn;
+      prevCheckOut.current = checkOut;
+      return;
+    }
 
-    // Notificar componente pai apenas se não houver erros
-    if (Object.keys(errors).length === 0 && checkIn && checkOut) {
+    // Verificar se houve mudança real
+    const hasCheckInChanged = checkIn !== prevCheckIn.current;
+    const hasCheckOutChanged = checkOut !== prevCheckOut.current;
+
+    if (!hasCheckInChanged && !hasCheckOutChanged) {
+      return;
+    }
+
+    // Atualizar refs
+    prevCheckIn.current = checkIn;
+    prevCheckOut.current = checkOut;
+
+    // Só notifica se não houver erros e ambas as datas estiverem preenchidas
+    if (Object.keys(validationErrors).length === 0 && checkIn && checkOut) {
       onChange?.({
         checkIn,
         checkOut,
         nights: Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24))
       });
     }
-  }, [checkIn, checkOut, validateDates, onChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkIn, checkOut]); // ⚠️ Sem validationErrors ou onChange aqui!
 
   // ========================================
   // HANDLERS

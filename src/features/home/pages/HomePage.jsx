@@ -427,7 +427,7 @@ export const HomePage = () => {
 
           {/* Services Section */}
           <ServicesSection
-            services={services.categories?.food || []}
+            services={services.categories?.food?.services || []}
             selectedServiceIds={reservation.selectedServices}
             onServiceToggle={handleServiceToggle}
             title="Serviços Adicionais"

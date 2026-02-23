@@ -3,6 +3,7 @@
 // ============================================
 // Responsabilidade: Gerenciar dados da HomePage
 // Integra hooks de DI com lógica de estado
+// VERSÃO CORRIGIDA - COM loadRoomDetails
 // ============================================
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -110,6 +111,19 @@ export const useHomeData = ({
     }
   }, [listServices, onSuccess, onError]);
 
+  // ✅ NOVA FUNÇÃO: loadRoomDetails
+  const loadRoomDetails = useCallback(async (roomId) => {
+    try {
+      logger.debug(`Carregando detalhes do quarto ${roomId}...`);
+      // Como não temos um hook específico, retornamos o quarto da lista
+      const room = rooms.find(r => r.id === roomId);
+      return room || null;
+    } catch (err) {
+      logger.error(`Erro ao carregar detalhes do quarto ${roomId}:`, err);
+      return null;
+    }
+  }, [rooms]);
+
   const loadAll = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -189,7 +203,7 @@ export const useHomeData = ({
   }, [availabilityService]);
 
   // ==========================================
-  // CARREGAMENTO INICIAL - CORRIGIDO!
+  // CARREGAMENTO INICIAL
   // ==========================================
 
   useEffect(() => {
@@ -200,11 +214,7 @@ export const useHomeData = ({
       
       setLoading(true);
       try {
-        // Carregar quartos e serviços em paralelo
-        await Promise.all([
-          loadRooms(),
-          loadServices()
-        ]);
+        await Promise.all([loadRooms(), loadServices()]);
         if (isMounted) setInitialized(true);
       } catch (err) {
         if (isMounted) {
@@ -221,9 +231,8 @@ export const useHomeData = ({
     return () => {
       isMounted = false;
     };
-    // ⚠️ IMPORTANTE: Executa apenas UMA VEZ na montagem
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoLoad]); // Apenas autoLoad como dependência
+  }, [autoLoad]);
 
   // ==========================================
   // RETORNO
@@ -246,6 +255,7 @@ export const useHomeData = ({
     loadRooms,
     loadServices,
     loadAll,
+    loadRoomDetails, // ✅ ADICIONADO!
     
     // Funções de refresh
     refresh,

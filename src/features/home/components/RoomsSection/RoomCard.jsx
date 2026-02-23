@@ -2,7 +2,7 @@
 // COMPONENT: RoomCard
 // ============================================
 // Responsabilidade: Card individual de quarto com integração de ocupação
-// Integração: useRoomOccupancy para status em tempo real
+// VERSÃO CORRIGIDA - Props filtradas e imagem fallback
 // ============================================
 
 import React, { useState, useCallback, memo } from 'react';
@@ -23,6 +23,9 @@ const icons = {
   calendar: '📅'
 };
 
+// Imagem placeholder para fallback
+const PLACEHOLDER_IMAGE = '/assets/images/placeholder-room.jpg';
+
 export const RoomCard = memo(({
   // Dados do quarto
   id,
@@ -39,7 +42,7 @@ export const RoomCard = memo(({
   
   // Callbacks e hooks
   onSelect,
-  occupancyHook, // Hook de ocupação injetado
+  occupancyHook,
   
   // Estado de loading
   isLoading = false,
@@ -74,19 +77,18 @@ export const RoomCard = memo(({
     setImageLoaded(true);
   }, []);
 
-  const handleImageError = useCallback(() => {
+  const handleImageError = useCallback((e) => {
     setImageError(true);
-    console.error(`Erro ao carregar imagem do quarto ${number}`);
+    e.target.src = PLACEHOLDER_IMAGE; // Fallback para imagem placeholder
+    console.warn(`Usando imagem placeholder para o quarto ${number}`);
   }, [number]);
 
   const handleSelect = useCallback(() => {
-    // Bloquear seleção se quarto estiver ocupado
     if (isOccupied) {
       console.warn(`Quarto ${number} está ocupado e não pode ser selecionado`);
       return;
     }
 
-    // Bloquear se já estiver selecionado ou em loading
     if (selected || isLoading || isLoadingStatus) {
       return;
     }
@@ -125,8 +127,10 @@ export const RoomCard = memo(({
     className
   ].filter(Boolean).join(' ');
 
-  // Determinar label de status para acessibilidade
   const statusLabel = isOccupied ? 'Quarto ocupado' : 'Quarto disponível';
+
+  // Separar props que não devem ir para o DOM
+  const { available, isAvailable: _, occupancyError, ...validProps } = props;
 
   // ========================================
   // RENDER
@@ -140,7 +144,7 @@ export const RoomCard = memo(({
       aria-labelledby={`room-title-${id}`}
       aria-describedby={`room-desc-${id}`}
       aria-disabled={!isAvailable}
-      {...props}
+      {...validProps} // Usar apenas props válidas
     >
       {/* Imagem do quarto */}
       <div className={styles.imageContainer}>

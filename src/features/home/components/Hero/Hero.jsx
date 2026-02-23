@@ -2,11 +2,10 @@
 // COMPONENT: Hero
 // ============================================
 // Responsabilidade: Seção principal (Hero) da Home Page
-// Acessibilidade: Estrutura semântica, ARIA labels, contraste adequado
-// Performance: Lazy loading de imagem, componente puro
+// VERSÃO CORRIGIDA - Com imagem fallback
 // ============================================
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button, ButtonSize, ButtonVariant } from '../../../../shared/components/ui';
 import styles from './Hero.module.css';
 
@@ -15,6 +14,7 @@ import styles from './Hero.module.css';
 // ============================================
 
 const DEFAULT_IMAGE = '/assets/images/hero/hotel-paradise-hero.jpg';
+const PLACEHOLDER_IMAGE = '/assets/images/placeholder-hero.jpg';
 const DEFAULT_TITLE = 'Hotel Paradise';
 const DEFAULT_SUBTITLE = 'O paraíso perfeito para suas férias dos sonhos';
 const DEFAULT_CTA_TEXT = 'Reservar Agora';
@@ -40,7 +40,7 @@ export const Hero = ({
   overlayColor = 'dark',
   
   // Alinhamento
-  align = 'center', // 'left', 'center', 'right'
+  align = 'center',
   
   // Ações
   onCtaClick,
@@ -57,6 +57,7 @@ export const Hero = ({
   
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [currentImage, setCurrentImage] = useState(imageSrc);
 
   // ========================================
   // HANDLERS DE IMAGEM
@@ -68,7 +69,8 @@ export const Hero = ({
 
   const handleImageError = () => {
     setImageError(true);
-    console.error(`Erro ao carregar imagem: ${imageSrc}`);
+    setCurrentImage(PLACEHOLDER_IMAGE);
+    console.warn('Usando imagem placeholder para o Hero');
   };
 
   // ========================================
@@ -80,7 +82,6 @@ export const Hero = ({
       e.preventDefault();
       onCtaClick();
     }
-    // Se não tiver onCtaClick, o link seguirá o href normal
   };
 
   // ========================================
@@ -119,7 +120,7 @@ export const Hero = ({
         )}
         
         <img
-          src={imageSrc}
+          src={currentImage}
           alt={imageAlt}
           className={styles.backgroundImage}
           onLoad={handleImageLoad}
@@ -177,9 +178,6 @@ Hero.displayName = 'Hero';
 // COMPONENTES DERIVADOS
 // ============================================
 
-/**
- * HeroCompact - Versão reduzida para páginas internas
- */
 export const HeroCompact = (props) => {
   return (
     <Hero
@@ -192,9 +190,6 @@ export const HeroCompact = (props) => {
 
 HeroCompact.displayName = 'HeroCompact';
 
-/**
- * HeroWithVideo - Versão com vídeo de fundo
- */
 export const HeroWithVideo = ({
   videoSrc,
   videoPoster,
