@@ -1,8 +1,8 @@
 // ============================================
 // COMPONENT: RoomCard
 // ============================================
-// Responsabilidade: Card individual de quarto com integração de ocupação
-// VERSÃO CORRIGIDA - Props filtradas e imagem fallback
+// Responsabilidade: Card individual de quarto com galeria de imagens
+// VERSÃO CORRIGIDA - Com múltiplas imagens e design profissional
 // ============================================
 
 import React, { useState, useCallback, memo } from 'react';
@@ -10,17 +10,24 @@ import { Button, ButtonVariant, ButtonSize } from '../../../../shared/components
 import { RoomStatusBadge, RoomStatus } from './RoomStatusBadge.jsx';
 import styles from './RoomCard.module.css';
 
-// Ícones (simulados)
-const icons = {
-  wifi: '📶',
-  tv: '📺',
-  ac: '❄️',
-  fridge: '🧊',
-  bath: '🛁',
-  coffee: '☕',
-  bed: '🛏️',
-  people: '👥',
-  calendar: '📅'
+// Mapa de ícones para amenities (usando emojis - substituir por SVGs em produção)
+const amenityIcons = {
+  'Wi-Fi': '📶',
+  'TV': '📺',
+  'Ar condicionado': '❄️',
+  'Frigobar': '🧊',
+  'Banheira': '🛁',
+  'Cafeteira': '☕',
+  'Secador': '💨',
+  'Cofre': '🔒',
+  'Varanda': '🏞️',
+  'Vista mar': '🌊',
+  'Mesa de trabalho': '💼',
+  '2 camas': '🛏️🛏️',
+  'Berço': '👶',
+  'Sala': '🛋️',
+  'Jacuzzi': '🫧',
+  'Vista 360': '🏔️'
 };
 
 // Imagem placeholder para fallback
@@ -36,7 +43,6 @@ export const RoomCard = memo(({
   pricePerNight,
   pricePerNightFormatted,
   status: initialStatus,
-  statusLabel: initialStatusLabel,
   mainImage,
   amenities = [],
   
@@ -55,44 +61,44 @@ export const RoomCard = memo(({
   ...props
 }) => {
   // ========================================
-  // ESTADO LOCAL E HOOKS
+  // ESTADO LOCAL
   // ========================================
   
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [currentImage, setCurrentImage] = useState(mainImage || `/assets/images/rooms/${type}/main.jpg`);
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [showThumbnails, setShowThumbnails] = useState(false);
+
+  // Lista de imagens do quarto (main + 3 adicionais)
+  const roomImages = [
+    mainImage || `/assets/images/rooms/${type}/main.jpg`,
+    `/assets/images/rooms/${type}/1.jpg`,
+    `/assets/images/rooms/${type}/2.jpg`,
+    `/assets/images/rooms/${type}/3.jpg`
+  ];
 
   // Obter status atualizado do hook de ocupação
   const currentStatus = occupancyHook?.getRoomStatus?.(id) || initialStatus;
   const isOccupied = currentStatus === RoomStatus.OCCUPIED;
   const isAvailable = currentStatus === RoomStatus.AVAILABLE;
   const isLoadingStatus = occupancyHook?.loadingMap?.get(id) || false;
-  const error = occupancyHook?.errorMap?.get(id);
 
   // ========================================
   // HANDLERS
   // ========================================
   
-  const handleImageLoad = useCallback(() => {
-    setImageLoaded(true);
-  }, []);
-
   const handleImageError = useCallback((e) => {
     setImageError(true);
-    e.target.src = PLACEHOLDER_IMAGE; // Fallback para imagem placeholder
-    console.warn(`Usando imagem placeholder para o quarto ${number}`);
-  }, [number]);
+    e.target.src = PLACEHOLDER_IMAGE;
+  }, []);
+
+  const handleImageClick = useCallback((imgSrc) => {
+    setCurrentImage(imgSrc);
+    setImageError(false);
+  }, []);
 
   const handleSelect = useCallback(() => {
-    if (isOccupied) {
-      console.warn(`Quarto ${number} está ocupado e não pode ser selecionado`);
-      return;
-    }
-
-    if (selected || isLoading || isLoadingStatus) {
-      return;
-    }
-
+    if (isOccupied || selected || isLoading || isLoadingStatus) return;
     if (onSelect) {
       onSelect({
         id,
@@ -108,10 +114,12 @@ export const RoomCard = memo(({
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
+    setShowThumbnails(true);
   }, []);
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false);
+    setShowThumbnails(false);
   }, []);
 
   // ========================================
@@ -122,7 +130,7 @@ export const RoomCard = memo(({
     styles.card,
     !isAvailable && styles.unavailable,
     selected && styles.selected,
-    isHovered && styles.hovered,
+    isHovered && !selected && !isLoading && !isLoadingStatus && styles.hovered,
     (isLoading || isLoadingStatus) && styles.loading,
     className
   ].filter(Boolean).join(' ');
@@ -144,72 +152,76 @@ export const RoomCard = memo(({
       aria-labelledby={`room-title-${id}`}
       aria-describedby={`room-desc-${id}`}
       aria-disabled={!isAvailable}
-      {...validProps} // Usar apenas props válidas
+      tabIndex={isAvailable ? 0 : -1}
+      {...validProps}
     >
-      {/* Imagem do quarto */}
+      {/* Container de imagem com galeria */}
       <div className={styles.imageContainer}>
-        {!imageLoaded && !imageError && (
-          <div className={styles.imagePlaceholder}>
-            <span className={styles.loadingIndicator}>Carregando...</span>
-          </div>
-        )}
-        
+        {/* Imagem principal */}
         <img
-          src={mainImage || `/assets/images/rooms/${type}/main.jpg`}
-          alt={`Quarto ${typeLabel} - Número ${number}`}
-          className={styles.image}
-          onLoad={handleImageLoad}
+          src={currentImage}
+          alt={`Quarto ${typeLabel} - ${number}`}
+          className={styles.mainImage}
           onError={handleImageError}
           loading="lazy"
         />
         
-        {/* Badge de status com estado atualizado */}
+        {/* Badge de status */}
         <div className={styles.statusBadge}>
-          <RoomStatusBadge
-            status={currentStatus}
-            size="small"
-          />
+          <RoomStatusBadge status={currentStatus} size="small" />
         </div>
 
-        {/* Badge de capacidade */}
-        <div className={styles.capacityBadge}>
-          <span className={styles.capacityIcon} aria-hidden="true">
-            {icons.people}
-          </span>
-          <span className={styles.capacityText}>
-            {capacity} {capacity === 1 ? 'hóspede' : 'hóspedes'}
-          </span>
-        </div>
+        {/* Miniaturas (aparecem no hover) */}
+        {showThumbnails && isAvailable && (
+          <div className={styles.thumbnailStrip}>
+            {roomImages.map((img, index) => (
+              <button
+                key={index}
+                className={`${styles.thumbnail} ${currentImage === img ? styles.activeThumbnail : ''}`}
+                onClick={() => handleImageClick(img)}
+                aria-label={`Ver imagem ${index + 1} do quarto`}
+              >
+                <img src={img} alt={`Miniatura ${index + 1}`} onError={handleImageError} />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Conteúdo do card */}
       <div className={styles.content}>
-        {/* Cabeçalho */}
+        {/* Cabeçalho com tipo e preço */}
         <div className={styles.header}>
-          <h3 id={`room-title-${id}`} className={styles.title}>
-            {typeLabel} - {number}
-          </h3>
-          <div className={styles.price}>
+          <div className={styles.roomInfo}>
+            <span className={styles.roomType}>{typeLabel}</span>
+            <h3 id={`room-title-${id}`} className={styles.title}>
+              Quarto {number}
+            </h3>
+          </div>
+          <div className={styles.priceContainer}>
             <span className={styles.priceValue}>{pricePerNightFormatted}</span>
             <span className={styles.pricePeriod}>/noite</span>
           </div>
         </div>
 
-        {/* Amenities */}
+        {/* Capacidade */}
+        <div className={styles.capacityInfo}>
+          <span className={styles.capacityIcon}>👥</span>
+          <span className={styles.capacityText}>
+            {capacity} {capacity === 1 ? 'hóspede' : 'hóspedes'}
+          </span>
+        </div>
+
+        {/* Amenities em formato chips */}
         <div className={styles.amenities} id={`room-desc-${id}`}>
-          {amenities.slice(0, 4).map((amenity, index) => (
+          {amenities.map((amenity, index) => (
             <div key={index} className={styles.amenity}>
               <span className={styles.amenityIcon} aria-hidden="true">
-                {icons[amenity.toLowerCase()] || '•'}
+                {amenityIcons[amenity] || '•'}
               </span>
               <span className={styles.amenityName}>{amenity}</span>
             </div>
           ))}
-          {amenities.length > 4 && (
-            <div className={styles.amenityMore}>
-              +{amenities.length - 4}
-            </div>
-          )}
         </div>
 
         {/* Botão de ação */}
@@ -221,10 +233,6 @@ export const RoomCard = memo(({
             onClick={handleSelect}
             disabled={!isAvailable || isLoading || isLoadingStatus}
             loading={isLoading || isLoadingStatus}
-            aria-label={isAvailable 
-              ? `Selecionar quarto ${number}` 
-              : `Quarto ${number} indisponível - ${statusLabel}`
-            }
           >
             {isAvailable ? 'Selecionar Quarto' : 'Indisponível'}
           </Button>

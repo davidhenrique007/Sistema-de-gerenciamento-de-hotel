@@ -2,7 +2,7 @@
 // COMPONENT: RoomStatusBadge
 // ============================================
 // Responsabilidade: Badge visual para status de ocupação do quarto
-// Acessibilidade: ARIA labels para leitores de tela
+// VERSÃO CORRIGIDA - Design corporativo consistente
 // ============================================
 
 import React from 'react';
@@ -20,36 +20,47 @@ export const RoomStatus = {
   CLEANING: 'cleaning'
 };
 
+// Configuração completa dos status com cores corporativas
 const STATUS_CONFIG = {
   [RoomStatus.AVAILABLE]: {
     label: 'Disponível',
     icon: '✓',
+    iconName: 'check',
     className: styles.available,
-    ariaLabel: 'Quarto disponível para reserva'
+    ariaLabel: 'Quarto disponível para reserva imediata',
+    description: 'Quarto livre e pronto para reserva'
   },
   [RoomStatus.OCCUPIED]: {
     label: 'Ocupado',
-    icon: '✗',
+    icon: '●',
+    iconName: 'circle',
     className: styles.occupied,
-    ariaLabel: 'Quarto ocupado no momento'
+    ariaLabel: 'Quarto ocupado no momento com hóspedes',
+    description: 'Quarto atualmente ocupado'
   },
   [RoomStatus.MAINTENANCE]: {
     label: 'Manutenção',
     icon: '🔧',
+    iconName: 'wrench',
     className: styles.maintenance,
-    ariaLabel: 'Quarto em manutenção'
+    ariaLabel: 'Quarto em manutenção temporária',
+    description: 'Quarto indisponível para reservas'
   },
   [RoomStatus.RESERVED]: {
     label: 'Reservado',
     icon: '📅',
+    iconName: 'calendar',
     className: styles.reserved,
-    ariaLabel: 'Quarto reservado'
+    ariaLabel: 'Quarto reservado para data futura',
+    description: 'Quarto com reserva confirmada'
   },
   [RoomStatus.CLEANING]: {
     label: 'Limpeza',
     icon: '🧹',
+    iconName: 'broom',
     className: styles.cleaning,
-    ariaLabel: 'Quarto em limpeza'
+    ariaLabel: 'Quarto em processo de limpeza',
+    description: 'Quarto sendo preparado'
   }
 };
 
@@ -79,6 +90,7 @@ export const RoomStatusBadge = ({
       className={badgeClasses}
       role="status"
       aria-label={config.ariaLabel}
+      title={config.description}
       {...props}
     >
       {showIcon && (
@@ -108,16 +120,48 @@ export const RoomStatusBadgeCompact = ({
   className = '',
   ...props
 }) => {
+  const config = STATUS_CONFIG[status] || STATUS_CONFIG[RoomStatus.AVAILABLE];
+  
   return (
-    <RoomStatusBadge
-      status={status}
-      showIcon={true}
-      showLabel={false}
-      size="small"
-      className={`${styles.compact} ${className}`}
+    <div
+      className={`${styles.compact} ${config.className} ${className}`}
+      role="status"
+      aria-label={config.ariaLabel}
+      title={config.description}
       {...props}
-    />
+    >
+      <span className={styles.compactIcon} aria-hidden="true">
+        {config.icon}
+      </span>
+    </div>
   );
 };
 
 RoomStatusBadgeCompact.displayName = 'RoomStatusBadgeCompact';
+
+// ============================================
+// COMPONENTE: RoomStatusPill
+// ============================================
+// Versão em formato de pílula (apenas texto) para listas
+// ============================================
+
+export const RoomStatusPill = ({
+  status = RoomStatus.AVAILABLE,
+  className = '',
+  ...props
+}) => {
+  const config = STATUS_CONFIG[status] || STATUS_CONFIG[RoomStatus.AVAILABLE];
+  
+  return (
+    <span
+      className={`${styles.pill} ${config.className} ${className}`}
+      role="status"
+      aria-label={config.ariaLabel}
+      {...props}
+    >
+      {config.label}
+    </span>
+  );
+};
+
+RoomStatusPill.displayName = 'RoomStatusPill';

@@ -3,7 +3,7 @@
 // ============================================
 // Responsabilidade: Gerenciar dados da HomePage
 // Integra hooks de DI com lógica de estado
-// VERSÃO CORRIGIDA - COM loadRoomDetails
+// VERSÃO CORRIGIDA - Com enriquecimento de dados
 // ============================================
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -17,6 +17,15 @@ import {
 import { createLogger } from '../../../core/utils.js';
 
 const logger = createLogger('useHomeData');
+
+// Mapeamento de tipos para labels amigáveis (fallback)
+const TYPE_LABELS = {
+  standard: 'Standard',
+  deluxe: 'Deluxe',
+  executive: 'Executivo',
+  family: 'Família',
+  presidential: 'Presidencial'
+};
 
 // ============================================
 // HOOK PRINCIPAL
@@ -54,7 +63,7 @@ export const useHomeData = ({
   // ==========================================
   
   const availableRooms = useMemo(() => {
-    return rooms.filter(room => room.available);
+    return rooms.filter(room => room.status === 'AVAILABLE');
   }, [rooms]);
 
   const featuredRooms = useMemo(() => {
@@ -70,18 +79,40 @@ export const useHomeData = ({
   }, [rooms.length, availableRooms.length, services.categories]);
 
   // ==========================================
-  // FUNÇÕES DE CARREGAMENTO
+  // FUNÇÕES DE CARREGAMENTO - CORRIGIDAS
   // ==========================================
+
+  // Função para enriquecer dados dos quartos
+  const enrichRoomData = useCallback((room) => {
+    return {
+      ...room,
+      // Garantir que typeLabel exista
+      typeLabel: room.typeLabel || TYPE_LABELS[room.type] || room.type,
+      // Garantir que pricePerNightFormatted exista
+      pricePerNightFormatted: new Intl.NumberFormat('pt-MZ', {
+        style: 'currency',
+        currency: room.pricePerNight?.currency || 'MZN'
+      }).format(room.pricePerNight?.amount || 0),
+      // Garantir que available seja calculado
+      available: room.status === 'AVAILABLE',
+      // Garantir que mainImage exista
+      mainImage: room.mainImage || `/assets/images/rooms/${room.type}/main.jpg`
+    };
+  }, []);
 
   const loadRooms = useCallback(async () => {
     try {
       logger.debug('Carregando quartos...');
-      const availableRooms = await listAvailableRooms.execute();
-      setRooms(availableRooms);
+      const rawRooms = await listAvailableRooms.execute();
       
-      if (onSuccess) onSuccess('rooms', availableRooms);
+      // Enriquecer dados dos quartos
+      const enrichedRooms = rawRooms.map(enrichRoomData);
       
-      return availableRooms;
+      setRooms(enrichedRooms);
+      
+      if (onSuccess) onSuccess('rooms', enrichedRooms);
+      
+      return enrichedRooms;
     } catch (err) {
       logger.error('Erro ao carregar quartos:', err);
       setError(err);
@@ -90,7 +121,7 @@ export const useHomeData = ({
       
       return [];
     }
-  }, [listAvailableRooms, onSuccess, onError]);
+  }, [listAvailableRooms, enrichRoomData, onSuccess, onError]);
 
   const loadServices = useCallback(async () => {
     try {
@@ -111,18 +142,23 @@ export const useHomeData = ({
     }
   }, [listServices, onSuccess, onError]);
 
-  // ✅ NOVA FUNÇÃO: loadRoomDetails
   const loadRoomDetails = useCallback(async (roomId) => {
     try {
       logger.debug(`Carregando detalhes do quarto ${roomId}...`);
-      // Como não temos um hook específico, retornamos o quarto da lista
       const room = rooms.find(r => r.id === roomId);
-      return room || null;
+      
+      if (!room) {
+        logger.warn(`Quarto ${roomId} não encontrado`);
+        return null;
+      }
+      
+      // Retornar dados enriquecidos
+      return enrichRoomData(room);
     } catch (err) {
       logger.error(`Erro ao carregar detalhes do quarto ${roomId}:`, err);
       return null;
     }
-  }, [rooms]);
+  }, [rooms, enrichRoomData]);
 
   const loadAll = useCallback(async () => {
     setLoading(true);
@@ -255,7 +291,7 @@ export const useHomeData = ({
     loadRooms,
     loadServices,
     loadAll,
-    loadRoomDetails, // ✅ ADICIONADO!
+    loadRoomDetails,
     
     // Funções de refresh
     refresh,
