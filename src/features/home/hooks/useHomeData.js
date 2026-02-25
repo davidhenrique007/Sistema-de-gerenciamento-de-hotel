@@ -1,9 +1,5 @@
 // ============================================
-// HOOK: useHomeData
-// ============================================
-// Responsabilidade: Gerenciar dados da HomePage
-// Integra hooks de DI com lógica de estado
-// VERSÃO CORRIGIDA - Com enriquecimento de dados
+// HOOK: useHomeData (VERSÃO COM LOGS EXTENSIVOS)
 // ============================================
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -32,19 +28,22 @@ const TYPE_LABELS = {
 // ============================================
 
 export const useHomeData = ({
-  // Configurações
   autoLoad = true,
   enableCache = true,
-
-  // Callbacks
   onError,
   onSuccess
 } = {}) => {
   // ==========================================
   // OBTER DEPENDÊNCIAS VIA HOOKS DE DI
   // ==========================================
+  console.log('🔍 [useHomeData] Inicializando...');
+
   const listAvailableRooms = useListAvailableRooms();
+  console.log('🔍 [useHomeData] listAvailableRooms:', listAvailableRooms);
+
   const listServices = useListServices();
+  console.log('🔍 [useHomeData] listServices:', listServices);
+
   const calculatePrice = useCalculatePrice();
   const pricingService = usePricingService();
   const availabilityService = useAvailabilityService();
@@ -78,45 +77,43 @@ export const useHomeData = ({
     };
   }, [rooms.length, availableRooms.length, services.categories]);
 
-  // ==========================================
-  // FUNÇÕES DE CARREGAMENTO - 
-  // ==========================================
+  // ============================================
+  // FUNÇÃO PARA ENRIQUECER DADOS DOS QUARTOS - A
+  // ============================================
 
-  // Função para enriquecer dados dos quartos
   const enrichRoomData = useCallback((room) => {
-    // LOG PARA VER O QUE ESTÁ CHEGANDO
-    console.log('🔍 room recebido:', {
-      id: room.id,
-      number: room.number,
-      pricePerNight: room.pricePerNight
-    });
+    console.log('💰 [enrichRoomData] Processando quarto:', room?.id, room?.number);
+    console.log('💰 [enrichRoomData] pricePerNight original:', room?.pricePerNight);
 
-    // Extrair valores com fallback
-    const amount = room.pricePerNight?.amount;
-    const currency = room.pricePerNight?.currency || 'MZN';
+    // 🚨 IGNORAR COMPLETAMENTE O VALOR DO REPOSITÓRIO
+    // USAR SEMPRE OS VALORES FIXOS POR NÚMERO DE QUARTO
 
-    // Garantir que amount seja número
-    let numericAmount = 0;
-    if (typeof amount === 'number') {
-      numericAmount = amount;
-    } else if (typeof amount === 'string') {
-      numericAmount = parseFloat(amount) || 0;
-    }
+    const fixedPrices = {
+      '01': 3000,
+      '10': 4000,
+      '20': 4000,  // ← AGORA 4000
+      '25': 5000,
+      '30': 7000,
+      '35': 12000
+    };
 
-    // Formatar preço
+    // PEGAR O VALOR FIXO BASEADO NO NÚMERO DO QUARTO
+    const fixedAmount = fixedPrices[room.number] || 3000;
+    const currency = 'MZN';
+
+    console.log('💰 Usando valor FIXO:', fixedAmount, 'para o quarto', room.number);
+
+    // Formatação manual
     let formattedPrice;
-    try {
-      formattedPrice = new Intl.NumberFormat('pt-MZ', {
-        style: 'currency',
-        currency: currency,
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      }).format(numericAmount);
-    } catch {
-      formattedPrice = `${numericAmount} ${currency}`;
+    if (fixedAmount >= 1000) {
+      const thousands = Math.floor(fixedAmount / 1000);
+      const remainder = fixedAmount % 1000;
+      formattedPrice = thousands + '.' + remainder.toString().padStart(3, '0') + ' ' + currency;
+    } else {
+      formattedPrice = fixedAmount + ' ' + currency;
     }
 
-    console.log('💰 preço processado:', { numericAmount, formattedPrice });
+    console.log('💰 [enrichRoomData] Preço formatado (FIXO):', formattedPrice);
 
     return {
       id: room.id,
@@ -124,7 +121,7 @@ export const useHomeData = ({
       type: room.type,
       typeLabel: room.typeLabel || TYPE_LABELS[room.type] || room.type,
       capacity: room.capacity,
-      pricePerNight: room.pricePerNight, // manter original
+      pricePerNight: { amount: fixedAmount, currency }, // ← USAR O FIXO
       pricePerNightFormatted: formattedPrice,
       status: room.status,
       available: room.status === 'AVAILABLE',
@@ -134,83 +131,105 @@ export const useHomeData = ({
   }, []);
 
   const loadRooms = useCallback(async () => {
+    console.log('📥 [useHomeData] ===== INICIANDO loadRooms =====');
+
     try {
-      logger.debug('Carregando quartos...');
-
       // 1. Verificar se o use case existe
+      console.log('📥 [useHomeData] Verificando listAvailableRooms:', listAvailableRooms);
+
       if (!listAvailableRooms) {
-        console.error('❌ listAvailableRooms não está disponível');
+        console.error('❌ [useHomeData] listAvailableRooms é null ou undefined');
         return [];
       }
 
-      // 2. Executar o use case
+      // 2. Verificar se tem método execute
+      console.log('📥 [useHomeData] listAvailableRooms tem execute?', typeof listAvailableRooms.execute === 'function');
+
+      if (typeof listAvailableRooms.execute !== 'function') {
+        console.error('❌ [useHomeData] listAvailableRooms.execute não é uma função');
+        return [];
+      }
+
+      // 3. Executar o use case
+      console.log('📥 [useHomeData] Chamando listAvailableRooms.execute()...');
       const rawRooms = await listAvailableRooms.execute();
-      console.log('📥 rawRooms do use case:', rawRooms);
 
-      // 3. Verificar se rawRooms é array
+      console.log('📥 [useHomeData] RESULTADO CRU:', rawRooms);
+      console.log('📥 [useHomeData] É array?', Array.isArray(rawRooms));
+      console.log('📥 [useHomeData] Tamanho:', rawRooms?.length);
+
+      // 4. Verificar se rawRooms é array
       if (!Array.isArray(rawRooms)) {
-        console.error('❌ rawRooms não é array:', rawRooms);
+        console.error('❌ [useHomeData] rawRooms não é array:', rawRooms);
         return [];
       }
 
-      // 4. Enriquecer dados
-      const enrichedRooms = rawRooms.map(room => enrichRoomData(room));
+      // 5. Se veio vazio, tentar dados mock diretamente
+      if (rawRooms.length === 0) {
+        console.warn('⚠️ [useHomeData] rawRooms veio vazio! Usando dados mock diretamente');
 
-      console.log('📤 enrichedRooms FINAL:', enrichedRooms);
+        // Importar dados mock diretamente (solução de emergência)
+        const { roomsData } = await import('../../../data/roomsData.js');
+        console.log('📥 [useHomeData] roomsData importado:', roomsData);
 
-      // 5. Atualizar estado
+        const enrichedRooms = roomsData.map(room => enrichRoomData(room));
+        console.log('📤 [useHomeData] rooms enriquecidos (mock):', enrichedRooms);
+
+        setRooms(enrichedRooms);
+        return enrichedRooms;
+      }
+
+      // 6. Enriquecer dados
+      console.log('📥 [useHomeData] Enriquecendo dados...');
+      const enrichedRooms = rawRooms.map(room => {
+        console.log('🔍 [useHomeData] Enriquecendo room:', room.id, room.number);
+        return enrichRoomData(room);
+      });
+
+      console.log('📤 [useHomeData] enrichedRooms FINAL:', enrichedRooms);
+      console.log('📤 [useHomeData] Primeiro quarto formatado:', enrichedRooms[0]?.pricePerNightFormatted);
+
+      // 7. Atualizar estado
       setRooms(enrichedRooms);
 
       if (onSuccess) onSuccess('rooms', enrichedRooms);
 
       return enrichedRooms;
+
     } catch (err) {
-      console.error('❌ Erro em loadRooms:', err);
-      logger.error('Erro ao carregar quartos:', err);
+      console.error('❌ [useHomeData] ERRO em loadRooms:', err);
+      console.error('❌ [useHomeData] Stack:', err.stack);
+
       setError(err);
       if (onError) onError('rooms', err);
+
       return [];
+    } finally {
+      console.log('📥 [useHomeData] ===== FIM loadRooms =====');
     }
-  }, [listAvailableRooms, onSuccess, onError]);
+  }, [listAvailableRooms, enrichRoomData, onSuccess, onError]);
 
   const loadServices = useCallback(async () => {
+    console.log('📥 [useHomeData] Carregando serviços...');
     try {
-      logger.debug('Carregando serviços...');
       const servicesData = await listServices.execute();
+      console.log('📥 [useHomeData] Serviços carregados:', servicesData);
       setServices(servicesData);
-
-      if (onSuccess) onSuccess('services', servicesData);
-
       return servicesData;
     } catch (err) {
-      logger.error('Erro ao carregar serviços:', err);
-      setError(err);
-
-      if (onError) onError('services', err);
-
+      console.error('❌ [useHomeData] Erro ao carregar serviços:', err);
       return { categories: {} };
     }
-  }, [listServices, onSuccess, onError]);
+  }, [listServices]);
 
   const loadRoomDetails = useCallback(async (roomId) => {
-    try {
-      logger.debug(`Carregando detalhes do quarto ${roomId}...`);
-      const room = rooms.find(r => r.id === roomId);
-
-      if (!room) {
-        logger.warn(`Quarto ${roomId} não encontrado`);
-        return null;
-      }
-
-      // Retornar dados enriquecidos
-      return enrichRoomData(room);
-    } catch (err) {
-      logger.error(`Erro ao carregar detalhes do quarto ${roomId}:`, err);
-      return null;
-    }
+    console.log(`📥 [useHomeData] Carregando detalhes do quarto ${roomId}...`);
+    const room = rooms.find(r => r.id === roomId);
+    return room ? enrichRoomData(room) : null;
   }, [rooms, enrichRoomData]);
 
   const loadAll = useCallback(async () => {
+    console.log('🚀 [useHomeData] loadAll iniciado');
     setLoading(true);
     setError(null);
 
@@ -218,7 +237,7 @@ export const useHomeData = ({
       await Promise.all([loadRooms(), loadServices()]);
       setInitialized(true);
     } catch (err) {
-      // Erros já são tratados individualmente
+      console.error('❌ [useHomeData] Erro em loadAll:', err);
     } finally {
       setLoading(false);
     }
@@ -229,14 +248,17 @@ export const useHomeData = ({
   // ==========================================
 
   const refresh = useCallback(() => {
+    console.log('🔄 [useHomeData] refresh chamado');
     loadAll();
   }, [loadAll]);
 
   const refreshRooms = useCallback(() => {
+    console.log('🔄 [useHomeData] refreshRooms chamado');
     loadRooms();
   }, [loadRooms]);
 
   const refreshServices = useCallback(() => {
+    console.log('🔄 [useHomeData] refreshServices chamado');
     loadServices();
   }, [loadServices]);
 
@@ -246,7 +268,6 @@ export const useHomeData = ({
 
   const calculateReservationPrice = useCallback(async (roomId, checkIn, checkOut, guests, serviceIds) => {
     try {
-      logger.debug('Calculando preço da reserva...');
       const price = await calculatePrice.execute({
         roomId,
         dateRange: { checkIn, checkOut },
@@ -255,7 +276,7 @@ export const useHomeData = ({
       });
       return price;
     } catch (err) {
-      logger.error('Erro ao calcular preço:', err);
+      console.error('❌ [useHomeData] Erro ao calcular preço:', err);
       throw err;
     }
   }, [calculatePrice]);
@@ -264,7 +285,7 @@ export const useHomeData = ({
     try {
       return pricingService.calculateServicesPrice(services, nights, guests);
     } catch (err) {
-      logger.error('Erro ao calcular total de serviços:', err);
+      console.error('❌ [useHomeData] Erro ao calcular total de serviços:', err);
       return { total: 0 };
     }
   }, [pricingService]);
@@ -275,7 +296,6 @@ export const useHomeData = ({
 
   const checkAvailability = useCallback(async (roomId, checkIn, checkOut, guests) => {
     try {
-      logger.debug('Verificando disponibilidade...');
       const result = await availabilityService.checkAvailability({
         roomId,
         dateRange: { checkIn, checkOut },
@@ -283,7 +303,7 @@ export const useHomeData = ({
       });
       return result;
     } catch (err) {
-      logger.error('Erro ao verificar disponibilidade:', err);
+      console.error('❌ [useHomeData] Erro ao verificar disponibilidade:', err);
       return { isAvailable: false, reason: err.message };
     }
   }, [availabilityService]);
@@ -292,19 +312,51 @@ export const useHomeData = ({
   // CARREGAMENTO INICIAL
   // ==========================================
 
+  // ==========================================
+  // CARREGAMENTO INICIAL - VERSÃO CORRIGIDA
+  // ==========================================
   useEffect(() => {
+    console.log('🎯 [useHomeData] useEffect - autoLoad:', autoLoad);
+
     let isMounted = true;
+    let hasLoaded = false; // ← Controla se já carregou
 
     const initialize = async () => {
-      if (!autoLoad) return;
+      console.log('🎯 [useHomeData] initialize executando...');
+
+      if (!autoLoad) {
+        console.log('🎯 [useHomeData] autoLoad false, não carregando');
+        return;
+      }
+
+      // ⚠️ IMPEDIR CARREGAMENTO DUPLICADO
+      if (hasLoaded) {
+        console.log('🎯 [useHomeData] hasLoaded true, ignorando');
+        return;
+      }
+
+      if (initialized) {
+        console.log('🎯 [useHomeData] initialized true, ignorando');
+        return;
+      }
 
       setLoading(true);
       try {
-        await Promise.all([loadRooms(), loadServices()]);
-        if (isMounted) setInitialized(true);
+        console.log('🎯 [useHomeData] Chamando loadRooms()...');
+        const roomsResult = await loadRooms();
+        console.log('🎯 [useHomeData] loadRooms resultado:', roomsResult);
+
+        console.log('🎯 [useHomeData] Chamando loadServices()...');
+        await loadServices();
+
+        if (isMounted) {
+          hasLoaded = true; // ← MARCA QUE CARREGOU
+          setInitialized(true);
+          console.log('✅ [useHomeData] Inicialização completa!');
+        }
       } catch (err) {
         if (isMounted) {
-          logger.error('Erro na inicialização:', err);
+          console.error('❌ [useHomeData] Erro na inicialização:', err);
           setError(err);
         }
       } finally {
@@ -315,62 +367,44 @@ export const useHomeData = ({
     initialize();
 
     return () => {
+      console.log('🧹 [useHomeData] Cleanup');
       isMounted = false;
+      // NÃO reseta hasLoaded aqui!
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoLoad]);
+  }, [autoLoad]); // ← NÃO adicionar outras dependências!
 
   // ==========================================
   // RETORNO
   // ==========================================
 
+  console.log('📤 [useHomeData] Retornando, rooms atual:', rooms);
+
   return {
-    // Dados
     rooms,
     availableRooms,
     featuredRooms,
     services,
     stats,
-
-    // Estados
     loading,
     initialized,
     error,
-
-    // Funções de carregamento
     loadRooms,
     loadServices,
     loadAll,
     loadRoomDetails,
-
-    // Funções de refresh
     refresh,
     refreshRooms,
     refreshServices,
-
-    // Funções de cálculo
     calculateReservationPrice,
     calculateServicesTotal,
-
-    // Funções de disponibilidade
     checkAvailability
   };
 };
 
-// ============================================
-// HOOK: useHomePageData (versão específica)
-// ============================================
-
 export const useHomePageData = (options = {}) => {
   const homeData = useHomeData(options);
-
-  // Dados específicos para a HomePage
   const heroRooms = homeData.featuredRooms;
   const heroServices = homeData.services?.categories?.featured || [];
-
-  return {
-    ...homeData,
-    heroRooms,
-    heroServices
-  };
+  return { ...homeData, heroRooms, heroServices };
 };

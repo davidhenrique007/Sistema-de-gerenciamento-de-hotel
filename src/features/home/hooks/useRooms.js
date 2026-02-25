@@ -59,13 +59,15 @@ export const useRooms = ({
   const mountedRef = useRef(true);
 
   // ========================================
-  // DADOS DERIVADOS
+  // DADOS DERIVADOS - COMPLETAMENTE CORRIGIDOS
   // ========================================
   
+  // ✅ CORRIGIDO: Filtrar por status 'AVAILABLE'
   const availableRooms = useMemo(() => {
-    return rooms.filter(room => room.available);
+    return rooms.filter(room => room.status === 'AVAILABLE');
   }, [rooms]);
 
+  // ✅ CORRIGIDO: Processamento completo com filtros e ordenação
   const filteredAndSortedRooms = useMemo(() => {
     let result = [...rooms];
 
@@ -78,8 +80,9 @@ export const useRooms = ({
       result = result.filter(room => room.capacity >= filters.minCapacity);
     }
 
+    // ✅ CORRIGIDO: Usar amount do pricePerNight para filtro de preço
     if (filters.maxPrice) {
-      result = result.filter(room => room.pricePerNight <= filters.maxPrice);
+      result = result.filter(room => (room.pricePerNight?.amount || 0) <= filters.maxPrice);
     }
 
     if (filters.amenities?.length > 0) {
@@ -90,10 +93,21 @@ export const useRooms = ({
       );
     }
 
-    // Aplicar ordenação
+    // ✅ CORRIGIDO: Ordenação usando amount do pricePerNight
     result.sort((a, b) => {
-      const aVal = a[sort.field];
-      const bVal = b[sort.field];
+      // Extrair valores para ordenação baseado no campo selecionado
+      let aVal, bVal;
+      
+      if (sort.field === 'pricePerNight') {
+        aVal = a.pricePerNight?.amount || 0;
+        bVal = b.pricePerNight?.amount || 0;
+      } else if (sort.field === 'capacity') {
+        aVal = a.capacity || 0;
+        bVal = b.capacity || 0;
+      } else {
+        aVal = a[sort.field];
+        bVal = b[sort.field];
+      }
       
       if (sort.order === 'asc') {
         return aVal > bVal ? 1 : -1;
@@ -105,19 +119,28 @@ export const useRooms = ({
     return result;
   }, [rooms, filters, sort]);
 
+  // ✅ CORRIGIDO: Estatísticas precisas
   const stats = useMemo(() => {
     return {
       total: rooms.length,
-      available: availableRooms.length,
-      occupied: rooms.length - availableRooms.length,
+      available: rooms.filter(room => room.status === 'AVAILABLE').length,
+      occupied: rooms.filter(room => room.status !== 'AVAILABLE').length,
+      // ✅ CORRIGIDO: Média de preços usando amount
       averagePrice: rooms.length > 0
-        ? rooms.reduce((sum, room) => sum + room.pricePerNight, 0) / rooms.length
+        ? rooms.reduce((sum, room) => sum + (room.pricePerNight?.amount || 0), 0) / rooms.length
+        : 0,
+      // ✅ NOVO: Preço mínimo e máximo
+      minPrice: rooms.length > 0
+        ? Math.min(...rooms.map(room => room.pricePerNight?.amount || 0))
+        : 0,
+      maxPrice: rooms.length > 0
+        ? Math.max(...rooms.map(room => room.pricePerNight?.amount || 0))
         : 0
     };
-  }, [rooms, availableRooms]);
+  }, [rooms]);
 
   // ========================================
-  // FUNÇÕES DE CARREGAMENTO
+  // FUNÇÕES DE CARREGAMENTO - CORRIGIDAS
   // ========================================
   
   const loadRooms = useCallback(async (useCache = true) => {
@@ -155,18 +178,27 @@ export const useRooms = ({
         signal: abortControllerRef.current.signal
       });
 
+      // ✅ CORREÇÃO: Garantir que os dados têm a estrutura esperada
+      const normalizedResult = result.map(room => ({
+        ...room,
+        // Garantir que pricePerNight existe
+        pricePerNight: room.pricePerNight || { amount: 0, currency: 'MZN' },
+        // Garantir que status existe
+        status: room.status || 'AVAILABLE'
+      }));
+
       // Verificar se o componente ainda está montado
       if (!mountedRef.current) return;
 
       // Atualizar cache
       if (enableCache) {
         cache.current.set(cacheKey, {
-          data: result,
+          data: normalizedResult,
           timestamp: Date.now()
         });
       }
 
-      setRooms(result);
+      setRooms(normalizedResult);
     } catch (err) {
       // Ignorar erros de cancelamento
       if (err.name === 'AbortError' || err.code === 'ERR_CANCELED') {
@@ -227,18 +259,25 @@ export const useRooms = ({
         signal: abortControllerRef.current.signal
       });
 
+      // ✅ CORREÇÃO: Normalizar dados do quarto
+      const normalizedRoom = {
+        ...result,
+        pricePerNight: result.pricePerNight || { amount: 0, currency: 'MZN' },
+        status: result.status || 'AVAILABLE'
+      };
+
       // Verificar se o componente ainda está montado
       if (!mountedRef.current) return;
 
       // Atualizar cache
       if (enableCache) {
         cache.current.set(cacheKey, {
-          data: result,
+          data: normalizedRoom,
           timestamp: Date.now()
         });
       }
 
-      setSelectedRoom(result);
+      setSelectedRoom(normalizedRoom);
     } catch (err) {
       if (err.name === 'AbortError' || err.code === 'ERR_CANCELED') {
         return;
@@ -307,8 +346,22 @@ export const useRooms = ({
     cache.current.clear();
   }, []);
 
+  // ✅ NOVO: Função para obter preço formatado
+  const getFormattedPrice = useCallback((room) => {
+    if (!room || !room.pricePerNight) return '0 MTn';
+    const amount = room.pricePerNight.amount || 0;
+    const currency = room.pricePerNight.currency || 'MTn';
+    return `${amount} ${currency}`;
+  }, []);
+
+  // ✅ NOVO: Função para verificar disponibilidade
+  const isRoomAvailable = useCallback((roomId) => {
+    const room = rooms.find(r => r.id === roomId);
+    return room?.status === 'AVAILABLE';
+  }, [rooms]);
+
   // ========================================
-  // EFEITOS - CORRIGIDOS!
+  // EFEITOS
   // ========================================
   
   // Carregamento inicial
@@ -328,10 +381,6 @@ export const useRooms = ({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Array vazio = executa apenas UMA vez na montagem!
-
-  // ⚠️ EFEITO PERIGOSO REMOVIDO!
-  // O efeito que recarregava quando filtros mudavam foi removido
-  // Agora o usuário deve chamar loadRooms() manualmente após aplicar filtros
 
   // ========================================
   // RETORNO
@@ -367,7 +416,11 @@ export const useRooms = ({
     
     // Cache
     cacheEnabled: enableCache,
-    clearCache
+    clearCache,
+    
+    // ✅ NOVAS UTILIDADES
+    getFormattedPrice,
+    isRoomAvailable
   };
 };
 
@@ -383,7 +436,9 @@ export const useRoom = (roomId, options = {}) => {
     error,
     loadRoomDetails,
     refreshRoomDetails,
-    clearSelection
+    clearSelection,
+    getFormattedPrice,
+    isRoomAvailable
   } = useRooms(options);
 
   const room = useMemo(() => {
@@ -402,6 +457,9 @@ export const useRoom = (roomId, options = {}) => {
     loading: loadingDetails,
     error,
     refresh: () => refreshRoomDetails(roomId),
-    clear: clearSelection
+    clear: clearSelection,
+    // ✅ UTILIDADES PARA O QUARTO ESPECÍFICO
+    formattedPrice: room ? getFormattedPrice(room) : '0 MTn',
+    isAvailable: room ? isRoomAvailable(roomId) : false
   };
 };

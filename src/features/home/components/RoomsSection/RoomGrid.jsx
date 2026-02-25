@@ -3,6 +3,7 @@
 // ============================================
 // Responsabilidade: Grid responsivo de cards de quartos
 // Performance: Lazy loading de imagens, memoização de cards
+// VERSÃO CORRIGIDA - Com roomItems definido
 // ============================================
 
 import React, { memo, useMemo } from 'react';
@@ -24,21 +25,34 @@ const GRID_LAYOUTS = {
 // COMPONENTE: RoomGridItem (Memoizado)
 // ============================================
 
-const RoomGridItem = memo(({ room, onSelect, selectedRoomId, isLoading }) => {
+const RoomGridItem = memo(({ room, onSelect, selectedRoomId, isLoading, occupancyHook }) => {
   console.log(`🔲 [RoomGridItem] Renderizando quarto ${room.number}`, {
     id: room.id,
     selected: selectedRoomId === room.id
   });
-
+  
   const isSelected = selectedRoomId === room.id;
 
   return (
     <div className={styles.gridItem}>
       <RoomCard
-        {...room}
+        // Props individuais do quarto
+        id={room.id}
+        number={room.number}
+        type={room.type}
+        typeLabel={room.typeLabel}
+        capacity={room.capacity}
+        pricePerNight={room.pricePerNight}
+        pricePerNightFormatted={room.pricePerNightFormatted}  // ← ESSENCIAL!
+        status={room.status}
+        mainImage={room.mainImage}
+        amenities={room.amenities}
+        
+        // Props de controle
         onSelect={onSelect}
         selected={isSelected}
         isLoading={isLoading}
+        occupancyHook={occupancyHook}
       />
     </div>
   );
@@ -89,9 +103,10 @@ export const RoomGrid = memo(({
         onSelect={onSelect}
         selectedRoomId={selectedRoomId}
         isLoading={isLoading}
+        occupancyHook={occupancyHook}
       />
     ));
-  }, [rooms, onSelect, selectedRoomId, isLoading]);
+  }, [rooms, onSelect, selectedRoomId, isLoading, occupancyHook]);
 
   // ========================================
   // SKELETON LOADING

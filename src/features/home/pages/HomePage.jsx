@@ -5,13 +5,16 @@
 // Integração: Use cases via DI, hooks de dados, reserva e pagamento
 // ============================================
 
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Componentes de layout
 import { Header } from '../../../shared/components/layout/Header/Header.jsx';
 import { Footer } from '../../../shared/components/layout/Footer/Footer.jsx';
-import { Container, ContainerSize } from '../../../shared/components/layout/Container/Container.jsx';
+import {
+  Container,
+  ContainerSize
+} from '../../../shared/components/layout/Container/Container.jsx';
 
 // Componentes de UI
 import { Spinner, SpinnerSize } from '../../../shared/components/ui/Spinner/Spinner.jsx';
@@ -26,7 +29,7 @@ import { ServicesSection } from '../components/ServicesSection/ServicesSection.j
 import { PriceSummary } from '../components/Summary/PriceSummary.jsx';
 
 // Componentes de Pagamento
-import { PaymentButton, PaymentSummary } from "../../../features/payment/components/index.js";
+import { PaymentButton, PaymentSummary } from '../../../features/payment/components/index.js';
 
 // Hooks da Home
 import { useHomeData } from '../hooks/useHomeData.js';
@@ -58,7 +61,7 @@ const LoadingScreen = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setMessageIndex(prev => (prev + 1) % LOADING_MESSAGES.length);
+      setMessageIndex((prev) => (prev + 1) % LOADING_MESSAGES.length);
     }, 2000);
 
     return () => clearInterval(interval);
@@ -82,11 +85,7 @@ const ErrorScreen = ({ error, onRetry }) => {
       <h2 className="error-title">Ops! Algo deu errado</h2>
       <p className="error-message">{error?.message || 'Não foi possível carregar a página'}</p>
       {onRetry && (
-        <Button 
-          variant={ButtonVariant.PRIMARY} 
-          onClick={onRetry}
-          className="error-retry"
-        >
+        <Button variant={ButtonVariant.PRIMARY} onClick={onRetry} className="error-retry">
           Tentar Novamente
         </Button>
       )}
@@ -102,10 +101,13 @@ export const HomePage = () => {
   const navigate = useNavigate();
   const notification = useNotification();
 
+  // ✅ ESTADO PARA DEBUG (remover em produção)
+  const [showDebug, setShowDebug] = useState(false);
+
   // ========================================
   // HOOKS DE DADOS
   // ========================================
-  
+
   const {
     rooms,
     services,
@@ -114,22 +116,31 @@ export const HomePage = () => {
     initialized,
     refresh,
     loadRoomDetails,
-    calculateReservationPrice
+    calculateReservationPrice,
+    stats
   } = useHomeData({
     onError: (type, error) => {
       notification.error(`Erro ao carregar ${type}: ${error.message}`);
     }
   });
 
-  // ✅ LOGS AGORA FUNCIONAM (depois da definição)
-  console.log('🏠 HomePage renderizando');
-  console.log('📊 Quartos carregados:', rooms?.length, rooms);
-  console.log('📊 Serviços carregados:', services);
+  // ✅ LOGS DE DEBUG ATUALIZADOS - usa pricePerNightFormatted
+  useEffect(() => {
+    if (rooms && rooms.length > 0) {
+      console.log('🏨 Quartos carregados com sucesso:');
+      rooms.forEach((room) => {
+        console.log(
+          `   • ${room.typeLabel} ${room.number}: ${room.pricePerNightFormatted} - Status: ${room.status}`
+        );
+      });
+      console.log('📊 Estatísticas:', stats);
+    }
+  }, [rooms, stats]);
 
   // ========================================
   // HOOKS DE OCUPAÇÃO
   // ========================================
-  
+
   const occupancy = useRoomOccupancy({
     onOccupancyChanged: (roomId, status) => {
       if (status === 'occupied') {
@@ -139,13 +150,18 @@ export const HomePage = () => {
     },
     onError: (roomId, error) => {
       notification.error(`Erro ao processar quarto: ${error.message}`);
+    },
+    // ✅ PASSAR FUNÇÃO DE VERIFICAÇÃO
+    checkAvailability: (roomId) => {
+      const room = rooms.find((r) => r.id === roomId);
+      return room?.status === 'AVAILABLE';
     }
   });
 
   // ========================================
   // HOOKS DE RESERVA
   // ========================================
-  
+
   const reservation = useHomeReservation({
     calculatePriceUseCase: { execute: calculateReservationPrice },
     onPriceCalculated: (breakdown) => {
@@ -168,9 +184,13 @@ export const HomePage = () => {
     selectedServices: reservation.selectedServices,
     validateAvailability: true,
     checkAvailability: async ({ roomId, checkIn, checkOut, guests }) => {
-      // Usar o hook de ocupação para verificar disponibilidade
-      const isAvailable = occupancy.isRoomAvailable(roomId);
-      return { isAvailable, reason: isAvailable ? null : 'Quarto ocupado' };
+      // Usar a função do hook para verificar disponibilidade
+      const room = rooms.find((r) => r.id === roomId);
+      const isAvailable = room?.status === 'AVAILABLE';
+      return {
+        isAvailable,
+        reason: isAvailable ? null : 'Quarto ocupado'
+      };
     },
     onValidationChange: (validationState) => {
       console.log('Validação atualizada:', validationState);
@@ -180,58 +200,72 @@ export const HomePage = () => {
   // ========================================
   // HANDLERS
   // ========================================
-  
-  const handleRoomSelect = useCallback(async (room) => {
-    // Verificar disponibilidade via hook de ocupação
-    const isAvailable = occupancy.isRoomAvailable(room.id);
-    
-    if (!isAvailable) {
-      notification.warning('Este quarto não está disponível no momento');
-      return;
-    }
 
-    reservation.selectRoom(room);
-    await loadRoomDetails(room.id);
-  }, [reservation, loadRoomDetails, occupancy, notification]);
-
-  const handleServiceToggle = useCallback((serviceId, isSelected) => {
-    reservation.toggleService(serviceId);
-  }, [reservation]);
-
-  const handleReservationSubmit = useCallback(async (state) => {
-    if (!validation.isReady) {
-      notification.warning('Por favor, verifique os dados da reserva');
-      return;
-    }
-
-    try {
-      // Ocupar o quarto via hook de ocupação
-      const success = await occupancy.occupyRoom(state.room.id, {
-        guestsCount: state.guests,
-        reservationId: `RES-${Date.now()}`,
-        checkIn: state.checkIn,
-        checkOut: state.checkOut,
-        services: state.selectedServices
-      });
-
-      if (success) {
-        notification.success('Reserva confirmada com sucesso!');
-        
-        // Redirecionar para página de confirmação (futuro)
-        // navigate('/confirmacao', { state: { reserva: state } });
-        
-        // Limpar formulário
-        reservation.clearReservation();
-        form.resetTouched();
+  const handleRoomSelect = useCallback(
+    async (room) => {
+      // Verificar disponibilidade diretamente do status
+      if (room.status !== 'AVAILABLE') {
+        notification.warning('Este quarto não está disponível no momento');
+        return;
       }
-    } catch (error) {
-      notification.error('Erro ao confirmar reserva. Tente novamente.');
-    }
-  }, [validation, occupancy, reservation, form, notification, navigate]);
+
+      console.log('✅ Quarto selecionado:', room.number, 'Preço:', room.pricePerNightFormatted);
+      reservation.selectRoom(room);
+      await loadRoomDetails(room.id);
+    },
+    [reservation, loadRoomDetails, notification]
+  );
+
+  const handleServiceToggle = useCallback(
+    (serviceId, isSelected) => {
+      reservation.toggleService(serviceId);
+    },
+    [reservation]
+  );
+
+  const handleReservationSubmit = useCallback(
+    async (state) => {
+      if (!validation.isReady) {
+        notification.warning('Por favor, verifique os dados da reserva');
+        return;
+      }
+
+      try {
+        // Verificar disponibilidade novamente antes de ocupar
+        if (state.room.status !== 'AVAILABLE') {
+          notification.error('Quarto não está mais disponível');
+          refresh();
+          return;
+        }
+
+        // Ocupar o quarto via hook de ocupação
+        const success = await occupancy.occupyRoom(state.room.id, {
+          guestsCount: state.guests,
+          reservationId: `RES-${Date.now()}`,
+          checkIn: state.checkIn,
+          checkOut: state.checkOut,
+          services: state.selectedServices
+        });
+
+        if (success) {
+          notification.success('Reserva confirmada com sucesso!');
+
+          // Limpar formulário
+          reservation.clearReservation();
+          form.resetTouched();
+        }
+      } catch (error) {
+        notification.error('Erro ao confirmar reserva. Tente novamente.');
+        console.error('Erro na reserva:', error);
+      }
+    },
+    [validation, occupancy, reservation, form, notification, refresh]
+  );
 
   const handleRefresh = useCallback(() => {
     refresh();
-  }, [refresh]);
+    notification.info('Atualizando dados...');
+  }, [refresh, notification]);
 
   // ========================================
   // HANDLER DE PAGAMENTO
@@ -259,6 +293,13 @@ export const HomePage = () => {
       return;
     }
 
+    // Verificar disponibilidade novamente
+    if (reservation.room.status !== 'AVAILABLE') {
+      notification.error('Este quarto não está mais disponível');
+      refresh();
+      return;
+    }
+
     // Preparar dados completos para o checkout
     const checkoutData = {
       // Informações do quarto
@@ -268,7 +309,8 @@ export const HomePage = () => {
         type: reservation.room.type,
         typeLabel: reservation.room.typeLabel,
         capacity: reservation.room.capacity,
-        pricePerNight: reservation.room.pricePerNight
+        pricePerNight: reservation.room.pricePerNight,
+        formattedPrice: reservation.room.pricePerNightFormatted
       },
       // Datas
       checkIn: reservation.checkIn,
@@ -277,13 +319,21 @@ export const HomePage = () => {
       // Hóspedes
       guests: reservation.guests,
       // Serviços selecionados
-      services: reservation.selectedServices.map(id => {
-        // Buscar detalhes do serviço (se disponível)
-        // Por enquanto, placeholder
+      services: reservation.selectedServices.map((id) => {
+        // Buscar detalhes do serviço
+        const service = services?.all?.find((s) => s.id === id) ||
+          services?.categories?.food?.services?.find((s) => s.id === id) || {
+            id,
+            name: `Serviço ${id}`,
+            price: { amount: 50, currency: 'MZN' }
+          };
+
         return {
-          id,
-          name: `Serviço ${id}`,
-          price: 50
+          id: service.id,
+          name: service.name,
+          price: service.price?.amount || 50,
+          currency: service.price?.currency || 'MZN',
+          formattedPrice: `${service.price?.amount || 50} ${service.price?.currency || 'MZN'}`
         };
       }),
       // Preços
@@ -297,21 +347,64 @@ export const HomePage = () => {
     };
 
     console.log('📋 Dados completos para checkout:', checkoutData);
-    
+
     notification.info('Redirecionando para página de pagamento...');
-    
+
     // Navegar para página de checkout com os dados da reserva
-    navigate('/checkout', { 
-      state: { 
-        reservation: checkoutData 
-      } 
+    navigate('/checkout', {
+      state: {
+        reservation: checkoutData
+      }
     });
-  }, [reservation, validation, notification, navigate]);
+  }, [reservation, validation, notification, navigate, refresh, services]);
+
+  // ========================================
+  // PAINEL DE DEBUG (opcional)
+  // ========================================
+
+  const DebugPanel = () => (
+    <div
+      style={{
+        position: 'fixed',
+        bottom: '10px',
+        right: '10px',
+        background: 'rgba(0,0,0,0.8)',
+        color: 'white',
+        padding: '10px',
+        borderRadius: '5px',
+        fontSize: '12px',
+        zIndex: 9999,
+        maxWidth: '300px',
+        maxHeight: '400px',
+        overflow: 'auto'
+      }}
+    >
+      <button onClick={() => setShowDebug(false)} style={{ float: 'right' }}>
+        X
+      </button>
+      <h4>Debug - Quartos</h4>
+      <pre>
+        {JSON.stringify(
+          rooms?.map((r) => ({
+            id: r.id,
+            number: r.number,
+            type: r.type,
+            price: r.pricePerNight?.amount,
+            formattedPrice: r.pricePerNightFormatted,
+            currency: r.pricePerNight?.currency,
+            status: r.status
+          })),
+          null,
+          2
+        )}
+      </pre>
+    </div>
+  );
 
   // ========================================
   // RENDERIZAÇÃO CONDICIONAL
   // ========================================
-  
+
   if (dataLoading && !initialized) {
     return <LoadingScreen />;
   }
@@ -323,18 +416,14 @@ export const HomePage = () => {
   // ========================================
   // RENDER PRINCIPAL
   // ========================================
-  
+
   return (
     <div className="home-page">
-      <Header 
-        onNavigate={navigate}
-        currentPath={window.location.pathname}
-        transparent={true}
-      />
+      <Header onNavigate={navigate} currentPath={window.location.pathname} transparent={true} />
 
       <main id="main-content" className="home-main">
         {/* Hero Section */}
-        <Hero 
+        <Hero
           title="Hotel Paradise"
           subtitle="O paraíso perfeito para suas férias dos sonhos"
           ctaText="Reservar Agora"
@@ -346,14 +435,31 @@ export const HomePage = () => {
 
         <Container size={ContainerSize.LARGE}>
           {/* Rooms Section com integração de ocupação */}
-          <RoomsSection
-            rooms={rooms}
-            onSelectRoom={handleRoomSelect}
-            selectedRoomId={reservation.room?.id}
-            title="Nossos Quartos"
-            subtitle="Escolha o quarto perfeito para sua estadia"
-            occupancyHook={occupancy}
-          />
+          {dataLoading ? (
+            <div className="rooms-loading" style={{ textAlign: 'center', padding: '40px' }}>
+              <Spinner size={SpinnerSize.MEDIUM} />
+              <p style={{ marginTop: '20px', color: '#666' }}>Carregando quartos disponíveis...</p>
+            </div>
+          ) : rooms.length > 0 ? (
+            <RoomsSection
+              rooms={rooms}
+              onSelectRoom={handleRoomSelect}
+              selectedRoomId={reservation.room?.id}
+              title="Nossos Quartos"
+              subtitle="Escolha o quarto perfeito para sua estadia"
+              occupancyHook={occupancy}
+            />
+          ) : (
+            <div className="no-rooms" style={{ textAlign: 'center', padding: '40px' }}>
+              <p style={{ fontSize: '18px', color: '#666', marginBottom: '20px' }}>
+                Nenhum quarto disponível no momento.
+              </p>
+              <Button variant={ButtonVariant.SECONDARY} onClick={refresh}>
+                Tentar novamente
+              </Button>
+            </div>
+          )}
+
 
           {/* Reservation Section */}
           <section id="reservation" className="reservation-section">
@@ -378,26 +484,36 @@ export const HomePage = () => {
                   checkOut={reservation.checkOut}
                   guests={reservation.guests}
                   nights={reservation.nights}
-                  services={reservation.selectedServices.map(id => ({
-                    id,
-                    name: `Serviço ${id}`,
-                    price: 50 // Placeholder - substituir por preço real
-                  }))}
+                  services={reservation.selectedServices.map((id) => {
+                    const service = services?.all?.find((s) => s.id === id) || {
+                      id,
+                      name: `Serviço ${id}`,
+                      price: { amount: 50, currency: 'MZN' }
+                    };
+                    return {
+                      id: service.id,
+                      name: service.name,
+                      price: service.price?.amount || 50,
+                      currency: service.price?.currency || 'MZN'
+                    };
+                  })}
                   roomPrice={reservation.priceBreakdown?.roomPrice?.subtotal || 0}
                   servicesPrice={reservation.servicesTotal}
                   taxes={reservation.taxesTotal}
                   total={reservation.total}
                   showBreakdown={true}
+                  currency="MZN"
                 />
-                
+
                 {/* Payment Button - Controlado por estado de validação */}
                 <PaymentButton
                   isEnabled={validation.isReady && reservation.room && !reservation.isCalculating}
                   total={reservation.total}
                   onProceed={handleProceedToPayment}
                   loading={reservation.isCalculating}
+                  currency="MZN"
                 />
-                
+
                 {/* Status de validação */}
                 {!validation.isReady && validation.hasErrors && (
                   <div className="validation-errors" role="alert">
@@ -424,11 +540,31 @@ export const HomePage = () => {
         </Container>
       </main>
 
-      <Footer 
-        onNavigate={navigate}
-        showNewsletter={true}
-        companyName="Hotel Paradise"
-      />
+      <Footer onNavigate={navigate} showNewsletter={true} companyName="Hotel Paradise" />
+
+      {/* Botão de Debug (opcional - remover em produção) */}
+      {process.env.NODE_ENV === 'development' && !showDebug && (
+        <button
+          onClick={() => setShowDebug(true)}
+          style={{
+            position: 'fixed',
+            bottom: '10px',
+            left: '10px',
+            zIndex: 9999,
+            padding: '5px 10px',
+            background: '#333',
+            color: 'white',
+            border: 'none',
+            borderRadius: '3px',
+            cursor: 'pointer'
+          }}
+        >
+          Debug
+        </button>
+      )}
+
+      {/* Painel de Debug */}
+      {showDebug && <DebugPanel />}
     </div>
   );
 };

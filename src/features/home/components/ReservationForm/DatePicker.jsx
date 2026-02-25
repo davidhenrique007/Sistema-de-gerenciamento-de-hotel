@@ -1,16 +1,17 @@
 // ============================================
 // COMPONENT: DatePicker
 // ============================================
-// Responsabilidade: Seleção de datas de check-in e check-out
-// Acessibilidade: Navegação por teclado, ARIA labels
-// VERSÃO CORRIGIDA - SEM LOOP INFINITO
+// Responsabilidade: Seleção de datas com calendário interativo
+// Design System: Consistente com tokens visuais
+// Acessibilidade: WCAG 2.1+ com navegação por teclado
+// Arquitetura: Puramente apresentacional, desacoplado do domínio
 // ============================================
 
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import styles from './ReservationForm.module.css';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import styles from './DatePicker.module.css';
 
 // ============================================
-// CONSTANTES
+// CONSTANTES E CONFIGURAÇÕES
 // ============================================
 
 const MONTHS = [
@@ -18,270 +19,362 @@ const MONTHS = [
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
 ];
 
-const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-
-const MIN_NIGHTS = 1;
-const MAX_NIGHTS = 30;
-const MAX_ADVANCE_DAYS = 365; // Máximo 1 ano de antecedência
+const WEEKDAYS_SHORT = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const WEEKDAYS_FULL = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
 // ============================================
-// COMPONENTE PRINCIPAL
+// COMPONENTE CALENDÁRIO (INTERNO)
+// ============================================
+
+const Calendar = ({
+  currentDate,
+  selectedDate,
+  onSelectDate,
+  minDate,
+  maxDate,
+  onClose,
+  id
+}) => {
+  const calendarRef = useRef(null);
+  const [displayMonth, setDisplayMonth] = useState(currentDate || new Date());
+
+  // ========================================
+  // FUNÇÕES AUXILIARES
+  // ========================================
+  
+  const getDaysInMonth = (date) => {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  };
+
+  const getFirstDayOfMonth = (date) => {
+    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+  };
+
+  const isDateDisabled = (date) => {
+    const compareDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const minCompare = minDate ? new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate()) : null;
+    const maxCompare = maxDate ? new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate()) : null;
+    
+    if (minCompare && compareDate < minCompare) return true;
+    if (maxCompare && compareDate > maxCompare) return true;
+    return false;
+  };
+
+  const isDateSelected = (year, month, day) => {
+    if (!selectedDate) return false;
+    return selectedDate.getFullYear() === year &&
+           selectedDate.getMonth() === month &&
+           selectedDate.getDate() === day;
+  };
+
+  const formatDateKey = (year, month, day) => `${year}-${month}-${day}`;
+
+  // ========================================
+  // HANDLERS DE NAVEGAÇÃO
+  // ========================================
+  
+  const handlePrevMonth = () => {
+    setDisplayMonth(new Date(displayMonth.getFullYear(), displayMonth.getMonth() - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setDisplayMonth(new Date(displayMonth.getFullYear(), displayMonth.getMonth() + 1, 1));
+  };
+
+  const handleDateClick = (year, month, day) => {
+    const selected = new Date(year, month, day);
+    if (!isDateDisabled(selected)) {
+      onSelectDate(selected);
+      onClose();
+    }
+  };
+
+  // ========================================
+  // RENDERIZAÇÃO DO CALENDÁRIO
+  // ========================================
+  
+  const year = displayMonth.getFullYear();
+  const month = displayMonth.getMonth();
+  const daysInMonth = getDaysInMonth(displayMonth);
+  const firstDay = getFirstDayOfMonth(displayMonth);
+  
+  const days = [];
+  for (let i = 0; i < firstDay; i++) {
+    days.push(<div key={`empty-${i}`} className={styles.calendarEmptyDay} />);
+  }
+  
+  for (let day = 1; day <= daysInMonth; day++) {
+    const disabled = isDateDisabled(new Date(year, month, day));
+    const selected = isDateSelected(year, month, day);
+    const dateKey = formatDateKey(year, month, day);
+    
+    days.push(
+      <button
+        key={dateKey}
+        onClick={() => handleDateClick(year, month, day)}
+        disabled={disabled}
+        className={`
+          ${styles.calendarDay}
+          ${selected ? styles.calendarDaySelected : ''}
+          ${disabled ? styles.calendarDayDisabled : ''}
+        `}
+        aria-label={`${day} de ${MONTHS[month]} de ${year}`}
+        aria-selected={selected}
+        aria-disabled={disabled}
+      >
+        {day}
+      </button>
+    );
+  }
+
+  return (
+    <div 
+      ref={calendarRef}
+      className={styles.calendar}
+      id={id}
+      role="dialog"
+      aria-label="Calendário de seleção de data"
+    >
+      {/* Cabeçalho do calendário */}
+      <div className={styles.calendarHeader}>
+        <button
+          onClick={handlePrevMonth}
+          className={styles.calendarNavButton}
+          aria-label="Mês anterior"
+        >
+          ←
+        </button>
+        <span className={styles.calendarTitle}>
+          {MONTHS[month]} {year}
+        </span>
+        <button
+          onClick={handleNextMonth}
+          className={styles.calendarNavButton}
+          aria-label="Próximo mês"
+        >
+          →
+        </button>
+      </div>
+
+      {/* Dias da semana */}
+      <div className={styles.calendarWeekdays}>
+        {WEEKDAYS_SHORT.map((day, index) => (
+          <div key={day} className={styles.calendarWeekday} aria-label={WEEKDAYS_FULL[index]}>
+            {day}
+          </div>
+        ))}
+      </div>
+
+      {/* Grade de dias */}
+      <div className={styles.calendarGrid}>
+        {days}
+      </div>
+    </div>
+  );
+};
+
+// ============================================
+// COMPONENTE PRINCIPAL DATEPICKER
 // ============================================
 
 export const DatePicker = ({
-  checkIn: externalCheckIn,
-  checkOut: externalCheckOut,
+  value,
   onChange,
-  minDate = new Date(),
-  maxDate = new Date(Date.now() + MAX_ADVANCE_DAYS * 24 * 60 * 60 * 1000),
+  error,
+  minDate,
+  maxDate,
   disabled = false,
-  error = null,
+  placeholder = 'Selecionar data',
+  label = 'Data',
+  required = false,
   className = '',
+  id: externalId,
   ...props
 }) => {
   // ========================================
-  // ESTADOS
+  // ESTADOS E REFS
   // ========================================
   
-  const [checkIn, setCheckIn] = useState(externalCheckIn || '');
-  const [checkOut, setCheckOut] = useState(externalCheckOut || '');
-  const [touched, setTouched] = useState({ checkIn: false, checkOut: false });
-  const [focused, setFocused] = useState({ checkIn: false, checkOut: false });
-
-  // Use ref para evitar loops no useEffect
-  const initialMount = useRef(true);
-  const prevCheckIn = useRef(checkIn);
-  const prevCheckOut = useRef(checkOut);
-
+  const [internalValue, setInternalValue] = useState(value || null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const [touched, setTouched] = useState(false);
+  
+  const containerRef = useRef(null);
+  const inputRef = useRef(null);
+  const calendarId = useRef(`calendar-${Math.random().toString(36).substr(2, 9)}`);
+  const inputId = externalId || `datepicker-${Math.random().toString(36).substr(2, 9)}`;
+  
   // ========================================
-  // VALIDAÇÕES - USANDO useMemo EM VEZ DE useEffect
+  // EFEITOS
   // ========================================
   
-  const validationErrors = useMemo(() => {
-    const errors = {};
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  // Sincronizar com valor externo
+  useEffect(() => {
+    setInternalValue(value || null);
+  }, [value]);
 
-    if (checkIn) {
-      const checkInDate = new Date(checkIn);
-      
-      if (checkInDate < today) {
-        errors.checkIn = 'A data de check-in não pode ser no passado';
-      } else if (checkInDate > maxDate) {
-        errors.checkIn = 'Data muito distante. Máximo 1 ano de antecedência';
+  // Fechar calendário ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
       }
-    }
+    };
 
-    if (checkOut && checkIn) {
-      const checkInDate = new Date(checkIn);
-      const checkOutDate = new Date(checkOut);
-      
-      const diffTime = checkOutDate - checkInDate;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-      if (diffDays < MIN_NIGHTS) {
-        errors.checkOut = `Mínimo de ${MIN_NIGHTS} ${MIN_NIGHTS === 1 ? 'noite' : 'noites'}`;
-      } else if (diffDays > MAX_NIGHTS) {
-        errors.checkOut = `Máximo de ${MAX_NIGHTS} noites`;
-      }
-    }
-
-    if (checkOut && checkIn && new Date(checkOut) <= new Date(checkIn)) {
-      errors.checkOut = 'Check-out deve ser após o check-in';
-    }
-
-    return errors;
-  }, [checkIn, checkOut, maxDate]);
-
-  // ========================================
-  // SYNC COM PROPS EXTERNAS
-  // ========================================
-  
-  useEffect(() => {
-    if (externalCheckIn !== undefined && externalCheckIn !== checkIn) {
-      setCheckIn(externalCheckIn);
-    }
-  }, [externalCheckIn, checkIn]);
-
-  useEffect(() => {
-    if (externalCheckOut !== undefined && externalCheckOut !== checkOut) {
-      setCheckOut(externalCheckOut);
-    }
-  }, [externalCheckOut, checkOut]);
-
-  // ========================================
-  // NOTIFICAR COMPONENTE PAI - CORRIGIDO!
-  // ========================================
-  
-  useEffect(() => {
-    // Ignorar a primeira montagem para evitar notificação desnecessária
-    if (initialMount.current) {
-      initialMount.current = false;
-      prevCheckIn.current = checkIn;
-      prevCheckOut.current = checkOut;
-      return;
-    }
-
-    // Verificar se houve mudança real
-    const hasCheckInChanged = checkIn !== prevCheckIn.current;
-    const hasCheckOutChanged = checkOut !== prevCheckOut.current;
-
-    if (!hasCheckInChanged && !hasCheckOutChanged) {
-      return;
-    }
-
-    // Atualizar refs
-    prevCheckIn.current = checkIn;
-    prevCheckOut.current = checkOut;
-
-    // Só notifica se não houver erros e ambas as datas estiverem preenchidas
-    if (Object.keys(validationErrors).length === 0 && checkIn && checkOut) {
-      onChange?.({
-        checkIn,
-        checkOut,
-        nights: Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24))
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checkIn, checkOut]); // ⚠️ Sem validationErrors ou onChange aqui!
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // ========================================
   // HANDLERS
   // ========================================
   
-  const handleCheckInChange = (e) => {
-    const value = e.target.value;
-    setCheckIn(value);
-    setTouched(prev => ({ ...prev, checkIn: true }));
-  };
+  const handleInputClick = useCallback(() => {
+    if (!disabled) {
+      setIsOpen(true);
+      setTouched(true);
+    }
+  }, [disabled]);
 
-  const handleCheckOutChange = (e) => {
-    const value = e.target.value;
-    setCheckOut(value);
-    setTouched(prev => ({ ...prev, checkOut: true }));
-  };
+  const handleDateSelect = useCallback((date) => {
+    setInternalValue(date);
+    onChange(date);
+    setIsOpen(false);
+  }, [onChange]);
 
-  const handleBlur = (field) => () => {
-    setTouched(prev => ({ ...prev, [field]: true }));
-    setFocused(prev => ({ ...prev, [field]: false }));
-  };
+  const handleKeyDown = useCallback((e) => {
+    if (disabled) return;
 
-  const handleFocus = (field) => () => {
-    setFocused(prev => ({ ...prev, [field]: true }));
-  };
+    switch (e.key) {
+      case 'Enter':
+      case 'Space':
+        e.preventDefault();
+        setIsOpen(true);
+        setTouched(true);
+        break;
+      case 'Escape':
+        if (isOpen) {
+          e.preventDefault();
+          setIsOpen(false);
+          inputRef.current?.focus();
+        }
+        break;
+      case 'Tab':
+        if (isOpen) {
+          // Se tab e calendário aberto, foco vai para o calendário
+          e.preventDefault();
+          const firstButton = document.querySelector(`#${calendarId.current} button`);
+          firstButton?.focus();
+        }
+        break;
+      default:
+        break;
+    }
+  }, [disabled, isOpen]);
 
-  const getTodayString = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-  const getMaxDateString = () => {
-    const year = maxDate.getFullYear();
-    const month = String(maxDate.getMonth() + 1).padStart(2, '0');
-    const day = String(maxDate.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+  // ========================================
+  // FORMATAÇÃO DE DATA
+  // ========================================
+  
+  const formatDisplayDate = (date) => {
+    if (!date) return '';
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
   };
 
   // ========================================
   // CLASSES CSS
   // ========================================
   
-  const getFieldClasses = (field) => {
-    const showError = touched[field] && validationErrors[field];
-    return [
-      styles.dateInput,
-      showError && styles.error,
-      focused[field] && styles.focused,
-      disabled && styles.disabled
-    ].filter(Boolean).join(' ');
-  };
+  const containerClasses = [
+    styles.datePickerContainer,
+    disabled && styles.disabled,
+    isFocused && styles.focused,
+    error && touched && styles.error,
+    className
+  ].filter(Boolean).join(' ');
+
+  const inputClasses = [
+    styles.datePickerInput,
+    isOpen && styles.inputActive,
+    error && touched && styles.inputError
+  ].filter(Boolean).join(' ');
 
   // ========================================
   // RENDER
   // ========================================
   
-  const showCheckInError = touched.checkIn && validationErrors.checkIn;
-  const showCheckOutError = touched.checkOut && validationErrors.checkOut;
-
   return (
-    <div className={`${styles.datePicker} ${className}`} {...props}>
-      <div className={styles.dateInputs}>
-        {/* Check-in */}
-        <div className={styles.dateField}>
-          <label 
-            htmlFor="check-in" 
-            className={styles.dateLabel}
-          >
-            Check-in
-          </label>
-          <input
-            id="check-in"
-            type="date"
-            value={checkIn}
-            onChange={handleCheckInChange}
-            onBlur={handleBlur('checkIn')}
-            onFocus={handleFocus('checkIn')}
-            min={getTodayString()}
-            max={getMaxDateString()}
-            disabled={disabled}
-            className={getFieldClasses('checkIn')}
-            aria-invalid={showCheckInError}
-            aria-describedby={showCheckInError ? 'check-in-error' : undefined}
-          />
-          {showCheckInError && (
-            <span 
-              id="check-in-error" 
-              className={styles.errorMessage}
-              role="alert"
-            >
-              {validationErrors.checkIn}
-            </span>
-          )}
-        </div>
+    <div 
+      ref={containerRef}
+      className={containerClasses}
+      onKeyDown={handleKeyDown}
+    >
+      {/* Label */}
+      {label && (
+        <label 
+          htmlFor={inputId}
+          className={styles.datePickerLabel}
+        >
+          {label}
+          {required && <span className={styles.requiredMark}>*</span>}
+        </label>
+      )}
 
-        {/* Check-out */}
-        <div className={styles.dateField}>
-          <label 
-            htmlFor="check-out" 
-            className={styles.dateLabel}
-          >
-            Check-out
-          </label>
-          <input
-            id="check-out"
-            type="date"
-            value={checkOut}
-            onChange={handleCheckOutChange}
-            onBlur={handleBlur('checkOut')}
-            onFocus={handleFocus('checkOut')}
-            min={checkIn || getTodayString()}
-            max={getMaxDateString()}
-            disabled={disabled || !checkIn}
-            className={getFieldClasses('checkOut')}
-            aria-invalid={showCheckOutError}
-            aria-describedby={showCheckOutError ? 'check-out-error' : undefined}
-          />
-          {showCheckOutError && (
-            <span 
-              id="check-out-error" 
-              className={styles.errorMessage}
-              role="alert"
-            >
-              {validationErrors.checkOut}
-            </span>
-          )}
-        </div>
+      {/* Input Container */}
+      <div className={styles.inputContainer}>
+        <input
+          ref={inputRef}
+          id={inputId}
+          type="text"
+          value={formatDisplayDate(internalValue)}
+          onClick={handleInputClick}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          placeholder={placeholder}
+          disabled={disabled}
+          readOnly
+          className={inputClasses}
+          aria-invalid={error && touched}
+          aria-describedby={error && touched ? `${inputId}-error` : undefined}
+          aria-expanded={isOpen}
+          aria-controls={calendarId.current}
+          aria-haspopup="dialog"
+          aria-label={label}
+        />
+        
+        {/* Ícone do calendário */}
+        <span className={styles.calendarIcon} aria-hidden="true">
+          📅
+        </span>
       </div>
 
-      {/* Informações de período */}
-      {checkIn && checkOut && !validationErrors.checkOut && (
-        <div className={styles.dateInfo} aria-live="polite">
-          <span className={styles.nightsCount}>
-            {Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24))} noites
-          </span>
+      {/* Calendário Popover */}
+      {isOpen && (
+        <Calendar
+          currentDate={internalValue || new Date()}
+          selectedDate={internalValue}
+          onSelectDate={handleDateSelect}
+          minDate={minDate}
+          maxDate={maxDate}
+          onClose={() => setIsOpen(false)}
+          id={calendarId.current}
+        />
+      )}
+
+      {/* Mensagem de erro */}
+      {error && touched && (
+        <div 
+          id={`${inputId}-error`}
+          className={styles.errorMessage}
+          role="alert"
+        >
+          <span className={styles.errorIcon} aria-hidden="true">⚠️</span>
+          {error}
         </div>
       )}
     </div>
