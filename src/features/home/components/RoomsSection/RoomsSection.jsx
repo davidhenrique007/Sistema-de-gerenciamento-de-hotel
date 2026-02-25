@@ -34,6 +34,15 @@ export const RoomsSection = ({
   ...props
 }) => {
   // ========================================
+  // LOGS PARA DIAGNÓSTICO
+  // ========================================
+  console.log('🏨 [RoomsSection] Renderizando');
+  console.log('   rooms recebidos:', rooms);
+  console.log('   rooms length:', rooms?.length);
+  console.log('   isLoading:', isLoading);
+  console.log('   occupancyHook presente:', !!occupancyHook);
+
+  // ========================================
   // ESTADOS LOCAIS
   // ========================================
   
@@ -44,8 +53,14 @@ export const RoomsSection = ({
   // ========================================
   
   const roomsWithOccupancy = useMemo(() => {
-    return rooms.map(room => {
-      // Obter status atualizado do hook de ocupação
+    console.log('🔄 [RoomsSection] Recalculando roomsWithOccupancy');
+    
+    if (!rooms || rooms.length === 0) {
+      console.log('   ⚠️ Nenhum quarto para processar');
+      return [];
+    }
+
+    const processed = rooms.map(room => {
       const currentStatus = occupancyHook?.getRoomStatus?.(room.id) || room.status;
       const isOccupied = currentStatus === RoomStatus.OCCUPIED;
       const isLoading = occupancyHook?.loadingMap?.get(room.id) || false;
@@ -58,10 +73,15 @@ export const RoomsSection = ({
         occupancyError: occupancyHook?.errorMap?.get(room.id)
       };
     });
+
+    console.log(`   ✅ ${processed.length} quartos processados`);
+    return processed;
   }, [rooms, occupancyHook]);
 
   const availableRoomsCount = useMemo(() => {
-    return roomsWithOccupancy.filter(room => room.isAvailable).length;
+    const count = roomsWithOccupancy.filter(room => room.isAvailable).length;
+    console.log(`📊 [RoomsSection] Quartos disponíveis: ${count}`);
+    return count;
   }, [roomsWithOccupancy]);
 
   // ========================================
@@ -69,11 +89,12 @@ export const RoomsSection = ({
   // ========================================
   
   const handleSelectRoom = useCallback((room) => {
-    // Verificar se o quarto está disponível via hook
+    console.log(`🖱️ [RoomsSection] Selecionando quarto:`, room);
+    
     const isAvailable = occupancyHook?.isRoomAvailable?.(room.id) ?? room.isAvailable;
     
     if (!isAvailable) {
-      console.warn(`Quarto ${room.number} não está disponível para seleção`);
+      console.warn(`⛔ Quarto ${room.number} não está disponível para seleção`);
       return;
     }
 
@@ -85,6 +106,7 @@ export const RoomsSection = ({
   }, [occupancyHook, onSelectRoom]);
 
   const handleRetry = useCallback(() => {
+    console.log('🔄 [RoomsSection] Tentando novamente');
     if (props.onRetry) {
       props.onRetry();
     }
@@ -100,6 +122,9 @@ export const RoomsSection = ({
     error && styles.error,
     className
   ].filter(Boolean).join(' ');
+
+  console.log('🎨 [RoomsSection] Renderizando JSX');
+  console.log('   roomsWithOccupancy length:', roomsWithOccupancy.length);
 
   return (
     <section 

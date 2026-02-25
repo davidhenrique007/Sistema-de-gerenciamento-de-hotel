@@ -2,7 +2,7 @@
 // COMPONENT: RoomCard
 // ============================================
 // Responsabilidade: Card individual de quarto com galeria de imagens
-// VERSÃO CORRIGIDA - Com múltiplas imagens e design profissional
+// VERSÃO CORRIGIDA - Com pricePerNightFormatted
 // ============================================
 
 import React, { useState, useCallback, memo } from 'react';
@@ -41,7 +41,7 @@ export const RoomCard = memo(({
   typeLabel,
   capacity,
   pricePerNight,
-  pricePerNightFormatted,
+  pricePerNightFormatted,  // ← ADICIONADO!
   status: initialStatus,
   mainImage,
   amenities = [],
@@ -60,6 +60,8 @@ export const RoomCard = memo(({
   className = '',
   ...props
 }) => {
+  console.log('🎴 Renderizando RoomCard', { number, pricePerNightFormatted });
+  
   // ========================================
   // ESTADO LOCAL
   // ========================================

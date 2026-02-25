@@ -7,7 +7,7 @@
 // ============================================
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { 
+import {
   useListAvailableRooms,
   useListServices,
   useCalculatePrice,
@@ -35,7 +35,7 @@ export const useHomeData = ({
   // Configurações
   autoLoad = true,
   enableCache = true,
-  
+
   // Callbacks
   onError,
   onSuccess
@@ -61,7 +61,7 @@ export const useHomeData = ({
   // ==========================================
   // DADOS DERIVADOS
   // ==========================================
-  
+
   const availableRooms = useMemo(() => {
     return rooms.filter(room => room.status === 'AVAILABLE');
   }, [rooms]);
@@ -79,23 +79,56 @@ export const useHomeData = ({
   }, [rooms.length, availableRooms.length, services.categories]);
 
   // ==========================================
-  // FUNÇÕES DE CARREGAMENTO - CORRIGIDAS
+  // FUNÇÕES DE CARREGAMENTO - 
   // ==========================================
 
   // Função para enriquecer dados dos quartos
   const enrichRoomData = useCallback((room) => {
-    return {
-      ...room,
-      // Garantir que typeLabel exista
-      typeLabel: room.typeLabel || TYPE_LABELS[room.type] || room.type,
-      // Garantir que pricePerNightFormatted exista
-      pricePerNightFormatted: new Intl.NumberFormat('pt-MZ', {
+    // LOG PARA VER O QUE ESTÁ CHEGANDO
+    console.log('🔍 room recebido:', {
+      id: room.id,
+      number: room.number,
+      pricePerNight: room.pricePerNight
+    });
+
+    // Extrair valores com fallback
+    const amount = room.pricePerNight?.amount;
+    const currency = room.pricePerNight?.currency || 'MZN';
+
+    // Garantir que amount seja número
+    let numericAmount = 0;
+    if (typeof amount === 'number') {
+      numericAmount = amount;
+    } else if (typeof amount === 'string') {
+      numericAmount = parseFloat(amount) || 0;
+    }
+
+    // Formatar preço
+    let formattedPrice;
+    try {
+      formattedPrice = new Intl.NumberFormat('pt-MZ', {
         style: 'currency',
-        currency: room.pricePerNight?.currency || 'MZN'
-      }).format(room.pricePerNight?.amount || 0),
-      // Garantir que available seja calculado
+        currency: currency,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(numericAmount);
+    } catch {
+      formattedPrice = `${numericAmount} ${currency}`;
+    }
+
+    console.log('💰 preço processado:', { numericAmount, formattedPrice });
+
+    return {
+      id: room.id,
+      number: room.number,
+      type: room.type,
+      typeLabel: room.typeLabel || TYPE_LABELS[room.type] || room.type,
+      capacity: room.capacity,
+      pricePerNight: room.pricePerNight, // manter original
+      pricePerNightFormatted: formattedPrice,
+      status: room.status,
       available: room.status === 'AVAILABLE',
-      // Garantir que mainImage exista
+      amenities: room.amenities || [],
       mainImage: room.mainImage || `/assets/images/rooms/${room.type}/main.jpg`
     };
   }, []);
@@ -103,41 +136,58 @@ export const useHomeData = ({
   const loadRooms = useCallback(async () => {
     try {
       logger.debug('Carregando quartos...');
+
+      // 1. Verificar se o use case existe
+      if (!listAvailableRooms) {
+        console.error('❌ listAvailableRooms não está disponível');
+        return [];
+      }
+
+      // 2. Executar o use case
       const rawRooms = await listAvailableRooms.execute();
-      
-      // Enriquecer dados dos quartos
-      const enrichedRooms = rawRooms.map(enrichRoomData);
-      
+      console.log('📥 rawRooms do use case:', rawRooms);
+
+      // 3. Verificar se rawRooms é array
+      if (!Array.isArray(rawRooms)) {
+        console.error('❌ rawRooms não é array:', rawRooms);
+        return [];
+      }
+
+      // 4. Enriquecer dados
+      const enrichedRooms = rawRooms.map(room => enrichRoomData(room));
+
+      console.log('📤 enrichedRooms FINAL:', enrichedRooms);
+
+      // 5. Atualizar estado
       setRooms(enrichedRooms);
-      
+
       if (onSuccess) onSuccess('rooms', enrichedRooms);
-      
+
       return enrichedRooms;
     } catch (err) {
+      console.error('❌ Erro em loadRooms:', err);
       logger.error('Erro ao carregar quartos:', err);
       setError(err);
-      
       if (onError) onError('rooms', err);
-      
       return [];
     }
-  }, [listAvailableRooms, enrichRoomData, onSuccess, onError]);
+  }, [listAvailableRooms, onSuccess, onError]);
 
   const loadServices = useCallback(async () => {
     try {
       logger.debug('Carregando serviços...');
       const servicesData = await listServices.execute();
       setServices(servicesData);
-      
+
       if (onSuccess) onSuccess('services', servicesData);
-      
+
       return servicesData;
     } catch (err) {
       logger.error('Erro ao carregar serviços:', err);
       setError(err);
-      
+
       if (onError) onError('services', err);
-      
+
       return { categories: {} };
     }
   }, [listServices, onSuccess, onError]);
@@ -146,12 +196,12 @@ export const useHomeData = ({
     try {
       logger.debug(`Carregando detalhes do quarto ${roomId}...`);
       const room = rooms.find(r => r.id === roomId);
-      
+
       if (!room) {
         logger.warn(`Quarto ${roomId} não encontrado`);
         return null;
       }
-      
+
       // Retornar dados enriquecidos
       return enrichRoomData(room);
     } catch (err) {
@@ -163,7 +213,7 @@ export const useHomeData = ({
   const loadAll = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       await Promise.all([loadRooms(), loadServices()]);
       setInitialized(true);
@@ -247,7 +297,7 @@ export const useHomeData = ({
 
     const initialize = async () => {
       if (!autoLoad) return;
-      
+
       setLoading(true);
       try {
         await Promise.all([loadRooms(), loadServices()]);
@@ -281,27 +331,27 @@ export const useHomeData = ({
     featuredRooms,
     services,
     stats,
-    
+
     // Estados
     loading,
     initialized,
     error,
-    
+
     // Funções de carregamento
     loadRooms,
     loadServices,
     loadAll,
     loadRoomDetails,
-    
+
     // Funções de refresh
     refresh,
     refreshRooms,
     refreshServices,
-    
+
     // Funções de cálculo
     calculateReservationPrice,
     calculateServicesTotal,
-    
+
     // Funções de disponibilidade
     checkAvailability
   };
@@ -313,11 +363,11 @@ export const useHomeData = ({
 
 export const useHomePageData = (options = {}) => {
   const homeData = useHomeData(options);
-  
+
   // Dados específicos para a HomePage
   const heroRooms = homeData.featuredRooms;
   const heroServices = homeData.services?.categories?.featured || [];
-  
+
   return {
     ...homeData,
     heroRooms,

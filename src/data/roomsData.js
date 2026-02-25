@@ -2,93 +2,94 @@
 // DATA: roomsData.js
 // ============================================
 // Dados mock para inicialização do repositório
-// Versão corrigida - EXATAMENTE 6 QUARTOS
-// Deluxe: 2 quartos | Outros: 1 cada
+// IDs sequenciais de 1 a 6
 // ============================================
 
 export const roomsData = [
-  // STANDARD - 1 quarto
+  // 1. STANDARD - ID 1
   {
-    id: 101,
-    number: '101',
+    id: 1,
+    number: '01',
     type: 'standard',
     typeLabel: 'Standard',
     capacity: 2,
     pricePerNight: {
-      amount: 3000.00,  // 3.000 MZN
+      amount: 3000.00,
       currency: 'MZN'
     },
     status: 'AVAILABLE',
     amenities: ['Wi-Fi', 'TV', 'Ar condicionado', 'Frigobar']
   },
   
-  // DELUXE - 2 quartos
+  // 2. DELUXE 1 - ID 2
   {
-    id: 102,
-    number: '102',
+    id: 2,
+    number: '10',
     type: 'deluxe',
     typeLabel: 'Deluxe',
     capacity: 3,
     pricePerNight: {
-      amount: 4000.00,  // 4.000 MZN
+      amount: 4000.00,
       currency: 'MZN'
     },
     status: 'AVAILABLE',
     amenities: ['Wi-Fi', 'TV', 'Ar condicionado', 'Frigobar', 'Banheira', 'Vista mar']
   },
+  
+  // 3. DELUXE 2 - ID 3
   {
-    id: 103,
-    number: '103',
+    id: 3,
+    number: '20',
     type: 'deluxe',
     typeLabel: 'Deluxe',
     capacity: 3,
     pricePerNight: {
-      amount: 4500.00,  // 4.500 MZN
+      amount: 4500.00,
       currency: 'MZN'
     },
     status: 'AVAILABLE',
     amenities: ['Wi-Fi', 'TV', 'Ar condicionado', 'Frigobar', 'Vista mar', 'Cafeteira']
   },
   
-  // EXECUTIVO - 1 quarto
+  // 4. EXECUTIVO - ID 4
   {
-    id: 201,
-    number: '201',
+    id: 4,
+    number: '25',
     type: 'executive',
     typeLabel: 'Executivo',
     capacity: 2,
     pricePerNight: {
-      amount: 5000.00,  // 5.000 MZN
+      amount: 5000.00,
       currency: 'MZN'
     },
     status: 'AVAILABLE',
     amenities: ['Wi-Fi', 'TV', 'Ar condicionado', 'Frigobar', 'Mesa de trabalho', 'Cafeteira', 'Secador']
   },
   
-  // FAMÍLIA - 1 quarto
+  // 5. FAMÍLIA - ID 5
   {
-    id: 301,
-    number: '301',
+    id: 5,
+    number: '30',
     type: 'family',
     typeLabel: 'Família',
     capacity: 5,
     pricePerNight: {
-      amount: 7000.00,  // 7.000 MZN
+      amount: 7000.00,
       currency: 'MZN'
     },
     status: 'AVAILABLE',
     amenities: ['Wi-Fi', 'TV', 'Ar condicionado', 'Frigobar', '2 camas', 'Berço', 'Sofá-cama']
   },
   
-  // PRESIDENCIAL - 1 quarto
+  // 6. PRESIDENCIAL - ID 6
   {
-    id: 401,
-    number: '401',
+    id: 6,
+    number: '35',
     type: 'presidential',
     typeLabel: 'Presidencial',
     capacity: 4,
     pricePerNight: {
-      amount: 12000.00,  // 12.000 MZN
+      amount: 12000.00,
       currency: 'MZN'
     },
     status: 'AVAILABLE',

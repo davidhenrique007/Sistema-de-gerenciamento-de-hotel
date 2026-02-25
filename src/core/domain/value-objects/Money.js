@@ -13,7 +13,7 @@ import { ValidationError } from '../../../shared/utils/errorUtils.js';
 // ============================================
 
 const DEFAULT_CURRENCY = 'BRL';
-const SUPPORTED_CURRENCIES = ['BRL', 'USD', 'EUR'];
+const SUPPORTED_CURRENCIES = ['BRL', 'USD', 'EUR', 'MZN'];
 
 // ============================================
 // CLASSE PRINCIPAL

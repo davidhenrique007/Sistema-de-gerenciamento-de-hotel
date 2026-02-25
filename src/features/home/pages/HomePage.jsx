@@ -35,11 +35,6 @@ import { useReservationForm } from '../hooks/useReservationForm.js';
 import { useReservationValidation } from '../hooks/useReservationValidation.js';
 import { useRoomOccupancy } from '../hooks/useRoomOccupancy.js';
 
-// Use cases (via DI) - COMENTE ESTAS LINHAS SE NÃO TIVER OS HOOKS
-// import { useListAvailableRooms, useGetRoomDetails } from '../../../di/homeDependencies.jsx';
-// import { useUpdateRoomOccupancy } from '../../../di/homeDependencies.jsx';
-// import { useCalculatePrice } from '../../../di/homeDependencies.jsx';
-
 // Estilos
 import './home.css';
 
@@ -108,15 +103,6 @@ export const HomePage = () => {
   const notification = useNotification();
 
   // ========================================
-  // USE CASES (via DI) - DESCOMENTE QUANDO TIVER OS HOOKS
-  // ========================================
-  
-  // const listAvailableRooms = useListAvailableRooms();
-  // const getRoomDetails = useGetRoomDetails();
-  // const updateRoomOccupancy = useUpdateRoomOccupancy();
-  // const calculatePrice = useCalculatePrice();
-
-  // ========================================
   // HOOKS DE DADOS
   // ========================================
   
@@ -130,19 +116,21 @@ export const HomePage = () => {
     loadRoomDetails,
     calculateReservationPrice
   } = useHomeData({
-    // listAvailableRoomsUseCase: listAvailableRooms, // Descomente quando tiver
-    // getRoomDetailsUseCase: getRoomDetails, // Descomente quando tiver
     onError: (type, error) => {
       notification.error(`Erro ao carregar ${type}: ${error.message}`);
     }
   });
+
+  // ✅ LOGS AGORA FUNCIONAM (depois da definição)
+  console.log('🏠 HomePage renderizando');
+  console.log('📊 Quartos carregados:', rooms?.length, rooms);
+  console.log('📊 Serviços carregados:', services);
 
   // ========================================
   // HOOKS DE OCUPAÇÃO
   // ========================================
   
   const occupancy = useRoomOccupancy({
-    // updateRoomOccupancyUseCase: updateRoomOccupancy, // Descomente quando tiver
     onOccupancyChanged: (roomId, status) => {
       if (status === 'occupied') {
         notification.success(`Quarto reservado com sucesso!`);
@@ -246,7 +234,7 @@ export const HomePage = () => {
   }, [refresh]);
 
   // ========================================
-  // HANDLER DE PAGAMENTO - ATUALIZADO
+  // HANDLER DE PAGAMENTO
   // ========================================
 
   const handleProceedToPayment = useCallback(() => {

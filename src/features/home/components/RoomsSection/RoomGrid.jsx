@@ -25,6 +25,11 @@ const GRID_LAYOUTS = {
 // ============================================
 
 const RoomGridItem = memo(({ room, onSelect, selectedRoomId, isLoading }) => {
+  console.log(`🔲 [RoomGridItem] Renderizando quarto ${room.number}`, {
+    id: room.id,
+    selected: selectedRoomId === room.id
+  });
+
   const isSelected = selectedRoomId === room.id;
 
   return (
@@ -51,15 +56,32 @@ export const RoomGrid = memo(({
   selectedRoomId = null,
   isLoading = false,
   loadingCards = 6,
-  layout = 'auto', // 'auto', 'compact', 'expanded'
+  layout = 'auto',
+  occupancyHook,
   className = '',
   ...props
 }) => {
+  // ========================================
+  // LOGS PARA DIAGNÓSTICO
+  // ========================================
+  console.log('🔷 [RoomGrid] Renderizando');
+  console.log('   rooms recebidos:', rooms);
+  console.log('   rooms length:', rooms?.length);
+  console.log('   isLoading:', isLoading);
+  console.log('   selectedRoomId:', selectedRoomId);
+
   // ========================================
   // MEMOIZAR LISTA DE QUARTOS
   // ========================================
   
   const roomItems = useMemo(() => {
+    console.log('🔄 [RoomGrid] Criando roomItems com', rooms.length, 'quartos');
+    
+    if (!rooms || rooms.length === 0) {
+      console.log('   ⚠️ Nenhum quarto para criar items');
+      return [];
+    }
+
     return rooms.map(room => (
       <RoomGridItem
         key={room.id}
@@ -76,6 +98,7 @@ export const RoomGrid = memo(({
   // ========================================
   
   const skeletonItems = useMemo(() => {
+    console.log('🔄 [RoomGrid] Criando skeleton items');
     return Array(loadingCards).fill(null).map((_, index) => (
       <div key={`skeleton-${index}`} className={styles.gridItem}>
         <div className={styles.skeletonCard}>
@@ -105,6 +128,11 @@ export const RoomGrid = memo(({
     rooms.length === 0 && styles.empty,
     className
   ].filter(Boolean).join(' ');
+
+  console.log('🎨 [RoomGrid] Renderizando JSX');
+  console.log('   roomItems length:', roomItems.length);
+  console.log('   skeletonItems length:', skeletonItems.length);
+  console.log('   isEmpty:', rooms.length === 0);
 
   // ========================================
   // RENDER
@@ -140,10 +168,13 @@ export const RoomGridHeader = ({
   title = 'Nossos Quartos',
   subtitle = 'Escolha o quarto perfeito para sua estadia',
   totalRooms,
+  availableRooms,
   onFilterChange,
   className = '',
   ...props
 }) => {
+  console.log('📋 [RoomGridHeader] Renderizando', { totalRooms, availableRooms });
+
   return (
     <div className={`${styles.gridHeader} ${className}`} {...props}>
       <div className={styles.headerContent}>
@@ -154,7 +185,8 @@ export const RoomGridHeader = ({
       {totalRooms !== undefined && (
         <div className={styles.gridStats}>
           <span className={styles.totalRooms}>
-            {totalRooms} {totalRooms === 1 ? 'quarto disponível' : 'quartos disponíveis'}
+            {totalRooms} {totalRooms === 1 ? 'quarto' : 'quartos'}
+            {availableRooms !== undefined && ` (${availableRooms} disponíveis)`}
           </span>
         </div>
       )}
