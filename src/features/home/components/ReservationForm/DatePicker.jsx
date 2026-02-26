@@ -7,12 +7,8 @@
 // Arquitetura: Puramente apresentacional, desacoplado do domínio
 // ============================================
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './DatePicker.module.css';
-
-// ============================================
-// CONSTANTES E CONFIGURAÇÕES
-// ============================================
 
 const MONTHS = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -38,10 +34,6 @@ const Calendar = ({
   const calendarRef = useRef(null);
   const [displayMonth, setDisplayMonth] = useState(currentDate || new Date());
 
-  // ========================================
-  // FUNÇÕES AUXILIARES
-  // ========================================
-  
   const getDaysInMonth = (date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   };
@@ -67,12 +59,6 @@ const Calendar = ({
            selectedDate.getDate() === day;
   };
 
-  const formatDateKey = (year, month, day) => `${year}-${month}-${day}`;
-
-  // ========================================
-  // HANDLERS DE NAVEGAÇÃO
-  // ========================================
-  
   const handlePrevMonth = () => {
     setDisplayMonth(new Date(displayMonth.getFullYear(), displayMonth.getMonth() - 1, 1));
   };
@@ -89,10 +75,6 @@ const Calendar = ({
     }
   };
 
-  // ========================================
-  // FOCUS TRAP PARA ACESSIBILIDADE
-  // ========================================
-  
   useEffect(() => {
     if (calendarRef.current) {
       const firstButton = calendarRef.current.querySelector('button');
@@ -100,10 +82,6 @@ const Calendar = ({
     }
   }, []);
 
-  // ========================================
-  // RENDERIZAÇÃO DO CALENDÁRIO
-  // ========================================
-  
   const year = displayMonth.getFullYear();
   const month = displayMonth.getMonth();
   const daysInMonth = getDaysInMonth(displayMonth);
@@ -117,7 +95,7 @@ const Calendar = ({
   for (let day = 1; day <= daysInMonth; day++) {
     const disabled = isDateDisabled(new Date(year, month, day));
     const selected = isDateSelected(year, month, day);
-    const dateKey = formatDateKey(year, month, day);
+    const dateKey = `${year}-${month}-${day}`;
     
     days.push(
       <button
@@ -147,7 +125,6 @@ const Calendar = ({
       aria-label="Calendário de seleção de data"
       aria-modal="true"
     >
-      {/* Cabeçalho do calendário */}
       <div className={styles.calendarHeader}>
         <button
           onClick={handlePrevMonth}
@@ -168,7 +145,6 @@ const Calendar = ({
         </button>
       </div>
 
-      {/* Dias da semana */}
       <div className={styles.calendarWeekdays}>
         {WEEKDAYS_SHORT.map((day, index) => (
           <div key={day} className={styles.calendarWeekday} aria-label={WEEKDAYS_FULL[index]}>
@@ -177,7 +153,6 @@ const Calendar = ({
         ))}
       </div>
 
-      {/* Grade de dias */}
       <div className={styles.calendarGrid}>
         {days}
       </div>
@@ -203,10 +178,6 @@ export const DatePicker = ({
   id: externalId,
   ...props
 }) => {
-  // ========================================
-  // ESTADOS E REFS
-  // ========================================
-  
   const [internalValue, setInternalValue] = useState(value || null);
   const [isOpen, setIsOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -217,16 +188,10 @@ export const DatePicker = ({
   const calendarId = useRef(`calendar-${Math.random().toString(36).substr(2, 9)}`);
   const inputId = externalId || `datepicker-${Math.random().toString(36).substr(2, 9)}`;
   
-  // ========================================
-  // EFEITOS
-  // ========================================
-  
-  // Sincronizar com valor externo
   useEffect(() => {
     setInternalValue(value || null);
   }, [value]);
 
-  // Fechar calendário ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
@@ -238,16 +203,12 @@ export const DatePicker = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // ========================================
-  // HANDLERS - CORRIGIDOS!
-  // ========================================
-  
   const handleInputClick = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
     
     if (!disabled) {
-      console.log('🔵 [DatePicker] Abrindo calendário'); // Log para debug
+      console.log('[DatePicker] Abrindo calendário');
       setIsOpen(true);
       setTouched(true);
     }
@@ -261,7 +222,7 @@ export const DatePicker = ({
       case ' ':
       case 'Space':
         e.preventDefault();
-        console.log('🔵 [DatePicker] Abrindo calendário via teclado');
+        console.log('[DatePicker] Abrindo calendário via teclado');
         setIsOpen(true);
         setTouched(true);
         break;
@@ -286,18 +247,13 @@ export const DatePicker = ({
   }, [disabled, isOpen]);
 
   const handleDateSelect = useCallback((date) => {
-    console.log('🔵 [DatePicker] Data selecionada:', date);
+    console.log('[DatePicker] Data selecionada:', date);
     setInternalValue(date);
     onChange(date);
     setIsOpen(false);
-    // Retornar foco ao input após selecionar
     setTimeout(() => inputRef.current?.focus(), 100);
   }, [onChange]);
 
-  // ========================================
-  // FORMATAÇÃO DE DATA
-  // ========================================
-  
   const formatDisplayDate = (date) => {
     if (!date) return '';
     return date.toLocaleDateString('pt-BR', {
@@ -307,10 +263,6 @@ export const DatePicker = ({
     });
   };
 
-  // ========================================
-  // CLASSES CSS
-  // ========================================
-  
   const containerClasses = [
     styles.datePickerContainer,
     disabled && styles.disabled,
@@ -325,17 +277,21 @@ export const DatePicker = ({
     error && touched && styles.inputError
   ].filter(Boolean).join(' ');
 
-  // ========================================
-  // RENDER
-  // ========================================
-  
+  console.log('[DatePicker] Renderizando com props:', {
+    value,
+    isOpen,
+    disabled,
+    error,
+    touched,
+    internalValue
+  });
+
   return (
     <div 
       ref={containerRef}
       className={containerClasses}
       {...props}
     >
-      {/* Label */}
       {label && (
         <label 
           htmlFor={inputId}
@@ -346,7 +302,6 @@ export const DatePicker = ({
         </label>
       )}
 
-      {/* Input Container */}
       <div className={styles.inputContainer}>
         <input
           ref={inputRef}
@@ -369,7 +324,6 @@ export const DatePicker = ({
           aria-label={label}
         />
         
-        {/* Ícone do calendário - TAMBÉM ABRE O CALENDÁRIO */}
         <span 
           className={styles.calendarIcon} 
           aria-hidden="true"
@@ -379,7 +333,6 @@ export const DatePicker = ({
         </span>
       </div>
 
-      {/* Calendário Popover */}
       {isOpen && (
         <Calendar
           currentDate={internalValue || new Date()}
@@ -392,7 +345,6 @@ export const DatePicker = ({
         />
       )}
 
-      {/* Mensagem de erro */}
       {error && touched && (
         <div 
           id={`${inputId}-error`}

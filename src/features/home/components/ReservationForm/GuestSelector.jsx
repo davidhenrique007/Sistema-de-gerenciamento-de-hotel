@@ -10,10 +10,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './GuestSelector.module.css';
 
-// ============================================
-// ÍCONES SVG (inline para evitar dependências)
-// ============================================
-
 const MinusIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -26,10 +22,6 @@ const PlusIcon = () => (
   </svg>
 );
 
-// ============================================
-// COMPONENTE PRINCIPAL
-// ============================================
-
 export const GuestSelector = ({
   value: externalValue = 1,
   onChange,
@@ -41,28 +33,17 @@ export const GuestSelector = ({
   className = '',
   ...props
 }) => {
-  // ========================================
-  // ESTADOS E REFS
-  // ========================================
-  
   const [guests, setGuests] = useState(externalValue);
   const [error, setError] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
-  const prevValueRef = useRef(externalValue);
   const timeoutRef = useRef(null);
 
-  // ========================================
-  // EFFECTS
-  // ========================================
-  
-  // Sincronizar com valor externo
   useEffect(() => {
     if (externalValue !== undefined && externalValue !== guests) {
       setGuests(externalValue);
     }
   }, [externalValue]);
 
-  // Limpar timeout no unmount
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -71,10 +52,6 @@ export const GuestSelector = ({
     };
   }, []);
 
-  // ========================================
-  // VALIDAÇÕES
-  // ========================================
-  
   const validateGuests = useCallback((value) => {
     if (maxPerRoom && value > maxPerRoom) {
       return `Máximo de ${maxPerRoom} ${maxPerRoom === 1 ? 'hóspede' : 'hóspedes'} por quarto`;
@@ -88,10 +65,6 @@ export const GuestSelector = ({
     return '';
   }, [min, max, maxPerRoom]);
 
-  // ========================================
-  // HANDLERS COM ANIMAÇÃO
-  // ========================================
-  
   const triggerAnimation = () => {
     setIsAnimating(true);
     if (timeoutRef.current) {
@@ -105,6 +78,8 @@ export const GuestSelector = ({
   const handleIncrement = useCallback(() => {
     if (disabled) return;
     
+    console.log('[GuestSelector] Incrementar - valor atual:', guests);
+    
     setGuests(prev => {
       const newValue = prev + 1;
       const errorMsg = validateGuests(newValue);
@@ -113,14 +88,18 @@ export const GuestSelector = ({
       if (!errorMsg) {
         triggerAnimation();
         onChange?.(newValue);
+        console.log('[GuestSelector] Novo valor:', newValue);
         return newValue;
       }
+      console.log('[GuestSelector] Incremento bloqueado - erro:', errorMsg);
       return prev;
     });
-  }, [disabled, onChange, validateGuests]);
+  }, [disabled, guests, onChange, validateGuests]);
 
   const handleDecrement = useCallback(() => {
     if (disabled) return;
+    
+    console.log('[GuestSelector] Decrementar - valor atual:', guests);
     
     setGuests(prev => {
       const newValue = Math.max(min, prev - 1);
@@ -130,28 +109,24 @@ export const GuestSelector = ({
       if (!errorMsg) {
         triggerAnimation();
         onChange?.(newValue);
+        console.log('[GuestSelector] Novo valor:', newValue);
         return newValue;
       }
+      console.log('[GuestSelector] Decremento bloqueado - erro:', errorMsg);
       return prev;
     });
-  }, [disabled, min, onChange, validateGuests]);
+  }, [disabled, min, guests, onChange, validateGuests]);
 
   const handleKeyDown = useCallback((e) => {
     if (disabled) return;
 
     switch (e.key) {
       case 'ArrowUp':
-        e.preventDefault();
-        handleIncrement();
-        break;
       case 'ArrowRight':
         e.preventDefault();
         handleIncrement();
         break;
       case 'ArrowDown':
-        e.preventDefault();
-        handleDecrement();
-        break;
       case 'ArrowLeft':
         e.preventDefault();
         handleDecrement();
@@ -159,6 +134,7 @@ export const GuestSelector = ({
       case 'Home':
         e.preventDefault();
         if (min !== guests) {
+          console.log('[GuestSelector] Home - indo para mínimo:', min);
           setGuests(min);
           onChange?.(min);
           triggerAnimation();
@@ -168,6 +144,7 @@ export const GuestSelector = ({
         e.preventDefault();
         const maxValue = maxPerRoom || max;
         if (maxValue !== guests) {
+          console.log('[GuestSelector] End - indo para máximo:', maxValue);
           setGuests(maxValue);
           onChange?.(maxValue);
           triggerAnimation();
@@ -178,10 +155,6 @@ export const GuestSelector = ({
     }
   }, [disabled, handleIncrement, handleDecrement, min, max, maxPerRoom, guests, onChange]);
 
-  // ========================================
-  // CLASSES CSS
-  // ========================================
-  
   const containerClasses = [
     styles.container,
     disabled && styles.disabled,
@@ -197,26 +170,22 @@ export const GuestSelector = ({
   const isMinReached = guests <= min;
   const isMaxReached = maxPerRoom ? guests >= maxPerRoom : guests >= max;
 
-  // ========================================
-  // RENDER
-  // ========================================
-  
+  console.log('[GuestSelector] Valor atual:', guests);
+  console.log('[GuestSelector] Limites:', { min, max: maxPerRoom || max, isMinReached, isMaxReached });
+
   return (
     <div 
       className={containerClasses}
       onKeyDown={handleKeyDown}
       {...props}
     >
-      {/* Label */}
       {label && (
         <label className={styles.label}>
           {label}
         </label>
       )}
 
-      {/* Controles */}
       <div className={styles.controls}>
-        {/* Botão Diminuir */}
         <button
           type="button"
           onClick={handleDecrement}
@@ -228,7 +197,6 @@ export const GuestSelector = ({
           <MinusIcon />
         </button>
 
-        {/* Valor Central */}
         <div 
           className={valueClasses}
           aria-live="polite"
@@ -240,7 +208,6 @@ export const GuestSelector = ({
           </span>
         </div>
 
-        {/* Botão Aumentar */}
         <button
           type="button"
           onClick={handleIncrement}
@@ -253,7 +220,6 @@ export const GuestSelector = ({
         </button>
       </div>
 
-      {/* Mensagem de erro */}
       {error && (
         <div 
           className={styles.errorMessage}
@@ -264,7 +230,6 @@ export const GuestSelector = ({
         </div>
       )}
 
-      {/* Hint de limites (acessibilidade) */}
       <div className={styles.hint} aria-hidden="true">
         {!disabled && (
           <>

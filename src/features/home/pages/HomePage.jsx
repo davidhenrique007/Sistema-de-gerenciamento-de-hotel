@@ -359,7 +359,7 @@ export const HomePage = () => {
   }, [reservation, validation, notification, navigate, refresh, services]);
 
   // ========================================
-  // PAINEL DE DEBUG (opcional)
+  // PAINEL DE DEBUG (AGORA COM POINTER-EVENTS: NONE)
   // ========================================
 
   const DebugPanel = () => (
@@ -376,10 +376,22 @@ export const HomePage = () => {
         zIndex: 9999,
         maxWidth: '300px',
         maxHeight: '400px',
-        overflow: 'auto'
+        overflow: 'auto',
+        pointerEvents: 'none' // ← ISSO FAZ O CLIQUE PASSAR ATRAVÉS DO PAINEL
       }}
     >
-      <button onClick={() => setShowDebug(false)} style={{ float: 'right' }}>
+      <button 
+        onClick={() => setShowDebug(false)} 
+        style={{ 
+          float: 'right',
+          pointerEvents: 'auto', // ← BOTÃO X AINDA FUNCIONA
+          cursor: 'pointer',
+          background: 'transparent',
+          border: 'none',
+          color: 'white',
+          fontSize: '16px'
+        }}
+      >
         X
       </button>
       <h4>Debug - Quartos</h4>
@@ -542,7 +554,8 @@ export const HomePage = () => {
 
       <Footer onNavigate={navigate} showNewsletter={true} companyName="Hotel Paradise" />
 
-      {/* Botão de Debug (opcional - remover em produção) */}
+      {/* Botão de Debug - Comentado para não atrapalhar */}
+      {/* 
       {process.env.NODE_ENV === 'development' && !showDebug && (
         <button
           onClick={() => setShowDebug(true)}
@@ -562,6 +575,7 @@ export const HomePage = () => {
           Debug
         </button>
       )}
+      */}
 
       {/* Painel de Debug */}
       {showDebug && <DebugPanel />}
