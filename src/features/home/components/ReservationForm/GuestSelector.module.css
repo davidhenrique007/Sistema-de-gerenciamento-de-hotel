@@ -1,0 +1,247 @@
+/* ============================================
+   GuestSelector.module.css
+   Design System Tokens
+   ============================================ */
+
+/* Container principal */
+.container {
+  width: 100%;
+  margin-bottom: var(--spacing-md, 16px);
+  font-family: var(--font-family, 'Inter', sans-serif);
+}
+
+/* Label */
+.label {
+  display: block;
+  margin-bottom: var(--spacing-xs, 4px);
+  font-size: var(--font-size-sm, 14px);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-secondary, #666);
+}
+
+/* Container dos controles */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm, 8px);
+  background-color: var(--color-background-light, #f9f9f9);
+  border-radius: var(--border-radius-lg, 48px);
+  padding: var(--spacing-xs, 4px);
+  border: 1px solid var(--color-border, #e0e0e0);
+  transition: all var(--transition-fast, 0.2s);
+}
+
+.controls:focus-within {
+  border-color: var(--color-primary, #ff8c00);
+  box-shadow: 0 0 0 3px var(--color-primary-alpha, rgba(255, 140, 0, 0.1));
+}
+
+/* Botões */
+.button {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-background, #fff);
+  border: 1px solid var(--color-border, #e0e0e0);
+  border-radius: var(--border-radius-circle, 50%);
+  color: var(--color-text-primary, #333);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.2s);
+  padding: 0;
+  box-shadow: var(--shadow-sm, 0 2px 4px rgba(0, 0, 0, 0.05));
+}
+
+.button:hover:not(:disabled) {
+  background-color: var(--color-primary, #ff8c00);
+  border-color: var(--color-primary, #ff8c00);
+  color: white;
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md, 0 4px 8px rgba(255, 140, 0, 0.2));
+}
+
+.button:active:not(:disabled) {
+  transform: scale(0.95);
+  transition: transform var(--transition-fast, 0.1s);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-primary, #ff8c00);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--color-background-disabled, #f5f5f5);
+  border-color: var(--color-border-disabled, #ddd);
+  color: var(--color-text-disabled, #999);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Ícones nos botões */
+.button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Valor central */
+.value {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 12px);
+  background-color: var(--color-background, #fff);
+  border-radius: var(--border-radius-md, 32px);
+  text-align: center;
+  transition: all var(--transition-normal, 0.2s);
+}
+
+.valueNumber {
+  font-size: var(--font-size-2xl, 28px);
+  font-weight: var(--font-weight-bold, 700);
+  line-height: 1.2;
+  color: var(--color-text-primary, #333);
+}
+
+.valueText {
+  font-size: var(--font-size-xs, 12px);
+  color: var(--color-text-tertiary, #999);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Animação ao alterar valor */
+.valueAnimating {
+  animation: valuePulse var(--transition-normal, 0.2s) ease-in-out;
+}
+
+@keyframes valuePulse {
+  0% {
+    transform: scale(1);
+    background-color: var(--color-background, #fff);
+  }
+  50% {
+    transform: scale(1.05);
+    background-color: var(--color-primary-alpha, rgba(255, 140, 0, 0.1));
+    color: var(--color-primary, #ff8c00);
+  }
+  100% {
+    transform: scale(1);
+    background-color: var(--color-background, #fff);
+  }
+}
+
+/* Estado de erro */
+.valueError {
+  border: 1px solid var(--color-error, #dc3545);
+  background-color: var(--color-error-light, #fff5f5);
+}
+
+.valueError .valueNumber {
+  color: var(--color-error, #dc3545);
+}
+
+/* Mensagem de erro */
+.errorMessage {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+  margin-top: var(--spacing-xs, 4px);
+  font-size: var(--font-size-sm, 14px);
+  color: var(--color-error, #dc3545);
+  animation: fadeIn var(--transition-fast, 0.2s);
+}
+
+.errorIcon {
+  font-size: var(--font-size-md, 16px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hint de limites (acessibilidade) */
+.hint {
+  height: 20px;
+  margin-top: var(--spacing-xs, 4px);
+  font-size: var(--font-size-xs, 12px);
+  color: var(--color-text-tertiary, #999);
+  visibility: hidden;
+}
+
+.hint span {
+  visibility: visible;
+}
+
+/* Estado desabilitado */
+.container.disabled {
+  opacity: 0.7;
+}
+
+.container.disabled .label {
+  color: var(--color-text-disabled, #999);
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .valueNumber {
+    font-size: var(--font-size-xl, 24px);
+  }
+
+  .valueText {
+    font-size: var(--font-size-2xs, 10px);
+  }
+}
+
+/* Acessibilidade - Alta contraste */
+@media (prefers-contrast: high) {
+  .button {
+    border-width: 2px;
+  }
+
+  .value {
+    border: 1px solid currentColor;
+  }
+}
+
+/* Acessibilidade - Reduzir movimento */
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .value,
+  .valueAnimating {
+    animation: none;
+    transition: none;
+  }
+
+  .button:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .button:active:not(:disabled) {
+    transform: none;
+  }
+}

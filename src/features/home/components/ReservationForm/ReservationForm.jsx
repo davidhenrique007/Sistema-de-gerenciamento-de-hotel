@@ -15,24 +15,24 @@ import styles from './ReservationForm.module.css';
 export const ReservationForm = ({
   // Dados do quarto selecionado
   selectedRoom = null,
-  
+
   // Use cases injetados
   calculatePriceUseCase,
-  
+
   // Callbacks
   onSubmit,
-  
+
   // Estados
   isSubmitting = false,
   priceBreakdown: externalPriceBreakdown,
-  
+
   // Hook de reserva (para integração)
   reservationHook,
-  
+
   // Configurações
   minNights = 1,
   maxNights = 30,
-  
+
   // Classes
   className = '',
   ...props
@@ -40,7 +40,7 @@ export const ReservationForm = ({
   // ========================================
   // ESTADOS
   // ========================================
-  
+
   const [checkIn, setCheckIn] = useState(null);
   const [checkOut, setCheckOut] = useState(null);
   const [guests, setGuests] = useState(1);
@@ -64,7 +64,7 @@ export const ReservationForm = ({
   // ========================================
   // EFEITOS DE MONTAGEM/DESMONTAGEM
   // ========================================
-  
+
   useEffect(() => {
     isMounted.current = true;
     return () => {
@@ -78,14 +78,14 @@ export const ReservationForm = ({
   // ========================================
   // INTEGRAÇÃO COM HOOK DE RESERVA
   // ========================================
-  
+
   useEffect(() => {
     if (reservationHook && isMounted.current) {
       // Sincronizar datas com o hook apenas se houver mudanças significativas
       if (reservationHook.checkIn !== checkIn) {
         reservationHook.setDates(checkIn, checkOut);
       }
-      
+
       // Sincronizar número de hóspedes
       if (reservationHook.guests !== guests) {
         reservationHook.setGuests(guests);
@@ -96,7 +96,7 @@ export const ReservationForm = ({
   // ========================================
   // VALIDAÇÕES COM useMemo
   // ========================================
-  
+
   const validationErrors = useMemo(() => {
     const errors = {};
 
@@ -116,7 +116,7 @@ export const ReservationForm = ({
     if (checkIn && checkOut) {
       const checkInDate = new Date(checkIn);
       const checkOutDate = new Date(checkOut);
-      
+
       if (checkOutDate <= checkInDate) {
         errors.checkOut = 'Check-out deve ser após o check-in';
       }
@@ -147,7 +147,7 @@ export const ReservationForm = ({
   // ========================================
   // CÁLCULO DE PREÇOS COM DEBOUNCE
   // ========================================
-  
+
   const calculatePrice = useCallback(async () => {
     // Limpar timeout anterior
     if (calculateTimeout.current) {
@@ -166,15 +166,15 @@ export const ReservationForm = ({
     }
 
     setIsCalculating(true);
-    
+
     try {
       let breakdown;
-      
+
       if (calculatePriceUseCase) {
         // Usar o use case injetado com debounce
         calculateTimeout.current = setTimeout(async () => {
           if (!isMounted.current) return;
-          
+
           try {
             breakdown = await calculatePriceUseCase.execute({
               roomId: selectedRoom.id,
@@ -183,14 +183,14 @@ export const ReservationForm = ({
               guestsCount: guests,
               serviceIds: reservationHook?.selectedServices || []
             });
-            
+
             if (isMounted.current) {
               setInternalPriceBreakdown(breakdown);
             }
           } catch (error) {
             console.error('Erro ao calcular preço:', error);
             if (isMounted.current) {
-              setFormErrors(prev => ({
+              setFormErrors((prev) => ({
                 ...prev,
                 calculate: 'Erro ao calcular preço. Tente novamente.'
               }));
@@ -205,13 +205,13 @@ export const ReservationForm = ({
         // Fallback para cálculo local (apenas para desenvolvimento)
         const roomPrice = selectedRoom.pricePerNight?.amount || selectedRoom.pricePerNight || 0;
         const roomTotal = roomPrice * nights;
-        
+
         breakdown = {
           roomId: selectedRoom.id,
           roomNumber: selectedRoom.number,
           nights,
           guestsCount: guests,
-          roomPrice: { 
+          roomPrice: {
             subtotal: roomTotal,
             currency: selectedRoom.pricePerNight?.currency || 'MZN'
           },
@@ -219,26 +219,35 @@ export const ReservationForm = ({
           taxes: { total: 0 },
           total: { amount: roomTotal }
         };
-        
+
         setInternalPriceBreakdown(breakdown);
         setIsCalculating(false);
       }
     } catch (error) {
       console.error('Erro ao calcular preço:', error);
       if (isMounted.current) {
-        setFormErrors(prev => ({
+        setFormErrors((prev) => ({
           ...prev,
           calculate: 'Erro ao calcular preço. Tente novamente.'
         }));
         setIsCalculating(false);
       }
     }
-  }, [selectedRoom, checkIn, checkOut, guests, nights, calculatePriceUseCase, reservationHook, validationErrors]);
+  }, [
+    selectedRoom,
+    checkIn,
+    checkOut,
+    guests,
+    nights,
+    calculatePriceUseCase,
+    reservationHook,
+    validationErrors
+  ]);
 
   // Efeito para recalcular quando dados mudarem
   useEffect(() => {
     calculatePrice();
-    
+
     return () => {
       if (calculateTimeout.current) {
         clearTimeout(calculateTimeout.current);
@@ -249,69 +258,75 @@ export const ReservationForm = ({
   // ========================================
   // HANDLERS
   // ========================================
-  
-  const handleDateChange = useCallback((date) => {
-    // O DatePicker agora retorna uma única data
-    // Precisamos gerenciar check-in e check-out separadamente
-    if (!checkIn) {
-      // Primeira seleção = check-in
-      setCheckIn(date);
-      setTouched(prev => ({ ...prev, checkIn: true }));
-    } else if (!checkOut && date > checkIn) {
-      // Segunda seleção = check-out (se for após check-in)
-      setCheckOut(date);
-      setNights(Math.ceil((date - checkIn) / (1000 * 60 * 60 * 24)));
-      setTouched(prev => ({ ...prev, checkOut: true }));
-    } else {
-      // Reiniciar seleção
-      setCheckIn(date);
-      setCheckOut(null);
-      setNights(0);
-      setTouched(prev => ({ ...prev, checkIn: true, checkOut: false }));
-    }
-  }, [checkIn, checkOut]);
+
+  const handleDateChange = useCallback(
+    (date) => {
+      // O DatePicker agora retorna uma única data
+      // Precisamos gerenciar check-in e check-out separadamente
+      if (!checkIn) {
+        // Primeira seleção = check-in
+        setCheckIn(date);
+        setTouched((prev) => ({ ...prev, checkIn: true }));
+      } else if (!checkOut && date > checkIn) {
+        // Segunda seleção = check-out (se for após check-in)
+        setCheckOut(date);
+        setNights(Math.ceil((date - checkIn) / (1000 * 60 * 60 * 24)));
+        setTouched((prev) => ({ ...prev, checkOut: true }));
+      } else {
+        // Reiniciar seleção
+        setCheckIn(date);
+        setCheckOut(null);
+        setNights(0);
+        setTouched((prev) => ({ ...prev, checkIn: true, checkOut: false }));
+      }
+    },
+    [checkIn, checkOut]
+  );
 
   const handleGuestsChange = useCallback((value) => {
     setGuests(value);
-    setTouched(prev => ({ ...prev, guests: true }));
+    setTouched((prev) => ({ ...prev, guests: true }));
   }, []);
 
-  const handleSubmit = useCallback(async (e) => {
-    e.preventDefault();
-    
-    // Marcar todos os campos como tocados
-    setTouched({
-      checkIn: true,
-      checkOut: true,
-      guests: true
-    });
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
 
-    // Validar antes de submeter
-    if (Object.keys(validationErrors).length > 0) {
-      return;
-    }
-
-    if (!selectedRoom || !checkIn || !checkOut || guests < 1) {
-      return;
-    }
-
-    if (onSubmit) {
-      await onSubmit({
-        roomId: selectedRoom?.id,
-        checkIn: checkIn.toISOString ? checkIn.toISOString() : checkIn,
-        checkOut: checkOut.toISOString ? checkOut.toISOString() : checkOut,
-        guests,
-        nights,
-        totalPrice: priceBreakdown?.total?.amount || 0,
-        priceBreakdown
+      // Marcar todos os campos como tocados
+      setTouched({
+        checkIn: true,
+        checkOut: true,
+        guests: true
       });
-    }
-  }, [selectedRoom, checkIn, checkOut, guests, nights, priceBreakdown, onSubmit, validationErrors]);
+
+      // Validar antes de submeter
+      if (Object.keys(validationErrors).length > 0) {
+        return;
+      }
+
+      if (!selectedRoom || !checkIn || !checkOut || guests < 1) {
+        return;
+      }
+
+      if (onSubmit) {
+        await onSubmit({
+          roomId: selectedRoom?.id,
+          checkIn: checkIn.toISOString ? checkIn.toISOString() : checkIn,
+          checkOut: checkOut.toISOString ? checkOut.toISOString() : checkOut,
+          guests,
+          nights,
+          totalPrice: priceBreakdown?.total?.amount || 0,
+          priceBreakdown
+        });
+      }
+    },
+    [selectedRoom, checkIn, checkOut, guests, nights, priceBreakdown, onSubmit, validationErrors]
+  );
 
   // ========================================
   // FUNÇÕES AUXILIARES
   // ========================================
-  
+
   const getMinDate = useCallback(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -327,28 +342,44 @@ export const ReservationForm = ({
   // ========================================
   // CLASSES CSS
   // ========================================
-  
-  const formClasses = [
-    styles.form,
-    !selectedRoom && styles.disabled,
-    className
-  ].filter(Boolean).join(' ');
 
-  // ========================================
+  const formClasses = [styles.form, !selectedRoom && styles.disabled, className]
+    .filter(Boolean)
+    .join(' ');
+
+  /// ========================================
   // RENDER
   // ========================================
-  
+
   const hasErrors = Object.keys(formErrors).length > 0;
-  const canSubmit = selectedRoom && 
-                    checkIn && 
-                    checkOut && 
-                    guests > 0 && 
-                    !hasErrors && 
-                    !isCalculating && 
-                    !isSubmitting;
+  const canSubmit =
+    selectedRoom &&
+    checkIn &&
+    checkOut &&
+    guests > 0 &&
+    !hasErrors &&
+    !isCalculating &&
+    !isSubmitting;
+
+  // ✅ LOG PARA DEBUG DO DATEPICKER
+  console.log('📅 [ReservationForm] DatePicker props:', {
+    value: checkIn || checkOut,
+    checkIn,
+    checkOut,
+    disabled: !selectedRoom || isSubmitting,
+    error:
+      touched.checkIn && formErrors.checkIn
+        ? formErrors.checkIn
+        : touched.checkOut && formErrors.checkOut
+          ? formErrors.checkOut
+          : '',
+    minDate: getMinDate(),
+    maxDate: getMaxDate(),
+    selectedRoom: !!selectedRoom
+  });
 
   return (
-    <form 
+    <form
       className={formClasses}
       onSubmit={handleSubmit}
       noValidate
@@ -362,30 +393,31 @@ export const ReservationForm = ({
         <DatePicker
           value={checkIn || checkOut}
           onChange={handleDateChange}
-          error={touched.checkIn && formErrors.checkIn ? formErrors.checkIn : 
-                 touched.checkOut && formErrors.checkOut ? formErrors.checkOut : ''}
+          error={
+            touched.checkIn && formErrors.checkIn
+              ? formErrors.checkIn
+              : touched.checkOut && formErrors.checkOut
+                ? formErrors.checkOut
+                : ''
+          }
           minDate={getMinDate()}
           maxDate={getMaxDate()}
           disabled={!selectedRoom || isSubmitting}
           label="Data de check-in / check-out"
           required
         />
-        
+
         {/* Instrução visual para seleção de datas */}
         {selectedRoom && !checkIn && (
-          <p className={styles.dateHint}>
-            Selecione a data de check-in
-          </p>
+          <p className={styles.dateHint}>Selecione a data de check-in</p>
         )}
-        {checkIn && !checkOut && (
-          <p className={styles.dateHint}>
-            Selecione a data de check-out
-          </p>
-        )}
+        {checkIn && !checkOut && <p className={styles.dateHint}>Selecione a data de check-out</p>}
         {checkIn && checkOut && (
           <p className={styles.dateRange}>
             {checkIn.toLocaleDateString('pt-BR')} → {checkOut.toLocaleDateString('pt-BR')}
-            <span className={styles.nightsBadge}>{nights} {nights === 1 ? 'noite' : 'noites'}</span>
+            <span className={styles.nightsBadge}>
+              {nights} {nights === 1 ? 'noite' : 'noites'}
+            </span>
           </p>
         )}
       </div>
@@ -407,11 +439,7 @@ export const ReservationForm = ({
       {/* Resumo de preços */}
       {selectedRoom && checkIn && checkOut && !hasErrors && (
         <div className={styles.formGroup}>
-          <PriceSummary
-            breakdown={priceBreakdown}
-            isLoading={isCalculating}
-            aria-live="polite"
-          />
+          <PriceSummary breakdown={priceBreakdown} isLoading={isCalculating} aria-live="polite" />
         </div>
       )}
 

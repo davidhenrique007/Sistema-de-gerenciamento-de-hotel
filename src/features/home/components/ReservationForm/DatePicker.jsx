@@ -90,6 +90,17 @@ const Calendar = ({
   };
 
   // ========================================
+  // FOCUS TRAP PARA ACESSIBILIDADE
+  // ========================================
+  
+  useEffect(() => {
+    if (calendarRef.current) {
+      const firstButton = calendarRef.current.querySelector('button');
+      firstButton?.focus();
+    }
+  }, []);
+
+  // ========================================
   // RENDERIZAÇÃO DO CALENDÁRIO
   // ========================================
   
@@ -134,6 +145,7 @@ const Calendar = ({
       id={id}
       role="dialog"
       aria-label="Calendário de seleção de data"
+      aria-modal="true"
     >
       {/* Cabeçalho do calendário */}
       <div className={styles.calendarHeader}>
@@ -227,29 +239,29 @@ export const DatePicker = ({
   }, []);
 
   // ========================================
-  // HANDLERS
+  // HANDLERS - CORRIGIDOS!
   // ========================================
   
-  const handleInputClick = useCallback(() => {
+  const handleInputClick = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (!disabled) {
+      console.log('🔵 [DatePicker] Abrindo calendário'); // Log para debug
       setIsOpen(true);
       setTouched(true);
     }
   }, [disabled]);
 
-  const handleDateSelect = useCallback((date) => {
-    setInternalValue(date);
-    onChange(date);
-    setIsOpen(false);
-  }, [onChange]);
-
-  const handleKeyDown = useCallback((e) => {
+  const handleInputKeyDown = useCallback((e) => {
     if (disabled) return;
 
     switch (e.key) {
       case 'Enter':
+      case ' ':
       case 'Space':
         e.preventDefault();
+        console.log('🔵 [DatePicker] Abrindo calendário via teclado');
         setIsOpen(true);
         setTouched(true);
         break;
@@ -262,9 +274,9 @@ export const DatePicker = ({
         break;
       case 'Tab':
         if (isOpen) {
-          // Se tab e calendário aberto, foco vai para o calendário
           e.preventDefault();
-          const firstButton = document.querySelector(`#${calendarId.current} button`);
+          const calendar = document.getElementById(calendarId.current);
+          const firstButton = calendar?.querySelector('button');
           firstButton?.focus();
         }
         break;
@@ -272,6 +284,15 @@ export const DatePicker = ({
         break;
     }
   }, [disabled, isOpen]);
+
+  const handleDateSelect = useCallback((date) => {
+    console.log('🔵 [DatePicker] Data selecionada:', date);
+    setInternalValue(date);
+    onChange(date);
+    setIsOpen(false);
+    // Retornar foco ao input após selecionar
+    setTimeout(() => inputRef.current?.focus(), 100);
+  }, [onChange]);
 
   // ========================================
   // FORMATAÇÃO DE DATA
@@ -312,7 +333,7 @@ export const DatePicker = ({
     <div 
       ref={containerRef}
       className={containerClasses}
-      onKeyDown={handleKeyDown}
+      {...props}
     >
       {/* Label */}
       {label && (
@@ -333,6 +354,7 @@ export const DatePicker = ({
           type="text"
           value={formatDisplayDate(internalValue)}
           onClick={handleInputClick}
+          onKeyDown={handleInputKeyDown}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
@@ -347,8 +369,12 @@ export const DatePicker = ({
           aria-label={label}
         />
         
-        {/* Ícone do calendário */}
-        <span className={styles.calendarIcon} aria-hidden="true">
+        {/* Ícone do calendário - TAMBÉM ABRE O CALENDÁRIO */}
+        <span 
+          className={styles.calendarIcon} 
+          aria-hidden="true"
+          onClick={handleInputClick}
+        >
           📅
         </span>
       </div>
