@@ -2,7 +2,7 @@
 // COMPONENT: RoomCard
 // ============================================
 // Responsabilidade: Card individual de quarto com galeria de imagens
-// VERSÃO CORRIGIDA - Com pricePerNightFormatted
+// VERSÃO COM LOGS DE DEBUG
 // ============================================
 
 import React, { useState, useCallback, memo } from 'react';
@@ -34,44 +34,35 @@ const amenityIcons = {
 const PLACEHOLDER_IMAGE = '/assets/images/placeholder-room.jpg';
 
 export const RoomCard = memo(({
-  // Dados do quarto
   id,
   number,
   type,
   typeLabel,
   capacity,
   pricePerNight,
-  pricePerNightFormatted,  // ← ADICIONADO!
+  pricePerNightFormatted,
   status: initialStatus,
   mainImage,
   amenities = [],
-  
-  // Callbacks e hooks
   onSelect,
   occupancyHook,
-  
-  // Estado de loading
   isLoading = false,
-  
-  // Modo de seleção
   selected = false,
-  
-  // Classes adicionais
   className = '',
   ...props
 }) => {
-  console.log('🎴 Renderizando RoomCard', { number, pricePerNightFormatted });
-  
-  // ========================================
-  // ESTADO LOCAL
-  // ========================================
+  // LOG CRÍTICO - mostra se onSelect existe
+  console.log('🎴 Renderizando RoomCard', { 
+    number, 
+    pricePerNightFormatted,
+    hasOnSelect: !!onSelect  // ← ISTO É FUNDAMENTAL!
+  });
   
   const [currentImage, setCurrentImage] = useState(mainImage || `/assets/images/rooms/${type}/main.jpg`);
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showThumbnails, setShowThumbnails] = useState(false);
 
-  // Lista de imagens do quarto (main + 3 adicionais)
   const roomImages = [
     mainImage || `/assets/images/rooms/${type}/main.jpg`,
     `/assets/images/rooms/${type}/1.jpg`,
@@ -79,16 +70,11 @@ export const RoomCard = memo(({
     `/assets/images/rooms/${type}/3.jpg`
   ];
 
-  // Obter status atualizado do hook de ocupação
   const currentStatus = occupancyHook?.getRoomStatus?.(id) || initialStatus;
   const isOccupied = currentStatus === RoomStatus.OCCUPIED;
   const isAvailable = currentStatus === RoomStatus.AVAILABLE;
   const isLoadingStatus = occupancyHook?.loadingMap?.get(id) || false;
 
-  // ========================================
-  // HANDLERS
-  // ========================================
-  
   const handleImageError = useCallback((e) => {
     setImageError(true);
     e.target.src = PLACEHOLDER_IMAGE;
@@ -100,8 +86,16 @@ export const RoomCard = memo(({
   }, []);
 
   const handleSelect = useCallback(() => {
-    if (isOccupied || selected || isLoading || isLoadingStatus) return;
+    console.log('🖱️ [RoomCard] Botão SELECIONAR clicado!', number);
+    console.log('🖱️ [RoomCard] onSelect existe?', !!onSelect);
+    
+    if (isOccupied || selected || isLoading || isLoadingStatus) {
+      console.log('🖱️ [RoomCard] Bloqueado por condição');
+      return;
+    }
+    
     if (onSelect) {
+      console.log('🖱️ [RoomCard] Chamando onSelect com:', { id, number });
       onSelect({
         id,
         number,
@@ -111,6 +105,8 @@ export const RoomCard = memo(({
         pricePerNight,
         status: currentStatus
       });
+    } else {
+      console.error('🖱️ [RoomCard] ERRO: onSelect é undefined!');
     }
   }, [onSelect, id, number, type, typeLabel, capacity, pricePerNight, currentStatus, isOccupied, selected, isLoading, isLoadingStatus]);
 
@@ -124,10 +120,6 @@ export const RoomCard = memo(({
     setShowThumbnails(false);
   }, []);
 
-  // ========================================
-  // CLASSES CSS
-  // ========================================
-  
   const cardClasses = [
     styles.card,
     !isAvailable && styles.unavailable,
@@ -137,15 +129,8 @@ export const RoomCard = memo(({
     className
   ].filter(Boolean).join(' ');
 
-  const statusLabel = isOccupied ? 'Quarto ocupado' : 'Quarto disponível';
-
-  // Separar props que não devem ir para o DOM
   const { available, isAvailable: _, occupancyError, ...validProps } = props;
 
-  // ========================================
-  // RENDER
-  // ========================================
-  
   return (
     <article
       className={cardClasses}
@@ -157,9 +142,7 @@ export const RoomCard = memo(({
       tabIndex={isAvailable ? 0 : -1}
       {...validProps}
     >
-      {/* Container de imagem com galeria */}
       <div className={styles.imageContainer}>
-        {/* Imagem principal */}
         <img
           src={currentImage}
           alt={`Quarto ${typeLabel} - ${number}`}
@@ -168,12 +151,10 @@ export const RoomCard = memo(({
           loading="lazy"
         />
         
-        {/* Badge de status */}
         <div className={styles.statusBadge}>
           <RoomStatusBadge status={currentStatus} size="small" />
         </div>
 
-        {/* Miniaturas (aparecem no hover) */}
         {showThumbnails && isAvailable && (
           <div className={styles.thumbnailStrip}>
             {roomImages.map((img, index) => (
@@ -190,9 +171,7 @@ export const RoomCard = memo(({
         )}
       </div>
 
-      {/* Conteúdo do card */}
       <div className={styles.content}>
-        {/* Cabeçalho com tipo e preço */}
         <div className={styles.header}>
           <div className={styles.roomInfo}>
             <span className={styles.roomType}>{typeLabel}</span>
@@ -206,7 +185,6 @@ export const RoomCard = memo(({
           </div>
         </div>
 
-        {/* Capacidade */}
         <div className={styles.capacityInfo}>
           <span className={styles.capacityIcon}>👥</span>
           <span className={styles.capacityText}>
@@ -214,7 +192,6 @@ export const RoomCard = memo(({
           </span>
         </div>
 
-        {/* Amenities em formato chips */}
         <div className={styles.amenities} id={`room-desc-${id}`}>
           {amenities.map((amenity, index) => (
             <div key={index} className={styles.amenity}>
@@ -226,7 +203,6 @@ export const RoomCard = memo(({
           ))}
         </div>
 
-        {/* Botão de ação */}
         <div className={styles.action}>
           <Button
             variant={isAvailable ? ButtonVariant.PRIMARY : ButtonVariant.SECONDARY}
@@ -241,7 +217,6 @@ export const RoomCard = memo(({
         </div>
       </div>
 
-      {/* Overlay de loading */}
       {(isLoading || isLoadingStatus) && (
         <div className={styles.loadingOverlay} aria-hidden="true">
           <div className={styles.loadingSpinner}></div>

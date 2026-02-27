@@ -203,14 +203,22 @@ export const HomePage = () => {
 
   const handleRoomSelect = useCallback(
     async (room) => {
-      // Verificar disponibilidade diretamente do status
+      console.log('🔥🔥🔥 [HomePage] handleRoomSelect RECEBEU!', room);
+      console.log('🔥 [HomePage] room recebido:', room.number);
+
       if (room.status !== 'AVAILABLE') {
         notification.warning('Este quarto não está disponível no momento');
         return;
       }
 
-      console.log('✅ Quarto selecionado:', room.number, 'Preço:', room.pricePerNightFormatted);
+      console.log('🔥 [HomePage] Chamando reservation.selectRoom...');
       reservation.selectRoom(room);
+
+      // Verificar se atualizou
+      setTimeout(() => {
+        console.log('🔥 [HomePage] reservation.room AGORA:', reservation.room);
+      }, 100);
+
       await loadRoomDetails(room.id);
     },
     [reservation, loadRoomDetails, notification]
@@ -380,9 +388,9 @@ export const HomePage = () => {
         pointerEvents: 'none' // ← ISSO FAZ O CLIQUE PASSAR ATRAVÉS DO PAINEL
       }}
     >
-      <button 
-        onClick={() => setShowDebug(false)} 
-        style={{ 
+      <button
+        onClick={() => setShowDebug(false)}
+        style={{
           float: 'right',
           pointerEvents: 'auto', // ← BOTÃO X AINDA FUNCIONA
           cursor: 'pointer',
@@ -471,7 +479,6 @@ export const HomePage = () => {
               </Button>
             </div>
           )}
-
 
           {/* Reservation Section */}
           <section id="reservation" className="reservation-section">
