@@ -1,121 +1,66 @@
-// ============================================
-// PAGE: CheckoutPage
-// ============================================
-// Responsabilidade: Página base de checkout
-// Arquitetura: Camada de apresentação, sem lógica de negócio
-// ============================================
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import './CheckoutPage.css';
 
-import React, { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Header } from '../../shared/components/layout/Header/Header.jsx';
-import { Footer } from '../../shared/components/layout/Footer/Footer.jsx';
-import { Container, ContainerSize } from '../../shared/components/layout/Container/Container.jsx';
-import { Button, ButtonVariant, ButtonSize } from '../../shared/components/ui/Button/Button.jsx';
-import { useNotification } from '../../shared/components/ui/Notification/Notification.jsx';
-import { PaymentSummary } from "../../features/payment/components/PaymentSummary.jsx";
-import styles from './CheckoutPage.module.css';
-
-export const CheckoutPage = () => {
-  const navigate = useNavigate();
+/**
+ * CheckoutPage - Página de finalização de reserva
+ * 
+ * Esta página será implementada no Sprint 2
+ * Por enquanto, apenas redireciona para Home se não houver dados
+ */
+const CheckoutPage = () => {
   const location = useLocation();
-  const notification = useNotification();
-  
-  // Recuperar dados da reserva da navegação (se disponíveis)
-  const reservationData = location.state?.reservation;
+  const navigate = useNavigate();
+  const reservationData = location.state;
 
-  useEffect(() => {
-    // Se não houver dados da reserva, redirecionar para home
+  // Redirecionar para home se não houver dados de reserva
+  React.useEffect(() => {
     if (!reservationData) {
-      notification.warning('Nenhuma reserva encontrada. Por favor, inicie uma nova reserva.');
       navigate('/', { replace: true });
     }
-  }, [reservationData, navigate, notification]);
-
-  const handleBackToHome = () => {
-    navigate('/');
-  };
-
-  const handleConfirmPayment = () => {
-    // Simulação de processamento de pagamento
-    notification.info('Processando pagamento...');
-    
-    setTimeout(() => {
-      notification.success('Pagamento processado com sucesso! (Modo de demonstração)');
-      // Em produção, redirecionaria para página de confirmação
-      setTimeout(() => {
-        navigate('/', { replace: true });
-      }, 2000);
-    }, 1500);
-  };
+  }, [reservationData, navigate]);
 
   if (!reservationData) {
-    return null; // Não renderiza nada enquanto redireciona
+    return null;
   }
 
   return (
-    <div className={styles.checkoutPage}>
-      <Header onNavigate={navigate} />
+    <div className="checkout-page">
+      <header className="checkout-page__header">
+        <div className="container">
+          <h1>Hotel Paradise</h1>
+          <button 
+            className="checkout-page__back-button"
+            onClick={() => navigate('/')}
+          >
+            ← Voltar
+          </button>
+        </div>
+      </header>
 
-      <main className={styles.main}>
-        <Container size={ContainerSize.SMALL}>
-          <div className={styles.checkoutContainer}>
-            <h1 className={styles.title}>Finalizar Pagamento</h1>
-            
-            <div className={styles.content}>
-              {/* Resumo da reserva */}
-              <section className={styles.summarySection}>
-                <h2 className={styles.sectionTitle}>Resumo da Reserva</h2>
-                <PaymentSummary
-                  room={reservationData.room}
-                  checkIn={reservationData.checkIn}
-                  checkOut={reservationData.checkOut}
-                  guests={reservationData.guests}
-                  nights={reservationData.nights}
-                  services={reservationData.services || []}
-                  roomPrice={reservationData.roomPrice || 0}
-                  servicesPrice={reservationData.servicesPrice || 0}
-                  taxes={reservationData.taxes || 0}
-                  total={reservationData.total || 0}
-                  showBreakdown={true}
-                />
-              </section>
+      <main className="checkout-page__main">
+        <div className="container">
+          <h2>Finalizar Reserva</h2>
+          
+          <div className="checkout-page__content">
+            <div className="checkout-page__reservation-summary">
+              <h3>Resumo da Reserva</h3>
+              <p>Em breve: detalhes da reserva</p>
+            </div>
 
-              {/* Informações de pagamento (placeholder) */}
-              <section className={styles.paymentSection}>
-                <h2 className={styles.sectionTitle}>Forma de Pagamento</h2>
-                <div className={styles.paymentPlaceholder}>
-                  <p className={styles.placeholderText}>
-                    Integração com gateway de pagamento será implementada aqui.
-                  </p>
-                  <p className={styles.placeholderNote}>
-                    Modo de demonstração - nenhum pagamento real será processado.
-                  </p>
-                </div>
-              </section>
-
-              {/* Ações */}
-              <div className={styles.actions}>
-                <Button
-                  variant={ButtonVariant.OUTLINE}
-                  size={ButtonSize.LARGE}
-                  onClick={handleBackToHome}
-                >
-                  Voltar para Home
-                </Button>
-                <Button
-                  variant={ButtonVariant.PRIMARY}
-                  size={ButtonSize.LARGE}
-                  onClick={handleConfirmPayment}
-                >
-                  Confirmar Pagamento
-                </Button>
-              </div>
+            <div className="checkout-page__payment-section">
+              <h3>Pagamento</h3>
+              <p>Em breve: formulário de pagamento</p>
             </div>
           </div>
-        </Container>
+        </div>
       </main>
 
-      <Footer onNavigate={navigate} />
+      <footer className="checkout-page__footer">
+        <div className="container">
+          <p>&copy; 2025 Hotel Paradise. Todos os direitos reservados.</p>
+        </div>
+      </footer>
     </div>
   );
 };

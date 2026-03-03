@@ -2,7 +2,7 @@
 // HOOK: useHomeReservation
 // ============================================
 // Responsabilidade: Gerenciar estado central da reserva na Home
-// VERSÃO CORRIGIDA - SEM VIOLAÇÃO DAS REGRAS DOS HOOKS
+// VERSÃO CORRIGIDA - COM ATUALIZAÇÃO CONFIÁVEL
 // ============================================
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
@@ -12,9 +12,9 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 // ============================================
 
 const TAX_CONFIG = {
-  serviceTax: 0.10, // 10% de taxa de serviço
-  cityTax: 0.05,    // 5% de taxa municipal
-  vat: 0.23         // 23% de IVA
+  serviceTax: 0.10,
+  cityTax: 0.05,
+  vat: 0.23
 };
 
 // ============================================
@@ -22,22 +22,17 @@ const TAX_CONFIG = {
 // ============================================
 
 export const useHomeReservation = ({
-  // Dependências injetadas (opcionais)
   calculatePriceUseCase,
   pricingService,
-  
-  // Configurações
   applyTaxes = true,
   maxGuestsPerRoom = 10,
-  
-  // Callbacks
   onReservationChange,
   onPriceCalculated
 } = {}) => {
   // ========================================
   // ESTADO PRIMÁRIO
   // ========================================
-  
+
   const [room, setRoom] = useState(null);
   const [checkIn, setCheckIn] = useState(null);
   const [checkOut, setCheckOut] = useState(null);
@@ -47,18 +42,15 @@ export const useHomeReservation = ({
   const [priceBreakdown, setPriceBreakdown] = useState(null);
 
   // ========================================
-  // ESTADO DERIVADO - CÁLCULOS
+  // ESTADO DERIVADO
   // ========================================
-  
+
   const nights = useMemo(() => {
     if (!checkIn || !checkOut) return 0;
-    
     const start = new Date(checkIn);
     const end = new Date(checkOut);
     const diffTime = Math.abs(end - start);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    return diffDays;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }, [checkIn, checkOut]);
 
   const canCalculate = useMemo(() => {
@@ -66,28 +58,19 @@ export const useHomeReservation = ({
   }, [room, checkIn, checkOut, guests, nights]);
 
   // ========================================
-  // FUNÇÕES DE ATUALIZAÇÃO
+  // FUNÇÕES DE ATUALIZAÇÃO - CORRIGIDAS
   // ========================================
-  
+
   const selectRoom = useCallback((selectedRoom) => {
+    console.log('📦 [useHomeReservation] selectRoom:', selectedRoom?.number);
     setRoom(selectedRoom);
-    setSelectedServices([]);
-    
-    if (onReservationChange) {
-      onReservationChange({
-        room: selectedRoom,
-        checkIn,
-        checkOut,
-        guests,
-        selectedServices: []
-      });
-    }
-  }, [checkIn, checkOut, guests, onReservationChange]);
+  }, []);
 
   const setDates = useCallback((newCheckIn, newCheckOut) => {
+    console.log('📅 [useHomeReservation] setDates:', { newCheckIn, newCheckOut });
     setCheckIn(newCheckIn);
     setCheckOut(newCheckOut);
-    
+
     if (onReservationChange) {
       onReservationChange({
         room,
@@ -100,18 +83,20 @@ export const useHomeReservation = ({
   }, [room, guests, selectedServices, onReservationChange]);
 
   const setGuestsCount = useCallback((newGuests) => {
+    console.log('👥 [useHomeReservation] setGuests:', newGuests);
+    
     if (room && newGuests > room.capacity) {
       console.warn(`Número de hóspedes excede a capacidade do quarto (${room.capacity})`);
       return;
     }
-    
+
     if (newGuests > maxGuestsPerRoom) {
       console.warn(`Número de hóspedes excede o limite máximo (${maxGuestsPerRoom})`);
       return;
     }
-    
+
     setGuests(newGuests);
-    
+
     if (onReservationChange) {
       onReservationChange({
         room,
@@ -124,12 +109,14 @@ export const useHomeReservation = ({
   }, [room, checkIn, checkOut, selectedServices, maxGuestsPerRoom, onReservationChange]);
 
   const toggleService = useCallback((serviceId) => {
+    console.log('🔧 [useHomeReservation] toggleService:', serviceId);
+    
     setSelectedServices(prev => {
       const isSelected = prev.includes(serviceId);
       const newSelection = isSelected
         ? prev.filter(id => id !== serviceId)
         : [...prev, serviceId];
-      
+
       if (onReservationChange) {
         onReservationChange({
           room,
@@ -139,19 +126,20 @@ export const useHomeReservation = ({
           selectedServices: newSelection
         });
       }
-      
+
       return newSelection;
     });
   }, [room, checkIn, checkOut, guests, onReservationChange]);
 
   const clearReservation = useCallback(() => {
+    console.log('🧹 [useHomeReservation] clearReservation');
     setRoom(null);
     setCheckIn(null);
     setCheckOut(null);
     setGuests(1);
     setSelectedServices([]);
     setPriceBreakdown(null);
-    
+
     if (onReservationChange) {
       onReservationChange({
         room: null,
@@ -166,15 +154,19 @@ export const useHomeReservation = ({
   // ========================================
   // CÁLCULO DE PREÇOS
   // ========================================
-  
+
   const calculatePrice = useCallback(async () => {
-    if (!canCalculate) return null;
-    
+    if (!canCalculate) {
+      console.log('💰 [useHomeReservation] Não pode calcular');
+      return null;
+    }
+
+    console.log('💰 [useHomeReservation] Calculando preço...');
     setIsCalculating(true);
-    
+
     try {
       let breakdown;
-      
+
       if (calculatePriceUseCase) {
         breakdown = await calculatePriceUseCase.execute({
           roomId: room.id,
@@ -194,7 +186,7 @@ export const useHomeReservation = ({
           total: subtotal * (TAX_CONFIG.serviceTax + TAX_CONFIG.cityTax + TAX_CONFIG.vat)
         } : { total: 0 };
         const total = subtotal + (taxes.total || 0);
-        
+
         breakdown = {
           roomId: room.id,
           roomNumber: room.number,
@@ -208,16 +200,17 @@ export const useHomeReservation = ({
       } else {
         throw new Error('Nenhum serviço de cálculo disponível');
       }
-      
+
+      console.log('💰 [useHomeReservation] Preço calculado:', breakdown);
       setPriceBreakdown(breakdown);
-      
+
       if (onPriceCalculated) {
         onPriceCalculated(breakdown);
       }
-      
+
       return breakdown;
     } catch (error) {
-      console.error('Erro ao calcular preço:', error);
+      console.error('💰 [useHomeReservation] Erro:', error);
       return null;
     } finally {
       setIsCalculating(false);
@@ -225,9 +218,9 @@ export const useHomeReservation = ({
   }, [room, checkIn, checkOut, guests, selectedServices, nights, canCalculate, calculatePriceUseCase, pricingService, applyTaxes, onPriceCalculated]);
 
   // ========================================
-  // EFEITO PARA CÁLCULO AUTOMÁTICO - CORRIGIDO!
+  // EFEITOS
   // ========================================
-  
+
   useEffect(() => {
     let isMounted = true;
 
@@ -246,10 +239,15 @@ export const useHomeReservation = ({
     };
   }, [canCalculate, calculatePrice]);
 
+  // Efeito para monitorar mudanças no room
+  useEffect(() => {
+    console.log('📊 [useHomeReservation] room ATUALIZADO:', room);
+  }, [room]);
+
   // ========================================
   // ESTADO CONSOLIDADO
   // ========================================
-  
+
   const reservationState = useMemo(() => ({
     room,
     checkIn,
@@ -271,7 +269,7 @@ export const useHomeReservation = ({
   // ========================================
   // RETORNO
   // ========================================
-  
+
   return {
     reservationState,
     room,

@@ -1,34 +1,59 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { DIContainerProvider } from './di/providers.jsx';
-import { NotificationProvider } from './shared/components/ui/Notification/Notification.jsx';
-import { HomeProvider } from './di/homeDependencies.jsx';
-import { HomePage } from './features/home/pages/HomePage.jsx';
-import { CheckoutPage } from './pages/checkout/CheckoutPage.jsx';
-import './shared/styles/global.css';
 
+// ============================================================================
+// PAGES (Lazy Loading)
+// ============================================================================
+
+const HomePage = React.lazy(() => import('@pages/Home/HomePage'));
+const CheckoutPage = React.lazy(() => import('@pages/Checkout/CheckoutPage'));
+
+// ============================================================================
+// LOADING FALLBACK
+// ============================================================================
+
+const LoadingFallback = () => (
+  <div style={{ 
+    display: 'flex', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    height: '100vh',
+    backgroundColor: 'var(--color-bg-primary)'
+  }}>
+    <div style={{ textAlign: 'center' }}>
+      <div className="spinner" style={{
+        width: '40px',
+        height: '40px',
+        border: '3px solid var(--color-neutral-200)',
+        borderTopColor: 'var(--color-primary-600)',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite',
+        margin: '0 auto var(--spacing-4)'
+      }} />
+      <p style={{ color: 'var(--color-text-secondary)' }}>Carregando Hotel Paradise...</p>
+    </div>
+  </div>
+);
+
+/**
+ * App - Componente raiz da aplicação
+ * 
+ * Estrutura corporativa:
+ * - Providers globais (serão adicionados conforme necessário)
+ * - Rotas principais
+ * - Lazy loading para performance
+ * - Suspense com fallback
+ */
 function App() {
   return (
-    <BrowserRouter
-      future={{
-        v7_startTransition: true,
-        v7_relativeSplatPath: true,
-      }}
-    >
-      <DIContainerProvider>
-        <NotificationProvider>
-          <HomeProvider>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              {/* Rotas futuras */}
-              <Route path="/quartos" element={<div>Página de Quartos (em construção)</div>} />
-              <Route path="/servicos" element={<div>Página de Serviços (em construção)</div>} />
-              <Route path="/contato" element={<div>Página de Contato (em construção)</div>} />
-            </Routes>
-          </HomeProvider>
-        </NotificationProvider>
-      </DIContainerProvider>
+    <BrowserRouter>
+      <React.Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="*" element={<HomePage />} />
+        </Routes>
+      </React.Suspense>
     </BrowserRouter>
   );
 }

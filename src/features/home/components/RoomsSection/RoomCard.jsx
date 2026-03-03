@@ -2,7 +2,7 @@
 // COMPONENT: RoomCard
 // ============================================
 // Responsabilidade: Card individual de quarto com galeria de imagens
-// VERSÃO CORRIGIDA - Com pricePerNightFormatted
+// VERSÃO CORRIGIDA - Com botão funcional e logs de debug
 // ============================================
 
 import React, { useState, useCallback, memo } from 'react';
@@ -41,7 +41,7 @@ export const RoomCard = memo(({
   typeLabel,
   capacity,
   pricePerNight,
-  pricePerNightFormatted,  // ← ADICIONADO!
+  pricePerNightFormatted,
   status: initialStatus,
   mainImage,
   amenities = [],
@@ -60,7 +60,7 @@ export const RoomCard = memo(({
   className = '',
   ...props
 }) => {
-  console.log('🎴 Renderizando RoomCard', { number, pricePerNightFormatted });
+  console.log('🎴 Renderizando RoomCard', { number, pricePerNightFormatted, hasOnSelect: !!onSelect });
   
   // ========================================
   // ESTADO LOCAL
@@ -70,6 +70,7 @@ export const RoomCard = memo(({
   const [imageError, setImageError] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showThumbnails, setShowThumbnails] = useState(false);
+  const [clickAttempts, setClickAttempts] = useState(0); // Para debug
 
   // Lista de imagens do quarto (main + 3 adicionais)
   const roomImages = [
@@ -99,9 +100,43 @@ export const RoomCard = memo(({
     setImageError(false);
   }, []);
 
+  // HANDLE SELECT CORRIGIDO COM LOGS
   const handleSelect = useCallback(() => {
-    if (isOccupied || selected || isLoading || isLoadingStatus) return;
+    console.log('🖱️ [RoomCard] handleSelect chamado para quarto', number);
+    console.log('🖱️ [RoomCard] Condições:', {
+      isOccupied,
+      selected,
+      isLoading,
+      isLoadingStatus,
+      isAvailable,
+      hasOnSelect: !!onSelect
+    });
+
+    // Verificar se pode selecionar
+    if (isOccupied) {
+      console.log('🖱️ [RoomCard] Bloqueado: quarto ocupado');
+      return;
+    }
+    if (selected) {
+      console.log('🖱️ [RoomCard] Bloqueado: já selecionado');
+      return;
+    }
+    if (isLoading || isLoadingStatus) {
+      console.log('🖱️ [RoomCard] Bloqueado: carregando');
+      return;
+    }
+
+    // Chamar onSelect se existir
     if (onSelect) {
+      console.log('🖱️ [RoomCard] Chamando onSelect com:', {
+        id,
+        number,
+        type,
+        typeLabel,
+        capacity,
+        status: currentStatus
+      });
+      
       onSelect({
         id,
         number,
@@ -111,8 +146,10 @@ export const RoomCard = memo(({
         pricePerNight,
         status: currentStatus
       });
+    } else {
+      console.error('🖱️ [RoomCard] ERRO: onSelect não está definido!');
     }
-  }, [onSelect, id, number, type, typeLabel, capacity, pricePerNight, currentStatus, isOccupied, selected, isLoading, isLoadingStatus]);
+  }, [onSelect, id, number, type, typeLabel, capacity, pricePerNight, currentStatus, isOccupied, selected, isLoading, isLoadingStatus, isAvailable]);
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
@@ -155,6 +192,7 @@ export const RoomCard = memo(({
       aria-describedby={`room-desc-${id}`}
       aria-disabled={!isAvailable}
       tabIndex={isAvailable ? 0 : -1}
+      onClick={() => console.log('👆 [RoomCard] Card clicado (não o botão)', number)}
       {...validProps}
     >
       {/* Container de imagem com galeria */}
@@ -226,7 +264,7 @@ export const RoomCard = memo(({
           ))}
         </div>
 
-        {/* Botão de ação */}
+        {/* Botão de ação - CORRIGIDO */}
         <div className={styles.action}>
           <Button
             variant={isAvailable ? ButtonVariant.PRIMARY : ButtonVariant.SECONDARY}
@@ -235,8 +273,9 @@ export const RoomCard = memo(({
             onClick={handleSelect}
             disabled={!isAvailable || isLoading || isLoadingStatus}
             loading={isLoading || isLoadingStatus}
+            data-testid={`select-room-${number}`}
           >
-            {isAvailable ? 'Selecionar Quarto' : 'Indisponível'}
+            {isAvailable ? 'SELECIONAR QUARTO' : 'INDISPONÍVEL'}
           </Button>
         </div>
       </div>
