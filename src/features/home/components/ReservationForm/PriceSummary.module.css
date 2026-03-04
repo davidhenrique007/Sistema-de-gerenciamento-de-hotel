@@ -1,0 +1,228 @@
+/* ============================================================================
+   CONTAINER PRINCIPAL
+   =========================================================================== */
+
+.container {
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-5);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-light);
+  width: 100%;
+}
+
+/* ============================================================================
+   TÍTULO
+   =========================================================================== */
+
+.title {
+  margin: 0 0 var(--spacing-4);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  border-bottom: 1px solid var(--color-border-light);
+  padding-bottom: var(--spacing-3);
+}
+
+/* ============================================================================
+   BREAKDOWN
+   =========================================================================== */
+
+.breakdown {
+  margin-bottom: var(--spacing-4);
+}
+
+.breakdownItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--spacing-2) 0;
+  border-bottom: 1px dashed var(--color-border-light);
+}
+
+.breakdownItem:last-child {
+  border-bottom: none;
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.itemLabel {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.itemDetails {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+}
+
+.itemAmount {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+/* ============================================================================
+   SUBTOTAL
+   =========================================================================== */
+
+.subtotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-3) 0;
+  border-top: 2px solid var(--color-border-medium);
+  margin-top: var(--spacing-2);
+}
+
+.subtotalLabel {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.subtotalAmount {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+/* ============================================================================
+   TAXAS
+   =========================================================================== */
+
+.taxes {
+  margin: var(--spacing-4) 0;
+  padding: var(--spacing-3);
+  background-color: var(--color-neutral-50);
+  border-radius: var(--radius-md);
+}
+
+.taxesTitle {
+  margin: 0 0 var(--spacing-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.taxItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-1) 0;
+  font-size: var(--font-size-sm);
+}
+
+.taxLabel {
+  color: var(--color-text-tertiary);
+}
+
+.taxAmount {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ============================================================================
+   TOTAL
+   =========================================================================== */
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-4) 0 var(--spacing-2);
+  border-top: 2px solid var(--color-primary-600);
+  margin-top: var(--spacing-2);
+}
+
+.totalLabel {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.totalAmount {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-600);
+}
+
+/* ============================================================================
+   NOTA
+   =========================================================================== */
+
+.note {
+  margin: var(--spacing-2) 0 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+  text-align: right;
+}
+
+/* ============================================================================
+   ESTADOS
+   =========================================================================== */
+
+.emptyMessage {
+  text-align: center;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-md);
+  padding: var(--spacing-4);
+  margin: 0;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-6);
+  color: var(--color-text-secondary);
+}
+
+.loadingSpinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-neutral-200);
+  border-top-color: var(--color-primary-600);
+  border-radius: var(--radius-full);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================================
+   RESPONSIVIDADE
+   =========================================================================== */
+
+@media (max-width: var(--breakpoint-sm)) {
+  .container {
+    padding: var(--spacing-4);
+  }
+
+  .title {
+    font-size: var(--font-size-md);
+  }
+
+  .totalLabel {
+    font-size: var(--font-size-md);
+  }
+
+  .totalAmount {
+    font-size: var(--font-size-lg);
+  }
+
+  .itemLabel,
+  .itemAmount {
+    font-size: var(--font-size-sm);
+  }
+}

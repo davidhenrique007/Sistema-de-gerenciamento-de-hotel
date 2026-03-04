@@ -99,3 +99,78 @@
   color: var(--color-text-tertiary) !important;
   font-style: italic;
 }
+/* ============================================================================
+   LAYOUT DE RESERVA
+   =========================================================================== */
+
+.reservation-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-6);
+  margin-top: var(--spacing-6);
+}
+
+@media (min-width: var(--breakpoint-lg)) {
+  .reservation-layout {
+    grid-template-columns: 1fr 300px;
+    align-items: start;
+  }
+}
+
+.reservation-form-wrapper {
+  width: 100%;
+}
+
+/* ============================================================================
+   INFORMAÇÃO DO QUARTO SELECIONADO
+   =========================================================================== */
+
+.selected-room-info {
+  background-color: var(--color-primary-50);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-5);
+  border: 1px solid var(--color-primary-200);
+}
+
+.selected-room-info h3 {
+  margin: 0 0 var(--spacing-4);
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.selected-room-card {
+  background-color: white;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.room-number {
+  margin: 0 0 var(--spacing-1);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.room-type {
+  margin: 0 0 var(--spacing-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-transform: capitalize;
+}
+
+.room-capacity {
+  margin: 0 0 var(--spacing-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.room-price {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-600);
+  border-top: 1px solid var(--color-border-light);
+  padding-top: var(--spacing-3);
+}

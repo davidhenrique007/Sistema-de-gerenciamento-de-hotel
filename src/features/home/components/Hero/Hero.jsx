@@ -1,12 +1,11 @@
-import React from 'react';
+import React, { memo } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-scroll';
 import Button from '../../../../shared/components/ui/Button';
 import HeroBackground from './HeroBackground';
 import styles from './Hero.module.css';
 
 /**
- * Hero Component - Banner principal da home
+ * Hero Component - Banner principal da HomePage
  * 
  * @component
  * @example
@@ -14,35 +13,30 @@ import styles from './Hero.module.css';
  *   title="Hotel Paradise"
  *   subtitle="O paraíso perfeito para suas férias"
  *   ctaText="Reservar Agora"
- *   ctaLink="reservation"
+ *   onCtaClick={scrollToForm}
  * />
  */
 const Hero = ({
   title = 'Hotel Paradise',
   subtitle = 'O paraíso perfeito para suas férias dos sonhos',
   ctaText = 'Reservar Agora',
-  ctaLink = 'reservation',
   backgroundImage = '/assets/images/hero-bg.jpg',
-  className = '',
+  overlay = true,
+  parallax = false,
   onCtaClick,
+  className = '',
 }) => {
-  // ==========================================================================
-  // HANDLERS
-  // ==========================================================================
-
-  const handleCtaClick = () => {
-    if (onCtaClick) {
-      onCtaClick();
-    }
-  };
-
   // ==========================================================================
   // RENDER
   // ==========================================================================
 
   return (
     <section className={`${styles.hero} ${className}`}>
-      <HeroBackground image={backgroundImage} overlay={true} />
+      <HeroBackground
+        image={backgroundImage}
+        overlay={overlay}
+        parallax={parallax}
+      />
       
       <div className={styles.container}>
         <div className={styles.content}>
@@ -50,23 +44,22 @@ const Hero = ({
           <p className={styles.subtitle}>{subtitle}</p>
           
           <div className={styles.cta}>
-            <Link
-              to={ctaLink}
-              spy={true}
-              smooth={true}
-              offset={-70}
-              duration={500}
-              onClick={handleCtaClick}
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={onCtaClick}
+              aria-label="Rolar para o formulário de reserva"
             >
-              <Button
-                variant="primary"
-                size="lg"
-              >
-                {ctaText}
-              </Button>
-            </Link>
+              {ctaText}
+            </Button>
           </div>
         </div>
+      </div>
+
+      {/* Indicador de scroll */}
+      <div className={styles.scrollIndicator} aria-hidden="true">
+        <span className={styles.scrollText}>Scroll</span>
+        <div className={styles.scrollArrow} />
       </div>
     </section>
   );
@@ -79,24 +72,27 @@ Hero.propTypes = {
   subtitle: PropTypes.string,
   /** Texto do botão CTA */
   ctaText: PropTypes.string,
-  /** ID da seção para scroll */
-  ctaLink: PropTypes.string,
   /** URL da imagem de fundo */
   backgroundImage: PropTypes.string,
-  /** Classes CSS adicionais */
-  className: PropTypes.string,
+  /** Mostrar overlay escuro */
+  overlay: PropTypes.bool,
+  /** Efeito parallax */
+  parallax: PropTypes.bool,
   /** Função chamada ao clicar no CTA */
   onCtaClick: PropTypes.func,
+  /** Classes CSS adicionais */
+  className: PropTypes.string,
 };
 
 Hero.defaultProps = {
   title: 'Hotel Paradise',
   subtitle: 'O paraíso perfeito para suas férias dos sonhos',
   ctaText: 'Reservar Agora',
-  ctaLink: 'reservation',
   backgroundImage: '/assets/images/hero-bg.jpg',
-  className: '',
+  overlay: true,
+  parallax: false,
   onCtaClick: undefined,
+  className: '',
 };
 
-export default React.memo(Hero);
+export default memo(Hero);

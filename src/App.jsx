@@ -5,20 +5,21 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 // PROVIDERS GLOBAIS
 // ============================================================================
 
-import { NotificationProvider } from './shared/components/Notification';
+import { NotificationProvider } from './shared/components/ui/Notification';
 
 // ============================================================================
 // COMPONENTES GLOBAIS
 // ============================================================================
 
-import Notification from './shared/components/Notification';
+import Notification from './shared/components/ui/Notification';
+import Spinner from './shared/components/ui/Spinner';
 
 // ============================================================================
-// PAGES (Lazy Loading)
+// PAGES (LAZY LOADING)
 // ============================================================================
 
-const HomePage = React.lazy(() => import('./pages/Home/HomePage'));
-const CheckoutPage = React.lazy(() => import('./pages/Checkout/CheckoutPage'));
+const HomePage = React.lazy(() => import('./features/home/pages/HomePage'));
+const CheckoutPage = React.lazy(() => import('./features/home/pages/CheckoutPage'));
 
 // ============================================================================
 // LOADING FALLBACK
@@ -33,26 +34,32 @@ const LoadingFallback = () => (
     backgroundColor: 'var(--color-bg-primary)'
   }}>
     <div style={{ textAlign: 'center' }}>
-      <div className="spinner" style={{
-        width: '40px',
-        height: '40px',
-        border: '3px solid var(--color-neutral-200)',
-        borderTopColor: 'var(--color-primary-600)',
-        borderRadius: '50%',
-        animation: 'spin 1s linear infinite',
-        margin: '0 auto var(--spacing-4)'
-      }} />
-      <p style={{ color: 'var(--color-text-secondary)' }}>Carregando Hotel Paradise...</p>
+      <Spinner size="lg" />
+      <p style={{ 
+        marginTop: 'var(--spacing-4)',
+        color: 'var(--color-text-secondary)',
+        fontSize: 'var(--font-size-lg)'
+      }}>
+        Carregando Hotel Paradise...
+      </p>
     </div>
   </div>
 );
 
 /**
- * App - Componente raiz com providers globais
+ * App - Componente raiz com todos os providers
+ * 
+ * Configuração final para produção:
+ * - NotificationProvider para feedback global
+ * - React Router com lazy loading
+ * - Suspense com fallback profissional
  */
 function App() {
   return (
-    <NotificationProvider maxStack={5} position="top-right">
+    <NotificationProvider 
+      maxStack={5} 
+      position="top-right"
+    >
       <BrowserRouter>
         <React.Suspense fallback={<LoadingFallback />}>
           <Routes>
@@ -62,6 +69,8 @@ function App() {
           </Routes>
         </React.Suspense>
       </BrowserRouter>
+      
+      {/* Componente global de notificações */}
       <Notification />
     </NotificationProvider>
   );

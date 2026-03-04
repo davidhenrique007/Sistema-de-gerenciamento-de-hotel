@@ -1,184 +1,309 @@
 /**
- * Utilitários de manipulação e formatação de datas
+ * ============================================================================
+ * SHARED UTILS - DATE UTILITIES
+ * ============================================================================
+ * 
+ * Utilitários de data compartilhados em toda aplicação
+ * Inclui formatação de moeda em Metical (MZN)
+ * 
  * @module dateUtils
  */
 
-import { ValidationError } from './errorUtils.js';
+// ============================================================================
+// CONSTANTES DE MOEDA
+// ============================================================================
 
-/**
- * Formatos de data suportados
- */
-export const DateFormat = {
-  DD_MM_YYYY: 'dd/MM/yyyy',
-  YYYY_MM_DD: 'yyyy-MM-dd',
-  MM_DD_YYYY: 'MM/dd/yyyy',
-  DD_MM_YYYY_HH_MM: 'dd/MM/yyyy HH:mm',
-  YYYY_MM_DD_HH_MM: 'yyyy-MM-dd HH:mm',
-  HH_MM: 'HH:mm'
+export const CURRENCY = {
+  MZN: 'MZN',
+  SYMBOL: 'MT',
+  LOCALE: 'pt-MZ', // Moçambique
 };
 
 /**
- * Valida e converte entrada para objeto Date
- * @param {string|Date} date - Data a ser validada
- * @returns {Date} Objeto Date válido
- * @throws {ValidationError} Quando a data é inválida
+ * Formata um valor para Metical (MZN)
+ * 
+ * @param {number} amount - Valor a ser formatado
+ * @param {Object} options - Opções de formatação
+ * @returns {string} Valor formatado (ex: "3.500 MT")
+ * 
+ * @example
+ * formatCurrency(3500) // "3.500 MT"
+ * formatCurrency(1250.50) // "1.250,50 MT"
  */
-const parseDate = (date) => {
-  if (date instanceof Date && !isNaN(date)) {
-    return new Date(date);
-  }
+export const formatCurrency = (amount, options = {}) => {
+  if (amount === null || amount === undefined) return '';
+  
+  const {
+    minimumFractionDigits = 0,
+    maximumFractionDigits = 0,
+    showSymbol = true,
+  } = options;
 
-  if (typeof date === 'string') {
-    const parsed = new Date(date);
-    if (!isNaN(parsed)) {
-      return parsed;
-    }
-  }
+  try {
+    const formatter = new Intl.NumberFormat(CURRENCY.LOCALE, {
+      style: 'decimal',
+      minimumFractionDigits,
+      maximumFractionDigits,
+    });
 
-  throw new ValidationError('Data inválida', {
-    field: 'date',
-    receivedValue: date
-  });
+    const formattedNumber = formatter.format(amount);
+    
+    return showSymbol 
+      ? `${formattedNumber} ${CURRENCY.SYMBOL}`
+      : formattedNumber;
+  } catch (error) {
+    // Fallback se o locale não estiver disponível
+    const formatted = amount.toLocaleString('pt-BR', {
+      minimumFractionDigits,
+      maximumFractionDigits,
+    });
+    
+    return showSymbol
+      ? `${formatted} ${CURRENCY.SYMBOL}`
+      : formatted;
+  }
 };
 
 /**
- * Formata data de acordo com o formato especificado
- * @param {Date|string} date - Data a ser formatada
- * @param {string} format - Formato desejado (use DateFormat)
+ * Formata um valor com formato de moeda completo
+ * 
+ * @param {number} amount - Valor a ser formatado
+ * @returns {string} Valor formatado com código MZN
+ * 
+ * @example
+ * formatCurrencyFull(3500) // "3.500,00 MZN"
+ */
+export const formatCurrencyFull = (amount) => {
+  return formatCurrency(amount, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    showSymbol: false,
+  }) + ` ${CURRENCY.MZN}`;
+};
+
+/**
+ * Formata um valor sem símbolo (apenas número)
+ * 
+ * @param {number} amount - Valor a ser formatado
+ * @returns {string} Número formatado
+ */
+export const formatCurrencyNumber = (amount) => {
+  return formatCurrency(amount, { showSymbol: false });
+};
+
+// ============================================================================
+// UTILITÁRIOS DE DATA
+// ============================================================================
+
+/**
+ * Formata uma data no padrão brasileiro (dd/mm/aaaa)
+ * 
+ * @param {Date} date - Data a ser formatada
  * @returns {string} Data formatada
- * @throws {ValidationError} Quando a data é inválida
+ * 
+ * @example
+ * formatDate(new Date()) // "04/03/2026"
  */
-export const formatDate = (date, format = DateFormat.DD_MM_YYYY) => {
-  try {
-    const dateObj = parseDate(date);
-
-    const pad = (num) => String(num).padStart(2, '0');
-
-    const replacements = {
-      'dd': pad(dateObj.getDate()),
-      'MM': pad(dateObj.getMonth() + 1),
-      'yyyy': dateObj.getFullYear(),
-      'HH': pad(dateObj.getHours()),
-      'mm': pad(dateObj.getMinutes()),
-      'ss': pad(dateObj.getSeconds())
-    };
-
-    return format.replace(/dd|MM|yyyy|HH|mm|ss/g, (match) => replacements[match]);
-  } catch (error) {
-    throw new ValidationError('Erro ao formatar data', {
-      format,
-      originalError: error.message
-    });
-  }
+export const formatDate = (date) => {
+  if (!date) return '';
+  
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(date);
 };
 
 /**
- * Calcula diferença em dias entre duas datas
- * @param {Date|string} startDate - Data inicial
- * @param {Date|string} endDate - Data final
- * @param {boolean} absolute - Retornar valor absoluto
- * @returns {number} Diferença em dias
- * @throws {ValidationError} Quando as datas são inválidas
+ * Formata uma data por extenso
+ * 
+ * @param {Date} date - Data a ser formatada
+ * @returns {string} Data por extenso
+ * 
+ * @example
+ * formatDateLong(new Date()) // "4 de março de 2026"
  */
-export const daysDifference = (startDate, endDate, absolute = true) => {
-  try {
-    const start = parseDate(startDate);
-    const end = parseDate(endDate);
+export const formatDateLong = (date) => {
+  if (!date) return '';
+  
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(date);
+};
 
-    // Resetar horas para comparar apenas datas
-    start.setHours(0, 0, 0, 0);
-    end.setHours(0, 0, 0, 0);
+/**
+ * Formata uma data para o formato ISO (aaaa-mm-dd)
+ * 
+ * @param {Date} date - Data a ser formatada
+ * @returns {string} Data no formato ISO
+ */
+export const formatDateISO = (date) => {
+  if (!date) return '';
+  
+  return date.toISOString().split('T')[0];
+};
 
-    const diffTime = end - start;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+/**
+ * Obtém a data de hoje com horário zerado
+ * 
+ * @returns {Date} Data de hoje
+ */
+export const getToday = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+};
 
-    return absolute ? Math.abs(diffDays) : diffDays;
-  } catch (error) {
-    throw new ValidationError('Erro ao calcular diferença de dias', {
-      startDate,
-      endDate,
-      originalError: error.message
-    });
-  }
+/**
+ * Verifica se uma data é anterior a hoje
+ * 
+ * @param {Date} date - Data a ser verificada
+ * @returns {boolean} True se for anterior
+ */
+export const isPastDate = (date) => {
+  if (!date) return false;
+  
+  const today = getToday();
+  return date < today;
+};
+
+/**
+ * Verifica se a data de check-out é válida (após check-in)
+ * 
+ * @param {Date} checkIn - Data de check-in
+ * @param {Date} checkOut - Data de check-out
+ * @returns {boolean} True se for válida
+ */
+export const isValidDateRange = (checkIn, checkOut) => {
+  if (!checkIn || !checkOut) return false;
+  
+  return checkOut > checkIn;
+};
+
+/**
+ * Calcula o número de noites entre duas datas
+ * 
+ * @param {Date} checkIn - Data de check-in
+ * @param {Date} checkOut - Data de check-out
+ * @returns {number} Número de noites
+ */
+export const calculateNights = (checkIn, checkOut) => {
+  if (!checkIn || !checkOut) return 0;
+  
+  const diffTime = Math.abs(checkOut - checkIn);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  return diffDays;
 };
 
 /**
  * Adiciona dias a uma data
- * @param {Date|string} date - Data base
+ * 
+ * @param {Date} date - Data base
  * @param {number} days - Número de dias a adicionar
  * @returns {Date} Nova data
- * @throws {ValidationError} Quando a data é inválida
  */
 export const addDays = (date, days) => {
-  try {
-    const dateObj = parseDate(date);
-    const result = new Date(dateObj);
-    result.setDate(result.getDate() + days);
-    return result;
-  } catch (error) {
-    throw new ValidationError('Erro ao adicionar dias', {
-      originalDate: date,
-      daysToAdd: days,
-      originalError: error.message
-    });
-  }
+  if (!date) return null;
+  
+  const newDate = new Date(date);
+  newDate.setDate(newDate.getDate() + days);
+  return newDate;
 };
 
 /**
- * Verifica se uma data está entre duas outras
- * @param {Date|string} date - Data a verificar
- * @param {Date|string} startDate - Data inicial
- * @param {Date|string} endDate - Data final
- * @param {boolean} inclusive - Incluir os extremos
- * @returns {boolean} true se está entre
+ * Verifica se uma data está dentro de um intervalo
+ * 
+ * @param {Date} date - Data a ser verificada
+ * @param {Date} startDate - Início do intervalo
+ * @param {Date} endDate - Fim do intervalo
+ * @returns {boolean} True se estiver no intervalo
  */
-export const isDateBetween = (date, startDate, endDate, inclusive = true) => {
-  try {
-    const dateObj = parseDate(date);
-    const start = parseDate(startDate);
-    const end = parseDate(endDate);
+export const isDateInRange = (date, startDate, endDate) => {
+  if (!date || !startDate || !endDate) return false;
+  
+  return date >= startDate && date <= endDate;
+};
 
-    if (inclusive) {
-      return dateObj >= start && dateObj <= end;
+/**
+ * Gera array de datas entre duas datas
+ * 
+ * @param {Date} startDate - Data inicial
+ * @param {Date} endDate - Data final
+ * @returns {Date[]} Array de datas
+ */
+export const getDatesInRange = (startDate, endDate) => {
+  if (!startDate || !endDate) return [];
+  
+  const dates = [];
+  const currentDate = new Date(startDate);
+  
+  while (currentDate <= endDate) {
+    dates.push(new Date(currentDate));
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  
+  return dates;
+};
+
+/**
+ * Verifica se uma data está disponível (não bloqueada)
+ * 
+ * @param {Date} date - Data a ser verificada
+ * @param {Date[]} blockedDates - Array de datas bloqueadas
+ * @returns {boolean} True se disponível
+ */
+export const isDateAvailable = (date, blockedDates = []) => {
+  if (!date) return false;
+  
+  return !blockedDates.some(
+    (blockedDate) => blockedDate.toDateString() === date.toDateString()
+  );
+};
+
+/**
+ * Agrupa datas por mês/ano
+ * 
+ * @param {Date[]} dates - Array de datas
+ * @returns {Object} Datas agrupadas
+ */
+export const groupDatesByMonth = (dates) => {
+  return dates.reduce((acc, date) => {
+    const key = `${date.getMonth()}-${date.getFullYear()}`;
+    
+    if (!acc[key]) {
+      acc[key] = [];
     }
-    return dateObj > start && dateObj < end;
-  } catch {
-    return false;
-  }
+    
+    acc[key].push(date);
+    return acc;
+  }, {});
 };
 
-/**
- * Retorna o primeiro dia do mês
- * @param {Date|string} date - Data base
- * @returns {Date} Primeiro dia do mês
- */
-export const getFirstDayOfMonth = (date) => {
-  const dateObj = parseDate(date);
-  return new Date(dateObj.getFullYear(), dateObj.getMonth(), 1);
-};
+// ============================================================================
+// EXPORTS
+// ============================================================================
 
-/**
- * Retorna o último dia do mês
- * @param {Date|string} date - Data base
- * @returns {Date} Último dia do mês
- */
-export const getLastDayOfMonth = (date) => {
-  const dateObj = parseDate(date);
-  return new Date(dateObj.getFullYear(), dateObj.getMonth() + 1, 0);
-};
-
-/**
- * Verifica se uma data é válida
- * @param {*} date - Valor a verificar
- * @returns {boolean} true se é uma data válida
- */
-export const isValidDate = (date) => {
-  if (date instanceof Date) {
-    return !isNaN(date);
-  }
-  if (typeof date === 'string') {
-    const parsed = new Date(date);
-    return !isNaN(parsed);
-  }
-  return false;
+export default {
+  // Moeda
+  CURRENCY,
+  formatCurrency,
+  formatCurrencyFull,
+  formatCurrencyNumber,
+  
+  // Data
+  formatDate,
+  formatDateLong,
+  formatDateISO,
+  getToday,
+  isPastDate,
+  isValidDateRange,
+  calculateNights,
+  addDays,
+  isDateInRange,
+  getDatesInRange,
+  isDateAvailable,
+  groupDatesByMonth,
 };

@@ -1,15 +1,16 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Spinner from '../shared/components/ui/Spinner';
 
 // ============================================================================
-// Lazy Loading das Páginas
+// LAZY LOADING DAS PÁGINAS
 // ============================================================================
 
-const HomePage = React.lazy(() => import('@pages/Home/HomePage'));
-const CheckoutPage = React.lazy(() => import('@pages/Checkout/CheckoutPage'));
+const HomePage = React.lazy(() => import('../features/home/pages/HomePage'));
+const CheckoutPage = React.lazy(() => import('../features/home/pages/CheckoutPage'));
 
 // ============================================================================
-// Loading Fallback
+// COMPONENTE DE FALLBACK PROFISSIONAL
 // ============================================================================
 
 const LoadingFallback = () => (
@@ -17,45 +18,41 @@ const LoadingFallback = () => (
     display: 'flex', 
     justifyContent: 'center', 
     alignItems: 'center', 
-    height: '100vh' 
+    height: '100vh',
+    backgroundColor: 'var(--color-bg-primary)'
   }}>
-    Carregando...
+    <Spinner size="lg" />
   </div>
 );
 
 // ============================================================================
-// Configuração das Rotas
+// CONFIGURAÇÃO DAS ROTAS
 // ============================================================================
+
+const withSuspense = (Component) => (
+  <React.Suspense fallback={<LoadingFallback />}>
+    <Component />
+  </React.Suspense>
+);
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: (
-      <React.Suspense fallback={<LoadingFallback />}>
-        <HomePage />
-      </React.Suspense>
-    ),
+    element: withSuspense(HomePage),
+    errorElement: <div>Erro ao carregar página</div>,
   },
   {
     path: '/checkout',
-    element: (
-      <React.Suspense fallback={<LoadingFallback />}>
-        <CheckoutPage />
-      </React.Suspense>
-    ),
+    element: withSuspense(CheckoutPage),
   },
   {
     path: '*',
-    element: (
-      <React.Suspense fallback={<LoadingFallback />}>
-        <HomePage />
-      </React.Suspense>
-    ),
+    element: withSuspense(HomePage),
   },
 ]);
 
 // ============================================================================
-// Provider das Rotas
+// PROVIDER DAS ROTAS
 // ============================================================================
 
 export const AppRouter = () => <RouterProvider router={router} />;

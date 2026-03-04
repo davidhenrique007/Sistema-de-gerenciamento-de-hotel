@@ -1,363 +1,132 @@
-/* ============================================
-   RESERVATION FORM MODULE CSS
-   ============================================
-   Estilos para o formulário de reserva
-   ============================================ */
+/* ============================================================================
+   CONTAINER PRINCIPAL
+   =========================================================================== */
 
-@import '../../../../shared/styles/variables.css';
-
-/* ============================================
-   FORM PRINCIPAL
-   ============================================ */
-
-.form {
-  background-color: var(--color-background-light);
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-xl);
+.container {
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-6);
   box-shadow: var(--shadow-lg);
-  max-width: 400px;
   width: 100%;
+  max-width: 500px;
   margin: 0 auto;
-  transition: all var(--transition-normal);
 }
 
-.form.disabled {
-  opacity: 0.7;
-  pointer-events: none;
-  filter: grayscale(0.3);
-}
+/* ============================================================================
+   ESTADO VAZIO (SEM QUARTO)
+   =========================================================================== */
 
-.formTitle {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-lg);
-  text-align: center;
-}
-
-.formGroup {
-  margin-bottom: var(--spacing-lg);
-}
-
-.formGroup:last-of-type {
-  margin-bottom: var(--spacing-xl);
-}
-
-/* ============================================
-   DATE PICKER (Legado)
-   ============================================ */
-
-.datePicker {
-  width: 100%;
-}
-
-.dateInputs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-sm);
-}
-
-.dateField {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-}
-
-.dateLabel {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-}
-
-.dateInput {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: var(--border-width-thin) solid var(--color-text-muted);
-  border-radius: var(--border-radius-md);
-  font-size: var(--font-size-md);
-  font-family: var(--font-family-primary);
-  color: var(--color-text-primary);
-  background-color: var(--color-background-light);
-  transition: all var(--transition-fast);
-  width: 100%;
-}
-
-.dateInput:focus {
-  outline: none;
-  border-color: var(--color-secondary);
-  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
-}
-
-.dateInput.focused {
-  border-color: var(--color-secondary);
-}
-
-.dateInput.error {
-  border-color: var(--color-danger);
-  background-color: var(--color-danger-light);
-}
-
-.dateInput:disabled {
-  background-color: var(--color-background-dark);
-  cursor: not-allowed;
-}
-
-.dateInfo {
-  text-align: center;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  margin-top: var(--spacing-xs);
-}
-
-.nightsCount {
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-primary);
-}
-
-/* ============================================
-   GUEST SELECTOR (Legado)
-   ============================================ */
-
-.guestSelector {
-  width: 100%;
-}
-
-.guestSelector.disabled {
-  opacity: 0.6;
-}
-
-.guestLabel {
-  display: block;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-xs);
-}
-
-.guestControls {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.guestButton {
-  width: 40px;
-  height: 40px;
-  border: var(--border-width-thin) solid var(--color-text-muted);
-  border-radius: var(--border-radius-md);
-  background-color: var(--color-background-light);
-  color: var(--color-text-primary);
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  cursor: pointer;
-  transition: all var(--transition-fast);
+.container.empty {
+  background-color: var(--color-neutral-50);
+  border: 2px dashed var(--color-border-medium);
+  min-height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.guestButton:hover:not(:disabled) {
-  background-color: var(--color-secondary);
-  border-color: var(--color-secondary);
-  color: var(--color-text-light);
-}
-
-.guestButton:focus-visible {
-  outline: 2px solid var(--color-secondary);
-  outline-offset: 2px;
-}
-
-.guestButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.guestValue {
-  flex: 1;
+.emptyMessage {
   text-align: center;
-}
-
-.guestInput {
-  width: 100%;
-  padding: var(--spacing-sm);
-  border: var(--border-width-thin) solid var(--color-text-muted);
-  border-radius: var(--border-radius-md);
-  font-size: var(--font-size-md);
-  text-align: center;
-  -moz-appearance: textfield;
-}
-
-.guestInput::-webkit-outer-spin-button,
-.guestInput::-webkit-inner-spin-button {
-  -webkit-appearance: none;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-lg);
   margin: 0;
+  max-width: 250px;
 }
 
-.guestInput:focus {
-  outline: none;
-  border-color: var(--color-secondary);
-}
+/* ============================================================================
+   TÍTULO
+   =========================================================================== */
 
-.guestHint {
+.title {
+  margin: 0 0 var(--spacing-6);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
   text-align: center;
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-  margin-top: var(--spacing-xs);
 }
 
-.guestError {
+/* ============================================================================
+   GRUPO DE CAMPOS
+   =========================================================================== */
+
+.fieldGroup {
+  margin-bottom: var(--spacing-5);
+}
+
+.label {
   display: block;
-  font-size: var(--font-size-xs);
-  color: var(--color-danger);
-  margin-top: var(--spacing-xs);
-}
-
-/* ============================================
-   NOVOS ESTILOS
-   ============================================ */
-
-.dateHint {
-  margin-top: var(--spacing-xs, 4px);
-  font-size: var(--font-size-sm, 14px);
-  color: var(--color-text-tertiary, #999);
-  font-style: italic;
-}
-
-.dateRange {
-  margin-top: var(--spacing-sm, 8px);
-  padding: var(--spacing-sm, 8px) var(--spacing-md, 12px);
-  background-color: var(--color-background-hover, #f5f5f5);
-  border-radius: var(--border-radius-md, 8px);
-  font-size: var(--font-size-md, 14px);
-  color: var(--color-text-primary, #333);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.nightsBadge {
-  background-color: var(--color-primary, #ff8c00);
-  color: white;
-  padding: var(--spacing-xs, 4px) var(--spacing-sm, 8px);
-  border-radius: var(--border-radius-pill, 20px);
-  font-size: var(--font-size-xs, 12px);
-  font-weight: var(--font-weight-semibold, 600);
-}
-
-.errorSummary {
-  margin-top: var(--spacing-lg, 24px);
-  padding: var(--spacing-md, 16px);
-  background-color: var(--color-error-light, #fff5f5);
-  border: 1px solid var(--color-error, #dc3545);
-  border-radius: var(--border-radius-md, 8px);
-}
-
-.errorSummaryTitle {
-  margin: 0 0 var(--spacing-sm, 8px) 0;
-  font-size: var(--font-size-sm, 14px);
-  font-weight: var(--font-weight-semibold, 600);
-  color: var(--color-error, #dc3545);
-}
-
-.errorList {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.errorList li {
-  margin-bottom: var(--spacing-xs, 4px);
-  font-size: var(--font-size-sm, 14px);
-  color: var(--color-error, #dc3545);
-}
-
-.errorList li:last-child {
-  margin-bottom: 0;
-}
-
-.formActions {
-  margin-top: var(--spacing-xl);
-}
-
-.errorMessage {
-  display: block;
-  font-size: var(--font-size-xs);
-  color: var(--color-danger);
-  margin-top: var(--spacing-xs);
-}
-
-.formError {
-  padding: var(--spacing-sm);
-  background-color: var(--color-danger-light);
-  border: var(--border-width-thin) solid var(--color-danger);
-  border-radius: var(--border-radius-md);
-  color: var(--color-danger);
+  margin-bottom: var(--spacing-2);
   font-size: var(--font-size-sm);
-  text-align: center;
-  margin-top: var(--spacing-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
 }
 
-/* ============================================
+.fieldHint {
+  margin: var(--spacing-1) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-primary-600);
+}
+
+.fieldError {
+  margin: var(--spacing-1) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-error-500);
+}
+
+/* ============================================================================
+   AÇÕES
+   =========================================================================== */
+
+.actions {
+  margin-top: var(--spacing-6);
+}
+
+/* ============================================================================
+   ERROS DE VALIDAÇÃO
+   =========================================================================== */
+
+.errors {
+  margin-top: var(--spacing-4);
+  padding: var(--spacing-4);
+  background-color: var(--color-error-50);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--color-error-500);
+}
+
+.errorsTitle {
+  margin: 0 0 var(--spacing-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-error-700);
+}
+
+.errorsList {
+  margin: 0;
+  padding-left: var(--spacing-5);
+  color: var(--color-error-600);
+  font-size: var(--font-size-sm);
+}
+
+.errorsList li {
+  margin-bottom: var(--spacing-1);
+}
+
+/* ============================================================================
    RESPONSIVIDADE
-   ============================================ */
+   =========================================================================== */
 
-@media (max-width: 768px) {
-  .form {
+@media (max-width: var(--breakpoint-md)) {
+  .container {
+    padding: var(--spacing-4);
     max-width: 100%;
-    padding: var(--spacing-lg);
   }
 
-  .formTitle {
+  .title {
     font-size: var(--font-size-lg);
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-4);
   }
 
-  .dateInputs {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-sm);
-  }
-}
-
-@media (max-width: 480px) {
-  .form {
-    padding: var(--spacing-md);
-  }
-
-  .formTitle {
+  .emptyMessage {
     font-size: var(--font-size-md);
-  }
-
-  .guestControls {
-    gap: var(--spacing-xs);
-  }
-
-  .guestButton {
-    width: 36px;
-    height: 36px;
-    font-size: var(--font-size-lg);
-  }
-}
-
-/* ============================================
-   ACESSIBILIDADE
-   ============================================ */
-
-@media (prefers-contrast: high) {
-  .dateInput,
-  .guestButton,
-  .guestInput {
-    border-width: 2px;
-  }
-
-  .formError {
-    border-width: 2px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .form,
-  .dateInput,
-  .guestButton {
-    transition: none;
   }
 }

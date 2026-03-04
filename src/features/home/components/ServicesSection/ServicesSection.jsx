@@ -1,172 +1,195 @@
-// ============================================
-// COMPONENT: ServicesSection
-// ============================================
-// Responsabilidade: Seção de listagem de serviços adicionais
-// Acessibilidade: role="group", navegação por teclado
-// ============================================
-
-import React, { useState, useCallback, useMemo, memo } from 'react';
-import { ServiceCard } from './ServiceCard.jsx';
+import React, { memo, useState } from 'react';
+import PropTypes from 'prop-types';
+import useServices from '../../hooks/useServices';
+import ServiceCard from './ServiceCard';
+import Spinner from '../../../../shared/components/ui/Spinner';
+import Button from '../../../../shared/components/ui/Button';
 import styles from './ServicesSection.module.css';
 
-// ============================================
-// COMPONENTE PRINCIPAL
-// ============================================
+/**
+ * ServicesSection Component - Seção de serviços do hotel
+ * 
+ * @component
+ * @example
+ * <ServicesSection
+ *   title="Serviços Adicionais"
+ *   subtitle="Personalize sua estadia"
+ *   onServiceToggle={handleServiceToggle}
+ * />
+ */
+const ServicesSection = ({ 
+  title = 'Serviços Adicionais',
+  subtitle = 'Personalize sua estadia com nossos serviços exclusivos',
+  onServiceToggle,
+  selectedServiceIds = [],
+  showFilters = true,
+  className = '',
+}) => {
+  // ==========================================================================
+  // HOOKS
+  // ==========================================================================
 
-export const ServicesSection = memo(
-  ({
-    services = [],
-    selectedServiceIds = [],
-    onServiceToggle,
-    maxSelections = 10,
-    title = 'Serviços Adicionais',
-    subtitle = 'Personalize sua estadia com nossos serviços exclusivos',
-    isLoading = false,
-    disabled = false,
-    className = '',
-    ...props
-  }) => {
-    // ========================================
-    // ESTADOS
-    // ========================================
+  const {
+    filteredServices,
+    categories,
+    selectedCategory,
+    handleCategoryChange,
+    isLoading,
+    error,
+  } = useServices();
 
-    const [focusedIndex, setFocusedIndex] = useState(-1);
+  // ==========================================================================
+  // STATE
+  // ==========================================================================
 
-    // ========================================
-    // HANDLERS
-    // ========================================
+  const [visibleCount, setVisibleCount] = useState(6);
 
-    const handleToggle = useCallback(
-      (serviceId, isSelected) => {
-        if (disabled) return;
+  // ==========================================================================
+  // HANDLERS
+  // ==========================================================================
 
-        // Verificar limite máximo de seleções
-        if (isSelected && selectedServiceIds.length >= maxSelections) {
-          // Pode emitir um aviso ou notificação
-          console.warn(`Máximo de ${maxSelections} serviços selecionados`);
-          return;
-        }
+  const handleToggle = (serviceId) => {
+    if (onServiceToggle) {
+      onServiceToggle(serviceId, !selectedServiceIds.includes(serviceId));
+    }
+  };
 
-        onServiceToggle(serviceId, isSelected);
-      },
-      [selectedServiceIds.length, maxSelections, onServiceToggle, disabled]
-    );
+  const handleLoadMore = () => {
+    setVisibleCount(prev => prev + 6);
+  };
 
-    const handleKeyDown = useCallback(
-      (e) => {
-        // Navegação por teclado entre os cards
-        const cards = document.querySelectorAll(`.${styles.serviceCard}`);
+  // ==========================================================================
+  // RENDER: LOADING
+  // ==========================================================================
 
-        switch (e.key) {
-          case 'ArrowDown':
-          case 'ArrowRight':
-            e.preventDefault();
-            setFocusedIndex((prev) => (prev < services.length - 1 ? prev + 1 : 0));
-            break;
-          case 'ArrowUp':
-          case 'ArrowLeft':
-            e.preventDefault();
-            setFocusedIndex((prev) => (prev > 0 ? prev - 1 : services.length - 1));
-            break;
-          case 'Home':
-            e.preventDefault();
-            setFocusedIndex(0);
-            break;
-          case 'End':
-            e.preventDefault();
-            setFocusedIndex(services.length - 1);
-            break;
-        }
-      },
-      [services.length]
-    );
-
-    // Focar no card apropriado quando o índice muda
-    React.useEffect(() => {
-      if (focusedIndex >= 0) {
-        const cards = document.querySelectorAll(`.${styles.serviceCard}`);
-        if (cards[focusedIndex]) {
-          cards[focusedIndex].focus();
-        }
-      }
-    }, [focusedIndex]);
-
-    // ========================================
-    // AGRUPAMENTO DE SERVIÇOS - 
-    // ========================================
-    const groupedServices = useMemo(() => {
-      if (!services || !Array.isArray(services)) {
-        console.warn('Services não é um array:', services);
-        return {};
-      }
-
-      const groups = {};
-      services.forEach((service) => {
-        const type = service.type || 'other';
-        if (!groups[type]) {
-          groups[type] = [];
-        }
-        groups[type].push(service);
-      });
-      return groups;
-    }, [services]);
-
-    // ========================================
-    // RENDER
-    // ========================================
-
-    const selectedCount = selectedServiceIds.length;
-    const canSelectMore = selectedCount < maxSelections;
-
+  if (isLoading) {
     return (
-      <section
-        className={`${styles.section} ${className}`}
-        aria-labelledby="services-title"
-        onKeyDown={handleKeyDown}
-        {...props}
-      >
-        <div className={styles.header}>
-          <h2 id="services-title" className={styles.title}>
-            {title}
-          </h2>
-          {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
-
-          <div className={styles.selectionInfo} aria-live="polite">
-            <span className={styles.selectedCount}>
-              {selectedCount} de {maxSelections} serviços selecionados
-            </span>
-            {!canSelectMore && <span className={styles.warning}>Limite máximo atingido</span>}
+      <section className={`${styles.section} ${className}`}>
+        <div className={styles.container}>
+          <div className={styles.loadingState}>
+            <Spinner size="lg" />
+            <p className={styles.loadingText}>Carregando serviços...</p>
           </div>
         </div>
-
-        <div className={styles.grid} role="group" aria-label="Lista de serviços disponíveis">
-          {services.map((service, index) => (
-            <ServiceCard
-              key={service.id}
-              service={service}
-              isSelected={selectedServiceIds.includes(service.id)}
-              onToggle={handleToggle}
-              disabled={disabled || (!canSelectMore && !selectedServiceIds.includes(service.id))}
-              tabIndex={focusedIndex === index ? 0 : -1}
-            />
-          ))}
-        </div>
-
-        {isLoading && (
-          <div className={styles.loading}>
-            <div className={styles.loadingSpinner} />
-            <span>Carregando serviços...</span>
-          </div>
-        )}
-
-        {!isLoading && services.length === 0 && (
-          <div className={styles.empty}>
-            <p>Nenhum serviço disponível no momento.</p>
-          </div>
-        )}
       </section>
     );
   }
-);
 
-ServicesSection.displayName = 'ServicesSection';
+  // ==========================================================================
+  // RENDER: ERROR
+  // ==========================================================================
+
+  if (error) {
+    return (
+      <section className={`${styles.section} ${className}`}>
+        <div className={styles.container}>
+          <div className={styles.errorState}>
+            <p className={styles.errorText}>{error}</p>
+            <Button variant="primary" onClick={() => window.location.reload()}>
+              Tentar novamente
+            </Button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================================================
+  // RENDER: SUCCESS
+  // ==========================================================================
+
+  const visibleServices = filteredServices.slice(0, visibleCount);
+  const hasMore = filteredServices.length > visibleCount;
+
+  return (
+    <section className={`${styles.section} ${className}`}>
+      <div className={styles.container}>
+        {/* Header */}
+        <div className={styles.header}>
+          <h2 className={styles.title}>{title}</h2>
+          {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+        </div>
+
+        {/* Filtros por categoria */}
+        {showFilters && (
+          <div className={styles.filters}>
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                className={`
+                  ${styles.filterButton}
+                  ${selectedCategory === category.id ? styles.active : ''}
+                `}
+                onClick={() => handleCategoryChange(category.id)}
+                aria-pressed={selectedCategory === category.id}
+              >
+                {category.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Grid de serviços */}
+        {visibleServices.length > 0 ? (
+          <>
+            <div className={styles.grid}>
+              {visibleServices.map((service) => (
+                <ServiceCard
+                  key={service.id}
+                  service={service}
+                  isSelected={selectedServiceIds.includes(service.id)}
+                  onToggle={handleToggle}
+                />
+              ))}
+            </div>
+
+            {/* Botão "Ver mais" */}
+            {hasMore && (
+              <div className={styles.loadMore}>
+                <Button
+                  variant="outline"
+                  size="md"
+                  onClick={handleLoadMore}
+                >
+                  Ver mais serviços
+                </Button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className={styles.emptyState}>
+            <p className={styles.emptyStateText}>
+              Nenhum serviço encontrado nesta categoria.
+            </p>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+};
+
+ServicesSection.propTypes = {
+  /** Título da seção */
+  title: PropTypes.string,
+  /** Subtítulo da seção */
+  subtitle: PropTypes.string,
+  /** Função chamada ao selecionar/deselecionar serviço */
+  onServiceToggle: PropTypes.func,
+  /** IDs dos serviços selecionados */
+  selectedServiceIds: PropTypes.arrayOf(PropTypes.string),
+  /** Mostrar filtros de categoria */
+  showFilters: PropTypes.bool,
+  /** Classes CSS adicionais */
+  className: PropTypes.string,
+};
+
+ServicesSection.defaultProps = {
+  title: 'Serviços Adicionais',
+  subtitle: 'Personalize sua estadia com nossos serviços exclusivos',
+  onServiceToggle: undefined,
+  selectedServiceIds: [],
+  showFilters: true,
+  className: '',
+};
+
+export default memo(ServicesSection);
