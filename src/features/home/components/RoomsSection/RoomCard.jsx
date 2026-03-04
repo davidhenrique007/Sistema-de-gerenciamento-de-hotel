@@ -1,293 +1,155 @@
-// ============================================
-// COMPONENT: RoomCard
-// ============================================
-// Responsabilidade: Card individual de quarto com galeria de imagens
-// VERSÃO CORRIGIDA - Com botão funcional e logs de debug
-// ============================================
-
-import React, { useState, useCallback, memo } from 'react';
-import { Button, ButtonVariant, ButtonSize } from '../../../../shared/components/ui';
-import { RoomStatusBadge, RoomStatus } from './RoomStatusBadge.jsx';
+import React, { memo } from 'react';
+import PropTypes from 'prop-types';
+import Button from '../../../../shared/components/ui/Button';
+import RoomStatusBadge from './RoomStatusBadge';
+import { ROOM_STATUS } from '../../constants/room.types';
 import styles from './RoomCard.module.css';
 
-// Mapa de ícones para amenities (usando emojis - substituir por SVGs em produção)
-const amenityIcons = {
-  'Wi-Fi': '📶',
-  'TV': '📺',
-  'Ar condicionado': '❄️',
-  'Frigobar': '🧊',
-  'Banheira': '🛁',
-  'Cafeteira': '☕',
-  'Secador': '💨',
-  'Cofre': '🔒',
-  'Varanda': '🏞️',
-  'Vista mar': '🌊',
-  'Mesa de trabalho': '💼',
-  '2 camas': '🛏️🛏️',
-  'Berço': '👶',
-  'Sala': '🛋️',
-  'Jacuzzi': '🫧',
-  'Vista 360': '🏔️'
-};
-
-// Imagem placeholder para fallback
-const PLACEHOLDER_IMAGE = '/assets/images/placeholder-room.jpg';
-
-export const RoomCard = memo(({
-  // Dados do quarto
-  id,
-  number,
-  type,
-  typeLabel,
-  capacity,
-  pricePerNight,
-  pricePerNightFormatted,
-  status: initialStatus,
-  mainImage,
-  amenities = [],
-  
-  // Callbacks e hooks
-  onSelect,
-  occupancyHook,
-  
-  // Estado de loading
-  isLoading = false,
-  
-  // Modo de seleção
-  selected = false,
-  
-  // Classes adicionais
-  className = '',
-  ...props
-}) => {
-  console.log('🎴 Renderizando RoomCard', { number, pricePerNightFormatted, hasOnSelect: !!onSelect });
-  
-  // ========================================
-  // ESTADO LOCAL
-  // ========================================
-  
-  const [currentImage, setCurrentImage] = useState(mainImage || `/assets/images/rooms/${type}/main.jpg`);
-  const [imageError, setImageError] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [showThumbnails, setShowThumbnails] = useState(false);
-  const [clickAttempts, setClickAttempts] = useState(0); // Para debug
-
-  // Lista de imagens do quarto (main + 3 adicionais)
-  const roomImages = [
-    mainImage || `/assets/images/rooms/${type}/main.jpg`,
-    `/assets/images/rooms/${type}/1.jpg`,
-    `/assets/images/rooms/${type}/2.jpg`,
-    `/assets/images/rooms/${type}/3.jpg`
-  ];
-
-  // Obter status atualizado do hook de ocupação
-  const currentStatus = occupancyHook?.getRoomStatus?.(id) || initialStatus;
-  const isOccupied = currentStatus === RoomStatus.OCCUPIED;
-  const isAvailable = currentStatus === RoomStatus.AVAILABLE;
-  const isLoadingStatus = occupancyHook?.loadingMap?.get(id) || false;
-
-  // ========================================
+/**
+ * RoomCard Component - Card de exibição de quarto
+ * 
+ * @component
+ * @example
+ * <RoomCard
+ *   room={room}
+ *   onSelect={handleSelect}
+ *   isSelected={false}
+ * />
+ */
+const RoomCard = ({ room, onSelect, isSelected = false }) => {
+  // ==========================================================================
   // HANDLERS
-  // ========================================
-  
-  const handleImageError = useCallback((e) => {
-    setImageError(true);
-    e.target.src = PLACEHOLDER_IMAGE;
-  }, []);
+  // ==========================================================================
 
-  const handleImageClick = useCallback((imgSrc) => {
-    setCurrentImage(imgSrc);
-    setImageError(false);
-  }, []);
-
-  // HANDLE SELECT CORRIGIDO COM LOGS
-  const handleSelect = useCallback(() => {
-    console.log('🖱️ [RoomCard] handleSelect chamado para quarto', number);
-    console.log('🖱️ [RoomCard] Condições:', {
-      isOccupied,
-      selected,
-      isLoading,
-      isLoadingStatus,
-      isAvailable,
-      hasOnSelect: !!onSelect
-    });
-
-    // Verificar se pode selecionar
-    if (isOccupied) {
-      console.log('🖱️ [RoomCard] Bloqueado: quarto ocupado');
-      return;
+  const handleSelect = () => {
+    if (room.status === ROOM_STATUS.AVAILABLE && onSelect) {
+      onSelect(room);
     }
-    if (selected) {
-      console.log('🖱️ [RoomCard] Bloqueado: já selecionado');
-      return;
-    }
-    if (isLoading || isLoadingStatus) {
-      console.log('🖱️ [RoomCard] Bloqueado: carregando');
-      return;
-    }
+  };
 
-    // Chamar onSelect se existir
-    if (onSelect) {
-      console.log('🖱️ [RoomCard] Chamando onSelect com:', {
-        id,
-        number,
-        type,
-        typeLabel,
-        capacity,
-        status: currentStatus
-      });
-      
-      onSelect({
-        id,
-        number,
-        type,
-        typeLabel,
-        capacity,
-        pricePerNight,
-        status: currentStatus
-      });
-    } else {
-      console.error('🖱️ [RoomCard] ERRO: onSelect não está definido!');
-    }
-  }, [onSelect, id, number, type, typeLabel, capacity, pricePerNight, currentStatus, isOccupied, selected, isLoading, isLoadingStatus, isAvailable]);
+  // ==========================================================================
+  // FORMATADORES
+  // ==========================================================================
 
-  const handleMouseEnter = useCallback(() => {
-    setIsHovered(true);
-    setShowThumbnails(true);
-  }, []);
+  const formattedPrice = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: room.price.currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(room.price.amount);
 
-  const handleMouseLeave = useCallback(() => {
-    setIsHovered(false);
-    setShowThumbnails(false);
-  }, []);
+  const isAvailable = room.status === ROOM_STATUS.AVAILABLE;
 
-  // ========================================
-  // CLASSES CSS
-  // ========================================
-  
-  const cardClasses = [
-    styles.card,
-    !isAvailable && styles.unavailable,
-    selected && styles.selected,
-    isHovered && !selected && !isLoading && !isLoadingStatus && styles.hovered,
-    (isLoading || isLoadingStatus) && styles.loading,
-    className
-  ].filter(Boolean).join(' ');
-
-  const statusLabel = isOccupied ? 'Quarto ocupado' : 'Quarto disponível';
-
-  // Separar props que não devem ir para o DOM
-  const { available, isAvailable: _, occupancyError, ...validProps } = props;
-
-  // ========================================
+  // ==========================================================================
   // RENDER
-  // ========================================
-  
+  // ==========================================================================
+
   return (
-    <article
-      className={cardClasses}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      aria-labelledby={`room-title-${id}`}
-      aria-describedby={`room-desc-${id}`}
-      aria-disabled={!isAvailable}
-      tabIndex={isAvailable ? 0 : -1}
-      onClick={() => console.log('👆 [RoomCard] Card clicado (não o botão)', number)}
-      {...validProps}
+    <article 
+      className={`${styles.card} ${isSelected ? styles.selected : ''}`}
+      aria-labelledby={`room-title-${room.id}`}
     >
-      {/* Container de imagem com galeria */}
       <div className={styles.imageContainer}>
-        {/* Imagem principal */}
         <img
-          src={currentImage}
-          alt={`Quarto ${typeLabel} - ${number}`}
-          className={styles.mainImage}
-          onError={handleImageError}
+          src={room.image}
+          alt={`Quarto ${room.number}`}
+          className={styles.image}
           loading="lazy"
         />
-        
-        {/* Badge de status */}
-        <div className={styles.statusBadge}>
-          <RoomStatusBadge status={currentStatus} size="small" />
+        <div className={styles.statusContainer}>
+          <RoomStatusBadge status={room.status} size="sm" />
         </div>
-
-        {/* Miniaturas (aparecem no hover) */}
-        {showThumbnails && isAvailable && (
-          <div className={styles.thumbnailStrip}>
-            {roomImages.map((img, index) => (
-              <button
-                key={index}
-                className={`${styles.thumbnail} ${currentImage === img ? styles.activeThumbnail : ''}`}
-                onClick={() => handleImageClick(img)}
-                aria-label={`Ver imagem ${index + 1} do quarto`}
-              >
-                <img src={img} alt={`Miniatura ${index + 1}`} onError={handleImageError} />
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
-      {/* Conteúdo do card */}
       <div className={styles.content}>
-        {/* Cabeçalho com tipo e preço */}
         <div className={styles.header}>
-          <div className={styles.roomInfo}>
-            <span className={styles.roomType}>{typeLabel}</span>
-            <h3 id={`room-title-${id}`} className={styles.title}>
-              Quarto {number}
+          <div>
+            <h3 id={`room-title-${room.id}`} className={styles.title}>
+              Quarto {room.number}
             </h3>
+            <p className={styles.type}>{room.typeLabel || room.type}</p>
           </div>
-          <div className={styles.priceContainer}>
-            <span className={styles.priceValue}>{pricePerNightFormatted}</span>
+          <div className={styles.price}>
+            <span className={styles.priceAmount}>{formattedPrice}</span>
             <span className={styles.pricePeriod}>/noite</span>
           </div>
         </div>
 
-        {/* Capacidade */}
-        <div className={styles.capacityInfo}>
-          <span className={styles.capacityIcon}>👥</span>
-          <span className={styles.capacityText}>
-            {capacity} {capacity === 1 ? 'hóspede' : 'hóspedes'}
-          </span>
+        <p className={styles.description}>{room.description}</p>
+
+        <div className={styles.details}>
+          <div className={styles.detailItem}>
+            <span className={styles.detailIcon}>👥</span>
+            <span>{room.capacity} {room.capacity === 1 ? 'hóspede' : 'hóspedes'}</span>
+          </div>
+          <div className={styles.detailItem}>
+            <span className={styles.detailIcon}>📏</span>
+            <span>{room.size}m²</span>
+          </div>
+          <div className={styles.detailItem}>
+            <span className={styles.detailIcon}>🛏️</span>
+            <span>{room.bedType || 'Cama de casal'}</span>
+          </div>
         </div>
 
-        {/* Amenities em formato chips */}
-        <div className={styles.amenities} id={`room-desc-${id}`}>
-          {amenities.map((amenity, index) => (
-            <div key={index} className={styles.amenity}>
-              <span className={styles.amenityIcon} aria-hidden="true">
-                {amenityIcons[amenity] || '•'}
-              </span>
-              <span className={styles.amenityName}>{amenity}</span>
-            </div>
+        <div className={styles.amenities}>
+          {room.amenities.slice(0, 4).map((amenity, index) => (
+            <span key={index} className={styles.amenity}>
+              {amenity}
+            </span>
           ))}
+          {room.amenities.length > 4 && (
+            <span className={styles.amenityMore}>
+              +{room.amenities.length - 4}
+            </span>
+          )}
         </div>
 
-        {/* Botão de ação - CORRIGIDO */}
         <div className={styles.action}>
           <Button
-            variant={isAvailable ? ButtonVariant.PRIMARY : ButtonVariant.SECONDARY}
-            size={ButtonSize.MEDIUM}
+            variant={isAvailable ? 'primary' : 'secondary'}
+            size="md"
             fullWidth
             onClick={handleSelect}
-            disabled={!isAvailable || isLoading || isLoadingStatus}
-            loading={isLoading || isLoadingStatus}
-            data-testid={`select-room-${number}`}
+            disabled={!isAvailable}
+            aria-label={isAvailable ? `Selecionar quarto ${room.number}` : `Quarto ${room.number} indisponível`}
           >
-            {isAvailable ? 'SELECIONAR QUARTO' : 'INDISPONÍVEL'}
+            {isAvailable ? 'Selecionar Quarto' : 'Indisponível'}
           </Button>
         </div>
       </div>
-
-      {/* Overlay de loading */}
-      {(isLoading || isLoadingStatus) && (
-        <div className={styles.loadingOverlay} aria-hidden="true">
-          <div className={styles.loadingSpinner}></div>
-        </div>
-      )}
     </article>
   );
-});
+};
 
-RoomCard.displayName = 'RoomCard';
+RoomCard.propTypes = {
+  /** Dados do quarto */
+  room: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    number: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    typeLabel: PropTypes.string,
+    capacity: PropTypes.number.isRequired,
+    price: PropTypes.shape({
+      amount: PropTypes.number.isRequired,
+      currency: PropTypes.string.isRequired,
+    }).isRequired,
+    status: PropTypes.oneOf(['available', 'occupied', 'maintenance']).isRequired,
+    amenities: PropTypes.arrayOf(PropTypes.string).isRequired,
+    image: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    size: PropTypes.number,
+    bedType: PropTypes.string,
+  }).isRequired,
+  /** Função chamada ao selecionar o quarto */
+  onSelect: PropTypes.func,
+  /** Indica se o quarto está selecionado */
+  isSelected: PropTypes.bool,
+};
+
+RoomCard.defaultProps = {
+  onSelect: undefined,
+  isSelected: false,
+};
+
+export default memo(RoomCard);

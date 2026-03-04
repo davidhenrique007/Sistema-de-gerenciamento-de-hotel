@@ -1,238 +1,169 @@
-// ============================================
-// COMPONENT: Modal
-// ============================================
-// Responsabilidade: Modal base reutilizável com acessibilidade
-// Acessibilidade: role="dialog", aria-modal, trap de foco, tecla ESC
-// ============================================
-
 import React, { useEffect, useRef, useCallback } from 'react';
-import { Button } from '../Button/Button.jsx';
+import { createPortal } from 'react-dom';
+import PropTypes from 'prop-types';
+import Button from '../Button';
 import styles from './Modal.module.css';
 
-// ============================================
-// CONSTANTES
-// ============================================
-
-export const ModalSize = {
-  SMALL: 'small',
-  MEDIUM: 'medium',
-  LARGE: 'large',
-  FULLSCREEN: 'fullscreen'
-};
-
-// ============================================
-// COMPONENTE PRINCIPAL
-// ============================================
-
-export const Modal = ({
-  // Controle
-  isOpen = false,
+/**
+ * Modal Component - Janela modal acessível com portal
+ * 
+ * @component
+ * @example
+ * <Modal isOpen={isOpen} onClose={handleClose} title="Título">
+ *   <p>Conteúdo do modal</p>
+ * </Modal>
+ */
+const Modal = ({
+  isOpen,
   onClose,
-  
-  // Conteúdo
   title,
   children,
-  footer,
-  
-  // Ações
-  confirmText = 'Confirmar',
-  cancelText = 'Cancelar',
-  onConfirm,
-  onCancel,
-  
-  // Configuração
-  size = ModalSize.MEDIUM,
+  size = 'md',
   closeOnOverlayClick = true,
-  closeOnEsc = true,
   showCloseButton = true,
-  showConfirmButton = false,
-  showCancelButton = true,
-  
-  // Estados dos botões
-  confirmLoading = false,
-  confirmDisabled = false,
-  cancelDisabled = false,
-  
-  // Classes customizadas
+  closeOnEsc = true,
   className = '',
-  overlayClassName = '',
-  contentClassName = '',
-  
-  // Props adicionais
   ...props
 }) => {
-  // ========================================
+  // ==========================================================================
   // REFS
-  // ========================================
-  
-  const modalRef = useRef(null);
-  const contentRef = useRef(null);
-  const initialFocusRef = useRef(null);
-  const previousActiveElement = useRef(null);
-  const closeButtonRef = useRef(null);
-  const confirmButtonRef = useRef(null);
-  const cancelButtonRef = useRef(null);
+  // ==========================================================================
 
-  // ========================================
-  // TRAP DE FOCO
-  // ========================================
-  
-  const getFocusableElements = useCallback(() => {
-    if (!modalRef.current) return [];
-    
+  const modalRef = useRef(null);
+  const previousActiveElement = useRef(null);
+  const focusableElements = useRef([]);
+
+  // ==========================================================================
+  // TRAP FOCUS - MANTER FOCO DENTRO DO MODAL
+  // ==========================================================================
+
+  const trapFocus = useCallback((event) => {
+    if (!modalRef.current || !isOpen) return;
+
     const focusableSelectors = [
       'button',
       '[href]',
       'input',
       'select',
       'textarea',
-      '[tabindex]:not([tabindex="-1"])'
-    ];
-    
-    return Array.from(
-      modalRef.current.querySelectorAll(focusableSelectors.join(','))
-    ).filter(el => !el.hasAttribute('disabled'));
-  }, []);
+      '[tabindex]:not([tabindex="-1"])',
+    ].join(',');
 
-  const trapFocus = useCallback((e) => {
-    const focusableElements = getFocusableElements();
-    
-    if (focusableElements.length === 0) return;
-    
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
-    
-    if (e.key === 'Tab') {
-      if (e.shiftKey && document.activeElement === firstElement) {
-        e.preventDefault();
-        lastElement.focus();
-      } else if (!e.shiftKey && document.activeElement === lastElement) {
-        e.preventDefault();
-        firstElement.focus();
+    const elements = modalRef.current.querySelectorAll(focusableSelectors);
+    focusableElements.current = Array.from(elements).filter(
+      (el) => !el.hasAttribute('disabled') && el.getAttribute('tabindex') !== '-1'
+    );
+
+    if (focusableElements.current.length === 0) return;
+
+    const firstElement = focusableElements.current[0];
+    const lastElement = focusableElements.current[focusableElements.current.length - 1];
+
+    if (event.key === 'Tab') {
+      if (event.shiftKey) {
+        if (document.activeElement === firstElement) {
+          event.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          event.preventDefault();
+          firstElement.focus();
+        }
       }
     }
-  }, [getFocusableElements]);
+  }, [isOpen]);
 
-  // ========================================
-  // HANDLERS DE FECHAMENTO
-  // ========================================
-  
-  const handleClose = useCallback(() => {
-    if (onClose) {
+  // ==========================================================================
+  // FECHAR AO CLICAR FORA
+  // ==========================================================================
+
+  const handleOverlayClick = useCallback((event) => {
+    if (closeOnOverlayClick && modalRef.current && !modalRef.current.contains(event.target)) {
       onClose();
     }
-  }, [onClose]);
+  }, [closeOnOverlayClick, onClose]);
 
-  const handleOverlayClick = useCallback((e) => {
-    if (closeOnOverlayClick && e.target === e.currentTarget) {
-      handleClose();
+  // ==========================================================================
+  // FECHAR COM ESC
+  // ==========================================================================
+
+  const handleEscKey = useCallback((event) => {
+    if (closeOnEsc && event.key === 'Escape') {
+      onClose();
     }
-  }, [closeOnOverlayClick, handleClose]);
+  }, [closeOnEsc, onClose]);
 
-  const handleKeyDown = useCallback((e) => {
-    if (closeOnEsc && e.key === 'Escape') {
-      e.preventDefault();
-      e.stopPropagation();
-      handleClose();
-    }
-    
-    trapFocus(e);
-  }, [closeOnEsc, handleClose, trapFocus]);
+  // ==========================================================================
+  // BLOQUEAR SCROLL E ADICIONAR LISTENERS
+  // ==========================================================================
 
-  // ========================================
-  // HANDLERS DE AÇÕES
-  // ========================================
-  
-  const handleConfirm = useCallback(() => {
-    if (onConfirm && !confirmDisabled && !confirmLoading) {
-      onConfirm();
-    }
-  }, [onConfirm, confirmDisabled, confirmLoading]);
-
-  const handleCancel = useCallback(() => {
-    if (onCancel && !cancelDisabled) {
-      onCancel();
-    } else {
-      handleClose();
-    }
-  }, [onCancel, cancelDisabled, handleClose]);
-
-  // ========================================
-  // EFEITOS
-  // ========================================
-  
   useEffect(() => {
     if (isOpen) {
-      // Salvar elemento ativo anterior
+      // Salvar elemento ativo antes de abrir
       previousActiveElement.current = document.activeElement;
-      
-      // Bloquear scroll do body
+
+      // Bloquear scroll
       document.body.style.overflow = 'hidden';
       
-      // Adicionar event listener para ESC
-      document.addEventListener('keydown', handleKeyDown);
-      
-      // Focar no modal
-      setTimeout(() => {
-        if (initialFocusRef.current) {
-          initialFocusRef.current.focus();
-        } else if (closeButtonRef.current) {
-          closeButtonRef.current.focus();
-        } else if (confirmButtonRef.current) {
-          confirmButtonRef.current.focus();
-        } else if (contentRef.current) {
-          contentRef.current.focus();
-        }
-      }, 100);
-    } else {
-      // Restaurar scroll do body
-      document.body.style.overflow = '';
-      
-      // Remover event listener
-      document.removeEventListener('keydown', handleKeyDown);
-      
-      // Restaurar foco anterior
-      if (previousActiveElement.current) {
-        previousActiveElement.current.focus();
-      }
-    }
-    
-    return () => {
-      document.body.style.overflow = '';
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen, handleKeyDown]);
+      // Calcular largura da scrollbar para evitar layout shift
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
 
-  // ========================================
-  // RENDER
-  // ========================================
-  
+      // Adicionar listeners
+      document.addEventListener('mousedown', handleOverlayClick);
+      document.addEventListener('keydown', handleEscKey);
+      document.addEventListener('keydown', trapFocus);
+
+      // Focar no modal após um pequeno delay
+      setTimeout(() => {
+        modalRef.current?.focus();
+      }, 100);
+
+      return () => {
+        // Restaurar scroll
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+
+        // Remover listeners
+        document.removeEventListener('mousedown', handleOverlayClick);
+        document.removeEventListener('keydown', handleEscKey);
+        document.removeEventListener('keydown', trapFocus);
+
+        // Restaurar foco
+        if (previousActiveElement.current) {
+          previousActiveElement.current.focus();
+        }
+      };
+    }
+  }, [isOpen, handleOverlayClick, handleEscKey, trapFocus]);
+
+  // ==========================================================================
+  // NÃO RENDERIZAR SE FECHADO
+  // ==========================================================================
+
   if (!isOpen) return null;
 
-  const modalClasses = [
-    styles.modal,
-    styles[size],
-    className
-  ].filter(Boolean).join(' ');
+  // ==========================================================================
+  // RENDER VIA PORTAL
+  // ==========================================================================
 
-  return (
-    <div
-      className={`${styles.overlay} ${overlayClassName}`}
-      onClick={handleOverlayClick}
-      onKeyDown={handleKeyDown}
-      role="presentation"
-    >
+  return createPortal(
+    <div className={styles.overlay}>
       <div
         ref={modalRef}
-        className={modalClasses}
+        className={`
+          ${styles.modal}
+          ${styles[size]}
+          ${className}
+        `}
+        tabIndex="-1"
         role="dialog"
         aria-modal="true"
+        aria-label={title}
         aria-labelledby={title ? 'modal-title' : undefined}
-        aria-describedby="modal-description"
-        tabIndex={-1}
         {...props}
       >
-        {/* Cabeçalho */}
         <div className={styles.header}>
           {title && (
             <h2 id="modal-title" className={styles.title}>
@@ -241,83 +172,55 @@ export const Modal = ({
           )}
           
           {showCloseButton && (
-            <button
-              ref={closeButtonRef}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onClose}
+              ariaLabel="Fechar modal"
               className={styles.closeButton}
-              onClick={handleClose}
-              aria-label="Fechar modal"
-              type="button"
             >
-              <span aria-hidden="true">×</span>
-            </button>
+              ✕
+            </Button>
           )}
         </div>
 
-        {/* Conteúdo */}
-        <div
-          ref={contentRef}
-          id="modal-description"
-          className={`${styles.content} ${contentClassName}`}
-          tabIndex={-1}
-        >
+        <div className={styles.content}>
           {children}
         </div>
-
-        {/* Footer */}
-        {(footer || showCancelButton || showConfirmButton) && (
-          <div className={styles.footer}>
-            {footer || (
-              <>
-                {showCancelButton && (
-                  <Button
-                    ref={cancelButtonRef}
-                    variant="ghost"
-                    onClick={handleCancel}
-                    disabled={cancelDisabled}
-                    aria-label={cancelText}
-                  >
-                    {cancelText}
-                  </Button>
-                )}
-                
-                {showConfirmButton && (
-                  <Button
-                    ref={confirmButtonRef}
-                    variant="primary"
-                    onClick={handleConfirm}
-                    loading={confirmLoading}
-                    disabled={confirmDisabled}
-                    aria-label={confirmText}
-                  >
-                    {confirmText}
-                  </Button>
-                )}
-              </>
-            )}
-          </div>
-        )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
-Modal.displayName = 'Modal';
-
-// ============================================
-// HOOK PARA USAR MODAL
-// ============================================
-
-export const useModal = (initialState = false) => {
-  const [isOpen, setIsOpen] = React.useState(initialState);
-
-  const open = useCallback(() => setIsOpen(true), []);
-  const close = useCallback(() => setIsOpen(false), []);
-  const toggle = useCallback(() => setIsOpen(prev => !prev), []);
-
-  return {
-    isOpen,
-    open,
-    close,
-    toggle
-  };
+Modal.propTypes = {
+  /** Controla a abertura do modal */
+  isOpen: PropTypes.bool.isRequired,
+  /** Função chamada ao fechar */
+  onClose: PropTypes.func.isRequired,
+  /** Título do modal */
+  title: PropTypes.string,
+  /** Conteúdo do modal */
+  children: PropTypes.node.isRequired,
+  /** Tamanho do modal */
+  size: PropTypes.oneOf(['sm', 'md', 'lg', 'xl', 'full']),
+  /** Fechar ao clicar no overlay */
+  closeOnOverlayClick: PropTypes.bool,
+  /** Mostrar botão de fechar */
+  showCloseButton: PropTypes.bool,
+  /** Fechar com tecla ESC */
+  closeOnEsc: PropTypes.bool,
+  /** Classes CSS adicionais */
+  className: PropTypes.string,
 };
+
+Modal.defaultProps = {
+  title: '',
+  size: 'md',
+  closeOnOverlayClick: true,
+  showCloseButton: true,
+  closeOnEsc: true,
+  className: '',
+};
+
+export default React.memo(Modal);

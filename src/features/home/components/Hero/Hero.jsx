@@ -1,193 +1,102 @@
-// ============================================
-// COMPONENT: Hero
-// ============================================
-// Responsabilidade: Seção principal (Hero) da Home Page
-// VERSÃO CORRIGIDA - Com imagem fallback
-// ============================================
-
-import React, { useState } from 'react';
-import { Button, ButtonSize, ButtonVariant } from '../../../../shared/components/ui';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Link } from 'react-scroll';
+import Button from '../../../../shared/components/ui/Button';
+import HeroBackground from './HeroBackground';
 import styles from './Hero.module.css';
 
-// ============================================
-// CONSTANTES
-// ============================================
-
-const DEFAULT_IMAGE = '/assets/images/hero/hotel-paradise-hero.jpg';
-const PLACEHOLDER_IMAGE = '/assets/images/default-room.jpg';
-const DEFAULT_TITLE = 'Hotel Paradise';
-const DEFAULT_SUBTITLE = 'O paraíso perfeito para suas férias dos sonhos';
-const DEFAULT_CTA_TEXT = 'Reservar Agora';
-const DEFAULT_CTA_ACTION = '/quartos';
-
-// ============================================
-// COMPONENTE PRINCIPAL
-// ============================================
-
-export const Hero = ({
-  // Conteúdo
-  title = DEFAULT_TITLE,
-  subtitle = DEFAULT_SUBTITLE,
-  ctaText = DEFAULT_CTA_TEXT,
-  ctaAction = DEFAULT_CTA_ACTION,
-
-  // Imagem
-  imageSrc = DEFAULT_IMAGE,
-  imageAlt = 'Vista paradisíaca do Hotel Paradise com piscina e mar ao fundo',
-
-  // Overlay
-  overlayOpacity = 0.4,
-  overlayColor = 'dark',
-
-  // Alinhamento
-  align = 'center',
-
-  // Ações
-  onCtaClick,
-
-  // Classes adicionais
+/**
+ * Hero Component - Banner principal da home
+ * 
+ * @component
+ * @example
+ * <Hero
+ *   title="Hotel Paradise"
+ *   subtitle="O paraíso perfeito para suas férias"
+ *   ctaText="Reservar Agora"
+ *   ctaLink="reservation"
+ * />
+ */
+const Hero = ({
+  title = 'Hotel Paradise',
+  subtitle = 'O paraíso perfeito para suas férias dos sonhos',
+  ctaText = 'Reservar Agora',
+  ctaLink = 'reservation',
+  backgroundImage = '/assets/images/hero-bg.jpg',
   className = '',
-
-  // Props adicionais
-  ...props
+  onCtaClick,
 }) => {
-  // ========================================
-  // ESTADOS
-  // ========================================
+  // ==========================================================================
+  // HANDLERS
+  // ==========================================================================
 
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
-  const [currentImage, setCurrentImage] = useState(imageSrc);
-
-  // ========================================
-  // HANDLERS DE IMAGEM
-  // ========================================
-
-  const handleImageLoad = () => {
-    setImageLoaded(true);
-  };
-
-  const handleImageError = () => {
-    setImageError(true);
-    setCurrentImage(PLACEHOLDER_IMAGE);
-  };
-
-  // ========================================
-  // HANDLER DO CTA
-  // ========================================
-
-  const handleCtaClick = (e) => {
+  const handleCtaClick = () => {
     if (onCtaClick) {
-      e.preventDefault();
       onCtaClick();
     }
   };
 
-  // ========================================
-  // CLASSES CSS
-  // ========================================
-
-  const heroClasses = [
-    styles.hero,
-    styles[`align-${align}`],
-    imageLoaded ? styles.imageLoaded : styles.imageLoading,
-    imageError && styles.imageError,
-    className
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  const overlayClasses = [styles.overlay, styles[`overlay-${overlayColor}`]]
-    .filter(Boolean)
-    .join(' ');
-
-  // ========================================
+  // ==========================================================================
   // RENDER
-  // ========================================
+  // ==========================================================================
 
   return (
-    <section className={heroClasses} aria-label="Seção principal de boas-vindas" {...props}>
-      {/* Imagem de fundo com lazy loading */}
-      <div className={styles.imageContainer}>
-        {!imageLoaded && !imageError && (
-          <div className={styles.imagePlaceholder} aria-hidden="true">
-            <span className={styles.loadingIndicator}>Carregando...</span>
-          </div>
-        )}
-
-        <img
-          src={currentImage}
-          alt={imageAlt}
-          className={styles.backgroundImage}
-          onLoad={handleImageLoad}
-          onError={handleImageError}
-          loading="lazy"
-          aria-hidden="true"
-        />
-      </div>
-
-      {/* Overlay para melhorar contraste */}
-      <div className={overlayClasses} style={{ opacity: overlayOpacity }} aria-hidden="true" />
-
-      {/* Conteúdo */}
-      <div className={styles.content}>
-        <div className={styles.contentInner}>
+    <section className={`${styles.hero} ${className}`}>
+      <HeroBackground image={backgroundImage} overlay={true} />
+      
+      <div className={styles.container}>
+        <div className={styles.content}>
           <h1 className={styles.title}>{title}</h1>
-
           <p className={styles.subtitle}>{subtitle}</p>
-
-          <div className={styles.ctaContainer}>
-            <Button
-              as="a"
-              href={ctaAction}
-              variant={ButtonVariant.PRIMARY}
-              size={ButtonSize.LARGE}
+          
+          <div className={styles.cta}>
+            <Link
+              to={ctaLink}
+              spy={true}
+              smooth={true}
+              offset={-70}
+              duration={500}
               onClick={handleCtaClick}
-              aria-label={`${ctaText} - Navegar para página de reservas`}
-              className={styles.ctaButton}
             >
-              {ctaText}
-            </Button>
+              <Button
+                variant="primary"
+                size="lg"
+              >
+                {ctaText}
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
-
-      {/* Skip link para acessibilidade */}
-      <a href="#main-content" className={styles.skipLink}>
-        Pular para o conteúdo principal
-      </a>
     </section>
   );
 };
 
-Hero.displayName = 'Hero';
-
-// ============================================
-// COMPONENTES DERIVADOS
-// ============================================
-
-export const HeroCompact = (props) => {
-  return <Hero {...props} overlayOpacity={0.3} className={styles.compact} />;
+Hero.propTypes = {
+  /** Título principal */
+  title: PropTypes.string,
+  /** Subtítulo */
+  subtitle: PropTypes.string,
+  /** Texto do botão CTA */
+  ctaText: PropTypes.string,
+  /** ID da seção para scroll */
+  ctaLink: PropTypes.string,
+  /** URL da imagem de fundo */
+  backgroundImage: PropTypes.string,
+  /** Classes CSS adicionais */
+  className: PropTypes.string,
+  /** Função chamada ao clicar no CTA */
+  onCtaClick: PropTypes.func,
 };
 
-HeroCompact.displayName = 'HeroCompact';
-
-export const HeroWithVideo = ({ videoSrc, videoPoster, ...props }) => {
-  return (
-    <Hero {...props} className={styles.withVideo}>
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        poster={videoPoster}
-        className={styles.backgroundVideo}
-        aria-hidden="true"
-      >
-        <source src={videoSrc} type="video/mp4" />
-      </video>
-    </Hero>
-  );
+Hero.defaultProps = {
+  title: 'Hotel Paradise',
+  subtitle: 'O paraíso perfeito para suas férias dos sonhos',
+  ctaText: 'Reservar Agora',
+  ctaLink: 'reservation',
+  backgroundImage: '/assets/images/hero-bg.jpg',
+  className: '',
+  onCtaClick: undefined,
 };
 
-HeroWithVideo.displayName = 'HeroWithVideo';
+export default React.memo(Hero);

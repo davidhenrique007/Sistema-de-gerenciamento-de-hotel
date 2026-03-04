@@ -1,462 +1,238 @@
-/* ============================================
-   ROOMS SECTION MODULE CSS
-   ============================================
-   Estilos para a seção de quartos
-   ============================================ */
-
-@import '../../../../shared/styles/variables.css';
-
-/* ============================================
+/* ============================================================================
    SEÇÃO PRINCIPAL
-   ============================================ */
+   =========================================================================== */
 
 .section {
-  padding: var(--spacing-3xl) 0;
-  background-color: var(--color-background-light);
-  position: relative;
-  overflow: hidden;
+  padding: var(--spacing-16) 0;
+  background-color: var(--color-bg-primary);
 }
 
-.section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(
-    90deg,
-    var(--color-secondary) 0%,
-    var(--color-primary) 50%,
-    var(--color-secondary) 100%
-  );
-  opacity: 0.3;
+.container {
+  max-width: var(--breakpoint-2xl);
+  margin: 0 auto;
+  padding: 0 var(--spacing-4);
 }
 
-/* ============================================
-   GRID HEADER
-   ============================================ */
+@media (min-width: var(--breakpoint-sm)) {
+  .container {
+    padding: 0 var(--spacing-6);
+  }
+}
 
-.gridHeader {
+@media (min-width: var(--breakpoint-lg)) {
+  .container {
+    padding: 0 var(--spacing-8);
+  }
+}
+
+/* ============================================================================
+   HEADER
+   =========================================================================== */
+
+.header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: var(--spacing-2xl);
-  flex-wrap: wrap;
-  gap: var(--spacing-lg);
+  flex-direction: column;
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-8);
+}
+
+@media (min-width: var(--breakpoint-md)) {
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
 }
 
 .headerContent {
-  flex: 1;
-  min-width: 300px;
+  max-width: 600px;
 }
 
-.gridTitle {
-  font-size: var(--font-size-3xl);
+.title {
+  margin: 0 0 var(--spacing-2);
+  font-size: clamp(var(--font-size-3xl), 5vw, var(--font-size-4xl));
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-sm);
-  line-height: var(--line-height-tight);
-  position: relative;
 }
 
-.gridTitle::after {
-  content: '';
-  display: block;
-  width: 80px;
-  height: 4px;
-  background-color: var(--color-secondary);
-  margin-top: var(--spacing-sm);
-  border-radius: var(--border-radius-full);
-}
-
-.gridSubtitle {
+.subtitle {
+  margin: 0;
   font-size: var(--font-size-lg);
   color: var(--color-text-secondary);
-  margin: 0;
-  line-height: var(--line-height-normal);
+  line-height: var(--line-height-relaxed);
 }
 
-.gridStats {
-  text-align: right;
-  padding-bottom: var(--spacing-xs);
+/* ============================================================================
+   STATS E FILTROS
+   =========================================================================== */
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  flex-wrap: wrap;
 }
 
-.totalRooms {
-  font-size: var(--font-size-md);
+.statItem {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+}
+
+.statItem strong {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  margin-right: var(--spacing-1);
+}
+
+.filters {
+  display: flex;
+  gap: var(--spacing-2);
+  margin-left: auto;
+}
+
+.filterButton {
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-secondary);
-  background-color: var(--color-background);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border-radius: var(--border-radius-full);
-  display: inline-block;
+  background-color: transparent;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast) var(--transition-ease);
 }
 
-/* ============================================
-   GRID DE QUARTOS
-   ============================================ */
-
-.gridContainer {
-  width: 100%;
-  overflow: hidden;
+.filterButton:hover {
+  background-color: var(--color-neutral-100);
 }
+
+.filterButton.active {
+  color: var(--color-primary-600);
+  background-color: var(--color-primary-50);
+  border-color: var(--color-primary-600);
+}
+
+/* ============================================================================
+   GRID
+   =========================================================================== */
 
 .grid {
   display: grid;
+  gap: var(--spacing-6);
+  margin-top: var(--spacing-8);
+}
+
+.grid.columns-1 {
+  grid-template-columns: 1fr;
+}
+
+.grid.columns-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid.columns-3 {
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-xl);
-  margin: 0;
-  padding: 0;
-  list-style: none;
+}
+
+.grid.columns-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: var(--breakpoint-lg)) {
+  .grid.columns-3,
+  .grid.columns-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: var(--breakpoint-md)) {
+  .grid.columns-2,
+  .grid.columns-3,
+  .grid.columns-4 {
+    grid-template-columns: 1fr;
+  }
 }
 
 .gridItem {
-  width: 100%;
   height: 100%;
 }
 
-/* Layout compact */
-.layout-compact .grid {
-  gap: var(--spacing-md);
-}
+/* ============================================================================
+   ESTADOS
+   =========================================================================== */
 
-.layout-compact .gridItem {
-  transform: scale(0.98);
-  transition: transform var(--transition-fast);
-}
-
-.layout-compact .gridItem:hover {
-  transform: scale(1);
-}
-
-/* Layout expanded */
-.layout-expanded .grid {
-  gap: var(--spacing-2xl);
-}
-
-/* ============================================
-   EMPTY STATE
-   ============================================ */
-
-.empty {
-  min-height: 400px;
+.loadingState,
+.errorState,
+.emptyState {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: var(--spacing-16) 0;
+  text-align: center;
+}
+
+.loadingText,
+.errorText,
+.emptyStateText {
+  margin: var(--spacing-4) 0 0;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+.errorState {
+  background-color: var(--color-error-50);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-8);
+}
+
+.errorText {
+  color: var(--color-error-700);
+  margin-bottom: var(--spacing-4);
 }
 
 .emptyState {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: var(--spacing-3xl) 0;
+  background-color: var(--color-neutral-50);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--color-border-medium);
 }
 
 .emptyStateText {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-lg);
+  color: var(--color-text-tertiary);
+}
+/* Adicionar ao final do arquivo existente */
+
+/* ============================================================================
+   INFORMAÇÃO DE SELEÇÃO
+   =========================================================================== */
+
+.selectionInfo {
+  margin-top: var(--spacing-6);
+  padding: var(--spacing-4);
+  background-color: var(--color-primary-50);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--color-primary-600);
+  animation: slideDown 0.3s var(--transition-ease-out);
 }
 
-/* ============================================
-   ERROR STATE
-   ============================================ */
-
-.errorState {
-  text-align: center;
-  padding: var(--spacing-2xl);
-  background-color: var(--color-danger-light);
-  border-radius: var(--border-radius-lg);
-  margin-top: var(--spacing-xl);
-}
-
-.errorMessage {
-  color: var(--color-danger);
-  font-size: var(--font-size-md);
-  margin-bottom: var(--spacing-md);
-}
-
-.retryButton {
-  background-color: var(--color-danger);
-  color: var(--color-text-light);
-  border: none;
-  padding: var(--spacing-sm) var(--spacing-xl);
-  border-radius: var(--border-radius-md);
-  font-size: var(--font-size-md);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.retryButton:hover {
-  background-color: var(--color-danger-dark);
-  transform: translateY(-2px);
-}
-
-.retryButton:focus-visible {
-  outline: 2px solid var(--color-secondary);
-  outline-offset: 2px;
-}
-
-/* ============================================
-   SELECTION FEEDBACK
-   ============================================ */
-
-.selectionFeedback {
-  margin-top: var(--spacing-xl);
-  padding: var(--spacing-md);
-  background-color: var(--color-success-light);
-  border: 1px solid var(--color-success);
-  border-radius: var(--border-radius-md);
-  animation: slideUp var(--transition-normal);
-}
-
-.selectionMessage {
-  color: var(--color-success);
-  font-size: var(--font-size-md);
+.selectionText {
   margin: 0;
-  text-align: center;
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
 }
 
-/* ============================================
-   SKELETON LOADING
-   ============================================ */
-
-.skeleton {
-  pointer-events: none;
+.selectionText strong {
+  color: var(--color-primary-700);
+  font-weight: var(--font-weight-semibold);
 }
 
-.skeletonCard {
-  background-color: var(--color-background-light);
-  border-radius: var(--border-radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-
-.skeletonImage {
-  width: 100%;
-  padding-top: 66.67%;
-  background: linear-gradient(
-    90deg,
-    var(--color-background-dark) 25%,
-    var(--color-background) 50%,
-    var(--color-background-dark) 75%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-.skeletonContent {
-  padding: var(--spacing-md);
-}
-
-.skeletonTitle {
-  width: 60%;
-  height: 24px;
-  background-color: var(--color-background-dark);
-  border-radius: var(--border-radius-sm);
-  margin-bottom: var(--spacing-sm);
-  animation: shimmer 1.5s infinite;
-}
-
-.skeletonPrice {
-  width: 100px;
-  height: 24px;
-  background-color: var(--color-background-dark);
-  border-radius: var(--border-radius-sm);
-  margin-bottom: var(--spacing-md);
-  animation: shimmer 1.5s infinite;
-}
-
-.skeletonAmenities {
-  display: flex;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
-}
-
-.skeletonAmenity {
-  width: 60px;
-  height: 24px;
-  background-color: var(--color-background-dark);
-  border-radius: var(--border-radius-sm);
-  animation: shimmer 1.5s infinite;
-}
-
-.skeletonButton {
-  width: 100%;
-  height: 40px;
-  background-color: var(--color-background-dark);
-  border-radius: var(--border-radius-md);
-  animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-/* ============================================
-   ANIMAÇÕES
-   ============================================ */
-
-@keyframes slideUp {
+@keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-/* ============================================
-   RESPONSIVIDADE
-   ============================================ */
-
-/* Desktop large */
-@media (min-width: 1400px) {
-  .grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* Desktop */
-@media (max-width: 1200px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-lg);
-  }
-}
-
-/* Tablet */
-@media (max-width: 768px) {
-  .section {
-    padding: var(--spacing-2xl) 0;
-  }
-
-  .gridHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-xl);
-  }
-
-  .gridStats {
-    text-align: left;
-    width: 100%;
-  }
-
-  .gridTitle {
-    font-size: var(--font-size-2xl);
-  }
-
-  .gridTitle::after {
-    width: 60px;
-  }
-
-  .gridSubtitle {
-    font-size: var(--font-size-md);
-  }
-
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-md);
-  }
-}
-
-/* Mobile */
-@media (max-width: 480px) {
-  .section {
-    padding: var(--spacing-xl) 0;
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-md);
-  }
-
-  .gridTitle {
-    font-size: var(--font-size-xl);
-  }
-
-  .totalRooms {
-    font-size: var(--font-size-sm);
-    padding: var(--spacing-xs) var(--spacing-md);
-  }
-
-  .selectionFeedback {
-    margin-top: var(--spacing-lg);
-    padding: var(--spacing-sm);
-  }
-}
-
-/* Mobile pequeno */
-@media (max-width: 360px) {
-  .gridTitle {
-    font-size: var(--font-size-lg);
-  }
-
-  .gridSubtitle {
-    font-size: var(--font-size-sm);
-  }
-}
-
-/* ============================================
-   ACESSIBILIDADE
-   ============================================ */
-
-@media (prefers-contrast: high) {
-  .gridTitle::after {
-    background-color: currentColor;
-  }
-
-  .totalRooms {
-    border: 1px solid currentColor;
-  }
-
-  .selectionFeedback {
-    border-width: 2px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .section::before,
-  .selectionFeedback,
-  .retryButton,
-  .skeletonImage,
-  .skeletonTitle,
-  .skeletonPrice,
-  .skeletonAmenity,
-  .skeletonButton {
-    animation: none;
-    transition: none;
-  }
-
-  .selectionFeedback {
-    animation: none;
-  }
-}
-
-/* ============================================
-   IMPRESSÃO
-   ============================================ */
-
-@media print {
-  .section {
-    padding: var(--spacing-md) 0;
-    background: none;
-  }
-
-  .section::before {
-    display: none;
-  }
-
-  .gridStats,
-  .selectionFeedback,
-  .retryButton {
-    display: none;
-  }
-
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-md);
   }
 }

@@ -1,166 +1,120 @@
-// ============================================
-// COMPONENT: Button
-// ============================================
-// Responsabilidade: Botão reutilizável com variantes
-// Acessibilidade: ARIA labels, foco visível, suporte a teclado
-// ============================================
-
-import React, { forwardRef } from 'react';
+import React, { forwardRef, memo } from 'react';
+import PropTypes from 'prop-types';
 import styles from './Button.module.css';
 
-// ============================================
-// CONSTANTES
-// ============================================
-
-export const ButtonVariant = {
-  PRIMARY: 'primary',
-  SECONDARY: 'secondary',
-  OUTLINE: 'outline',
-  GHOST: 'ghost',
-  DANGER: 'danger',
-  SUCCESS: 'success'
-};
-
-export const ButtonSize = {
-  SMALL: 'small',
-  MEDIUM: 'medium',
-  LARGE: 'large'
-};
-
-// ============================================
-// COMPONENTE PRINCIPAL
-// ============================================
-
-export const Button = forwardRef(({
-  // Conteúdo
+/**
+ * Button Component - Base do Design System Corporativo
+ * 
+ * @component
+ * @example
+ * <Button variant="primary" size="lg" onClick={handleClick}>
+ *   Reservar Agora
+ * </Button>
+ */
+const Button = forwardRef(({
   children,
-  
-  // Variantes e estilo
-  variant = ButtonVariant.PRIMARY,
-  size = ButtonSize.MEDIUM,
-  fullWidth = false,
-  
-  // Estados
-  disabled = false,
-  loading = false,
-  
-  // Ícones
-  leftIcon,
-  rightIcon,
-  
-  // Acessibilidade
-  ariaLabel,
-  ariaExpanded,
-  ariaControls,
-  
-  // Eventos
-  onClick,
-  onFocus,
-  onBlur,
-  
-  // Tipo do botão
+  variant = 'primary',
+  size = 'md',
   type = 'button',
-  
-  // Classes adicionais
+  disabled = false,
+  onClick,
+  fullWidth = false,
+  loading = false,
   className = '',
-  
-  // Resto das props
+  ariaLabel,
   ...props
 }, ref) => {
-  // ========================================
-  // CLASSES CSS
-  // ========================================
+  // ==========================================================================
+  // CLASSES CONDICIONAIS
+  // ==========================================================================
   
   const buttonClasses = [
     styles.button,
     styles[variant],
     styles[size],
     fullWidth && styles.fullWidth,
-    disabled && styles.disabled,
     loading && styles.loading,
-    className
-  ].filter(Boolean).join(' ');
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
-  // ========================================
+  // ==========================================================================
   // HANDLERS
-  // ========================================
-  
-  const handleClick = (e) => {
+  // ==========================================================================
+
+  const handleClick = (event) => {
     if (disabled || loading) {
-      e.preventDefault();
+      event.preventDefault();
       return;
     }
-    
-    if (onClick) {
-      onClick(e);
-    }
+    onClick?.(event);
   };
 
-  const handleKeyDown = (e) => {
-    // Suporte para Enter e Espaço (acessibilidade)
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      if (!disabled && !loading && onClick) {
-        onClick(e);
-      }
-    }
-  };
-
-  // ========================================
+  // ==========================================================================
   // RENDER
-  // ========================================
-  
+  // ==========================================================================
+
   return (
     <button
       ref={ref}
       type={type}
       className={buttonClasses}
       onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      onFocus={onFocus}
-      onBlur={onBlur}
       disabled={disabled || loading}
-      aria-label={ariaLabel}
-      aria-expanded={ariaExpanded}
-      aria-controls={ariaControls}
       aria-disabled={disabled || loading}
+      aria-busy={loading}
+      aria-label={ariaLabel}
       {...props}
     >
-      {loading && (
-        <span className={styles.spinner} aria-hidden="true">
-          <span className={styles.spinnerDot}></span>
-          <span className={styles.spinnerDot}></span>
-          <span className={styles.spinnerDot}></span>
+      {loading ? (
+        <span className={styles.loadingContent}>
+          <span className={styles.spinner} aria-hidden="true" />
+          <span>{children}</span>
         </span>
+      ) : (
+        children
       )}
-      
-      <span className={styles.content}>
-        {leftIcon && (
-          <span className={styles.leftIcon} aria-hidden="true">
-            {leftIcon}
-          </span>
-        )}
-        
-        <span className={styles.text}>{children}</span>
-        
-        {rightIcon && (
-          <span className={styles.rightIcon} aria-hidden="true">
-            {rightIcon}
-          </span>
-        )}
-      </span>
     </button>
   );
 });
 
 Button.displayName = 'Button';
 
-// PropTypes virtuais para documentação
 Button.propTypes = {
-  variant: Object.values(ButtonVariant),
-  size: Object.values(ButtonSize),
-  fullWidth: 'boolean',
-  disabled: 'boolean',
-  loading: 'boolean',
-  type: 'button submit reset'
+  /** Conteúdo do botão */
+  children: PropTypes.node.isRequired,
+  /** Variante visual */
+  variant: PropTypes.oneOf(['primary', 'secondary', 'outline']),
+  /** Tamanho do botão */
+  size: PropTypes.oneOf(['sm', 'md', 'lg']),
+  /** Tipo HTML do botão */
+  type: PropTypes.oneOf(['button', 'submit', 'reset']),
+  /** Estado desabilitado */
+  disabled: PropTypes.bool,
+  /** Função de clique */
+  onClick: PropTypes.func,
+  /** Ocupa 100% da largura do container */
+  fullWidth: PropTypes.bool,
+  /** Estado de carregamento */
+  loading: PropTypes.bool,
+  /** Classes CSS adicionais */
+  className: PropTypes.string,
+  /** Label acessível (quando sem texto visível) */
+  ariaLabel: PropTypes.string,
 };
+
+Button.defaultProps = {
+  variant: 'primary',
+  size: 'md',
+  type: 'button',
+  disabled: false,
+  fullWidth: false,
+  loading: false,
+  className: '',
+  ariaLabel: undefined,
+  onClick: undefined,
+};
+
+// Memo para evitar re-renderizações desnecessárias
+export default memo(Button);

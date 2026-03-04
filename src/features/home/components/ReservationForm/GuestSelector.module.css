@@ -1,233 +1,191 @@
-/* ============================================
-   GuestSelector.module.css
-   Design System Tokens
-   ============================================ */
+/* ============================================================================
+   CONTAINER PRINCIPAL
+   =========================================================================== */
 
 .container {
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4);
   width: 100%;
-  margin-bottom: var(--spacing-md, 16px);
-  font-family: var(--font-family, 'Inter', sans-serif);
+  max-width: 400px;
 }
 
-.label {
-  display: block;
-  margin-bottom: var(--spacing-xs, 4px);
-  font-size: var(--font-size-sm, 14px);
-  font-weight: var(--font-weight-medium, 500);
-  color: var(--color-text-secondary, #666);
+/* ============================================================================
+   TÍTULO
+   =========================================================================== */
+
+.title {
+  margin: 0 0 var(--spacing-4);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
 }
 
-.controls {
+/* ============================================================================
+   LISTA DE HÓSPEDES
+   =========================================================================== */
+
+.guestsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+.guestItem {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-sm, 8px);
-  background-color: var(--color-background-light, #f9f9f9);
-  border-radius: var(--border-radius-lg, 48px);
-  padding: var(--spacing-xs, 4px);
-  border: 1px solid var(--color-border, #e0e0e0);
-  transition: all var(--transition-fast, 0.2s);
+  padding: var(--spacing-2) 0;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
-.controls:focus-within {
-  border-color: var(--color-primary, #ff8c00);
-  box-shadow: 0 0 0 3px var(--color-primary-alpha, rgba(255, 140, 0, 0.1));
+.guestItem:last-child {
+  border-bottom: none;
 }
 
-.button {
-  width: 48px;
-  height: 48px;
+/* ============================================================================
+   INFORMAÇÕES DO HÓSPEDE
+   =========================================================================== */
+
+.guestInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.guestIcon {
+  font-size: var(--font-size-2xl);
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-background, #fff);
-  border: 1px solid var(--color-border, #e0e0e0);
-  border-radius: var(--border-radius-circle, 50%);
-  color: var(--color-text-primary, #333);
+}
+
+.guestLabel {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.guestDescription {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+}
+
+/* ============================================================================
+   CONTROLES
+   =========================================================================== */
+
+.guestControls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.controlButton {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-neutral-100);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
   cursor: pointer;
-  transition: all var(--transition-fast, 0.2s);
-  padding: 0;
-  box-shadow: var(--shadow-sm, 0 2px 4px rgba(0, 0, 0, 0.05));
+  transition: all var(--transition-fast) var(--transition-ease);
 }
 
-.button:hover:not(:disabled) {
-  background-color: var(--color-primary, #ff8c00);
-  border-color: var(--color-primary, #ff8c00);
-  color: white;
-  transform: scale(1.05);
-  box-shadow: var(--shadow-md, 0 4px 8px rgba(255, 140, 0, 0.2));
+.controlButton:hover:not(:disabled) {
+  background-color: var(--color-primary-100);
+  border-color: var(--color-primary-300);
 }
 
-.button:active:not(:disabled) {
+.controlButton:active:not(:disabled) {
   transform: scale(0.95);
-  transition: transform var(--transition-fast, 0.1s);
 }
 
-.button:focus-visible {
-  outline: 2px solid var(--color-primary, #ff8c00);
+.controlButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.controlButton:focus-visible {
+  outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;
 }
 
-.button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background-color: var(--color-background-disabled, #f5f5f5);
-  border-color: var(--color-border-disabled, #ddd);
-  color: var(--color-text-disabled, #999);
-  transform: none;
-  box-shadow: none;
-}
-
-.button svg {
-  width: 20px;
-  height: 20px;
-}
-
-.value {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 80px;
-  padding: var(--spacing-sm, 8px) var(--spacing-md, 12px);
-  background-color: var(--color-background, #fff);
-  border-radius: var(--border-radius-md, 32px);
+.guestCount {
+  min-width: 24px;
   text-align: center;
-  transition: all var(--transition-normal, 0.2s);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
 }
 
-.valueNumber {
-  font-size: var(--font-size-2xl, 28px);
-  font-weight: var(--font-weight-bold, 700);
-  line-height: 1.2;
-  color: var(--color-text-primary, #333);
-}
+/* ============================================================================
+   TOTAL
+   =========================================================================== */
 
-.valueText {
-  font-size: var(--font-size-xs, 12px);
-  color: var(--color-text-tertiary, #999);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.valueAnimating {
-  animation: valuePulse var(--transition-normal, 0.2s) ease-in-out;
-}
-
-@keyframes valuePulse {
-  0% {
-    transform: scale(1);
-    background-color: var(--color-background, #fff);
-  }
-  50% {
-    transform: scale(1.05);
-    background-color: var(--color-primary-alpha, rgba(255, 140, 0, 0.1));
-    color: var(--color-primary, #ff8c00);
-  }
-  100% {
-    transform: scale(1);
-    background-color: var(--color-background, #fff);
-  }
-}
-
-.valueError {
-  border: 1px solid var(--color-error, #dc3545);
-  background-color: var(--color-error-light, #fff5f5);
-}
-
-.valueError .valueNumber {
-  color: var(--color-error, #dc3545);
-}
-
-.errorMessage {
+.totalContainer {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs, 4px);
-  margin-top: var(--spacing-xs, 4px);
-  font-size: var(--font-size-sm, 14px);
-  color: var(--color-error, #dc3545);
-  animation: fadeIn var(--transition-fast, 0.2s);
+  justify-content: space-between;
+  padding: var(--spacing-3) 0;
+  margin-top: var(--spacing-2);
+  border-top: 2px solid var(--color-border-medium);
 }
 
-.errorIcon {
-  font-size: var(--font-size-md, 16px);
+.totalLabel {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.totalValue {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-600);
 }
 
-.hint {
-  height: 20px;
-  margin-top: var(--spacing-xs, 4px);
-  font-size: var(--font-size-xs, 12px);
-  color: var(--color-text-tertiary, #999);
-  visibility: hidden;
-}
+/* ============================================================================
+   RESPONSIVIDADE
+   =========================================================================== */
 
-.hint span {
-  visibility: visible;
-}
-
-.container.disabled {
-  opacity: 0.7;
-}
-
-.container.disabled .label {
-  color: var(--color-text-disabled, #999);
-}
-
-@media (max-width: 480px) {
-  .button {
-    width: 40px;
-    height: 40px;
+@media (max-width: var(--breakpoint-sm)) {
+  .container {
+    padding: var(--spacing-3);
   }
 
-  .button svg {
-    width: 18px;
-    height: 18px;
+  .guestIcon {
+    font-size: var(--font-size-xl);
+    width: 28px;
+    height: 28px;
   }
 
-  .valueNumber {
-    font-size: var(--font-size-xl, 24px);
+  .guestLabel {
+    font-size: var(--font-size-sm);
   }
 
-  .valueText {
-    font-size: var(--font-size-2xs, 10px);
-  }
-}
-
-@media (prefers-contrast: high) {
-  .button {
-    border-width: 2px;
+  .guestDescription {
+    font-size: var(--font-size-xs);
   }
 
-  .value {
-    border: 1px solid currentColor;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .button,
-  .value,
-  .valueAnimating {
-    animation: none;
-    transition: none;
+  .controlButton {
+    width: 28px;
+    height: 28px;
+    font-size: var(--font-size-md);
   }
 
-  .button:hover:not(:disabled) {
-    transform: none;
+  .guestCount {
+    font-size: var(--font-size-md);
   }
 
-  .button:active:not(:disabled) {
-    transform: none;
+  .totalValue {
+    font-size: var(--font-size-lg);
   }
 }

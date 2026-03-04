@@ -1,403 +1,163 @@
-// ============================================
-// COMPONENT: Input
-// ============================================
-// Responsabilidade: Input reutilizável com validação
-// Acessibilidade: Labels vinculadas, ARIA, mensagens de erro
-// ============================================
-
-import React, { forwardRef, useState, useId } from 'react';
+import React, { forwardRef, useState, useId, memo } from 'react';
+import PropTypes from 'prop-types';
 import styles from './Input.module.css';
 
-// ============================================
-// CONSTANTES
-// ============================================
-
-export const InputType = {
-  TEXT: 'text',
-  EMAIL: 'email',
-  PASSWORD: 'password',
-  NUMBER: 'number',
-  TEL: 'tel',
-  DATE: 'date',
-  TIME: 'time',
-  DATETIME_LOCAL: 'datetime-local',
-  SEARCH: 'search',
-  URL: 'url'
-};
-
-export const InputSize = {
-  SMALL: 'small',
-  MEDIUM: 'medium',
-  LARGE: 'large'
-};
-
-// ============================================
-// VALIDADORES
-// ============================================
-
-const validators = {
-  [InputType.EMAIL]: (value) => {
-    if (!value) return { isValid: true };
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return {
-      isValid: emailRegex.test(value),
-      message: 'Por favor, insira um e-mail válido'
-    };
-  },
-  
-  [InputType.URL]: (value) => {
-    if (!value) return { isValid: true };
-    try {
-      new URL(value);
-      return { isValid: true };
-    } catch {
-      return {
-        isValid: false,
-        message: 'Por favor, insira uma URL válida'
-      };
-    }
-  },
-  
-  [InputType.NUMBER]: (value, min, max) => {
-    if (!value && value !== 0) return { isValid: true };
-    const num = Number(value);
-    if (isNaN(num)) {
-      return {
-        isValid: false,
-        message: 'Por favor, insira um número válido'
-      };
-    }
-    if (min !== undefined && num < min) {
-      return {
-        isValid: false,
-        message: `O valor mínimo é ${min}`
-      };
-    }
-    if (max !== undefined && num > max) {
-      return {
-        isValid: false,
-        message: `O valor máximo é ${max}`
-      };
-    }
-    return { isValid: true };
-  },
-  
-  [InputType.TEL]: (value) => {
-    if (!value) return { isValid: true };
-    const phoneRegex = /^[\d\s\-\(\)]+$/;
-    return {
-      isValid: phoneRegex.test(value),
-      message: 'Por favor, insira um telefone válido'
-    };
-  },
-  
-  [InputType.DATE]: (value, min, max) => {
-    if (!value) return { isValid: true };
-    const date = new Date(value);
-    if (isNaN(date.getTime())) {
-      return {
-        isValid: false,
-        message: 'Por favor, insira uma data válida'
-      };
-    }
-    if (min && date < new Date(min)) {
-      return {
-        isValid: false,
-        message: `A data deve ser após ${new Date(min).toLocaleDateString()}`
-      };
-    }
-    if (max && date > new Date(max)) {
-      return {
-        isValid: false,
-        message: `A data deve ser antes de ${new Date(max).toLocaleDateString()}`
-      };
-    }
-    return { isValid: true };
-  }
-};
-
-// ============================================
-// COMPONENTE PRINCIPAL
-// ============================================
-
-export const Input = forwardRef(({
-  // Identificação
-  id,
-  name,
-  
-  // Label
+/**
+ * Input Component - Campo de entrada corporativo com acessibilidade
+ * 
+ * @component
+ * @example
+ * <Input
+ *   label="Nome completo"
+ *   name="fullName"
+ *   value={value}
+ *   onChange={handleChange}
+ *   error="Campo obrigatório"
+ * />
+ */
+const Input = forwardRef(({
   label,
-  hideLabel = false,
-  
-  // Tipo e valor
-  type = InputType.TEXT,
+  name,
+  type = 'text',
   value = '',
-  defaultValue,
-  placeholder,
-  
-  // Validação
-  required = false,
-  disabled = false,
-  readOnly = false,
-  min,
-  max,
-  minLength,
-  maxLength,
-  pattern,
-  
-  // Tamanho
-  size = InputSize.MEDIUM,
-  fullWidth = false,
-  
-  // Estados
-  error: externalError,
-  success = false,
-  
-  // Ícones
-  leftIcon,
-  rightIcon,
-  
-  // Eventos
   onChange,
   onBlur,
   onFocus,
-  onKeyDown,
-  
-  // Classes
+  error,
+  helperText,
+  required = false,
+  disabled = false,
+  fullWidth = true,
+  placeholder = '',
   className = '',
-  inputClassName = '',
-  
-  // Acessibilidade
-  ariaLabel,
-  ariaDescribedby,
-  autoComplete = 'off',
-  
-  // Resto das props
+  id: providedId,
+  maxLength,
+  minLength,
+  pattern,
+  autoComplete,
   ...props
 }, ref) => {
-  // ========================================
+  // ==========================================================================
   // ESTADOS
-  // ========================================
-  
-  const [internalValue, setInternalValue] = useState(defaultValue || value || '');
-  const [touched, setTouched] = useState(false);
-  const [focused, setFocused] = useState(false);
-  
-  // Gerar ID único se não fornecido
+  // ==========================================================================
+
+  const [isFocused, setIsFocused] = useState(false);
+  const [isTouched, setIsTouched] = useState(false);
+
+  // ==========================================================================
+  // ID ÚNICO PARA ACESSIBILIDADE
+  // ==========================================================================
+
   const generatedId = useId();
-  const inputId = id || `input-${generatedId}`;
+  const inputId = providedId || `input-${generatedId}`;
+  const helperId = `${inputId}-helper`;
   const errorId = `${inputId}-error`;
-  const descriptionId = `${inputId}-description`;
 
-  // ========================================
-  // VALIDAÇÃO
-  // ========================================
-  
-  const validate = (val) => {
-    // Se tem erro externo, usar ele
-    if (externalError) {
-      return { isValid: false, message: externalError };
-    }
-    
-    // Validação de campo obrigatório
-    if (required && (!val || val.toString().trim() === '')) {
-      return {
-        isValid: false,
-        message: 'Este campo é obrigatório'
-      };
-    }
-    
-    // Validação de tipo específico
-    const validator = validators[type];
-    if (validator && val) {
-      const result = validator(val, min, max);
-      if (!result.isValid) {
-        return result;
-      }
-    }
-    
-    // Validação de minLength/maxLength para strings
-    if (typeof val === 'string') {
-      if (minLength && val.length < minLength) {
-        return {
-          isValid: false,
-          message: `Mínimo de ${minLength} caracteres`
-        };
-      }
-      if (maxLength && val.length > maxLength) {
-        return {
-          isValid: false,
-          message: `Máximo de ${maxLength} caracteres`
-        };
-      }
-    }
-    
-    // Validação de pattern
-    if (pattern && val) {
-      const regex = new RegExp(pattern);
-      if (!regex.test(val)) {
-        return {
-          isValid: false,
-          message: 'Formato inválido'
-        };
-      }
-    }
-    
-    return { isValid: true };
-  };
-
-  const currentValue = value !== undefined ? value : internalValue;
-  const validation = validate(currentValue);
-  const showError = (touched || externalError) && !validation.isValid;
-
-  // ========================================
+  // ==========================================================================
   // HANDLERS
-  // ========================================
-  
-  const handleChange = (e) => {
-    const newValue = e.target.value;
-    
-    if (value === undefined) {
-      setInternalValue(newValue);
-    }
-    
-    if (onChange) {
-      onChange(e, validation);
-    }
+  // ==========================================================================
+
+  const handleFocus = (event) => {
+    setIsFocused(true);
+    onFocus?.(event);
   };
 
-  const handleBlur = (e) => {
-    setTouched(true);
-    setFocused(false);
-    
-    if (onBlur) {
-      onBlur(e, validation);
-    }
+  const handleBlur = (event) => {
+    setIsFocused(false);
+    setIsTouched(true);
+    onBlur?.(event);
   };
 
-  const handleFocus = (e) => {
-    setFocused(true);
-    
-    if (onFocus) {
-      onFocus(e);
-    }
+  const handleChange = (event) => {
+    onChange?.(event);
   };
 
-  // ========================================
+  // ==========================================================================
   // CLASSES CSS
-  // ========================================
-  
-  const wrapperClasses = [
-    styles.inputWrapper,
-    styles[size],
+  // ==========================================================================
+
+  const containerClasses = [
+    styles.container,
     fullWidth && styles.fullWidth,
     disabled && styles.disabled,
-    readOnly && styles.readOnly,
-    showError && styles.error,
-    success && styles.success,
-    focused && styles.focused,
-    leftIcon && styles.hasLeftIcon,
-    rightIcon && styles.hasRightIcon,
-    className
+    className,
   ].filter(Boolean).join(' ');
 
   const inputClasses = [
     styles.input,
-    showError && styles.inputError,
-    success && styles.inputSuccess,
-    inputClassName
+    isFocused && styles.focused,
+    error && isTouched && styles.error,
+    disabled && styles.disabled,
   ].filter(Boolean).join(' ');
 
-  // ========================================
+  // ==========================================================================
+  // ARIA DESCRIBEDBY
+  // ==========================================================================
+
+  const describedBy = [];
+  if (helperText && !error) describedBy.push(helperId);
+  if (error && isTouched) describedBy.push(errorId);
+
+  // ==========================================================================
   // RENDER
-  // ========================================
-  
+  // ==========================================================================
+
   return (
-    <div className={wrapperClasses}>
-      {/* Label */}
+    <div className={containerClasses}>
       {label && (
         <label 
-          htmlFor={inputId}
-          className={`${styles.label} ${hideLabel ? styles.visuallyHidden : ''}`}
+          htmlFor={inputId} 
+          className={styles.label}
         >
           {label}
-          {required && <span className={styles.required} aria-hidden="true"> *</span>}
+          {required && <span className={styles.required}>*</span>}
         </label>
       )}
-      
-      {/* Input Container */}
-      <div className={styles.inputContainer}>
-        {/* Ícone Esquerdo */}
-        {leftIcon && (
-          <span className={styles.leftIcon} aria-hidden="true">
-            {leftIcon}
-          </span>
-        )}
-        
-        {/* Input */}
+
+      <div className={styles.inputWrapper}>
         <input
           ref={ref}
           id={inputId}
           name={name}
           type={type}
-          value={currentValue}
-          placeholder={placeholder}
+          value={value}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           disabled={disabled}
-          readOnly={readOnly}
           required={required}
-          min={min}
-          max={max}
-          minLength={minLength}
+          placeholder={placeholder}
+          className={inputClasses}
+          aria-invalid={!!(error && isTouched)}
+          aria-describedby={describedBy.length > 0 ? describedBy.join(' ') : undefined}
           maxLength={maxLength}
+          minLength={minLength}
           pattern={pattern}
           autoComplete={autoComplete}
-          
-          onChange={handleChange}
-          onBlur={handleBlur}
-          onFocus={handleFocus}
-          onKeyDown={onKeyDown}
-          
-          className={inputClasses}
-          
-          aria-label={ariaLabel || label}
-          aria-invalid={showError}
-          aria-required={required}
-          aria-describedby={[
-            descriptionId,
-            showError ? errorId : null,
-            ariaDescribedby
-          ].filter(Boolean).join(' ')}
-          
           {...props}
         />
-        
-        {/* Ícone Direito */}
-        {rightIcon && (
-          <span className={styles.rightIcon} aria-hidden="true">
-            {rightIcon}
+
+        {error && isTouched && (
+          <span className={styles.errorIcon} aria-hidden="true">
+            ⚠️
           </span>
         )}
       </div>
-      
-      {/* Mensagem de Erro */}
-      {showError && (
-        <div 
-          id={errorId}
+
+      {helperText && !error && (
+        <span id={helperId} className={styles.helperText}>
+          {helperText}
+        </span>
+      )}
+
+      {error && isTouched && (
+        <span 
+          id={errorId} 
           className={styles.errorMessage}
           role="alert"
         >
-          {validation.message}
-        </div>
-      )}
-      
-      {/* Descrição/Hint */}
-      {props.description && !showError && (
-        <div 
-          id={descriptionId}
-          className={styles.description}
-        >
-          {props.description}
-        </div>
+          {error}
+        </span>
       )}
     </div>
   );
@@ -406,10 +166,66 @@ export const Input = forwardRef(({
 Input.displayName = 'Input';
 
 Input.propTypes = {
-  type: Object.values(InputType),
-  size: Object.values(InputSize),
-  required: 'boolean',
-  disabled: 'boolean',
-  readOnly: 'boolean',
-  fullWidth: 'boolean'
+  /** Label do campo */
+  label: PropTypes.string,
+  /** Nome do campo (para formulários) */
+  name: PropTypes.string,
+  /** Tipo do input */
+  type: PropTypes.oneOf(['text', 'email', 'password', 'number', 'tel', 'url', 'date', 'time', 'search']),
+  /** Valor atual */
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  /** Função chamada ao alterar valor */
+  onChange: PropTypes.func,
+  /** Função chamada ao perder foco */
+  onBlur: PropTypes.func,
+  /** Função chamada ao ganhar foco */
+  onFocus: PropTypes.func,
+  /** Mensagem de erro */
+  error: PropTypes.string,
+  /** Texto de ajuda (quando não há erro) */
+  helperText: PropTypes.string,
+  /** Campo obrigatório */
+  required: PropTypes.bool,
+  /** Estado desabilitado */
+  disabled: PropTypes.bool,
+  /** Ocupa 100% da largura */
+  fullWidth: PropTypes.bool,
+  /** Placeholder */
+  placeholder: PropTypes.string,
+  /** Classes CSS adicionais */
+  className: PropTypes.string,
+  /** ID customizado */
+  id: PropTypes.string,
+  /** Máximo de caracteres */
+  maxLength: PropTypes.number,
+  /** Mínimo de caracteres */
+  minLength: PropTypes.number,
+  /** Padrão regex para validação */
+  pattern: PropTypes.string,
+  /** Autocomplete */
+  autoComplete: PropTypes.string,
 };
+
+Input.defaultProps = {
+  label: '',
+  name: '',
+  type: 'text',
+  value: '',
+  onChange: undefined,
+  onBlur: undefined,
+  onFocus: undefined,
+  error: '',
+  helperText: '',
+  required: false,
+  disabled: false,
+  fullWidth: true,
+  placeholder: '',
+  className: '',
+  id: undefined,
+  maxLength: undefined,
+  minLength: undefined,
+  pattern: undefined,
+  autoComplete: undefined,
+};
+
+export default memo(Input);

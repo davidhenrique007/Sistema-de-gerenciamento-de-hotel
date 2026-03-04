@@ -1,298 +1,171 @@
-// ============================================
-// COMPONENT: Notification
-// ============================================
-// Responsabilidade: Sistema de notificações toast
-// Acessibilidade: role="alert", aria-live="assertive"
-// ============================================
-
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
+import { NotificationContext, NOTIFICATION_TYPES } from './NotificationContext';
 import styles from './Notification.module.css';
 
-// ============================================
-// CONSTANTES
-// ============================================
-
-export const NotificationType = {
-  SUCCESS: 'success',
-  ERROR: 'error',
-  INFO: 'info',
-  WARNING: 'warning'
-};
-
-export const NotificationPosition = {
-  TOP_RIGHT: 'top-right',
-  TOP_LEFT: 'top-left',
-  BOTTOM_RIGHT: 'bottom-right',
-  BOTTOM_LEFT: 'bottom-left',
-  TOP_CENTER: 'top-center',
-  BOTTOM_CENTER: 'bottom-center'
-};
-
-const DEFAULT_DURATION = 5000; // 5 segundos
-const ANIMATION_DURATION = 300; // 300ms para animações
-
-// ============================================
+// ============================================================================
 // ÍCONES POR TIPO
-// ============================================
+// ============================================================================
 
-const icons = {
-  [NotificationType.SUCCESS]: '✓',
-  [NotificationType.ERROR]: '✗',
-  [NotificationType.INFO]: 'ℹ',
-  [NotificationType.WARNING]: '⚠'
+const ICONS = {
+  [NOTIFICATION_TYPES.SUCCESS]: (
+    <svg className={styles.icon} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+    </svg>
+  ),
+  [NOTIFICATION_TYPES.ERROR]: (
+    <svg className={styles.icon} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+    </svg>
+  ),
+  [NOTIFICATION_TYPES.WARNING]: (
+    <svg className={styles.icon} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+    </svg>
+  ),
+  [NOTIFICATION_TYPES.INFO]: (
+    <svg className={styles.icon} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clipRule="evenodd" />
+    </svg>
+  ),
 };
 
-// ============================================
-// COMPONENTE: Notification Item
-// ============================================
+// ============================================================================
+// NOTIFICATION ITEM
+// ============================================================================
 
-const NotificationItem = ({
-  id,
-  type = NotificationType.INFO,
-  title,
-  message,
-  duration = DEFAULT_DURATION,
-  onClose,
-  position = NotificationPosition.TOP_RIGHT
-}) => {
+const NotificationItem = React.memo(({ notification, onRemove }) => {
   const [isExiting, setIsExiting] = useState(false);
 
-  // ========================================
-  // AUTO-DISMISS
-  // ========================================
-  
-  useEffect(() => {
-    if (duration > 0) {
-      const timer = setTimeout(() => {
-        handleClose();
-      }, duration);
+  // ==========================================================================
+  // HANDLE CLOSE COM ANIMAÇÃO
+  // ==========================================================================
 
-      return () => clearTimeout(timer);
-    }
-  }, [duration]);
-
-  // ========================================
-  // HANDLERS
-  // ========================================
-  
   const handleClose = useCallback(() => {
     setIsExiting(true);
     setTimeout(() => {
-      onClose(id);
-    }, ANIMATION_DURATION);
-  }, [id, onClose]);
+      onRemove(notification.id);
+    }, 200); // Tempo da animação de saída
+  }, [notification.id, onRemove]);
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Escape') {
-      handleClose();
+  // ==========================================================================
+  // AUTO-CLOSE
+  // ==========================================================================
+
+  useEffect(() => {
+    if (notification.duration > 0) {
+      const timer = setTimeout(() => {
+        handleClose();
+      }, notification.duration);
+
+      return () => clearTimeout(timer);
     }
-  };
+  }, [notification.duration, handleClose]);
 
-  // ========================================
-  // CLASSES
-  // ========================================
-  
-  const notificationClasses = [
-    styles.notification,
-    styles[type],
-    styles[position.split('-')[0]], // top ou bottom
-    isExiting && styles.exiting
-  ].filter(Boolean).join(' ');
-
-  // ========================================
+  // ==========================================================================
   // RENDER
-  // ========================================
-  
+  // ==========================================================================
+
   return (
     <div
-      className={notificationClasses}
+      className={`
+        ${styles.notification}
+        ${styles[notification.type]}
+        ${isExiting ? styles.exiting : ''}
+      `}
       role="alert"
       aria-live="assertive"
-      aria-atomic="true"
-      onKeyDown={handleKeyDown}
-      tabIndex={0}
     >
       <div className={styles.content}>
-        <div className={styles.icon} aria-hidden="true">
-          {icons[type]}
+        <div className={styles.iconContainer}>
+          {ICONS[notification.type]}
         </div>
         
-        <div className={styles.textContent}>
-          {title && <h4 className={styles.title}>{title}</h4>}
-          <p className={styles.message}>{message}</p>
+        <div className={styles.messageContainer}>
+          <p className={styles.message}>{notification.message}</p>
         </div>
         
         <button
           className={styles.closeButton}
           onClick={handleClose}
           aria-label="Fechar notificação"
+          type="button"
         >
-          ×
+          <svg className={styles.closeIcon} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+          </svg>
         </button>
       </div>
       
-      {/* Barra de progresso */}
-      {duration > 0 && (
-        <div 
-          className={styles.progressBar}
-          style={{ animationDuration: `${duration}ms` }}
-        />
-      )}
+      <div 
+        className={styles.progressBar} 
+        style={{ animationDuration: `${notification.duration}ms` }} 
+        aria-hidden="true"
+      />
     </div>
   );
-};
+});
 
-// ============================================
-// COMPONENTE: Notification Container
-// ============================================
+NotificationItem.displayName = 'NotificationItem';
 
-export const NotificationContainer = ({
-  notifications = [],
-  position = NotificationPosition.TOP_RIGHT,
-  onClose
-}) => {
-  if (!notifications.length) return null;
+// ============================================================================
+// COMPONENTE PRINCIPAL
+// ============================================================================
 
-  const containerClasses = [
-    styles.container,
-    styles[position]
-  ].filter(Boolean).join(' ');
+const Notification = () => {
+  const context = useContext(NotificationContext);
+  const [mounted, setMounted] = useState(false);
 
-  return (
-    <div className={containerClasses} aria-live="polite" aria-atomic="false">
+  // ==========================================================================
+  // VERIFICAÇÃO DE CONTEXTO
+  // ==========================================================================
+
+  if (!context) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Notification must be used within NotificationProvider');
+    }
+    return null;
+  }
+
+  const { notifications, removeNotification, position } = context;
+
+  // ==========================================================================
+  // MOUNT NO CLIENTE (PARA PORTAL)
+  // ==========================================================================
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  // ==========================================================================
+  // NÃO RENDERIZAR NO SERVER
+  // ==========================================================================
+
+  if (!mounted || !notifications.length) {
+    return null;
+  }
+
+  // ==========================================================================
+  // RENDER VIA PORTAL
+  // ==========================================================================
+
+  return createPortal(
+    <div 
+      className={`${styles.container} ${styles[position]}`}
+      aria-live="polite"
+      aria-atomic="false"
+    >
       {notifications.map((notification) => (
         <NotificationItem
           key={notification.id}
-          {...notification}
-          position={position}
-          onClose={onClose}
+          notification={notification}
+          onRemove={removeNotification}
         />
       ))}
-    </div>
+    </div>,
+    document.body
   );
 };
 
-// ============================================
-// NOTIFICATION PROVIDER
-// ============================================
-
-export const NotificationContext = React.createContext(null);
-
-export const NotificationProvider = ({ children }) => {
-  const [notifications, setNotifications] = useState([]);
-
-  const show = useCallback(({ type, title, message, duration }) => {
-    const id = Date.now() + Math.random().toString(36).substr(2, 9);
-    
-    setNotifications(prev => [...prev, {
-      id,
-      type,
-      title,
-      message,
-      duration
-    }]);
-
-    return id;
-  }, []);
-
-  const success = useCallback((message, options = {}) => {
-    return show({
-      type: NotificationType.SUCCESS,
-      message,
-      ...options
-    });
-  }, [show]);
-
-  const error = useCallback((message, options = {}) => {
-    return show({
-      type: NotificationType.ERROR,
-      message,
-      ...options
-    });
-  }, [show]);
-
-  const info = useCallback((message, options = {}) => {
-    return show({
-      type: NotificationType.INFO,
-      message,
-      ...options
-    });
-  }, [show]);
-
-  const warning = useCallback((message, options = {}) => {
-    return show({
-      type: NotificationType.WARNING,
-      message,
-      ...options
-    });
-  }, [show]);
-
-  const close = useCallback((id) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
-  }, []);
-
-  const closeAll = useCallback(() => {
-    setNotifications([]);
-  }, []);
-
-  const value = {
-    notifications,
-    show,
-    success,
-    error,
-    info,
-    warning,
-    close,
-    closeAll
-  };
-
-  return (
-    <NotificationContext.Provider value={value}>
-      {children}
-      <NotificationContainer
-        notifications={notifications}
-        onClose={close}
-      />
-    </NotificationContext.Provider>
-  );
-};
-
-// ============================================
-// HOOK PARA USAR NOTIFICAÇÕES
-// ============================================
-
-export const useNotification = () => {
-  const context = React.useContext(NotificationContext);
-  
-  if (!context) {
-    throw new Error('useNotification deve ser usado dentro de NotificationProvider');
-  }
-  
-  return context;
-};
-
-// ============================================
-// COMPONENTE PRINCIPAL (para uso direto)
-// ============================================
-
-export const Notification = ({
-  type = NotificationType.INFO,
-  title,
-  message,
-  duration = DEFAULT_DURATION,
-  onClose,
-  show = true
-}) => {
-  if (!show) return null;
-
-  return (
-    <NotificationItem
-      id="single"
-      type={type}
-      title={title}
-      message={message}
-      duration={duration}
-      onClose={() => onClose?.()}
-    />
-  );
-};
+export default React.memo(Notification);

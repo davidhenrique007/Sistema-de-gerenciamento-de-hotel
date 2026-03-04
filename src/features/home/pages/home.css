@@ -1,0 +1,101 @@
+/* ============================================================================
+   HOMEPAGE
+   =========================================================================== */
+
+.home-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.home-page__main {
+  flex: 1;
+}
+
+/* ============================================================================
+   SEÇÕES
+   =========================================================================== */
+
+.home-page__section {
+  padding: var(--spacing-16) 0;
+}
+
+.home-page__section--highlight {
+  background-color: var(--color-neutral-100);
+}
+
+/* ============================================================================
+   TÍTULOS DE SEÇÃO
+   =========================================================================== */
+
+.section-title {
+  margin: 0 0 var(--spacing-3);
+  font-size: clamp(
+    var(--font-size-3xl),
+    5vw,
+    var(--font-size-4xl)
+  );
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+.section-subtitle {
+  margin: 0 auto var(--spacing-8);
+  font-size: clamp(
+    var(--font-size-md),
+    3vw,
+    var(--font-size-xl)
+  );
+  color: var(--color-text-secondary);
+  text-align: center;
+  max-width: 600px;
+}
+
+/* ============================================================================
+   RESPONSIVIDADE
+   =========================================================================== */
+
+@media (max-width: var(--breakpoint-md)) {
+  .home-page__section {
+    padding: var(--spacing-12) 0;
+  }
+
+  .section-title {
+    margin-bottom: var(--spacing-2);
+  }
+
+  .section-subtitle {
+    margin-bottom: var(--spacing-6);
+  }
+}
+/* Adicionar ao final do arquivo */
+
+/* ============================================================================
+   PREVIEW DO QUARTO SELECIONADO
+   =========================================================================== */
+
+.selected-room-preview {
+  background-color: var(--color-primary-50);
+  border: 2px solid var(--color-primary-200);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  margin: var(--spacing-4) auto;
+  max-width: 400px;
+  text-align: left;
+}
+
+.selected-room-preview p {
+  margin: var(--spacing-2) 0;
+  color: var(--color-text-secondary);
+}
+
+.selected-room-preview strong {
+  color: var(--color-primary-700);
+  font-size: var(--font-size-lg);
+}
+
+.text-muted {
+  color: var(--color-text-tertiary) !important;
+  font-style: italic;
+}

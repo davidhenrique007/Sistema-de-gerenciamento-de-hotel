@@ -1,14 +1,6 @@
-/* ============================================
-   MODAL MODULE CSS
-   ============================================
-   Estilos isolados para o componente Modal
-   ============================================ */
-
-@import '../../../styles/variables.css';
-
-/* ============================================
-   OVERLAY
-   ============================================ */
+/* ============================================================================
+   OVERLAY (BACKDROP)
+   =========================================================================== */
 
 .overlay {
   position: fixed;
@@ -16,71 +8,69 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--color-bg-overlay);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: var(--z-index-modal);
-  animation: fadeIn var(--transition-normal);
-  padding: var(--spacing-md);
+  z-index: var(--z-index-modal-backdrop);
+  animation: fadeIn 0.2s var(--transition-ease-out);
+  padding: var(--spacing-4);
 }
 
-/* ============================================
-   MODAL PRINCIPAL
-   ============================================ */
+/* ============================================================================
+   MODAL
+   =========================================================================== */
 
 .modal {
-  background-color: var(--color-background-light);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-xl);
-  max-height: calc(100vh - var(--spacing-xl) * 2);
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-2xl);
   width: 100%;
+  max-height: calc(100vh - var(--spacing-8));
+  overflow-y: auto;
+  animation: slideUp 0.3s var(--transition-ease-out);
+  outline: none;
   display: flex;
   flex-direction: column;
-  animation: slideUp var(--transition-normal);
   position: relative;
-  outline: none;
 }
 
-.modal:focus-visible {
-  outline: 2px solid var(--color-secondary);
-  outline-offset: 2px;
-}
+/* ============================================================================
+   TAMANHOS
+   =========================================================================== */
 
-/* ============================================
-   TAMANHOS DO MODAL
-   ============================================ */
-
-.small {
+.sm {
   max-width: 400px;
 }
 
-.medium {
+.md {
   max-width: 600px;
 }
 
-.large {
+.lg {
   max-width: 800px;
 }
 
-.fullscreen {
-  max-width: 90vw;
-  max-height: 90vh;
-  width: 90vw;
-  height: 90vh;
+.xl {
+  max-width: 1000px;
 }
 
-/* ============================================
+.full {
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+/* ============================================================================
    HEADER
-   ============================================ */
+   =========================================================================== */
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing-lg);
-  border-bottom: var(--border-width-thin) solid var(--color-background-dark);
+  padding: var(--spacing-4) var(--spacing-6);
+  border-bottom: 1px solid var(--color-border-light);
   flex-shrink: 0;
 }
 
@@ -92,73 +82,30 @@
   line-height: var(--line-height-tight);
 }
 
-/* ============================================
+/* ============================================================================
    BOTÃO FECHAR
-   ============================================ */
+   =========================================================================== */
 
 .closeButton {
-  background: none;
-  border: none;
-  font-size: var(--font-size-2xl);
-  line-height: 1;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  padding: var(--spacing-xs);
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--border-radius-sm);
-  transition: all var(--transition-fast);
+  min-width: auto !important;
+  padding: var(--spacing-2) !important;
+  font-size: var(--font-size-lg) !important;
+  line-height: 1 !important;
 }
 
-.closeButton:hover {
-  color: var(--color-text-primary);
-  background-color: var(--color-background-dark);
-}
-
-.closeButton:focus-visible {
-  outline: 2px solid var(--color-secondary);
-  outline-offset: 2px;
-}
-
-/* ============================================
-   CONTENT
-   ============================================ */
+/* ============================================================================
+   CONTEÚDO
+   =========================================================================== */
 
 .content {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-6);
   overflow-y: auto;
   flex: 1;
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-normal);
-  outline: none;
 }
 
-.content:focus-visible {
-  outline: 2px solid var(--color-secondary);
-  outline-offset: -2px;
-  border-radius: var(--border-radius-sm);
-}
-
-/* ============================================
-   FOOTER
-   ============================================ */
-
-.footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--spacing-md);
-  padding: var(--spacing-lg);
-  border-top: var(--border-width-thin) solid var(--color-background-dark);
-  flex-shrink: 0;
-}
-
-/* ============================================
+/* ============================================================================
    ANIMAÇÕES
-   ============================================ */
+   =========================================================================== */
 
 @keyframes fadeIn {
   from {
@@ -171,124 +118,42 @@
 
 @keyframes slideUp {
   from {
-    opacity: 0;
     transform: translateY(20px);
+    opacity: 0;
   }
   to {
-    opacity: 1;
     transform: translateY(0);
+    opacity: 1;
   }
 }
 
-/* ============================================
+/* ============================================================================
    RESPONSIVIDADE
-   ============================================ */
+   =========================================================================== */
 
-@media (max-width: 768px) {
-  .overlay {
-    padding: var(--spacing-sm);
-  }
-  
-  .small,
-  .medium,
-  .large {
+@media (max-width: var(--breakpoint-md)) {
+  .sm,
+  .md,
+  .lg,
+  .xl {
     max-width: 100%;
   }
-  
-  .fullscreen {
-    max-width: 100vw;
-    max-height: 100vh;
-    width: 100vw;
-    height: 100vh;
-    border-radius: 0;
+
+  .full {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: var(--radius-lg);
   }
-  
+
   .header {
-    padding: var(--spacing-md);
+    padding: var(--spacing-3) var(--spacing-4);
   }
-  
+
   .title {
     font-size: var(--font-size-lg);
   }
-  
+
   .content {
-    padding: var(--spacing-md);
-  }
-  
-  .footer {
-    padding: var(--spacing-md);
-    flex-direction: column-reverse;
-    gap: var(--spacing-sm);
-  }
-  
-  .footer button {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .overlay {
-    padding: 0;
-  }
-  
-  .modal {
-    max-height: 100vh;
-    border-radius: 0;
-  }
-  
-  .header {
-    padding: var(--spacing-sm) var(--spacing-md);
-  }
-  
-  .closeButton {
-    width: 28px;
-    height: 28px;
-    font-size: var(--font-size-xl);
-  }
-}
-
-/* ============================================
-   ACESSIBILIDADE
-   ============================================ */
-
-/* High contrast mode */
-@media (prefers-contrast: high) {
-  .overlay {
-    background-color: rgba(0, 0, 0, 0.8);
-  }
-  
-  .modal {
-    border: 2px solid currentColor;
-  }
-}
-
-/* Reduced motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  .overlay,
-  .modal {
-    animation: none;
-  }
-}
-
-/* ============================================
-   IMPRESSÃO
-   ============================================ */
-
-@media print {
-  .overlay {
-    position: static;
-    background: none;
-    backdrop-filter: none;
-    padding: 0;
-  }
-  
-  .modal {
-    box-shadow: none;
-    border: 1px solid var(--color-text-muted);
-    animation: none;
-  }
-  
-  .closeButton {
-    display: none;
+    padding: var(--spacing-4);
   }
 }

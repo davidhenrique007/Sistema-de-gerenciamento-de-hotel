@@ -1,296 +1,217 @@
-/* ============================================
-   BUTTON MODULE CSS
-   ============================================
-   Estilos isolados para o componente Button
-   ============================================ */
-
-@import '../../../styles/variables.css';
-
-/* ============================================
+/* ============================================================================
    BUTTON BASE
-   ============================================ */
+   =========================================================================== */
 
 .button {
+  /* Layout */
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-2);
   
+  /* Tipografia */
   font-family: var(--font-family-primary);
   font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-normal);
+  line-height: 1;
+  white-space: nowrap;
   
-  border: none;
-  border-radius: var(--border-radius-md);
+  /* Borda e fundo */
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  
+  /* Cursor */
   cursor: pointer;
   
-  transition: all var(--transition-fast);
-  
-  position: relative;
-  overflow: hidden;
-  
-  /* Reset de estilos padrão */
-  background: none;
-  text-decoration: none;
+  /* Transições */
+  transition: all var(--transition-fast) var(--transition-ease);
   
   /* Acessibilidade */
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.button:focus-visible {
-  outline: 2px solid var(--color-secondary);
-  outline-offset: 2px;
-}
+/* ============================================================================
+   TAMANHOS
+   =========================================================================== */
 
-.button:active {
-  transform: translateY(1px);
-}
-
-/* ============================================
-   VARIANTES DE TAMANHO
-   ============================================ */
-
-.small {
-  padding: var(--spacing-xs) var(--spacing-md);
+.sm {
+  padding: var(--spacing-2) var(--spacing-3);
   font-size: var(--font-size-sm);
   min-height: 32px;
 }
 
-.medium {
-  padding: var(--spacing-sm) var(--spacing-lg);
+.md {
+  padding: var(--spacing-3) var(--spacing-6);
   font-size: var(--font-size-md);
   min-height: 40px;
 }
 
-.large {
-  padding: var(--spacing-md) var(--spacing-xl);
+.lg {
+  padding: var(--spacing-4) var(--spacing-8);
   font-size: var(--font-size-lg);
   min-height: 48px;
 }
 
-/* ============================================
-   VARIANTES DE COR
-   ============================================ */
+/* ============================================================================
+   VARIANTES
+   =========================================================================== */
 
 /* Primary */
 .primary {
-  background-color: var(--color-primary);
-  color: var(--color-text-light);
+  background-color: var(--color-primary-600);
+  color: var(--color-text-inverse);
+  border-color: var(--color-primary-600);
 }
 
-.primary:hover:not(:disabled):not(.loading) {
-  background-color: var(--color-primary-light);
+.primary:hover:not(:disabled) {
+  background-color: var(--color-primary-700);
+  border-color: var(--color-primary-700);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
-.primary:active:not(:disabled):not(.loading) {
-  background-color: var(--color-primary-dark);
+.primary:active:not(:disabled) {
+  background-color: var(--color-primary-800);
+  border-color: var(--color-primary-800);
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.primary:focus-visible {
+  outline: 2px solid var(--color-primary-400);
+  outline-offset: 2px;
 }
 
 /* Secondary */
 .secondary {
-  background-color: var(--color-secondary);
-  color: var(--color-text-light);
+  background-color: var(--color-neutral-100);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-medium);
 }
 
-.secondary:hover:not(:disabled):not(.loading) {
-  background-color: var(--color-secondary-light);
+.secondary:hover:not(:disabled) {
+  background-color: var(--color-neutral-200);
+  border-color: var(--color-neutral-400);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
-.secondary:active:not(:disabled):not(.loading) {
-  background-color: var(--color-secondary-dark);
+.secondary:active:not(:disabled) {
+  background-color: var(--color-neutral-300);
+  border-color: var(--color-neutral-500);
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.secondary:focus-visible {
+  outline: 2px solid var(--color-neutral-400);
+  outline-offset: 2px;
 }
 
 /* Outline */
 .outline {
   background-color: transparent;
-  color: var(--color-primary);
-  border: var(--border-width-medium) solid var(--color-primary);
+  color: var(--color-primary-600);
+  border-color: var(--color-primary-600);
 }
 
-.outline:hover:not(:disabled):not(.loading) {
-  background-color: var(--color-primary);
-  color: var(--color-text-light);
+.outline:hover:not(:disabled) {
+  background-color: var(--color-primary-50);
+  border-color: var(--color-primary-700);
+  color: var(--color-primary-700);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
-.outline:active:not(:disabled):not(.loading) {
-  background-color: var(--color-primary-dark);
-  border-color: var(--color-primary-dark);
+.outline:active:not(:disabled) {
+  background-color: var(--color-primary-100);
+  border-color: var(--color-primary-800);
+  color: var(--color-primary-800);
+  transform: translateY(0);
+  box-shadow: none;
 }
 
-/* Ghost */
-.ghost {
-  background-color: transparent;
-  color: var(--color-primary);
+.outline:focus-visible {
+  outline: 2px solid var(--color-primary-300);
+  outline-offset: 2px;
 }
 
-.ghost:hover:not(:disabled):not(.loading) {
-  background-color: rgba(44, 62, 80, 0.1);
-}
-
-.ghost:active:not(:disabled):not(.loading) {
-  background-color: rgba(44, 62, 80, 0.2);
-}
-
-/* Danger */
-.danger {
-  background-color: var(--color-danger);
-  color: var(--color-text-light);
-}
-
-.danger:hover:not(:disabled):not(.loading) {
-  background-color: #c82333;
-}
-
-.danger:active:not(:disabled):not(.loading) {
-  background-color: #bd2130;
-}
-
-/* Success */
-.success {
-  background-color: var(--color-success);
-  color: var(--color-text-light);
-}
-
-.success:hover:not(:disabled):not(.loading) {
-  background-color: #218838;
-}
-
-.success:active:not(:disabled):not(.loading) {
-  background-color: #1e7e34;
-}
-
-/* ============================================
+/* ============================================================================
    ESTADOS
-   ============================================ */
+   =========================================================================== */
 
 /* Disabled */
-.button.disabled,
-.button:disabled {
-  opacity: 0.6;
+.button:disabled,
+.button[aria-disabled="true"] {
+  opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Loading */
-.button.loading {
+.loading {
   cursor: wait;
   opacity: 0.8;
   pointer-events: none;
 }
 
-/* Full Width */
+.loadingContent {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--radius-full);
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================================
+   VARIAÇÕES DE LAYOUT
+   =========================================================================== */
+
 .fullWidth {
   width: 100%;
 }
 
-/* ============================================
-   ÍCONES
-   ============================================ */
-
-.content {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
-  width: 100%;
-}
-
-.leftIcon,
-.rightIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2em;
-  line-height: 1;
-}
-
-/* ============================================
-   SPINNER (LOADING)
-   ============================================ */
-
-.spinner {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-xs);
-  background-color: inherit;
-  border-radius: inherit;
-}
-
-.spinnerDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: currentColor;
-  animation: bounce 1.4s infinite ease-in-out both;
-}
-
-.spinnerDot:nth-child(1) {
-  animation-delay: -0.32s;
-}
-
-.spinnerDot:nth-child(2) {
-  animation-delay: -0.16s;
-}
-
-@keyframes bounce {
-  0%, 80%, 100% {
-    transform: scale(0);
-  }
-  40% {
-    transform: scale(1);
-  }
-}
-
-/* ============================================
-   ACESSIBILIDADE
-   ============================================ */
-
-/* High contrast mode */
-@media (prefers-contrast: high) {
-  .button {
-    border: 2px solid currentColor;
-  }
-  
-  .outline {
-    border-width: 3px;
-  }
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .button,
-  .spinnerDot {
-    animation: none;
-    transition: none;
-  }
-  
-  .button:active {
-    transform: none;
-  }
-}
-
-/* ============================================
+/* ============================================================================
    RESPONSIVIDADE
-   ============================================ */
+   =========================================================================== */
 
-@media (max-width: 768px) {
-  .small {
-    padding: var(--spacing-xs) var(--spacing-sm);
+@media (max-width: var(--breakpoint-sm)) {
+  .lg {
+    padding: var(--spacing-3) var(--spacing-6);
+    font-size: var(--font-size-md);
+    min-height: 44px;
   }
   
-  .medium {
-    padding: var(--spacing-xs) var(--spacing-md);
+  .md {
+    min-height: 44px; /* Acessibilidade: tamanho mínimo para toque */
   }
-  
-  .large {
-    padding: var(--spacing-sm) var(--spacing-lg);
+}
+
+/* ============================================================================
+   DARK MODE PREPARATION
+   =========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  .secondary {
+    background-color: var(--color-neutral-800);
+    color: var(--color-text-inverse);
   }
 }

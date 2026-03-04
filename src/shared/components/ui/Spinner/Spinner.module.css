@@ -1,233 +1,92 @@
-/* ============================================
-   SPINNER MODULE CSS
-   ============================================
-   Estilos isolados para o componente Spinner
-   ============================================ */
-
-@import '../../../styles/variables.css';
-
-/* ============================================
+/* ============================================================================
    SPINNER BASE
-   ============================================ */
+   =========================================================================== */
 
 .spinner {
   display: inline-flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-sm);
+  position: relative;
 }
 
-/* ============================================
+/* ============================================================================
    CÍRCULO ANIMADO
-   ============================================ */
+   =========================================================================== */
 
 .circle {
-  display: inline-block;
-  position: relative;
-  width: 40px;
-  height: 40px;
-  animation: rotate 2s linear infinite;
+  border: 3px solid var(--color-neutral-200);
+  border-top-color: var(--color-primary-600);
+  border-right-color: var(--color-primary-300);
+  border-radius: var(--radius-full);
+  animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+  will-change: transform;
 }
 
-.path {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 3px solid transparent;
-  border-top-color: currentColor;
-  border-radius: 50%;
-  animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-}
-
-/* ============================================
+/* ============================================================================
    TAMANHOS
-   ============================================ */
+   =========================================================================== */
 
-.small .circle {
+.sm .circle {
   width: 20px;
   height: 20px;
-}
-
-.small .path {
   border-width: 2px;
 }
 
-.medium .circle {
-  width: 40px;
-  height: 40px;
-}
-
-.medium .path {
+.md .circle {
+  width: 32px;
+  height: 32px;
   border-width: 3px;
 }
 
-.large .circle {
-  width: 60px;
-  height: 60px;
-}
-
-.large .path {
+.lg .circle {
+  width: 48px;
+  height: 48px;
   border-width: 4px;
 }
 
-/* ============================================
-   CORES
-   ============================================ */
+/* ============================================================================
+   FULL SCREEN
+   =========================================================================== */
 
-.primary {
-  color: var(--color-primary);
+.fullScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-bg-overlay);
+  backdrop-filter: blur(4px);
+  z-index: var(--z-index-modal);
 }
 
-.secondary {
-  color: var(--color-secondary);
+.fullScreen .circle {
+  width: 64px;
+  height: 64px;
+  border-width: 5px;
 }
 
-.light {
-  color: var(--color-text-light);
-}
-
-.dark {
-  color: var(--color-text-dark);
-}
-
-/* ============================================
-   LABEL
-   ============================================ */
-
-.label {
-  font-size: var(--font-size-sm);
-  color: inherit;
-  margin-top: var(--spacing-xs);
-}
-
-.visuallyHidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  border: 0;
-}
-
-/* ============================================
-   ANIMAÇÕES
-   ============================================ */
-
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+/* ============================================================================
+   ANIMAÇÃO
+   =========================================================================== */
 
 @keyframes spin {
   0% {
     transform: rotate(0deg);
-  }
-  50% {
-    transform: rotate(180deg);
   }
   100% {
     transform: rotate(360deg);
   }
 }
 
-/* ============================================
-   OVERLAY
-   ============================================ */
+/* ============================================================================
+   OTIMIZAÇÕES DE PERFORMANCE
+   =========================================================================== */
 
-.overlayContainer {
-  position: relative;
-  min-height: 100px;
+.spinner {
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
-.overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(255, 255, 255, 0.8);
-  z-index: var(--z-index-modal-backdrop);
-  border-radius: inherit;
-}
-
-.overlay.blur {
-  backdrop-filter: blur(4px);
-}
-
-.overlay.transparent {
-  background-color: transparent;
-}
-
-/* ============================================
-   INLINE CONTAINER
-   ============================================ */
-
-.inlineContainer {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.inlineText {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-}
-
-/* ============================================
-   ACESSIBILIDADE
-   ============================================ */
-
-/* Reduced motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  .circle,
-  .path {
-    animation: none;
-  }
-  
-  .overlay.blur {
-    backdrop-filter: none;
-  }
-}
-
-/* High contrast mode */
-@media (prefers-contrast: high) {
-  .path {
-    border-top-color: currentColor;
-    border-right-color: transparent;
-    border-bottom-color: transparent;
-    border-left-color: transparent;
-  }
-}
-
-/* ============================================
-   RESPONSIVIDADE
-   ============================================ */
-
-@media (max-width: 768px) {
-  .small .circle {
-    width: 16px;
-    height: 16px;
-  }
-  
-  .medium .circle {
-    width: 32px;
-    height: 32px;
-  }
-  
-  .large .circle {
-    width: 48px;
-    height: 48px;
-  }
+.circle {
+  transform: translateZ(0);
 }

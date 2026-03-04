@@ -1,176 +1,177 @@
-// ============================================
-// COMPONENT: RoomsSection
-// ============================================
-// Responsabilidade: Seção principal de quartos com integração de use cases
-// ============================================
-
-import React, { useState, useCallback, useMemo } from 'react';
-import { Container, ContainerSize } from '../../../../shared/components/layout';
-import { RoomGrid, RoomGridHeader } from './RoomGrid.jsx';
-import { RoomStatus } from './RoomStatusBadge.jsx';
+import React, { useCallback } from 'react';
+import PropTypes from 'prop-types';
+import useRooms from '../../hooks/useRooms';
+import useRoomSelection from '../../hooks/useRoomSelection';
+import RoomGrid from './RoomGrid';
+import Spinner from '../../../../shared/components/ui/Spinner';
+import Button from '../../../../shared/components/ui/Button';
 import styles from './RoomsSection.module.css';
 
-export const RoomsSection = ({
-  // Dados
-  rooms = [],
-  totalRooms,
-  
-  // Estados
-  isLoading = false,
-  error = null,
-  
-  // Callbacks e hooks
-  onSelectRoom,
-  occupancyHook,
-  
-  // Configuração
-  title = 'Nossos Quartos',
-  subtitle = 'Conforto e sofisticação para todos os momentos',
-  showHeader = true,
-  layout = 'auto',
-  
-  // Classes
-  className = '',
-  ...props
-}) => {
-  // ========================================
-  // LOGS PARA DIAGNÓSTICO
-  // ========================================
-  console.log('🏨 [RoomsSection] Renderizando');
-  console.log('   rooms recebidos:', rooms);
-  console.log('   rooms length:', rooms?.length);
-  console.log('   isLoading:', isLoading);
-  console.log('   occupancyHook presente:', !!occupancyHook);
+/**
+ * RoomsSection Component - Seção principal de quartos
+ * Agora integrada com useRoomSelection
+ * 
+ * @component
+ * @example
+ * <RoomsSection onSelectRoom={handleRoomSelect} />
+ */
+const RoomsSection = ({ onSelectRoom, title, subtitle }) => {
+  // ==========================================================================
+  // HOOKS
+  // ==========================================================================
 
-  // ========================================
-  // ESTADOS LOCAIS
-  // ========================================
-  
-  const [selectedRoomId, setSelectedRoomId] = useState(null);
+  const { rooms, isLoading, error, stats, getAvailableRooms } = useRooms();
+  const { selectedRoomId, selectRoom } = useRoomSelection(rooms);
 
-  // ========================================
-  // DADOS DERIVADOS COM ESTADO DE OCUPAÇÃO
-  // ========================================
-  
-  const roomsWithOccupancy = useMemo(() => {
-    console.log('🔄 [RoomsSection] Recalculando roomsWithOccupancy');
-    
-    if (!rooms || rooms.length === 0) {
-      console.log('   ⚠️ Nenhum quarto para processar');
-      return [];
-    }
+  // ==========================================================================
+  // STATE
+  // ==========================================================================
 
-    const processed = rooms.map(room => {
-      const currentStatus = occupancyHook?.getRoomStatus?.(room.id) || room.status;
-      const isOccupied = currentStatus === RoomStatus.OCCUPIED;
-      const isLoading = occupancyHook?.loadingMap?.get(room.id) || false;
+  const [filter, setFilter] = React.useState('all'); // 'all' | 'available'
 
-      return {
-        ...room,
-        status: currentStatus,
-        isAvailable: !isOccupied,
-        isLoading,
-        occupancyError: occupancyHook?.errorMap?.get(room.id)
-      };
-    });
-
-    console.log(`   ✅ ${processed.length} quartos processados`);
-    return processed;
-  }, [rooms, occupancyHook]);
-
-  const availableRoomsCount = useMemo(() => {
-    const count = roomsWithOccupancy.filter(room => room.isAvailable).length;
-    console.log(`📊 [RoomsSection] Quartos disponíveis: ${count}`);
-    return count;
-  }, [roomsWithOccupancy]);
-
-  // ========================================
+  // ==========================================================================
   // HANDLERS
-  // ========================================
-  
-  const handleSelectRoom = useCallback((room) => {
-    console.log(`🖱️ [RoomsSection] Selecionando quarto:`, room);
-    
-    const isAvailable = occupancyHook?.isRoomAvailable?.(room.id) ?? room.isAvailable;
-    
-    if (!isAvailable) {
-      console.warn(`⛔ Quarto ${room.number} não está disponível para seleção`);
-      return;
-    }
+  // ==========================================================================
 
-    setSelectedRoomId(room.id);
+  const handleFilterChange = useCallback((newFilter) => {
+    setFilter(newFilter);
+  }, []);
+
+  const handleSelectRoom = useCallback((room) => {
+    selectRoom(room);
     
+    // Propagar para componente pai se necessário
     if (onSelectRoom) {
       onSelectRoom(room);
     }
-  }, [occupancyHook, onSelectRoom]);
+  }, [selectRoom, onSelectRoom]);
 
   const handleRetry = useCallback(() => {
-    console.log('🔄 [RoomsSection] Tentando novamente');
-    if (props.onRetry) {
-      props.onRetry();
-    }
-  }, [props.onRetry]);
+    window.location.reload();
+  }, []);
 
-  // ========================================
-  // RENDER
-  // ========================================
-  
-  const sectionClasses = [
-    styles.section,
-    isLoading && styles.loading,
-    error && styles.error,
-    className
-  ].filter(Boolean).join(' ');
+  // ==========================================================================
+  // FILTERED ROOMS
+  // ==========================================================================
 
-  console.log('🎨 [RoomsSection] Renderizando JSX');
-  console.log('   roomsWithOccupancy length:', roomsWithOccupancy.length);
+  const filteredRooms = filter === 'available'
+    ? getAvailableRooms()
+    : rooms;
+
+  // ==========================================================================
+  // RENDER: LOADING
+  // ==========================================================================
+
+  if (isLoading) {
+    return (
+      <section className={styles.section}>
+        <div className={styles.container}>
+          <div className={styles.loadingState}>
+            <Spinner size="lg" />
+            <p className={styles.loadingText}>Carregando quartos disponíveis...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================================================
+  // RENDER: ERROR
+  // ==========================================================================
+
+  if (error) {
+    return (
+      <section className={styles.section}>
+        <div className={styles.container}>
+          <div className={styles.errorState}>
+            <p className={styles.errorText}>{error}</p>
+            <Button variant="primary" onClick={handleRetry}>
+              Tentar novamente
+            </Button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ==========================================================================
+  // RENDER: SUCCESS
+  // ==========================================================================
 
   return (
-    <section 
-      className={sectionClasses}
-      aria-labelledby="rooms-section-title"
-      {...props}
-    >
-      <Container size={ContainerSize.LARGE}>
-        {/* Cabeçalho da seção */}
-        {showHeader && (
-          <RoomGridHeader
-            title={title}
-            subtitle={subtitle}
-            totalRooms={totalRooms || rooms.length}
-            availableRooms={availableRoomsCount}
-          />
-        )}
+    <section className={styles.section}>
+      <div className={styles.container}>
+        {/* Header */}
+        <div className={styles.header}>
+          <div className={styles.headerContent}>
+            <h2 className={styles.title}>{title}</h2>
+            {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+          </div>
 
-        {/* Grid de quartos */}
-        <div className={styles.gridContainer}>
-          <RoomGrid
-            rooms={roomsWithOccupancy}
-            onSelect={handleSelectRoom}
-            selectedRoomId={selectedRoomId}
-            isLoading={isLoading}
-            layout={layout}
-            occupancyHook={occupancyHook}
-          />
+          {/* Stats e Filtros */}
+          <div className={styles.stats}>
+            <span className={styles.statItem}>
+              <strong>{stats.total}</strong> total
+            </span>
+            <span className={styles.statItem}>
+              <strong>{stats.available}</strong> disponíveis
+            </span>
+            
+            <div className={styles.filters}>
+              <button
+                className={`${styles.filterButton} ${filter === 'all' ? styles.active : ''}`}
+                onClick={() => handleFilterChange('all')}
+                aria-pressed={filter === 'all'}
+              >
+                Todos
+              </button>
+              <button
+                className={`${styles.filterButton} ${filter === 'available' ? styles.active : ''}`}
+                onClick={() => handleFilterChange('available')}
+                aria-pressed={filter === 'available'}
+              >
+                Disponíveis
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Estado de erro */}
-        {error && (
-          <div className={styles.errorState} role="alert">
-            <p className={styles.errorMessage}>{error}</p>
-            {props.onRetry && (
-              <button 
-                className={styles.retryButton}
-                onClick={handleRetry}
-                aria-label="Tentar novamente"
-              >
-                Tentar Novamente
-              </button>
-            )}
+        {/* Grid de Quartos */}
+        <RoomGrid
+          rooms={filteredRooms}
+          selectedRoomId={selectedRoomId}
+          onSelect={handleSelectRoom}
+        />
+
+        {/* Informação do quarto selecionado */}
+        {selectedRoomId && (
+          <div className={styles.selectionInfo}>
+            <p className={styles.selectionText}>
+              Quarto selecionado: {' '}
+              <strong>
+                {rooms.find(r => r.id === selectedRoomId)?.number}
+              </strong>
+            </p>
           </div>
         )}
-      </Container>
+      </div>
     </section>
   );
 };
+
+RoomsSection.propTypes = {
+  /** Função chamada ao selecionar um quarto */
+  onSelectRoom: PropTypes.func,
+  /** Título da seção */
+  title: PropTypes.string,
+  /** Subtítulo da seção */
+  subtitle: PropTypes.string,
+};
+
+RoomsSection.defaultProps = {
+  onSelectRoom: undefined,
+  title: 'Nossos Quartos',
+  subtitle: 'Escolha o quarto perfeito para sua estadia',
+};
+
+export default React.memo(RoomsSection);

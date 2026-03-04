@@ -2,11 +2,23 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // ============================================================================
+// PROVIDERS GLOBAIS
+// ============================================================================
+
+import { NotificationProvider } from './shared/components/Notification';
+
+// ============================================================================
+// COMPONENTES GLOBAIS
+// ============================================================================
+
+import Notification from './shared/components/Notification';
+
+// ============================================================================
 // PAGES (Lazy Loading)
 // ============================================================================
 
-const HomePage = React.lazy(() => import('@pages/Home/HomePage'));
-const CheckoutPage = React.lazy(() => import('@pages/Checkout/CheckoutPage'));
+const HomePage = React.lazy(() => import('./pages/Home/HomePage'));
+const CheckoutPage = React.lazy(() => import('./pages/Checkout/CheckoutPage'));
 
 // ============================================================================
 // LOADING FALLBACK
@@ -36,25 +48,22 @@ const LoadingFallback = () => (
 );
 
 /**
- * App - Componente raiz da aplicação
- * 
- * Estrutura corporativa:
- * - Providers globais (serão adicionados conforme necessário)
- * - Rotas principais
- * - Lazy loading para performance
- * - Suspense com fallback
+ * App - Componente raiz com providers globais
  */
 function App() {
   return (
-    <BrowserRouter>
-      <React.Suspense fallback={<LoadingFallback />}>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="*" element={<HomePage />} />
-        </Routes>
-      </React.Suspense>
-    </BrowserRouter>
+    <NotificationProvider maxStack={5} position="top-right">
+      <BrowserRouter>
+        <React.Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="*" element={<HomePage />} />
+          </Routes>
+        </React.Suspense>
+      </BrowserRouter>
+      <Notification />
+    </NotificationProvider>
   );
 }
 

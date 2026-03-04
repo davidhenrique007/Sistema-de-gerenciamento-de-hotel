@@ -1,293 +1,177 @@
-/* ============================================
-   INPUT MODULE CSS
-   ============================================
-   Estilos isolados para o componente Input
-   ============================================ */
+/* ============================================================================
+   CONTAINER PRINCIPAL
+   =========================================================================== */
 
-@import '../../../styles/variables.css';
-
-/* ============================================
-   INPUT WRAPPER
-   ============================================ */
-
-.inputWrapper {
+.container {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
-  width: auto;
-  font-family: var(--font-family-primary);
+  margin-bottom: var(--spacing-4);
 }
 
-.inputWrapper.fullWidth {
+.container.fullWidth {
   width: 100%;
 }
 
-/* ============================================
+.container.disabled {
+  opacity: 0.7;
+}
+
+/* ============================================================================
    LABEL
-   ============================================ */
+   =========================================================================== */
 
 .label {
+  margin-bottom: var(--spacing-1);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   line-height: var(--line-height-normal);
-  cursor: pointer;
-}
-
-.visuallyHidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  border: 0;
 }
 
 .required {
-  color: var(--color-danger);
-  margin-left: var(--spacing-xs);
+  margin-left: var(--spacing-1);
+  color: var(--color-error-500);
+  font-size: var(--font-size-lg);
+  line-height: 1;
 }
 
-/* ============================================
-   INPUT CONTAINER
-   ============================================ */
+/* ============================================================================
+   WRAPPER DO INPUT
+   =========================================================================== */
 
-.inputContainer {
+.inputWrapper {
   position: relative;
   display: flex;
   align-items: center;
   width: 100%;
 }
 
-/* ============================================
-   INPUT BASE
-   ============================================ */
+/* ============================================================================
+   INPUT
+   =========================================================================== */
 
 .input {
   width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
   font-family: var(--font-family-primary);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
   color: var(--color-text-primary);
-  background-color: var(--color-background-light);
-  border: var(--border-width-thin) solid var(--color-text-muted);
-  border-radius: var(--border-radius-md);
-  transition: all var(--transition-fast);
-  
-  /* Remove estilos padrão */
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast) var(--transition-ease);
   outline: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
 }
 
-.input:hover:not(:disabled):not(.readOnly) {
-  border-color: var(--color-primary-light);
+/* Estado de foco */
+.input.focused {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
 }
 
-.input:focus {
-  border-color: var(--color-secondary);
-  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+/* Estado de erro */
+.input.error {
+  border-color: var(--color-error-500);
+  background-color: var(--color-error-50);
+  padding-right: calc(var(--spacing-4) + 24px);
 }
 
-.input::placeholder {
-  color: var(--color-text-muted);
-  opacity: 0.7;
+.input.error.focused {
+  box-shadow: 0 0 0 3px var(--color-error-100);
 }
 
-/* ============================================
-   TAMANHOS
-   ============================================ */
-
-.small .input {
-  padding: var(--spacing-xs) var(--spacing-sm);
-  font-size: var(--font-size-sm);
-  height: 32px;
-}
-
-.medium .input {
-  padding: var(--spacing-sm) var(--spacing-md);
-  font-size: var(--font-size-md);
-  height: 40px;
-}
-
-.large .input {
-  padding: var(--spacing-md) var(--spacing-lg);
-  font-size: var(--font-size-lg);
-  height: 48px;
-}
-
-/* ============================================
-   ÍCONES
-   ============================================ */
-
-.leftIcon,
-.rightIcon {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-muted);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.leftIcon {
-  left: var(--spacing-sm);
-}
-
-.rightIcon {
-  right: var(--spacing-sm);
-}
-
-/* Ajuste de padding quando tem ícones */
-.hasLeftIcon .input {
-  padding-left: calc(var(--spacing-xl) + var(--spacing-xs));
-}
-
-.hasRightIcon .input {
-  padding-right: calc(var(--spacing-xl) + var(--spacing-xs));
-}
-
-/* Tamanhos dos ícones */
-.small .leftIcon,
-.small .rightIcon {
-  font-size: var(--font-size-md);
-  width: 20px;
-}
-
-.medium .leftIcon,
-.medium .rightIcon {
-  font-size: var(--font-size-lg);
-  width: 24px;
-}
-
-.large .leftIcon,
-.large .rightIcon {
-  font-size: var(--font-size-xl);
-  width: 28px;
-}
-
-/* ============================================
-   ESTADOS
-   ============================================ */
-
-/* Disabled */
-.disabled .input,
-.input:disabled {
-  background-color: var(--color-background-dark);
-  border-color: var(--color-text-muted);
-  color: var(--color-text-muted);
+/* Estado desabilitado */
+.input.disabled {
+  background-color: var(--color-neutral-100);
+  border-color: var(--color-border-light);
+  color: var(--color-text-disabled);
   cursor: not-allowed;
-  opacity: 0.7;
 }
 
-/* Read Only */
-.readOnly .input,
-.input:read-only {
-  background-color: var(--color-background-dark);
-  border-color: var(--color-text-muted);
-  cursor: default;
+/* Placeholder */
+.input::placeholder {
+  color: var(--color-text-tertiary);
+  opacity: 1;
 }
 
-/* Error */
-.error .input {
-  border-color: var(--color-danger);
-  background-color: var(--color-danger-light);
+.input:disabled::placeholder {
+  color: var(--color-text-disabled);
 }
 
-.error .input:focus {
-  border-color: var(--color-danger);
-  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+/* ============================================================================
+   ÍCONE DE ERRO
+   =========================================================================== */
+
+.errorIcon {
+  position: absolute;
+  right: var(--spacing-3);
+  color: var(--color-error-500);
+  font-size: var(--font-size-lg);
+  pointer-events: none;
 }
 
-/* Success */
-.success .input {
-  border-color: var(--color-success);
-  background-color: var(--color-success-light);
-}
-
-.success .input:focus {
-  border-color: var(--color-success);
-  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
-}
-
-/* Focus */
-.focused .input {
-  border-color: var(--color-secondary);
-  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
-}
-
-/* ============================================
-   MENSAGENS
-   ============================================ */
+/* ============================================================================
+   MENSAGEM DE ERRO
+   =========================================================================== */
 
 .errorMessage {
-  font-size: var(--font-size-xs);
-  color: var(--color-danger);
-  margin-top: var(--spacing-xs);
+  margin-top: var(--spacing-1);
+  font-size: var(--font-size-sm);
+  color: var(--color-error-500);
+  line-height: var(--line-height-normal);
+  animation: fadeIn var(--transition-fast) var(--transition-ease);
+}
+
+/* ============================================================================
+   TEXTO DE AJUDA
+   =========================================================================== */
+
+.helperText {
+  margin-top: var(--spacing-1);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
   line-height: var(--line-height-normal);
 }
 
-.description {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-  margin-top: var(--spacing-xs);
-  line-height: var(--line-height-normal);
+/* ============================================================================
+   VARIAÇÕES DE ESTADO
+   =========================================================================== */
+
+.container:has(.error) .label {
+  color: var(--color-error-600);
 }
 
-/* ============================================
-   ACESSIBILIDADE
-   ============================================ */
-
-/* High contrast mode */
-@media (prefers-contrast: high) {
-  .input {
-    border-width: 2px;
-  }
-  
-  .error .input {
-    border-width: 3px;
-  }
-  
-  .success .input {
-    border-width: 3px;
-  }
+.container.disabled .label {
+  color: var(--color-text-disabled);
 }
 
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .input {
-    transition: none;
+/* ============================================================================
+   ANIMAÇÕES
+   =========================================================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* ============================================
+/* ============================================================================
    RESPONSIVIDADE
-   ============================================ */
+   =========================================================================== */
 
-@media (max-width: 768px) {
-  .small .input {
-    height: 36px;
+@media (max-width: var(--breakpoint-sm)) {
+  .input {
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
   }
-  
-  .medium .input {
-    height: 44px;
-  }
-  
-  .large .input {
-    height: 52px;
-  }
-}
 
-@media (max-width: 480px) {
-  .inputWrapper {
-    width: 100%;
-  }
-  
-  .hasLeftIcon .input,
-  .hasRightIcon .input {
-    padding-left: calc(var(--spacing-xl) + var(--spacing-xs));
-    padding-right: calc(var(--spacing-xl) + var(--spacing-xs));
+  .input.error {
+    padding-right: calc(var(--spacing-3) + 24px);
   }
 }
