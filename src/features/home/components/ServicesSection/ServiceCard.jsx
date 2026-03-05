@@ -40,6 +40,7 @@ const ServiceCard = ({
     <div 
       className={`
         ${styles.card}
+        ${styles[service.category]}
         ${isSelected ? styles.selected : ''}
         ${className}
       `}

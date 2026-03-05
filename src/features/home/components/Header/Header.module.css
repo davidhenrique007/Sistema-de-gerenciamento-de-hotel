@@ -1,11 +1,11 @@
 /* ============================================================================
-   HEADER PRINCIPAL
+   HEADER PRINCIPAL - FUNDO ESCURO FIXO
    =========================================================================== */
 
 .header {
   width: 100%;
-  background-color: #9c9e9f;
-  border-bottom: 1px solid #f80000;
+  background-color: #0f172a;  /* Azul escuro/cinza escuro - SEMPRE VISÍVEL */
+  border-bottom: 1px solid #1e293b;
   transition: all 0.3s ease;
   z-index: 1000;
 }
@@ -15,19 +15,21 @@
   top: 0;
 }
 
+/* Remove o fundo claro e mantém escuro mesmo no transparent */
 .header.transparent {
-  background-color: transparent;
-  border-bottom-color: transparent;
+  background-color: #0f172a;  /* Mesma cor, não transparente */
+  border-bottom-color: #1e293b;
 }
 
 .header.transparent.scrolled {
-  background-color: rgba(255, 255, 255, 0.95);
-  border-bottom-color: #e5e7eb;
+  background-color: #0a0f1a;  /* Mais escuro ao rolar */
+  border-bottom-color: #2563eb;
   backdrop-filter: blur(8px);
 }
 
 .header.scrolled {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: #0a0f1a;  /* Mais escuro ao rolar */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* ============================================================================
@@ -58,7 +60,7 @@
 }
 
 /* ============================================================================
-   LOGO
+   LOGO - TEXTO BRANCO SEMPRE
    =========================================================================== */
 
 .logo {
@@ -79,15 +81,16 @@
 }
 
 .logoPrimary {
-  fill: #2563eb;
+  fill: #3b82f6;  /* Azul vibrante */
 }
 
 .logoSecondary {
   fill: white;
 }
 
+/* Remove a classe light que mudava as cores */
 .logo.light .logoPrimary {
-  fill: white;
+  fill: #3b82f6;  /* Mantém azul */
 }
 
 .logo.light .logoSecondary {
@@ -97,25 +100,26 @@
 .logoText {
   font-size: 18px;
   font-weight: 400;
-  color: #111827;
+  color: white !important;  /* Força branco */
   white-space: nowrap;
 }
 
 .logoText strong {
   font-weight: 700;
-  color: #2563eb;
+  color: #3b82f6 !important;  /* Azul sempre visível */
 }
 
+/* Remove a classe light que mudava o texto */
 .logo.light .logoText {
-  color: white;
+  color: white !important;
 }
 
 .logo.light .logoText strong {
-  color: white;
+  color: #3b82f6 !important;
 }
 
 /* ============================================================================
-   NAVEGAÇÃO DESKTOP
+   NAVEGAÇÃO DESKTOP - LINKS BRANCOS SEMPRE
    =========================================================================== */
 
 .navMenu {
@@ -146,19 +150,19 @@
   padding: 8px 12px;
   font-size: 16px;
   font-weight: 500;
-  color: #111827;
+  color: white !important;  /* Força branco */
   text-decoration: none;
   border-radius: 6px;
   transition: all 0.2s ease;
 }
 
 .navLink:hover {
-  color: #2563eb;
-  background-color: #f3f4f6;
+  color: #3b82f6 !important;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .navLink.active {
-  color: #2563eb;
+  color: #3b82f6 !important;
   font-weight: 600;
 }
 
@@ -169,12 +173,13 @@
   left: 12px;
   right: 12px;
   height: 2px;
-  background-color: #2563eb;
+  background-color: #3b82f6;
   border-radius: 2px;
 }
 
+/* Remove a classe transparent que mudava as cores */
 .transparent .navLink {
-  color: white;
+  color: white !important;
 }
 
 .transparent .navLink:hover {
@@ -182,7 +187,7 @@
 }
 
 /* ============================================================================
-   MENU TOGGLE (MOBILE)
+   MENU TOGGLE (MOBILE) - BRANCO SEMPRE
    =========================================================================== */
 
 .menuToggle {
@@ -197,10 +202,11 @@
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  color: white !important;  /* Ícone branco */
 }
 
 .menuToggle:hover {
-  background-color: #f3f4f6;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .menuToggle.open {
@@ -209,11 +215,12 @@
 }
 
 .menuToggle.open:hover {
-  background-color: #e5e7eb;
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
+/* Remove a classe transparent */
 .transparent .menuToggle {
-  color: white;
+  color: white !important;
 }
 
 .transparent .menuToggle:hover {
@@ -221,14 +228,14 @@
 }
 
 /* ============================================================================
-   HAMBURGER ICON
+   HAMBURGER ICON - BRANCO SEMPRE
    =========================================================================== */
 
 .hamburgerIcon {
   position: relative;
   width: 24px;
   height: 2px;
-  background-color: currentColor;
+  background-color: white !important;
   border-radius: 2px;
   transition: all 0.2s ease;
 }
@@ -239,7 +246,7 @@
   position: absolute;
   width: 24px;
   height: 2px;
-  background-color: currentColor;
+  background-color: white !important;
   border-radius: 2px;
   transition: all 0.2s ease;
 }
@@ -256,14 +263,6 @@
   background-color: transparent;
 }
 
-.menuToggle.open .hamburgerIcon::before {
-  transform: rotate(45deg);
-}
-
-.menuToggle.open .hamburgerIcon::after {
-  transform: rotate(-45deg);
-}
-
 /* ============================================================================
    MENU MOBILE
    =========================================================================== */
@@ -274,7 +273,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: white;
+  background-color: #0f172a;  /* Fundo escuro para mobile */
   z-index: 1000;
   padding: 80px 16px 32px;
   overflow-y: auto;
@@ -312,7 +311,7 @@
   padding: 16px 20px;
   font-size: 20px;
   font-weight: 500;
-  color: #111827;
+  color: white !important;
   text-decoration: none;
   text-align: center;
   border-radius: 12px;
@@ -320,12 +319,13 @@
 }
 
 .mobileNavLink:hover {
-  background-color: #f3f4f6;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #3b82f6 !important;
 }
 
 .mobileNavLink.active {
-  color: #2563eb;
-  background-color: #eff6ff;
+  color: #3b82f6 !important;
+  background-color: rgba(59, 130, 246, 0.2);
   font-weight: 600;
 }
 

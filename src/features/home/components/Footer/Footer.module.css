@@ -3,126 +3,82 @@
    =========================================================================== */
 
 .footer {
-  background-color: var(--color-neutral-900);
-  color: var(--color-text-inverse);
+  background-color: #111827;
+  color: #e5e7eb;
+  padding: 60px 0 20px;
   margin-top: auto;
+  width: 100%;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 /* ============================================================================
-   CONTAINER DO FOOTER
+   LINHA PRINCIPAL COM COLUNAS
    =========================================================================== */
 
-.footerContainer {
+.mainRow {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--spacing-8);
-  max-width: var(--breakpoint-2xl);
-  margin: 0 auto;
-  padding: var(--spacing-12) var(--spacing-4);
+  gap: 40px;
+  margin-bottom: 40px;
 }
 
-@media (min-width: var(--breakpoint-sm)) {
-  .footerContainer {
-    padding: var(--spacing-12) var(--spacing-6);
-  }
-}
-
-@media (min-width: var(--breakpoint-md)) {
-  .footerContainer {
+@media (min-width: 640px) {
+  .mainRow {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (min-width: var(--breakpoint-lg)) {
-  .footerContainer {
-    grid-template-columns: repeat(4, 1fr);
-    padding: var(--spacing-16) var(--spacing-8);
+@media (min-width: 1024px) {
+  .mainRow {
+    grid-template-columns: 2fr 1fr 1fr 1.5fr;
+    gap: 30px;
   }
 }
 
 /* ============================================================================
-   SEÇÕES DO FOOTER
+   COLUNAS
    =========================================================================== */
 
-.footerSection {
+.column {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4);
+  gap: 16px;
 }
 
-.footerTitle {
-  margin: 0 0 var(--spacing-2);
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
+.columnTitle {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
   color: white;
+  position: relative;
+  padding-bottom: 12px;
 }
 
-.footerSubtitle {
-  margin: 0 0 var(--spacing-3);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: white;
-}
-
-.footerDescription {
-  margin: 0;
-  font-size: var(--font-size-md);
-  line-height: var(--line-height-relaxed);
-  color: var(--color-neutral-400);
+.columnTitle::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  border-radius: 2px;
 }
 
 /* ============================================================================
-   LINKS DO FOOTER
+   COLUNA 1 - SOBRE
    =========================================================================== */
 
-.footerLinks {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2);
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.footerLink {
-  color: var(--color-neutral-400);
-  text-decoration: none;
-  font-size: var(--font-size-md);
-  transition: color var(--transition-fast) var(--transition-ease);
-}
-
-.footerLink:hover {
-  color: white;
-  text-decoration: none;
-}
-
-/* ============================================================================
-   CONTATO
-   =========================================================================== */
-
-.contactList {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2);
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.contactLink {
-  color: var(--color-neutral-400);
-  text-decoration: none;
-  font-size: var(--font-size-md);
-  transition: color var(--transition-fast) var(--transition-ease);
-}
-
-.contactLink:hover {
-  color: white;
-}
-
-.contactText {
-  color: var(--color-neutral-400);
-  font-size: var(--font-size-md);
+.aboutText {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #9ca3af;
 }
 
 /* ============================================================================
@@ -131,8 +87,7 @@
 
 .socialLinks {
   display: flex;
-  gap: var(--spacing-3);
-  margin-top: var(--spacing-2);
+  gap: 12px;
 }
 
 .socialLink {
@@ -141,72 +96,161 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  background-color: var(--color-neutral-800);
-  color: white;
-  border-radius: var(--radius-full);
-  transition: all var(--transition-fast) var(--transition-ease);
+  background-color: #1f2937;
+  border-radius: 50%;
+  color: #9ca3af;
+  transition: all 0.3s ease;
 }
 
 .socialLink:hover {
-  background-color: var(--color-primary-600);
-  transform: translateY(-2px);
+  background-color: #2563eb;
+  color: white;
+  transform: translateY(-3px);
 }
 
 .socialIcon {
-  font-size: var(--font-size-lg);
+  font-size: 18px;
 }
 
 /* ============================================================================
-   COPYRIGHT
+   LISTAS DE LINKS
    =========================================================================== */
 
-.copyright {
-  border-top: 1px solid var(--color-neutral-800);
-  padding: var(--spacing-4) 0;
+.linkList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.copyrightContainer {
+.link {
+  color: #9ca3af;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s ease;
+  display: inline-block;
+}
+
+.link:hover {
+  color: white;
+  transform: translateX(5px);
+}
+
+/* ============================================================================
+   LISTA DE CONTATO
+   =========================================================================== */
+
+.contactList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.contactIcon {
+  font-size: 16px;
+  min-width: 20px;
+}
+
+.contactLink {
+  color: #9ca3af;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.contactLink:hover {
+  color: white;
+}
+
+.contactText {
+  color: #9ca3af;
+}
+
+/* ============================================================================
+   LINHA DE COPYRIGHT
+   =========================================================================== */
+
+.copyrightRow {
+  padding-top: 20px;
+  border-top: 1px solid #1f2937;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-2);
-  max-width: var(--breakpoint-2xl);
-  margin: 0 auto;
-  padding: 0 var(--spacing-4);
+  gap: 10px;
+  text-align: center;
 }
 
-@media (min-width: var(--breakpoint-sm)) {
-  .copyrightContainer {
+@media (min-width: 768px) {
+  .copyrightRow {
     flex-direction: row;
     justify-content: space-between;
-    padding: 0 var(--spacing-6);
+    text-align: left;
   }
 }
 
-@media (min-width: var(--breakpoint-lg)) {
-  .copyrightContainer {
-    padding: 0 var(--spacing-8);
-  }
-}
-
-.copyrightText {
+.copyright {
   margin: 0;
-  font-size: var(--font-size-sm);
-  color: var(--color-neutral-500);
+  font-size: 14px;
+  color: #6b7280;
 }
 
-.copyrightLinks {
+.legalLinks {
   display: flex;
-  gap: var(--spacing-4);
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
 }
 
-.copyrightLink {
-  color: var(--color-neutral-500);
+.legalLink {
+  color: #6b7280;
   text-decoration: none;
-  font-size: var(--font-size-sm);
-  transition: color var(--transition-fast) var(--transition-ease);
+  transition: color 0.2s ease;
 }
 
-.copyrightLink:hover {
+.legalLink:hover {
   color: white;
+}
+
+.separator {
+  color: #6b7280;
+}
+
+/* ============================================================================
+   RESPONSIVIDADE ADICIONAL
+   =========================================================================== */
+
+@media (max-width: 640px) {
+  .footer {
+    padding: 40px 0 20px;
+  }
+
+  .columnTitle::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .column {
+    text-align: center;
+    align-items: center;
+  }
+
+  .socialLinks {
+    justify-content: center;
+  }
+
+  .contactItem {
+    justify-content: center;
+  }
 }

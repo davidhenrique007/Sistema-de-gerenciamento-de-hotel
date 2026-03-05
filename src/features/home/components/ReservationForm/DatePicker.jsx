@@ -1,20 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Calendar from './Calendar';
 import useDatePicker from '../../hooks/useDatePicker';
 import styles from './DatePicker.module.css';
 
-/**
- * DatePicker Component - Seletor de datas com calendário
- * 
- * @component
- * @example
- * <DatePicker
- *   value={dateRange}
- *   onChange={handleDateChange}
- *   minDate={new Date()}
- * />
- */
 const DatePicker = ({
   value,
   onChange,
@@ -24,10 +13,6 @@ const DatePicker = ({
   placeholder = 'Selecionar data',
   className = '',
 }) => {
-  // ==========================================================================
-  // HOOKS
-  // ==========================================================================
-
   const {
     checkIn,
     checkOut,
@@ -41,59 +26,59 @@ const DatePicker = ({
     goToNextMonth,
     isDateDisabled,
     displayValue,
-  } = useDatePicker({
-    minDate,
-    maxDate,
-    blockedDates,
-  });
-
-  // ==========================================================================
-  // REFS
-  // ==========================================================================
+  } = useDatePicker({ minDate, maxDate, blockedDates });
 
   const containerRef = useRef(null);
-  const inputRef = useRef(null);
+  const prevCheckInRef = useRef(checkIn);
+  const prevCheckOutRef = useRef(checkOut);
+  const isInternalChangeRef = useRef(false);
 
   // ==========================================================================
-  // EFFECTS
+  // FECHAR AO CLICAR FORA
   // ==========================================================================
-
-  // Sincronizar com value externo
-  useEffect(() => {
-    if (value && typeof value === 'object') {
-      // Implementar sincronização se necessário
-    }
-  }, [value]);
-
-  // Fechar ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
         closePicker();
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [closePicker]);
 
-  // Notificar mudanças
+  // ==========================================================================
+  // NOTIFICAR MUDANÇAS - COM PROTEÇÃO CONTRA LOOP
+  // ==========================================================================
   useEffect(() => {
-    if (onChange) {
+    // Evitar loop se for mudança interna
+    if (isInternalChangeRef.current) {
+      isInternalChangeRef.current = false;
+      return;
+    }
+
+    const checkInChanged = prevCheckInRef.current !== checkIn;
+    const checkOutChanged = prevCheckOutRef.current !== checkOut;
+
+    if ((checkInChanged || checkOutChanged) && onChange) {
       onChange({ checkIn, checkOut });
     }
+
+    prevCheckInRef.current = checkIn;
+    prevCheckOutRef.current = checkOut;
   }, [checkIn, checkOut, onChange]);
 
   // ==========================================================================
-  // RENDER
+  // HANDLER DE SELEÇÃO COM CONTROLE
   // ==========================================================================
+  const handleSelectDate = useCallback((date) => {
+    isInternalChangeRef.current = true;
+    selectDate(date);
+  }, [selectDate]);
 
   return (
     <div className={`${styles.container} ${className}`} ref={containerRef}>
-      {/* Input Field */}
       <div className={styles.inputWrapper}>
         <input
-          ref={inputRef}
           type="text"
           className={styles.input}
           value={displayValue}
@@ -104,19 +89,16 @@ const DatePicker = ({
           aria-label="Selecionar datas de check-in e check-out"
           aria-expanded={isOpen}
         />
-        <span className={styles.icon} aria-hidden="true">
-          📅
-        </span>
+        <span className={styles.icon}>📅</span>
       </div>
 
-      {/* Calendário */}
       {isOpen && (
         <div className={styles.calendarWrapper}>
           <Calendar
             currentMonth={currentMonth}
             checkIn={checkIn}
             checkOut={checkOut}
-            onSelectDate={selectDate}
+            onSelectDate={handleSelectDate}
             isDateDisabled={isDateDisabled}
             onPrevMonth={goToPreviousMonth}
             onNextMonth={goToNextMonth}
@@ -128,22 +110,15 @@ const DatePicker = ({
 };
 
 DatePicker.propTypes = {
-  /** Valor controlado externamente */
   value: PropTypes.shape({
     checkIn: PropTypes.instanceOf(Date),
     checkOut: PropTypes.instanceOf(Date),
   }),
-  /** Função chamada ao mudar datas */
   onChange: PropTypes.func,
-  /** Data mínima permitida */
   minDate: PropTypes.instanceOf(Date),
-  /** Data máxima permitida */
   maxDate: PropTypes.instanceOf(Date),
-  /** Array de datas bloqueadas */
   blockedDates: PropTypes.arrayOf(PropTypes.instanceOf(Date)),
-  /** Placeholder do input */
   placeholder: PropTypes.string,
-  /** Classes CSS adicionais */
   className: PropTypes.string,
 };
 

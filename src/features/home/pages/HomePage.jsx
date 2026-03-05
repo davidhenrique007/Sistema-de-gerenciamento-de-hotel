@@ -9,23 +9,13 @@ import Footer from '../components/Footer';
 import useRoomSelection from '../hooks/useRoomSelection';
 import useScrollToForm from '../hooks/useScrollToForm';
 import useServices from '../hooks/useServices';
-import useNotification from "../../../shared/components/ui/Notification/useNotification"
+import useRooms from '../hooks/useRooms';
+import useNotification from "../../../shared/components/ui/Notification/useNotification";
 import './home.css';
 
-/**
- * HomePage - Página principal completa e finalizada
- * 
- * Integra todos os componentes da feature home:
- * - Header com navegação responsiva
- * - Hero com scroll automático
- * - Seção de quartos com seleção
- * - Formulário de reserva completo
- * - Seção de serviços interativa
- * - Footer institucional
- */
 const HomePage = () => {
   // ==========================================================================
-  // HOOKS GLOBAIS
+  // HOOKS
   // ==========================================================================
 
   const navigate = useNavigate();
@@ -35,11 +25,12 @@ const HomePage = () => {
     behavior: 'smooth',
   });
 
-  // ==========================================================================
-  // HOOKS DE DOMÍNIO
-  // ==========================================================================
+  // ✅ Carregar quartos
+  const { rooms, isLoading: roomsLoading, error: roomsError } = useRooms();
 
-  const { selectedRoom, selectRoom } = useRoomSelection();
+  // ✅ Passar rooms para o hook de seleção
+  const { selectedRoom, selectRoom, selectedRoomId } = useRoomSelection(rooms || []);
+
   const { 
     selectedServices, 
     toggleService, 
@@ -49,60 +40,47 @@ const HomePage = () => {
   } = useServices();
 
   // ==========================================================================
-  // LOGS DE DEBUG (remover em produção)
+  // LOGS DE DEBUG (CORRIGIDOS - com verificação)
   // ==========================================================================
 
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('🏨 [HomePage] Renderizada');
-      console.log('   📍 selectedRoom:', selectedRoom?.number);
-      console.log('   📍 selectedServices:', selectedServices.length);
-    }
-  }, [selectedRoom, selectedServices]);
+    console.log('🏠 [HomePage] Estado atual:');
+    console.log('   📍 rooms carregados:', rooms?.length || 0);  // ← CORRIGIDO
+    console.log('   📍 selectedRoomId:', selectedRoomId);
+    console.log('   📍 selectedRoom:', selectedRoom?.number || 'nenhum');
+    console.log('   📍 selectedServices:', selectedServices?.length || 0);
+  }, [rooms, selectedRoomId, selectedRoom, selectedServices]);
 
   // ==========================================================================
   // HANDLERS
   // ==========================================================================
 
-  /**
-   * Seleciona um quarto e rola para o formulário
-   */
   const handleRoomSelect = useCallback((room) => {
-    selectRoom(room);
-    scrollToFormWithDelay(300);
-    
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`🛏️ Quarto ${room.number} selecionado`);
+    console.log('🛏️ [HomePage] Quarto selecionado:', room?.number);
+    if (room) {
+      selectRoom(room);
+      scrollToFormWithDelay(300);
     }
   }, [selectRoom, scrollToFormWithDelay]);
 
-  /**
-   * Submete a reserva e redireciona para checkout
-   */
   const handleReservationSubmit = useCallback(async (reservationData) => {
     try {
-      // Combinar dados da reserva com serviços selecionados
       const completeReservation = {
         ...reservationData,
-        selectedServices: selectedServicesDetails,
-        servicesTotal: selectedServicesTotal,
+        selectedServices: selectedServicesDetails || [],
+        servicesTotal: selectedServicesTotal || 0,
         createdAt: new Date().toISOString(),
         reservationId: `RES-${Date.now()}`,
       };
 
-      if (process.env.NODE_ENV === 'development') {
-        console.log('📋 Reserva completa:', completeReservation);
-      }
+      console.log('📋 Reserva completa:', completeReservation);
 
-      // Simular envio para API
       await new Promise(resolve => setTimeout(resolve, 800));
 
       notifySuccess('Reserva processada com sucesso!');
       
-      // Limpar seleções após reserva
-      clearSelectedServices();
+      if (clearSelectedServices) clearSelectedServices();
 
-      // Redirecionar para checkout
       setTimeout(() => {
         navigate('/checkout', { 
           state: { reservation: completeReservation },
@@ -115,19 +93,46 @@ const HomePage = () => {
     }
   }, [navigate, notifySuccess, notifyError, selectedServicesDetails, selectedServicesTotal, clearSelectedServices]);
 
-  /**
-   * Alterna seleção de serviços
-   */
   const handleServiceToggle = useCallback((serviceId, isSelected) => {
-    toggleService(serviceId);
-    
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`${isSelected ? '✅' : '❌'} Serviço ${serviceId} ${isSelected ? 'adicionado' : 'removido'}`);
+    if (toggleService) {
+      toggleService(serviceId);
     }
   }, [toggleService]);
 
   // ==========================================================================
-  // RENDER
+  // RENDER: LOADING
+  // ==========================================================================
+
+  if (roomsLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div className="spinner" style={{ width: '40px', height: '40px', border: '3px solid #f3f3f3', borderTopColor: '#2563eb', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 20px' }} />
+          <p>Carregando quartos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================================================
+  // RENDER: ERROR
+  // ==========================================================================
+
+  if (roomsError) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div style={{ textAlign: 'center', padding: '20px', background: '#fee2e2', borderRadius: '8px' }}>
+          <p style={{ color: '#b91c1c', marginBottom: '10px' }}>Erro ao carregar quartos: {roomsError}</p>
+          <button onClick={() => window.location.reload()} style={{ padding: '8px 16px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================================================
+  // RENDER: SUCCESS
   // ==========================================================================
 
   return (
@@ -135,9 +140,6 @@ const HomePage = () => {
       <Header transparent={true} />
 
       <main className="home-page__main">
-        {/* ======================================================================
-             HERO SECTION
-        ====================================================================== */}
         <Hero 
           onCtaClick={scrollToForm}
           size="small"     
@@ -147,18 +149,13 @@ const HomePage = () => {
           ctaText="Reservar Agora"
         />
 
-        {/* ======================================================================
-             ROOMS SECTION
-        ====================================================================== */}
         <RoomsSection
           onSelectRoom={handleRoomSelect}
+          selectedRoomId={selectedRoomId}
           title="Nossos Quartos"
           subtitle="Escolha o quarto perfeito para sua estadia"
         />
 
-        {/* ======================================================================
-             RESERVATION SECTION
-        ====================================================================== */}
         <section 
           id="reservation" 
           className="home-page__section home-page__section--highlight"
@@ -178,36 +175,13 @@ const HomePage = () => {
                 />
               </div>
 
-              {selectedRoom && (
-                <aside className="selected-room-info" aria-label="Informações do quarto selecionado">
-                  <h3>Quarto Selecionado</h3>
-                  <div className="selected-room-card">
-                    <p className="room-number">Quarto {selectedRoom.number}</p>
-                    <p className="room-type">{selectedRoom.typeLabel}</p>
-                    <p className="room-capacity">
-                      <span aria-label="Capacidade">👥</span> {selectedRoom.capacity} {selectedRoom.capacity === 1 ? 'hóspede' : 'hóspedes'}
-                    </p>
-                    <p className="room-price">
-                      <span aria-label="Preço por noite">💰</span>{' '}
-                      {new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: selectedRoom.price.currency,
-                        minimumFractionDigits: 0,
-                      }).format(selectedRoom.price.amount)}/noite
-                    </p>
-                  </div>
-                </aside>
-              )}
             </div>
           </div>
         </section>
 
-        {/* ======================================================================
-             SERVICES SECTION
-        ====================================================================== */}
         <ServicesSection
           onServiceToggle={handleServiceToggle}
-          selectedServiceIds={selectedServices}
+          selectedServiceIds={selectedServices || []}
           title="Serviços Adicionais"
           subtitle="Personalize sua estadia com nossos serviços exclusivos"
         />

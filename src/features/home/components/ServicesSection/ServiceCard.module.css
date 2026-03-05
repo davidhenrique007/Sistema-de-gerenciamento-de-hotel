@@ -1,167 +1,133 @@
 /* ============================================================================
-   CARD PRINCIPAL - APRIMORADO
+   CARD DE SERVIÇO - CORES POR CATEGORIA
    =========================================================================== */
 
 .card {
   display: flex;
   flex-direction: column;
-  background-color: var(--color-bg-primary);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-lg);
+  background-color: #7da6ad;
+  border: 1px solid #3d4363;
+  border-radius: 20px;
   overflow: hidden;
-  transition: all var(--transition-base) var(--transition-ease);
+  transition: all 0.3s ease;
   height: 100%;
   position: relative;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--color-primary-300);
-}
-
-.card.selected {
-  border-color: var(--color-primary-500);
-  box-shadow: var(--shadow-md);
-  background-color: var(--color-primary-50);
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.15);
 }
 
 /* ============================================================================
-   CABEÇALHO DO CARD - NOVO DESIGN
+   ÍCONE - CORES POR CATEGORIA
    =========================================================================== */
 
-.header {
-  padding: var(--spacing-5) var(--spacing-4) var(--spacing-3);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-3);
-  border-bottom: 1px solid var(--color-border-light);
-  background: linear-gradient(
-    to bottom,
-    var(--color-neutral-50),
-    transparent
-  );
-}
-
 .iconContainer {
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-50),
-    var(--color-primary-100)
-  );
-  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-fast) var(--transition-ease);
-}
-
-.card:hover .iconContainer {
-  transform: scale(1.05);
-  background: linear-gradient(
-    135deg,
-    var(--color-primary-100),
-    var(--color-primary-200)
-  );
+  padding: 24px 20px 8px;
 }
 
 .icon {
-  font-size: 28px;
+  font-size: 56px;
   line-height: 1;
-  color: var(--color-primary-600);
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.1));
 }
 
-.titleContainer {
+/* ============================================================================
+   CONTEÚDO
+   =========================================================================== */
+
+.content {
+  padding: 0 20px 16px;
   flex: 1;
 }
 
 .name {
-  margin: 0 0 var(--spacing-1);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-}
-
-.category {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  background: var(--color-neutral-100);
-  padding: var(--spacing-0_5) var(--spacing-2);
-  border-radius: var(--radius-full);
-  display: inline-block;
-}
-
-/* ============================================================================
-   CONTEÚDO - APRIMORADO
-   =========================================================================== */
-
-.content {
-  padding: var(--spacing-4);
-  flex: 1;
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: center;
 }
 
 .description {
-  margin: 0 0 var(--spacing-3);
-  font-size: var(--font-size-sm);
-  line-height: var(--line-height-relaxed);
-  color: var(--color-text-secondary);
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #475569;
+  text-align: center;
 }
 
 /* ============================================================================
-   HIGHLIGHTS - MANTENDO MAS COM MELHORIAS
+   HIGHLIGHTS - CHECKMARKS VERDES
    =========================================================================== */
 
 .highlights {
   list-style: none;
   padding: 0;
-  margin: var(--spacing-3) 0;
+  margin: 16px 0;
 }
 
 .highlight {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
-  padding: var(--spacing-1) 0;
+  font-size: 14px;
+  color: #334155;
+  padding: 6px 0;
   display: flex;
   align-items: center;
-  gap: var(--spacing-2);
+  gap: 10px;
 }
 
 .highlight::before {
   content: '✓';
-  color: var(--color-success-500);
-  font-weight: bold;
-  font-size: var(--font-size-sm);
+  color: #10b981;
+  font-weight: 700;
+  font-size: 16px;
+  background: #e6f7e6;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ============================================================================
-   DURAÇÃO - MANTENDO
+   DURAÇÃO
    =========================================================================== */
 
 .duration {
-  margin: var(--spacing-2) 0 0;
-  font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: #64748b;
   font-style: italic;
-  padding-top: var(--spacing-2);
-  border-top: 1px dashed var(--color-border-light);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  padding: 6px 12px;
+  border-radius: 30px;
+  width: fit-content;
+}
+
+.duration::before {
+  content: '⏱️';
+  font-size: 14px;
 }
 
 /* ============================================================================
-   FOOTER - APRIMORADO
+   FOOTER
    =========================================================================== */
 
 .footer {
-  padding: var(--spacing-4);
-  border-top: 1px solid var(--color-border-light);
+  padding: 16px 20px 20px;
+  border-top: 1px solid #edf2f7;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--color-neutral-50);
 }
 
 .price {
@@ -170,130 +136,160 @@
 }
 
 .priceValue {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary-600);
+  font-size: 26px;
+  font-weight: 700;
   line-height: 1.2;
 }
 
 .pricePeriod {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
+  font-size: 12px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* Botão customizado usando suas variáveis */
-.addButton {
-  padding: var(--spacing-2) var(--spacing-4);
-  background-color: var(--color-primary-600);
+/* Botão base */
+.card button {
+  padding: 10px 24px;
   color: white;
   border: none;
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  border-radius: 40px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-fast) var(--transition-ease);
-  min-width: 100px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.addButton:hover {
-  background-color: var(--color-primary-700);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+.card button:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
-.addButton.selected {
-  background-color: var(--color-error-600);
-}
-
-.addButton.selected:hover {
-  background-color: var(--color-error-700);
+.card button:active {
+  transform: scale(0.98);
 }
 
 /* ============================================================================
-   VARIAÇÕES POR CATEGORIA - CORES DINÂMICAS
+   CORES POR CATEGORIA - ALIMENTAÇÃO (Laranja)
    =========================================================================== */
 
-.card.food .iconContainer {
-  background: linear-gradient(135deg, #f59e0b20, #fbbf2420);
-}
 .card.food .priceValue {
-  color: #f59e0b;
+  color: #f97316;
 }
 
-.card.wellness .iconContainer {
-  background: linear-gradient(135deg, #10b98120, #34d39920);
+.card.food button {
+  background: linear-gradient(135deg, #f97316, #fb923c);
 }
+
+.card.food button:hover {
+  background: linear-gradient(135deg, #ea580c, #f97316);
+}
+
+.card.food .icon {
+  filter: drop-shadow(0 8px 12px rgba(249, 115, 22, 0.2));
+}
+
+/* ============================================================================
+   CORES POR CATEGORIA - BEM-ESTAR (Verde)
+   =========================================================================== */
+
 .card.wellness .priceValue {
   color: #10b981;
 }
 
-.card.leisure .iconContainer {
-  background: linear-gradient(135deg, #3b82f620, #60a5fa20);
+.card.wellness button {
+  background: linear-gradient(135deg, #10b981, #34d399);
 }
+
+.card.wellness button:hover {
+  background: linear-gradient(135deg, #059669, #10b981);
+}
+
+.card.wellness .icon {
+  filter: drop-shadow(0 8px 12px rgba(16, 185, 129, 0.2));
+}
+
+/* ============================================================================
+   CORES POR CATEGORIA - LAZER (Azul)
+   =========================================================================== */
+
 .card.leisure .priceValue {
   color: #3b82f6;
 }
 
-.card.activity .iconContainer {
-  background: linear-gradient(135deg, #8b5cf620, #a78bfa20);
+.card.leisure button {
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
 }
+
+.card.leisure button:hover {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+}
+
+.card.leisure .icon {
+  filter: drop-shadow(0 8px 12px rgba(59, 130, 246, 0.2));
+}
+
+/* ============================================================================
+   CORES POR CATEGORIA - ATIVIDADES (Roxo)
+   =========================================================================== */
+
 .card.activity .priceValue {
   color: #8b5cf6;
 }
 
-.card.convenience .iconContainer {
-  background: linear-gradient(135deg, #6b728020, #9ca3af20);
+.card.activity button {
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
 }
+
+.card.activity button:hover {
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+}
+
+.card.activity .icon {
+  filter: drop-shadow(0 8px 12px rgba(139, 92, 246, 0.2));
+}
+
+/* ============================================================================
+   CORES POR CATEGORIA - CONVENIÊNCIA (Cinza)
+   =========================================================================== */
+
 .card.convenience .priceValue {
   color: #6b7280;
 }
 
-/* ============================================================================
-   ESTADOS - MANTENDO E APRIMORANDO
-   =========================================================================== */
-
-.card.selected .footer {
-  background-color: var(--color-primary-100);
-  border-top-color: var(--color-primary-200);
+.card.convenience button {
+  background: linear-gradient(135deg, #6b7280, #9ca3af);
 }
 
-.card.selected .priceValue {
-  color: var(--color-primary-700);
+.card.convenience button:hover {
+  background: linear-gradient(135deg, #4b5563, #6b7280);
+}
+
+.card.convenience .icon {
+  filter: drop-shadow(0 8px 12px rgba(107, 114, 128, 0.2));
 }
 
 /* ============================================================================
-   RESPONSIVIDADE - MANTENDO E APRIMORANDO
+   RESPONSIVIDADE
    =========================================================================== */
 
-@media (max-width: var(--breakpoint-sm)) {
-  .header {
-    padding: var(--spacing-3) var(--spacing-3) var(--spacing-2);
-  }
-
-  .iconContainer {
-    width: 44px;
-    height: 44px;
-  }
-
+@media (max-width: 640px) {
   .icon {
-    font-size: 22px;
+    font-size: 48px;
   }
 
   .name {
-    font-size: var(--font-size-md);
-  }
-
-  .description {
-    font-size: var(--font-size-xs);
+    font-size: 18px;
   }
 
   .priceValue {
-    font-size: var(--font-size-lg);
+    font-size: 22px;
   }
 
   .footer {
     flex-direction: column;
-    gap: var(--spacing-3);
+    gap: 16px;
     align-items: stretch;
   }
 
@@ -301,7 +297,7 @@
     text-align: center;
   }
 
-  .addButton {
+  .card button {
     width: 100%;
   }
 }

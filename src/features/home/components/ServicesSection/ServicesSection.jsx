@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import useServices from '../../hooks/useServices';
 import ServiceCard from './ServiceCard';
@@ -7,15 +7,7 @@ import Button from '../../../../shared/components/ui/Button';
 import styles from './ServicesSection.module.css';
 
 /**
- * ServicesSection Component - Seção de serviços do hotel
- * 
- * @component
- * @example
- * <ServicesSection
- *   title="Serviços Adicionais"
- *   subtitle="Personalize sua estadia"
- *   onServiceToggle={handleServiceToggle}
- * />
+ * ServicesSection Component - Seção de serviços com cards horizontais
  */
 const ServicesSection = ({ 
   title = 'Serviços Adicionais',
@@ -29,6 +21,8 @@ const ServicesSection = ({
   // HOOKS
   // ==========================================================================
 
+  const carouselRef = useRef(null);
+
   const {
     filteredServices,
     categories,
@@ -39,12 +33,6 @@ const ServicesSection = ({
   } = useServices();
 
   // ==========================================================================
-  // STATE
-  // ==========================================================================
-
-  const [visibleCount, setVisibleCount] = useState(6);
-
-  // ==========================================================================
   // HANDLERS
   // ==========================================================================
 
@@ -52,10 +40,6 @@ const ServicesSection = ({
     if (onServiceToggle) {
       onServiceToggle(serviceId, !selectedServiceIds.includes(serviceId));
     }
-  };
-
-  const handleLoadMore = () => {
-    setVisibleCount(prev => prev + 6);
   };
 
   // ==========================================================================
@@ -98,9 +82,6 @@ const ServicesSection = ({
   // RENDER: SUCCESS
   // ==========================================================================
 
-  const visibleServices = filteredServices.slice(0, visibleCount);
-  const hasMore = filteredServices.length > visibleCount;
-
   return (
     <section className={`${styles.section} ${className}`}>
       <div className={styles.container}>
@@ -129,11 +110,11 @@ const ServicesSection = ({
           </div>
         )}
 
-        {/* Grid de serviços */}
-        {visibleServices.length > 0 ? (
-          <>
-            <div className={styles.grid}>
-              {visibleServices.map((service) => (
+        {/* CARROSSEL HORIZONTAL - substitui o grid */}
+        {filteredServices.length > 0 ? (
+          <div className={styles.carouselContainer} ref={carouselRef}>
+            <div className={styles.carouselTrack}>
+              {filteredServices.map((service) => (
                 <ServiceCard
                   key={service.id}
                   service={service}
@@ -142,20 +123,7 @@ const ServicesSection = ({
                 />
               ))}
             </div>
-
-            {/* Botão "Ver mais" */}
-            {hasMore && (
-              <div className={styles.loadMore}>
-                <Button
-                  variant="outline"
-                  size="md"
-                  onClick={handleLoadMore}
-                >
-                  Ver mais serviços
-                </Button>
-              </div>
-            )}
-          </>
+          </div>
         ) : (
           <div className={styles.emptyState}>
             <p className={styles.emptyStateText}>
@@ -169,17 +137,11 @@ const ServicesSection = ({
 };
 
 ServicesSection.propTypes = {
-  /** Título da seção */
   title: PropTypes.string,
-  /** Subtítulo da seção */
   subtitle: PropTypes.string,
-  /** Função chamada ao selecionar/deselecionar serviço */
   onServiceToggle: PropTypes.func,
-  /** IDs dos serviços selecionados */
   selectedServiceIds: PropTypes.arrayOf(PropTypes.string),
-  /** Mostrar filtros de categoria */
   showFilters: PropTypes.bool,
-  /** Classes CSS adicionais */
   className: PropTypes.string,
 };
 

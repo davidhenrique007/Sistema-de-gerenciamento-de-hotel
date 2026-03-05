@@ -13,6 +13,8 @@
     "test": "node test-fase1.js"
   },
   "dependencies": {
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.577.0",
     "module-alias": "^2.3.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

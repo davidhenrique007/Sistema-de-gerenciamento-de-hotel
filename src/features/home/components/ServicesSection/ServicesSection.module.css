@@ -1,45 +1,34 @@
 /* ============================================================================
-   SEÇÃO PRINCIPAL - MANTENDO SUAS VARIÁVEIS
+   SEÇÃO DE SERVIÇOS - LAYOUT HORIZONTAL
    =========================================================================== */
 
 .section {
-  padding: var(--spacing-16) 0;
-  background-color: var(--color-bg-primary);
+  padding: 60px 0;
+  background-color: #f9fafb;
+  width: 100%;
+  overflow: hidden;
 }
 
 .container {
-  max-width: var(--breakpoint-2xl);
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 var(--spacing-4);
-}
-
-@media (min-width: var(--breakpoint-sm)) {
-  .container {
-    padding: 0 var(--spacing-6);
-  }
-}
-
-@media (min-width: var(--breakpoint-lg)) {
-  .container {
-    padding: 0 var(--spacing-8);
-  }
+  padding: 0 20px;
 }
 
 /* ============================================================================
-   HEADER - APRIMORADO
+   HEADER
    =========================================================================== */
 
 .header {
   text-align: center;
-  margin-bottom: var(--spacing-8);
-  position: relative;
+  margin-bottom: 40px;
 }
 
 .title {
-  margin: 0 0 var(--spacing-3);
-  font-size: clamp(var(--font-size-3xl), 5vw, var(--font-size-4xl));
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
+  margin: 0 0 12px;
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
   position: relative;
   display: inline-block;
 }
@@ -47,102 +36,108 @@
 .title::after {
   content: '';
   position: absolute;
-  bottom: calc(-1 * var(--spacing-2));
+  bottom: -8px;
   left: 50%;
   transform: translateX(-50%);
   width: 60px;
   height: 3px;
-  background: linear-gradient(
-    90deg,
-    var(--color-primary-400),
-    var(--color-primary-600)
-  );
-  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  border-radius: 2px;
 }
 
 .subtitle {
-  margin: var(--spacing-4) auto 0;
-  font-size: clamp(var(--font-size-md), 3vw, var(--font-size-lg));
-  color: var(--color-text-secondary);
+  margin: 0;
+  font-size: 16px;
+  color: #6b7280;
   max-width: 600px;
-  line-height: var(--line-height-relaxed);
+  margin: 0 auto;
+  line-height: 1.6;
 }
 
 /* ============================================================================
-   FILTROS - MANTENDO SEU CÓDIGO
+   FILTROS
    =========================================================================== */
 
 .filters {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: var(--spacing-2);
-  margin-bottom: var(--spacing-8);
+  gap: 8px;
+  margin-bottom: 40px;
 }
 
 .filterButton {
-  padding: var(--spacing-2) var(--spacing-4);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-  background-color: transparent;
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-full);
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 30px;
   cursor: pointer;
-  transition: all var(--transition-fast) var(--transition-ease);
+  transition: all 0.2s ease;
 }
 
 .filterButton:hover {
-  background-color: var(--color-neutral-100);
-  border-color: var(--color-neutral-300);
+  background: #f3f4f6;
+  color: #111827;
 }
 
 .filterButton.active {
-  color: var(--color-primary-600);
-  background-color: var(--color-primary-50);
-  border-color: var(--color-primary-600);
-}
-
-.filterButton:focus-visible {
-  outline: 2px solid var(--color-primary-500);
-  outline-offset: 2px;
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
 }
 
 /* ============================================================================
-   GRID - MANTENDO SUA ESTRUTURA
+   CARROSSEL HORIZONTAL - SUBSTITUI O GRID
    =========================================================================== */
 
-.grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--spacing-6);
-  margin-bottom: var(--spacing-8);
+.carouselContainer {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 8px 0 24px;
+  scrollbar-width: thin;
+  scrollbar-color: #2563eb #e5e7eb;
+  -webkit-overflow-scrolling: touch;
 }
 
-@media (min-width: var(--breakpoint-sm)) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.carouselContainer::-webkit-scrollbar {
+  height: 8px;
 }
 
-@media (min-width: var(--breakpoint-lg)) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+.carouselContainer::-webkit-scrollbar-track {
+  background: #e5e7eb;
+  border-radius: 10px;
+}
+
+.carouselContainer::-webkit-scrollbar-thumb {
+  background: #2563eb;
+  border-radius: 10px;
+}
+
+.carouselContainer::-webkit-scrollbar-thumb:hover {
+  background: #1d4ed8;
+}
+
+.carouselTrack {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+  padding: 4px 4px 8px;
 }
 
 /* ============================================================================
-   LOAD MORE - MANTENDO
+   LOAD MORE - REMOVIDO (NÃO USA MAIS)
    =========================================================================== */
 
 .loadMore {
-  display: flex;
-  justify-content: center;
-  margin-top: var(--spacing-4);
+  display: none;
 }
 
 /* ============================================================================
-   ESTADOS - MANTENDO
+   ESTADOS - MANTIDOS
    =========================================================================== */
 
 .loadingState,
@@ -152,55 +147,50 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-16) 0;
+  padding: 60px 0;
   text-align: center;
 }
 
 .loadingText,
 .errorText,
 .emptyStateText {
-  margin: var(--spacing-4) 0 0;
-  font-size: var(--font-size-lg);
-  color: var(--color-text-secondary);
+  margin: 16px 0 0;
+  font-size: 16px;
+  color: #6b7280;
 }
 
 .errorState {
-  background-color: var(--color-error-50);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-8);
+  background-color: #fef2f2;
+  border-radius: 12px;
+  padding: 40px;
 }
 
 .errorText {
-  color: var(--color-error-700);
-  margin-bottom: var(--spacing-4);
+  color: #dc2626;
+  margin-bottom: 16px;
 }
 
 .emptyState {
-  background-color: var(--color-neutral-50);
-  border-radius: var(--radius-lg);
-  border: 2px dashed var(--color-border-medium);
-  padding: var(--spacing-12);
+  background-color: #f9fafb;
+  border-radius: 12px;
+  border: 2px dashed #e5e7eb;
+  padding: 60px;
 }
 
 .emptyStateText {
-  color: var(--color-text-tertiary);
+  color: #9ca3af;
 }
 
 /* ============================================================================
-   RESPONSIVIDADE - MANTENDO
+   RESPONSIVIDADE
    =========================================================================== */
 
-@media (max-width: var(--breakpoint-sm)) {
+@media (max-width: 768px) {
   .section {
-    padding: var(--spacing-12) 0;
+    padding: 40px 0;
   }
-
-  .filters {
-    gap: var(--spacing-1);
-  }
-
-  .filterButton {
-    padding: var(--spacing-1) var(--spacing-3);
-    font-size: var(--font-size-xs);
+  
+  .title {
+    font-size: 28px;
   }
 }
