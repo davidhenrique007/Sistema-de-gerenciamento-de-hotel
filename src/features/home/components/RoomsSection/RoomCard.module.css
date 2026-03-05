@@ -1,325 +1,310 @@
 /* ============================================================================
-   ROOM CARD PROFISSIONAL - VERSÃO CORRIGIDA
+   ROOM CARD - DESIGN COMPACTO E PROFISSIONAL
    =========================================================================== */
 
 .card {
   background: white;
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   height: 100%;
   display: flex;
   flex-direction: column;
-  border: 2px solid transparent;
+  border: 1px solid #edf2f7;
 }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 15px 30px rgba(37, 99, 235, 0.1);
+  border-color: #2563eb20;
 }
 
 .card.selected {
-  border-color: #2563eb;
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.2);
+  border: 2px solid #2563eb;
+  box-shadow: 0 15px 30px rgba(37, 99, 235, 0.15);
 }
 
 /* ============================================================================
-   IMAGEM - CORRIGIDA PARA REMOVER ESPAÇOS
+   IMAGEM - MANTIDA NO MESMO TAMANHO
    =========================================================================== */
 
 .imageContainer {
   position: relative;
   width: 100%;
-  height: 200px; /* Altura fixa para controle preciso */
-  background-color: #f3f4f6;
+  height: 200px; /* Tamanho fixo - NÃO ALTERAR */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   overflow: hidden;
-  margin: 0;
-  padding: 0;
-  line-height: 0; /* Remove espaço extra de linha */
-  display: block;
 }
 
 .mainImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block; /* Remove espaço inline da imagem */
-  margin: 0;
-  padding: 0;
+  transition: transform 0.5s ease;
 }
 
 .card:hover .mainImage {
   transform: scale(1.05);
 }
 
-/* Fallback quando imagem não carrega */
-.mainImage[src=""] {
-  display: none;
-}
-
-.imageContainer::after {
-  content: '🏨';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 48px;
-  color: #9ca3af;
-  display: none;
-  z-index: 1;
-}
-
-.mainImage[src=""] ~ .imageContainer::after {
-  display: block;
-}
-
-/* ============================================================================
-   STATUS BADGE - MAIS PRÓXIMO DA BORDA DA IMAGEM
-   =========================================================================== */
-
+/* Status Badge - Mais compacto */
 .statusContainer {
   position: absolute;
-  top: 8px;  /* Reduzido de 12px */
-  right: 8px; /* Reduzido de 12px */
+  top: 12px;
+  right: 12px;
   z-index: 10;
-  margin: 0;
-  padding: 0;
 }
 
 .statusBadge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 40px;
+  font-size: 11px;
   font-weight: 600;
   background: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin: 0;
-  border: none;
-  line-height: 1;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .statusDot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  display: inline-block;
-}
-
-/* Cores do badge para cada status */
-.statusBadge.available {
-  color: #059669;
-  background-color: #ecfdf5;
-}
-.statusBadge.available .statusDot {
-  background: #10b981;
-}
-
-.statusBadge.occupied {
-  color: #dc2626;
-  background-color: #fef2f2;
-}
-.statusBadge.occupied .statusDot {
-  background: #ef4444;
-}
-
-.statusBadge.maintenance {
-  color: #d97706;
-  background-color: #fffbeb;
-}
-.statusBadge.maintenance .statusDot {
-  background: #f59e0b;
 }
 
 /* ============================================================================
-   CONTEÚDO
+   CONTEÚDO - ESPAÇAMENTOS REDUZIDOS
    =========================================================================== */
 
 .content {
-  padding: 20px;
+  padding: 16px; /* Reduzido de 24px */
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px; /* Reduzido */
   flex: 1;
 }
 
+/* Header - Mais compacto */
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
+  margin-bottom: 4px;
 }
 
-.roomInfo h3 {
+.roomInfo {
+  flex: 1;
+}
+
+.title {
   margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #111827;
+  font-size: 18px; /* Reduzido */
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
 }
 
 .roomType {
-  margin: 4px 0 0;
-  font-size: 14px;
-  color: #6b7280;
-  text-transform: capitalize;
+  margin: 2px 0 0;
+  font-size: 12px; /* Reduzido */
+  color: #2563eb;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: #eef2ff;
+  display: inline-block;
+  padding: 2px 8px; /* Reduzido */
+  border-radius: 30px;
 }
 
 .price {
   text-align: right;
+  background: #f8fafc;
+  padding: 4px 10px; /* Reduzido */
+  border-radius: 30px;
+  border: 1px solid #e2e8f0;
 }
 
 .priceAmount {
-  font-size: 20px;
+  font-size: 18px; /* Reduzido */
   font-weight: 700;
   color: #2563eb;
-  white-space: nowrap;
+  line-height: 1;
 }
 
 .pricePeriod {
-  font-size: 12px;
-  color: #9ca3af;
-  margin-left: 2px;
+  font-size: 10px; /* Reduzido */
+  color: #64748b;
+  display: block;
 }
 
-/* ============================================================================
-   DESCRIÇÃO
-   =========================================================================== */
-
+/* Descrição - Mais curta */
 .description {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: #4b5563;
+  font-size: 13px; /* Reduzido */
+  line-height: 1.4; /* Reduzido */
+  color: #475569;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* ============================================================================
-   DETALHES
-   =========================================================================== */
-
+/* Detalhes - Mais compactos */
 .details {
   display: flex;
-  gap: 16px;
+  gap: 8px; /* Reduzido */
   flex-wrap: wrap;
-  margin: 4px 0;
+  background: #f8fafc;
+  padding: 8px; /* Reduzido */
+  border-radius: 12px;
 }
 
 .detailItem {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 13px;
-  color: #6b7280;
+  font-size: 11px; /* Reduzido */
+  color: #334155;
+  background: white;
+  padding: 4px 8px; /* Reduzido */
+  border-radius: 30px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
 }
 
 .detailIcon {
-  font-size: 16px;
+  font-size: 12px;
 }
 
-/* ============================================================================
-   AMENITIES
-   =========================================================================== */
-
+/* Amenities - Mais compactas */
 .amenities {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin: 4px 0;
+  gap: 4px; /* Reduzido */
+  margin: 2px 0;
 }
 
 .amenity {
-  font-size: 12px;
-  color: #4b5563;
-  background: #f3f4f6;
-  padding: 4px 8px;
-  border-radius: 9999px;
+  font-size: 10px; /* Reduzido */
+  color: #2563eb;
+  background: #eef2ff;
+  padding: 4px 8px; /* Reduzido */
+  border-radius: 30px;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.amenity:hover {
+  background: #2563eb;
+  color: white;
 }
 
 .amenityMore {
-  font-size: 12px;
-  color: #6b7280;
-  background: #e5e7eb;
+  font-size: 10px;
+  color: #64748b;
+  background: #f1f5f9;
   padding: 4px 8px;
-  border-radius: 9999px;
+  border-radius: 30px;
 }
 
-/* ============================================================================
-   BOTÃO
-   =========================================================================== */
-
-.action {
-  margin-top: auto;
-  padding-top: 16px;
+/* Grupo de botões - Mais compacto */
+.buttonGroup {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px; /* Reduzido */
+  margin-top: 4px; /* Reduzido */
 }
 
-.action button {
-  width: 100%;
-  padding: 10px;
+.detailsButton {
+  background: white;
+  border: 1px solid #2563eb;
+  color: #2563eb;
+  padding: 8px; /* Reduzido */
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 12px; /* Reduzido */
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.detailsButton:hover {
   background: #2563eb;
   color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37,99,235,0.2);
+}
+
+.selectButton {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
   border: none;
-  border-radius: 8px;
-  font-weight: 500;
+  color: white;
+  padding: 8px; /* Reduzido */
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 12px; /* Reduzido */
   cursor: pointer;
-  transition: all 0.2s;
-  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.2);
 }
 
-.action button:hover:not(:disabled) {
-  background: #1d4ed8;
+.selectButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37,99,235,0.3);
 }
 
-.action button:disabled {
-  background: #e5e7eb;
-  color: #9ca3af;
+.selectButton:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 /* ============================================================================
-   GALERIA DE IMAGENS
+   GALERIA DE IMAGENS (HOVER)
    =========================================================================== */
 
 .thumbnailStrip {
   position: absolute;
-  bottom: 10px;
-  left: 0;
-  right: 0;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
   display: flex;
   justify-content: center;
-  gap: 8px;
-  padding: 8px;
-  background: rgba(0, 0, 0, 0.5);
+  gap: 4px;
+  padding: 4px;
+  background: rgba(255,255,255,0.2);
   backdrop-filter: blur(4px);
+  border-radius: 30px;
   z-index: 5;
-  margin: 0;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.card:hover .thumbnailStrip {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .thumbnail {
-  width: 50px;
-  height: 50px;
+  width: 35px; /* Reduzido */
+  height: 35px;
   object-fit: cover;
-  border-radius: 4px;
-  border: 2px solid transparent;
+  border-radius: 8px;
+  border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.2s ease;
-  display: block;
 }
 
 .thumbnail:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
   border-color: white;
 }
 
 .activeThumbnail {
   border-color: #2563eb;
-  transform: scale(1.1);
 }
 
 /* ============================================================================
@@ -328,34 +313,23 @@
 
 @media (max-width: 768px) {
   .imageContainer {
-    height: 180px; /* Altura menor em mobile */
+    height: 180px;
   }
   
   .content {
-    padding: 16px;
+    padding: 12px;
   }
   
-  .priceAmount {
-    font-size: 18px;
-  }
-  
-  .roomInfo h3 {
+  .title {
     font-size: 16px;
   }
   
-  .statusContainer {
-    top: 6px;
-    right: 6px;
+  .priceAmount {
+    font-size: 16px;
   }
   
-  .statusBadge {
-    padding: 3px 8px;
-    font-size: 11px;
-  }
-  
-  .thumbnail {
-    width: 40px;
-    height: 40px;
+  .buttonGroup {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -365,7 +339,7 @@
   }
   
   .thumbnail {
-    width: 35px;
-    height: 35px;
+    width: 30px;
+    height: 30px;
   }
 }

@@ -1,43 +1,12 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import RoomGridItem from './RoomGridItem';
 import styles from './RoomGrid.module.css';
 
 /**
  * RoomGrid Component - Grid responsivo de quartos
- * 
- * @component
- * @example
- * <RoomGrid
- *   rooms={rooms}
- *   selectedRoomId="room-001"
- *   onSelect={handleSelect}
- * />
  */
-const RoomGrid = ({ rooms, selectedRoomId, onSelect, columns = 3 }) => {
-  // ==========================================================================
-  // MEMOIZAR LISTA DE ITEMS
-  // ==========================================================================
-
-  const gridItems = useMemo(() => {
-    if (!rooms || rooms.length === 0) {
-      return null;
-    }
-
-    return rooms.map((room) => (
-      <RoomGridItem
-        key={room.id}
-        room={room}
-        isSelected={selectedRoomId === room.id}
-        onSelect={onSelect}
-      />
-    ));
-  }, [rooms, selectedRoomId, onSelect]);
-
-  // ==========================================================================
-  // RENDER: EMPTY STATE
-  // ==========================================================================
-
+const RoomGrid = ({ rooms, selectedRoomId, onSelect, onDetails, columns = 3 }) => {
   if (!rooms || rooms.length === 0) {
     return (
       <div className={styles.emptyState}>
@@ -48,35 +17,37 @@ const RoomGrid = ({ rooms, selectedRoomId, onSelect, columns = 3 }) => {
     );
   }
 
-  // ==========================================================================
-  // RENDER: GRID
-  // ==========================================================================
-
   return (
     <div
       className={`${styles.grid} ${styles[`columns-${columns}`]}`}
       role="grid"
-      aria-label="Lista de quartos disponíveis"
+      aria-label="Lista de quartos"
     >
-      {gridItems}
+      {rooms.map((room) => (
+        <RoomGridItem
+          key={room.id}
+          room={room}
+          isSelected={selectedRoomId === room.id}
+          onSelect={onSelect}
+          onDetails={onDetails}
+        />
+      ))}
     </div>
   );
 };
 
 RoomGrid.propTypes = {
-  /** Lista de quartos a serem exibidos */
   rooms: PropTypes.array.isRequired,
-  /** ID do quarto selecionado */
   selectedRoomId: PropTypes.string,
-  /** Função chamada ao selecionar um quarto */
   onSelect: PropTypes.func,
-  /** Número de colunas no grid */
+  onDetails: PropTypes.func,
   columns: PropTypes.oneOf([1, 2, 3, 4]),
 };
 
 RoomGrid.defaultProps = {
   selectedRoomId: null,
   onSelect: undefined,
+  onDetails: undefined,
   columns: 3,
 };
 

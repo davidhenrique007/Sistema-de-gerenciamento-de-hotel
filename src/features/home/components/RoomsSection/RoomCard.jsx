@@ -6,11 +6,9 @@ import { ROOM_STATUS } from '../../constants/room.types';
 import styles from './RoomCard.module.css';
 
 /**
- * RoomCard Component - Card de exibição de quarto com galeria
- * 
- * @component
+ * RoomCard Component - Card de exibição de quarto com dois botões
  */
-const RoomCard = ({ room, onSelect, isSelected = false }) => {
+const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
   // ==========================================================================
   // STATES
   // ==========================================================================
@@ -28,6 +26,12 @@ const RoomCard = ({ room, onSelect, isSelected = false }) => {
     }
   };
 
+  const handleDetails = () => {
+    if (onDetails) {
+      onDetails(room);
+    }
+  };
+
   const handleImageError = () => {
     setImageError(true);
   };
@@ -35,10 +39,6 @@ const RoomCard = ({ room, onSelect, isSelected = false }) => {
   const handleImageClick = (imgSrc) => {
     setCurrentImage(imgSrc);
     setImageError(false);
-  };
-
-  const toggleGallery = () => {
-    setShowGallery(!showGallery);
   };
 
   // ==========================================================================
@@ -131,10 +131,6 @@ const RoomCard = ({ room, onSelect, isSelected = false }) => {
             <span className={styles.detailIcon}>🛏️</span>
             <span>{room.bedType}</span>
           </div>
-          <div className={styles.detailItem}>
-            <span className={styles.detailIcon}>📶</span>
-            <span>Wi-Fi</span>
-          </div>
         </div>
 
         <div className={styles.amenities}>
@@ -150,16 +146,25 @@ const RoomCard = ({ room, onSelect, isSelected = false }) => {
           )}
         </div>
 
-        <div className={styles.action}>
+        {/* DOIS BOTÕES: DETALHES E SELECIONAR */}
+        <div className={styles.buttonGroup}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDetails}
+            className={styles.detailsButton}
+          >
+            Ver Detalhes
+          </Button>
+
           <Button
             variant={isAvailable ? 'primary' : 'secondary'}
-            size="md"
-            fullWidth
+            size="sm"
             onClick={handleSelect}
             disabled={!isAvailable}
-            aria-label={isAvailable ? `Selecionar quarto ${room.number}` : `Quarto ${room.number} indisponível`}
+            className={styles.selectButton}
           >
-            {isAvailable ? 'Selecionar Quarto' : 'Indisponível'}
+            {isAvailable ? 'Selecionar' : 'Indisponível'}
           </Button>
         </div>
       </div>
@@ -188,11 +193,13 @@ RoomCard.propTypes = {
     size: PropTypes.number.isRequired,
   }).isRequired,
   onSelect: PropTypes.func,
+  onDetails: PropTypes.func,
   isSelected: PropTypes.bool,
 };
 
 RoomCard.defaultProps = {
   onSelect: undefined,
+  onDetails: undefined,
   isSelected: false,
 };
 
