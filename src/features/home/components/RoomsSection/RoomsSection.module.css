@@ -1,9 +1,9 @@
 /* ============================================================================
-   SEÇÃO PRINCIPAL
+   SEÇÃO PRINCIPAL - VERSÃO COMPACTA
    =========================================================================== */
 
 .section {
-  padding: var(--spacing-16) 0;
+  padding: 40px 0;  /* Reduzido de var(--spacing-16) que era 64px */
   background-color: var(--color-bg-primary);
 }
 
@@ -26,14 +26,14 @@
 }
 
 /* ============================================================================
-   HEADER
+   HEADER - COM ESPAÇAMENTOS REDUZIDOS
    =========================================================================== */
 
 .header {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-6);
-  margin-bottom: var(--spacing-8);
+  gap: 16px;  /* Reduzido de var(--spacing-6) que era 24px */
+  margin-bottom: 24px;  /* Reduzido de var(--spacing-8) que era 32px */
 }
 
 @media (min-width: var(--breakpoint-md)) {
@@ -49,17 +49,33 @@
 }
 
 .title {
-  margin: 0 0 var(--spacing-2);
-  font-size: clamp(var(--font-size-3xl), 5vw, var(--font-size-4xl));
+  margin: 0 0 8px;  /* Reduzido de var(--spacing-2) */
+  font-size: clamp(28px, 5vw, 36px);  /* Valores fixos para mais controle */
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
+  line-height: 1.2;
 }
 
 .subtitle {
   margin: 0;
-  font-size: var(--font-size-lg);
+  font-size: 16px;  /* Reduzido de var(--font-size-lg) */
   color: var(--color-text-secondary);
-  line-height: var(--line-height-relaxed);
+  line-height: 1.5;
+}
+
+/* ============================================================================
+   TÍTULO DE DISPONIBILIDADE (SE HOUVER)
+   =========================================================================== */
+
+.availabilityTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #10b981;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 8px;
+  padding: 0;
+  display: block;
 }
 
 /* ============================================================================
@@ -69,37 +85,37 @@
 .stats {
   display: flex;
   align-items: center;
-  gap: var(--spacing-4);
+  gap: 16px;
   flex-wrap: wrap;
 }
 
 .statItem {
-  font-size: var(--font-size-sm);
+  font-size: 14px;
   color: var(--color-text-tertiary);
 }
 
 .statItem strong {
-  font-size: var(--font-size-lg);
+  font-size: 18px;
   color: var(--color-text-primary);
-  margin-right: var(--spacing-1);
+  margin-right: 4px;
 }
 
 .filters {
   display: flex;
-  gap: var(--spacing-2);
+  gap: 8px;
   margin-left: auto;
 }
 
 .filterButton {
-  padding: var(--spacing-2) var(--spacing-4);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
   color: var(--color-text-secondary);
   background-color: transparent;
   border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-full);
+  border-radius: 20px;
   cursor: pointer;
-  transition: all var(--transition-fast) var(--transition-ease);
+  transition: all 0.2s ease;
 }
 
 .filterButton:hover {
@@ -113,13 +129,13 @@
 }
 
 /* ============================================================================
-   GRID
+   GRID DE QUARTOS - ESPAÇAMENTOS REDUZIDOS
    =========================================================================== */
 
 .grid {
   display: grid;
-  gap: var(--spacing-6);
-  margin-top: var(--spacing-8);
+  gap: 20px;  /* Reduzido de var(--spacing-6) que era 24px */
+  margin-top: 24px;  /* Reduzido de var(--spacing-8) que era 32px */
 }
 
 .grid.columns-1 {
@@ -138,18 +154,19 @@
   grid-template-columns: repeat(4, 1fr);
 }
 
-@media (max-width: var(--breakpoint-lg)) {
+@media (max-width: 1024px) {
   .grid.columns-3,
   .grid.columns-4 {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: var(--breakpoint-md)) {
+@media (max-width: 768px) {
   .grid.columns-2,
   .grid.columns-3,
   .grid.columns-4 {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 }
 
@@ -158,7 +175,31 @@
 }
 
 /* ============================================================================
-   ESTADOS
+   INFORMAÇÃO DE SELEÇÃO
+   =========================================================================== */
+
+.selectionInfo {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: var(--color-primary-50);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--color-primary-600);
+  animation: slideDown 0.3s ease-out;
+}
+
+.selectionText {
+  margin: 0;
+  font-size: 15px;
+  color: var(--color-text-secondary);
+}
+
+.selectionText strong {
+  color: var(--color-primary-700);
+  font-weight: 600;
+}
+
+/* ============================================================================
+   ESTADOS (LOADING, ERROR, EMPTY)
    =========================================================================== */
 
 .loadingState,
@@ -168,63 +209,43 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-16) 0;
+  padding: 48px 0;
   text-align: center;
 }
 
 .loadingText,
 .errorText,
 .emptyStateText {
-  margin: var(--spacing-4) 0 0;
-  font-size: var(--font-size-lg);
+  margin: 16px 0 0;
+  font-size: 18px;
   color: var(--color-text-secondary);
 }
 
 .errorState {
   background-color: var(--color-error-50);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-8);
+  border-radius: 12px;
+  padding: 32px;
 }
 
 .errorText {
   color: var(--color-error-700);
-  margin-bottom: var(--spacing-4);
+  margin-bottom: 16px;
 }
 
 .emptyState {
   background-color: var(--color-neutral-50);
-  border-radius: var(--radius-lg);
+  border-radius: 12px;
   border: 2px dashed var(--color-border-medium);
+  padding: 48px;
 }
 
 .emptyStateText {
   color: var(--color-text-tertiary);
 }
-/* Adicionar ao final do arquivo existente */
 
 /* ============================================================================
-   INFORMAÇÃO DE SELEÇÃO
+   ANIMAÇÕES
    =========================================================================== */
-
-.selectionInfo {
-  margin-top: var(--spacing-6);
-  padding: var(--spacing-4);
-  background-color: var(--color-primary-50);
-  border-radius: var(--radius-lg);
-  border-left: 4px solid var(--color-primary-600);
-  animation: slideDown 0.3s var(--transition-ease-out);
-}
-
-.selectionText {
-  margin: 0;
-  font-size: var(--font-size-md);
-  color: var(--color-text-secondary);
-}
-
-.selectionText strong {
-  color: var(--color-primary-700);
-  font-weight: var(--font-weight-semibold);
-}
 
 @keyframes slideDown {
   from {
@@ -234,5 +255,40 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* ============================================================================
+   RESPONSIVIDADE ADICIONAL
+   =========================================================================== */
+
+@media (max-width: 640px) {
+  .section {
+    padding: 32px 0;
+  }
+  
+  .title {
+    font-size: 24px;
+  }
+  
+  .subtitle {
+    font-size: 14px;
+  }
+  
+  .stats {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .filters {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .selectionInfo {
+    margin-top: 16px;
+    padding: 12px;
   }
 }

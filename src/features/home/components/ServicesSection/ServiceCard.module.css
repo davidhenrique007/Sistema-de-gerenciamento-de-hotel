@@ -1,5 +1,5 @@
 /* ============================================================================
-   CARD PRINCIPAL
+   CARD PRINCIPAL - APRIMORADO
    =========================================================================== */
 
 .card {
@@ -12,12 +12,13 @@
   transition: all var(--transition-base) var(--transition-ease);
   height: 100%;
   position: relative;
+  box-shadow: var(--shadow-sm);
 }
 
 .card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
-  border-color: var(--color-primary-200);
+  border-color: var(--color-primary-300);
 }
 
 .card.selected {
@@ -27,37 +28,81 @@
 }
 
 /* ============================================================================
-   ÍCONE
+   CABEÇALHO DO CARD - NOVO DESIGN
    =========================================================================== */
 
+.header {
+  padding: var(--spacing-5) var(--spacing-4) var(--spacing-3);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  border-bottom: 1px solid var(--color-border-light);
+  background: linear-gradient(
+    to bottom,
+    var(--color-neutral-50),
+    transparent
+  );
+}
+
 .iconContainer {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-50),
+    var(--color-primary-100)
+  );
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-6) var(--spacing-4) var(--spacing-2);
+  transition: all var(--transition-fast) var(--transition-ease);
+}
+
+.card:hover .iconContainer {
+  transform: scale(1.05);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-100),
+    var(--color-primary-200)
+  );
 }
 
 .icon {
-  font-size: 64px;
+  font-size: 28px;
   line-height: 1;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+  color: var(--color-primary-600);
 }
 
-/* ============================================================================
-   CONTEÚDO
-   =========================================================================== */
-
-.content {
-  padding: 0 var(--spacing-4) var(--spacing-4);
+.titleContainer {
   flex: 1;
 }
 
 .name {
-  margin: 0 0 var(--spacing-2);
+  margin: 0 0 var(--spacing-1);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
-  text-align: center;
+}
+
+.category {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--color-neutral-100);
+  padding: var(--spacing-0_5) var(--spacing-2);
+  border-radius: var(--radius-full);
+  display: inline-block;
+}
+
+/* ============================================================================
+   CONTEÚDO - APRIMORADO
+   =========================================================================== */
+
+.content {
+  padding: var(--spacing-4);
+  flex: 1;
 }
 
 .description {
@@ -65,11 +110,10 @@
   font-size: var(--font-size-sm);
   line-height: var(--line-height-relaxed);
   color: var(--color-text-secondary);
-  text-align: center;
 }
 
 /* ============================================================================
-   HIGHLIGHTS
+   HIGHLIGHTS - MANTENDO MAS COM MELHORIAS
    =========================================================================== */
 
 .highlights {
@@ -80,21 +124,22 @@
 
 .highlight {
   font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
   padding: var(--spacing-1) 0;
   display: flex;
   align-items: center;
-  gap: var(--spacing-1);
+  gap: var(--spacing-2);
 }
 
 .highlight::before {
   content: '✓';
   color: var(--color-success-500);
   font-weight: bold;
+  font-size: var(--font-size-sm);
 }
 
 /* ============================================================================
-   DURAÇÃO
+   DURAÇÃO - MANTENDO
    =========================================================================== */
 
 .duration {
@@ -102,10 +147,12 @@
   font-size: var(--font-size-xs);
   color: var(--color-text-tertiary);
   font-style: italic;
+  padding-top: var(--spacing-2);
+  border-top: 1px dashed var(--color-border-light);
 }
 
 /* ============================================================================
-   FOOTER
+   FOOTER - APRIMORADO
    =========================================================================== */
 
 .footer {
@@ -123,7 +170,7 @@
 }
 
 .priceValue {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-primary-600);
   line-height: 1.2;
@@ -134,8 +181,75 @@
   color: var(--color-text-tertiary);
 }
 
+/* Botão customizado usando suas variáveis */
+.addButton {
+  padding: var(--spacing-2) var(--spacing-4);
+  background-color: var(--color-primary-600);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast) var(--transition-ease);
+  min-width: 100px;
+}
+
+.addButton:hover {
+  background-color: var(--color-primary-700);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.addButton.selected {
+  background-color: var(--color-error-600);
+}
+
+.addButton.selected:hover {
+  background-color: var(--color-error-700);
+}
+
 /* ============================================================================
-   ESTADOS
+   VARIAÇÕES POR CATEGORIA - CORES DINÂMICAS
+   =========================================================================== */
+
+.card.food .iconContainer {
+  background: linear-gradient(135deg, #f59e0b20, #fbbf2420);
+}
+.card.food .priceValue {
+  color: #f59e0b;
+}
+
+.card.wellness .iconContainer {
+  background: linear-gradient(135deg, #10b98120, #34d39920);
+}
+.card.wellness .priceValue {
+  color: #10b981;
+}
+
+.card.leisure .iconContainer {
+  background: linear-gradient(135deg, #3b82f620, #60a5fa20);
+}
+.card.leisure .priceValue {
+  color: #3b82f6;
+}
+
+.card.activity .iconContainer {
+  background: linear-gradient(135deg, #8b5cf620, #a78bfa20);
+}
+.card.activity .priceValue {
+  color: #8b5cf6;
+}
+
+.card.convenience .iconContainer {
+  background: linear-gradient(135deg, #6b728020, #9ca3af20);
+}
+.card.convenience .priceValue {
+  color: #6b7280;
+}
+
+/* ============================================================================
+   ESTADOS - MANTENDO E APRIMORANDO
    =========================================================================== */
 
 .card.selected .footer {
@@ -148,12 +262,21 @@
 }
 
 /* ============================================================================
-   RESPONSIVIDADE
+   RESPONSIVIDADE - MANTENDO E APRIMORANDO
    =========================================================================== */
 
 @media (max-width: var(--breakpoint-sm)) {
+  .header {
+    padding: var(--spacing-3) var(--spacing-3) var(--spacing-2);
+  }
+
+  .iconContainer {
+    width: 44px;
+    height: 44px;
+  }
+
   .icon {
-    font-size: 48px;
+    font-size: 22px;
   }
 
   .name {
@@ -165,7 +288,7 @@
   }
 
   .priceValue {
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-lg);
   }
 
   .footer {
@@ -176,5 +299,9 @@
 
   .price {
     text-align: center;
+  }
+
+  .addButton {
+    width: 100%;
   }
 }

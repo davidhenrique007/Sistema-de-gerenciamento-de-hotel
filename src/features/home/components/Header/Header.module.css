@@ -1,0 +1,344 @@
+/* ============================================================================
+   HEADER PRINCIPAL
+   =========================================================================== */
+
+.header {
+  width: 100%;
+  background-color: #9c9e9f;
+  border-bottom: 1px solid #f80000;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.header.sticky {
+  position: sticky;
+  top: 0;
+}
+
+.header.transparent {
+  background-color: transparent;
+  border-bottom-color: transparent;
+}
+
+.header.transparent.scrolled {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-bottom-color: #e5e7eb;
+  backdrop-filter: blur(8px);
+}
+
+.header.scrolled {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================================================
+   CONTAINER DO HEADER
+   =========================================================================== */
+
+.headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  height: 60px;
+}
+
+@media (min-width: 640px) {
+  .headerContainer {
+    padding: 12px 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .headerContainer {
+    padding: 16px 32px;
+    height: 70px;
+  }
+}
+
+/* ============================================================================
+   LOGO
+   =========================================================================== */
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.logo:hover {
+  opacity: 0.9;
+}
+
+.logoIcon {
+  width: 40px;
+  height: 40px;
+}
+
+.logoPrimary {
+  fill: #2563eb;
+}
+
+.logoSecondary {
+  fill: white;
+}
+
+.logo.light .logoPrimary {
+  fill: white;
+}
+
+.logo.light .logoSecondary {
+  fill: rgba(255, 255, 255, 0.2);
+}
+
+.logoText {
+  font-size: 18px;
+  font-weight: 400;
+  color: #111827;
+  white-space: nowrap;
+}
+
+.logoText strong {
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.logo.light .logoText {
+  color: white;
+}
+
+.logo.light .logoText strong {
+  color: white;
+}
+
+/* ============================================================================
+   NAVEGAÇÃO DESKTOP
+   =========================================================================== */
+
+.navMenu {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .navMenu {
+    display: block;
+  }
+}
+
+.navList {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navItem {
+  position: relative;
+}
+
+.navLink {
+  display: inline-block;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #111827;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.navLink:hover {
+  color: #2563eb;
+  background-color: #f3f4f6;
+}
+
+.navLink.active {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.navLink.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background-color: #2563eb;
+  border-radius: 2px;
+}
+
+.transparent .navLink {
+  color: white;
+}
+
+.transparent .navLink:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================================================
+   MENU TOGGLE (MOBILE)
+   =========================================================================== */
+
+.menuToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.menuToggle:hover {
+  background-color: #f3f4f6;
+}
+
+.menuToggle.open {
+  position: relative;
+  z-index: 1001;
+}
+
+.menuToggle.open:hover {
+  background-color: #e5e7eb;
+}
+
+.transparent .menuToggle {
+  color: white;
+}
+
+.transparent .menuToggle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================================================
+   HAMBURGER ICON
+   =========================================================================== */
+
+.hamburgerIcon {
+  position: relative;
+  width: 24px;
+  height: 2px;
+  background-color: currentColor;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.hamburgerIcon::before,
+.hamburgerIcon::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 2px;
+  background-color: currentColor;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.hamburgerIcon::before {
+  transform: translateY(-8px);
+}
+
+.hamburgerIcon::after {
+  transform: translateY(8px);
+}
+
+.menuToggle.open .hamburgerIcon {
+  background-color: transparent;
+}
+
+.menuToggle.open .hamburgerIcon::before {
+  transform: rotate(45deg);
+}
+
+.menuToggle.open .hamburgerIcon::after {
+  transform: rotate(-45deg);
+}
+
+/* ============================================================================
+   MENU MOBILE
+   =========================================================================== */
+
+.mobileMenu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  z-index: 1000;
+  padding: 80px 16px 32px;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-out;
+}
+
+.mobileMenu.open {
+  transform: translateX(0);
+}
+
+.mobileMenu.closed {
+  transform: translateX(100%);
+}
+
+.mobileNav {
+  width: 100%;
+}
+
+.mobileNavList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mobileNavItem {
+  width: 100%;
+}
+
+.mobileNavLink {
+  display: block;
+  padding: 16px 20px;
+  font-size: 20px;
+  font-weight: 500;
+  color: #111827;
+  text-decoration: none;
+  text-align: center;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.mobileNavLink:hover {
+  background-color: #f3f4f6;
+}
+
+.mobileNavLink.active {
+  color: #2563eb;
+  background-color: #eff6ff;
+  font-weight: 600;
+}
+
+/* ============================================================================
+   RESPONSIVIDADE
+   =========================================================================== */
+
+@media (max-width: 768px) {
+  .headerContainer {
+    height: 60px;
+  }
+
+  .navMenu {
+    display: none;
+  }
+}

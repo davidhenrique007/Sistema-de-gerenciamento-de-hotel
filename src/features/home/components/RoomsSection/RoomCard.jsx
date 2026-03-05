@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { useState, memo } from 'react';
 import PropTypes from 'prop-types';
 import Button from '../../../../shared/components/ui/Button';
 import RoomStatusBadge from './RoomStatusBadge';
@@ -6,17 +6,18 @@ import { ROOM_STATUS } from '../../constants/room.types';
 import styles from './RoomCard.module.css';
 
 /**
- * RoomCard Component - Card de exibição de quarto
+ * RoomCard Component - Card de exibição de quarto com galeria
  * 
  * @component
- * @example
- * <RoomCard
- *   room={room}
- *   onSelect={handleSelect}
- *   isSelected={false}
- * />
  */
 const RoomCard = ({ room, onSelect, isSelected = false }) => {
+  // ==========================================================================
+  // STATES
+  // ==========================================================================
+  const [currentImage, setCurrentImage] = useState(room.images.main);
+  const [imageError, setImageError] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
+
   // ==========================================================================
   // HANDLERS
   // ==========================================================================
@@ -25,6 +26,19 @@ const RoomCard = ({ room, onSelect, isSelected = false }) => {
     if (room.status === ROOM_STATUS.AVAILABLE && onSelect) {
       onSelect(room);
     }
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
+  const handleImageClick = (imgSrc) => {
+    setCurrentImage(imgSrc);
+    setImageError(false);
+  };
+
+  const toggleGallery = () => {
+    setShowGallery(!showGallery);
   };
 
   // ==========================================================================
@@ -48,14 +62,41 @@ const RoomCard = ({ room, onSelect, isSelected = false }) => {
     <article 
       className={`${styles.card} ${isSelected ? styles.selected : ''}`}
       aria-labelledby={`room-title-${room.id}`}
+      onMouseEnter={() => setShowGallery(true)}
+      onMouseLeave={() => setShowGallery(false)}
     >
       <div className={styles.imageContainer}>
+        {/* Imagem Principal */}
         <img
-          src={room.image}
+          src={imageError ? '/assets/images/default-room.jpg' : currentImage}
+          onError={handleImageError}
           alt={`Quarto ${room.number}`}
-          className={styles.image}
+          className={styles.mainImage}
           loading="lazy"
         />
+
+        {/* Miniaturas da Galeria */}
+        {showGallery && (
+          <div className={styles.thumbnailStrip}>
+            <img
+              src={room.images.main}
+              alt="Principal"
+              className={`${styles.thumbnail} ${currentImage === room.images.main ? styles.activeThumbnail : ''}`}
+              onClick={() => handleImageClick(room.images.main)}
+            />
+            {room.images.gallery.map((img, index) => (
+              <img
+                key={index}
+                src={img}
+                alt={`Foto ${index + 1}`}
+                className={`${styles.thumbnail} ${currentImage === img ? styles.activeThumbnail : ''}`}
+                onClick={() => handleImageClick(img)}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Status Badge */}
         <div className={styles.statusContainer}>
           <RoomStatusBadge status={room.status} size="sm" />
         </div>
@@ -63,11 +104,11 @@ const RoomCard = ({ room, onSelect, isSelected = false }) => {
 
       <div className={styles.content}>
         <div className={styles.header}>
-          <div>
+          <div className={styles.roomInfo}>
             <h3 id={`room-title-${room.id}`} className={styles.title}>
               Quarto {room.number}
             </h3>
-            <p className={styles.type}>{room.typeLabel || room.type}</p>
+            <p className={styles.roomType}>{room.typeLabel}</p>
           </div>
           <div className={styles.price}>
             <span className={styles.priceAmount}>{formattedPrice}</span>
@@ -88,7 +129,11 @@ const RoomCard = ({ room, onSelect, isSelected = false }) => {
           </div>
           <div className={styles.detailItem}>
             <span className={styles.detailIcon}>🛏️</span>
-            <span>{room.bedType || 'Cama de casal'}</span>
+            <span>{room.bedType}</span>
+          </div>
+          <div className={styles.detailItem}>
+            <span className={styles.detailIcon}>📶</span>
+            <span>Wi-Fi</span>
           </div>
         </div>
 
@@ -123,12 +168,10 @@ const RoomCard = ({ room, onSelect, isSelected = false }) => {
 };
 
 RoomCard.propTypes = {
-  /** Dados do quarto */
   room: PropTypes.shape({
     id: PropTypes.string.isRequired,
     number: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    typeLabel: PropTypes.string,
+    typeLabel: PropTypes.string.isRequired,
     capacity: PropTypes.number.isRequired,
     price: PropTypes.shape({
       amount: PropTypes.number.isRequired,
@@ -136,14 +179,15 @@ RoomCard.propTypes = {
     }).isRequired,
     status: PropTypes.oneOf(['available', 'occupied', 'maintenance']).isRequired,
     amenities: PropTypes.arrayOf(PropTypes.string).isRequired,
-    image: PropTypes.string.isRequired,
+    images: PropTypes.shape({
+      main: PropTypes.string.isRequired,
+      gallery: PropTypes.arrayOf(PropTypes.string).isRequired,
+    }).isRequired,
     description: PropTypes.string.isRequired,
-    size: PropTypes.number,
-    bedType: PropTypes.string,
+    bedType: PropTypes.string.isRequired,
+    size: PropTypes.number.isRequired,
   }).isRequired,
-  /** Função chamada ao selecionar o quarto */
   onSelect: PropTypes.func,
-  /** Indica se o quarto está selecionado */
   isSelected: PropTypes.bool,
 };
 

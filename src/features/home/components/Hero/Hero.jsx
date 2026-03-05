@@ -4,18 +4,6 @@ import Button from '../../../../shared/components/ui/Button';
 import HeroBackground from './HeroBackground';
 import styles from './Hero.module.css';
 
-/**
- * Hero Component - Banner principal da HomePage
- * 
- * @component
- * @example
- * <Hero
- *   title="Hotel Paradise"
- *   subtitle="O paraíso perfeito para suas férias"
- *   ctaText="Reservar Agora"
- *   onCtaClick={scrollToForm}
- * />
- */
 const Hero = ({
   title = 'Hotel Paradise',
   subtitle = 'O paraíso perfeito para suas férias dos sonhos',
@@ -23,15 +11,19 @@ const Hero = ({
   backgroundImage = '/assets/images/hero-bg.jpg',
   overlay = true,
   parallax = false,
+  size = 'large', // 'small', 'medium', 'large'
   onCtaClick,
   className = '',
 }) => {
-  // ==========================================================================
-  // RENDER
-  // ==========================================================================
+  // Mapeamento de tamanhos
+  const sizeClasses = {
+    small: styles.heroSmall,
+    medium: styles.heroMedium,
+    large: styles.heroLarge,
+  };
 
   return (
-    <section className={`${styles.hero} ${className}`}>
+    <section className={`${styles.hero} ${sizeClasses[size]} ${className}`}>
       <HeroBackground
         image={backgroundImage}
         overlay={overlay}
@@ -48,39 +40,25 @@ const Hero = ({
               variant="primary"
               size="lg"
               onClick={onCtaClick}
-              aria-label="Rolar para o formulário de reserva"
             >
               {ctaText}
             </Button>
           </div>
         </div>
       </div>
-
-      {/* Indicador de scroll */}
-      <div className={styles.scrollIndicator} aria-hidden="true">
-        <span className={styles.scrollText}>Scroll</span>
-        <div className={styles.scrollArrow} />
-      </div>
     </section>
   );
 };
 
 Hero.propTypes = {
-  /** Título principal */
   title: PropTypes.string,
-  /** Subtítulo */
   subtitle: PropTypes.string,
-  /** Texto do botão CTA */
   ctaText: PropTypes.string,
-  /** URL da imagem de fundo */
   backgroundImage: PropTypes.string,
-  /** Mostrar overlay escuro */
   overlay: PropTypes.bool,
-  /** Efeito parallax */
   parallax: PropTypes.bool,
-  /** Função chamada ao clicar no CTA */
+  size: PropTypes.oneOf(['small', 'medium', 'large']),
   onCtaClick: PropTypes.func,
-  /** Classes CSS adicionais */
   className: PropTypes.string,
 };
 
@@ -91,6 +69,7 @@ Hero.defaultProps = {
   backgroundImage: '/assets/images/hero-bg.jpg',
   overlay: true,
   parallax: false,
+  size: 'medium', // Mudar para 'medium' por padrão
   onCtaClick: undefined,
   className: '',
 };

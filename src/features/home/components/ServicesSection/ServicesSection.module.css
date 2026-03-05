@@ -1,5 +1,5 @@
 /* ============================================================================
-   SEÇÃO PRINCIPAL
+   SEÇÃO PRINCIPAL - MANTENDO SUAS VARIÁVEIS
    =========================================================================== */
 
 .section {
@@ -26,38 +26,50 @@
 }
 
 /* ============================================================================
-   HEADER
+   HEADER - APRIMORADO
    =========================================================================== */
 
 .header {
   text-align: center;
   margin-bottom: var(--spacing-8);
+  position: relative;
 }
 
 .title {
   margin: 0 0 var(--spacing-3);
-  font-size: clamp(
-    var(--font-size-3xl),
-    5vw,
-    var(--font-size-4xl)
-  );
+  font-size: clamp(var(--font-size-3xl), 5vw, var(--font-size-4xl));
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
+  position: relative;
+  display: inline-block;
+}
+
+.title::after {
+  content: '';
+  position: absolute;
+  bottom: calc(-1 * var(--spacing-2));
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary-400),
+    var(--color-primary-600)
+  );
+  border-radius: var(--radius-full);
 }
 
 .subtitle {
-  margin: 0 auto;
-  font-size: clamp(
-    var(--font-size-md),
-    3vw,
-    var(--font-size-xl)
-  );
+  margin: var(--spacing-4) auto 0;
+  font-size: clamp(var(--font-size-md), 3vw, var(--font-size-lg));
   color: var(--color-text-secondary);
   max-width: 600px;
+  line-height: var(--line-height-relaxed);
 }
 
 /* ============================================================================
-   FILTROS
+   FILTROS - MANTENDO SEU CÓDIGO
    =========================================================================== */
 
 .filters {
@@ -97,7 +109,7 @@
 }
 
 /* ============================================================================
-   GRID
+   GRID - MANTENDO SUA ESTRUTURA
    =========================================================================== */
 
 .grid {
@@ -120,7 +132,7 @@
 }
 
 /* ============================================================================
-   LOAD MORE
+   LOAD MORE - MANTENDO
    =========================================================================== */
 
 .loadMore {
@@ -130,7 +142,7 @@
 }
 
 /* ============================================================================
-   ESTADOS
+   ESTADOS - MANTENDO
    =========================================================================== */
 
 .loadingState,
@@ -175,7 +187,7 @@
 }
 
 /* ============================================================================
-   RESPONSIVIDADE
+   RESPONSIVIDADE - MANTENDO
    =========================================================================== */
 
 @media (max-width: var(--breakpoint-sm)) {

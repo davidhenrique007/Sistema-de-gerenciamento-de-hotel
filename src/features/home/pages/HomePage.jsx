@@ -9,7 +9,7 @@ import Footer from '../components/Footer';
 import useRoomSelection from '../hooks/useRoomSelection';
 import useScrollToForm from '../hooks/useScrollToForm';
 import useServices from '../hooks/useServices';
-import useNotification from '../../../shared/hooks/useNotification';
+import useNotification from "../../../shared/components/ui/Notification/useNotification"
 import './home.css';
 
 /**
@@ -140,6 +140,7 @@ const HomePage = () => {
         ====================================================================== */}
         <Hero 
           onCtaClick={scrollToForm}
+          size="small"     
           parallax={true}
           title="Hotel Paradise"
           subtitle="O paraíso perfeito para suas férias dos sonhos"
