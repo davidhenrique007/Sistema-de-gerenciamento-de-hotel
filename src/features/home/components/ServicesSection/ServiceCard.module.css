@@ -1,133 +1,154 @@
 /* ============================================================================
-   CARD DE SERVIÇO - CORES POR CATEGORIA
+   SERVICE CARD - DESIGN COMPACTO
    =========================================================================== */
 
 .card {
   display: flex;
   flex-direction: column;
-  background-color: #7da6ad;
-  border: 1px solid #3d4363;
+  background-color: #ffffff;
+  border: 1px solid #e9eef2;
   border-radius: 20px;
   overflow: hidden;
   transition: all 0.3s ease;
   height: 100%;
   position: relative;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  max-width: 350px; /* Largura máxima para não ficar muito largo */
+  margin: 0 auto; /* Centraliza quando em grid */
 }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 30px -10px rgba(37, 99, 235, 0.15);
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+.card.selected {
+  border: 2px solid #2563eb;
+  box-shadow: 0 20px 30px -10px rgba(37, 99, 235, 0.2);
+  background-color: #f8faff;
 }
 
 /* ============================================================================
-   ÍCONE - CORES POR CATEGORIA
+   ÍCONE - REDUZIDO
    =========================================================================== */
 
 .iconContainer {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 20px 8px;
+  padding: 16px 16px 4px; /* Reduzido */
 }
 
 .icon {
-  font-size: 56px;
+  font-size: 40px; /* Reduzido de 56px */
   line-height: 1;
-  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 4px 8px rgba(37, 99, 235, 0.15));
+  transition: transform 0.3s ease;
+}
+
+.card:hover .icon {
+  transform: scale(1.05) rotate(2deg);
 }
 
 /* ============================================================================
-   CONTEÚDO
+   CONTEÚDO - MAIS COMPACTO
    =========================================================================== */
 
 .content {
-  padding: 0 20px 16px;
+  padding: 0 16px 12px; /* Reduzido */
   flex: 1;
 }
 
 .name {
-  margin: 0 0 8px;
-  font-size: 20px;
+  margin: 0 0 6px; /* Reduzido */
+  font-size: 18px; /* Reduzido */
   font-weight: 600;
   color: #1e293b;
   text-align: center;
+  letter-spacing: -0.3px;
 }
 
 .description {
-  margin: 0 0 16px;
-  font-size: 14px;
-  line-height: 1.6;
+  margin: 0 0 12px; /* Reduzido */
+  font-size: 13px; /* Reduzido */
+  line-height: 1.5;
   color: #475569;
   text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limita a 2 linhas */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* ============================================================================
-   HIGHLIGHTS - CHECKMARKS VERDES
+   HIGHLIGHTS - MAIS COMPACTOS
    =========================================================================== */
 
 .highlights {
   list-style: none;
   padding: 0;
-  margin: 16px 0;
+  margin: 8px 0; /* Reduzido */
 }
 
 .highlight {
-  font-size: 14px;
+  font-size: 13px; /* Reduzido */
   color: #334155;
-  padding: 6px 0;
+  padding: 4px 0; /* Reduzido */
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  border-bottom: 1px dashed #e2e8f0;
+}
+
+.highlight:last-child {
+  border-bottom: none;
 }
 
 .highlight::before {
   content: '✓';
-  color: #10b981;
+  color: #2563eb;
   font-weight: 700;
-  font-size: 16px;
-  background: #e6f7e6;
-  width: 22px;
-  height: 22px;
+  font-size: 14px;
+  background: #e6f0ff;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 /* ============================================================================
-   DURAÇÃO
+   DURAÇÃO - MAIS COMPACTA
    =========================================================================== */
 
 .duration {
-  margin: 12px 0 0;
-  font-size: 13px;
+  margin: 8px 0 0;
+  font-size: 12px;
   color: #64748b;
   font-style: italic;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   background: #f8fafc;
-  padding: 6px 12px;
-  border-radius: 30px;
+  padding: 4px 10px;
+  border-radius: 20px;
   width: fit-content;
 }
 
-.duration::before {
-  content: '⏱️';
-  font-size: 14px;
-}
-
 /* ============================================================================
-   FOOTER
+   FOOTER - MAIS COMPACTO
    =========================================================================== */
 
 .footer {
-  padding: 16px 20px 20px;
+  padding: 12px 16px 16px; /* Reduzido */
   border-top: 1px solid #edf2f7;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: linear-gradient(to bottom, #ffffff, #fafcfc);
 }
 
 .price {
@@ -136,160 +157,100 @@
 }
 
 .priceValue {
-  font-size: 26px;
+  font-size: 20px; /* Reduzido de 26px */
   font-weight: 700;
+  color: #2563eb;
   line-height: 1.2;
+  letter-spacing: -0.3px;
 }
 
 .pricePeriod {
-  font-size: 12px;
+  font-size: 11px; /* Reduzido */
   color: #64748b;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
-/* Botão base */
+/* Botão - MAIS COMPACTO */
 .card button {
-  padding: 10px 24px;
+  padding: 8px 20px; /* Reduzido */
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
   color: white;
   border: none;
   border-radius: 40px;
-  font-size: 14px;
+  font-size: 13px; /* Reduzido */
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+  letter-spacing: 0.3px;
+  min-width: 100px; /* Largura mínima */
 }
 
 .card button:hover {
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
   transform: scale(1.02);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.35);
 }
 
-.card button:active {
-  transform: scale(0.98);
-}
-
-/* ============================================================================
-   CORES POR CATEGORIA - ALIMENTAÇÃO (Laranja)
-   =========================================================================== */
-
-.card.food .priceValue {
-  color: #f97316;
-}
-
-.card.food button {
-  background: linear-gradient(135deg, #f97316, #fb923c);
-}
-
-.card.food button:hover {
-  background: linear-gradient(135deg, #ea580c, #f97316);
-}
-
-.card.food .icon {
-  filter: drop-shadow(0 8px 12px rgba(249, 115, 22, 0.2));
+.card.selected button {
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.25);
 }
 
 /* ============================================================================
-   CORES POR CATEGORIA - BEM-ESTAR (Verde)
+   CORES POR CATEGORIA (MANTIDAS)
    =========================================================================== */
 
-.card.wellness .priceValue {
-  color: #10b981;
-}
+.card.food .priceValue { color: #f97316; }
+.card.food button { background: linear-gradient(135deg, #f97316, #fb923c); }
+.card.food .icon { filter: drop-shadow(0 4px 8px rgba(249, 115, 22, 0.2)); }
 
-.card.wellness button {
-  background: linear-gradient(135deg, #10b981, #34d399);
-}
+.card.wellness .priceValue { color: #10b981; }
+.card.wellness button { background: linear-gradient(135deg, #10b981, #34d399); }
+.card.wellness .icon { filter: drop-shadow(0 4px 8px rgba(16, 185, 129, 0.2)); }
 
-.card.wellness button:hover {
-  background: linear-gradient(135deg, #059669, #10b981);
-}
+.card.leisure .priceValue { color: #3b82f6; }
+.card.leisure button { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
+.card.leisure .icon { filter: drop-shadow(0 4px 8px rgba(59, 130, 246, 0.2)); }
 
-.card.wellness .icon {
-  filter: drop-shadow(0 8px 12px rgba(16, 185, 129, 0.2));
-}
+.card.activity .priceValue { color: #8b5cf6; }
+.card.activity button { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
+.card.activity .icon { filter: drop-shadow(0 4px 8px rgba(139, 92, 246, 0.2)); }
+
+.card.convenience .priceValue { color: #6b7280; }
+.card.convenience button { background: linear-gradient(135deg, #6b7280, #9ca3af); }
+.card.convenience .icon { filter: drop-shadow(0 4px 8px rgba(107, 114, 128, 0.2)); }
 
 /* ============================================================================
-   CORES POR CATEGORIA - LAZER (Azul)
+   RESPONSIVIDADE PARA MOBILE
    =========================================================================== */
 
-.card.leisure .priceValue {
-  color: #3b82f6;
-}
-
-.card.leisure button {
-  background: linear-gradient(135deg, #3b82f6, #60a5fa);
-}
-
-.card.leisure button:hover {
-  background: linear-gradient(135deg, #2563eb, #3b82f6);
-}
-
-.card.leisure .icon {
-  filter: drop-shadow(0 8px 12px rgba(59, 130, 246, 0.2));
-}
-
-/* ============================================================================
-   CORES POR CATEGORIA - ATIVIDADES (Roxo)
-   =========================================================================== */
-
-.card.activity .priceValue {
-  color: #8b5cf6;
-}
-
-.card.activity button {
-  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
-}
-
-.card.activity button:hover {
-  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
-}
-
-.card.activity .icon {
-  filter: drop-shadow(0 8px 12px rgba(139, 92, 246, 0.2));
-}
-
-/* ============================================================================
-   CORES POR CATEGORIA - CONVENIÊNCIA (Cinza)
-   =========================================================================== */
-
-.card.convenience .priceValue {
-  color: #6b7280;
-}
-
-.card.convenience button {
-  background: linear-gradient(135deg, #6b7280, #9ca3af);
-}
-
-.card.convenience button:hover {
-  background: linear-gradient(135deg, #4b5563, #6b7280);
-}
-
-.card.convenience .icon {
-  filter: drop-shadow(0 8px 12px rgba(107, 114, 128, 0.2));
-}
-
-/* ============================================================================
-   RESPONSIVIDADE
-   =========================================================================== */
-
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+  .card {
+    max-width: 100%; /* Ocupa toda largura disponível */
+  }
+  
   .icon {
-    font-size: 48px;
+    font-size: 36px;
   }
 
   .name {
-    font-size: 18px;
+    font-size: 16px;
+  }
+
+  .description {
+    font-size: 12px;
+    -webkit-line-clamp: 3; /* Mostra 3 linhas no mobile */
   }
 
   .priceValue {
-    font-size: 22px;
+    font-size: 18px;
   }
 
   .footer {
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
     align-items: stretch;
   }
 
@@ -299,5 +260,42 @@
 
   .card button {
     width: 100%;
+    padding: 8px 12px;
+  }
+  
+  .highlight {
+    font-size: 12px;
+  }
+  
+  .duration {
+    font-size: 11px;
+    margin: 4px 0 0;
+  }
+}
+
+/* Para telas muito pequenas */
+@media (max-width: 480px) {
+  .icon {
+    font-size: 32px;
+  }
+  
+  .iconContainer {
+    padding: 12px 12px 4px;
+  }
+  
+  .content {
+    padding: 0 12px 10px;
+  }
+  
+  .name {
+    font-size: 15px;
+  }
+  
+  .highlight {
+    padding: 3px 0;
+  }
+  
+  .footer {
+    padding: 10px 12px 12px;
   }
 }

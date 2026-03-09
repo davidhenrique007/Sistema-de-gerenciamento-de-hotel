@@ -594,3 +594,41 @@
     font-size: 22px;
   }
 }
+/* ============================================================================
+   SERVIÇOS NO RESUMO
+   =========================================================================== */
+
+.servicesDivider {
+  margin: 12px 0 8px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.2);
+  font-size: 13px;
+  font-weight: 600;
+  color: #fbbf24;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.serviceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.serviceName {
+  font-weight: 400;
+}
+
+.servicePrice {
+  font-weight: 600;
+  color: #fbbf24;
+}
+
+.serviceType {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-left: 4px;
+}

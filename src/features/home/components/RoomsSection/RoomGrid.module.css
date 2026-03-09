@@ -29,23 +29,36 @@
 }
 
 /* ============================================================================
-   RESPONSIVIDADE
+   RESPONSIVIDADE - CORRIGIDA
    =========================================================================== */
 
-/* Tablet */
-@media (max-width: var(--breakpoint-lg)) {
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
   .columns-3,
   .columns-4 {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* Mobile */
-@media (max-width: var(--breakpoint-md)) {
+/* Mobile (481px - 767px) - 2 COLUNAS */
+@media (max-width: 767px) and (min-width: 481px) {
   .columns-2,
   .columns-3,
   .columns-4 {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas no mobile */
+  }
+  
+  .grid {
+    gap: 12px; /* Gap menor para mobile */
+  }
+}
+
+/* Mobile pequeno (até 480px) - 1 COLUNA */
+@media (max-width: 480px) {
+  .columns-2,
+  .columns-3,
+  .columns-4 {
+    grid-template-columns: 1fr; /* 1 coluna apenas em telas muito pequenas */
   }
   
   .grid {

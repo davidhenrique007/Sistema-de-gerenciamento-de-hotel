@@ -4,13 +4,13 @@ import { format, addDays, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import styles from './ReservationForm.module.css';
 
-const ReservationForm = ({ selectedRoom, onSubmit }) => {
+const ReservationForm = ({ selectedRoom, onSubmit, selectedServices = [] }) => {
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState({
     adults: 2,
     children: 1,
-    babies: 0
+    babies: 0,
   });
 
   if (!selectedRoom) {
@@ -22,30 +22,43 @@ const ReservationForm = ({ selectedRoom, onSubmit }) => {
   }
 
   const handleGuestChange = (type, operation) => {
-    setGuests(prev => {
+    setGuests((prev) => {
       const newValue = operation === 'increment' ? prev[type] + 1 : prev[type] - 1;
-      
+
       if (type === 'adults' && newValue < 1) return prev;
       if (type === 'children' && newValue < 0) return prev;
       if (type === 'babies' && newValue < 0) return prev;
-      
+
       return {
         ...prev,
-        [type]: newValue
+        [type]: newValue,
       };
     });
   };
 
   const totalGuests = guests.adults + guests.children + guests.babies;
-  
+
   // Cálculo das noites
-  const nights = checkIn && checkOut 
-    ? differenceInDays(new Date(checkOut), new Date(checkIn))
-    : 0;
-  
-  // Cálculo dos valores
+  const nights = checkIn && checkOut ? differenceInDays(new Date(checkOut), new Date(checkIn)) : 0;
+
+  // Cálculo dos valores do quarto
   const pricePerNight = selectedRoom.price.amount;
-  const subtotal = nights * pricePerNight;
+  const subtotalRoom = nights * pricePerNight;
+
+  // Cálculo dos serviços selecionados
+  const calculateServicePrice = (service) => {
+    if (service.type === 'daily') {
+      return service.price * nights;
+    }
+    return service.price; // 'stay' - preço fixo por estadia
+  };
+
+  const servicesTotal = selectedServices.reduce((sum, service) => {
+    return sum + calculateServicePrice(service);
+  }, 0);
+
+  // Totais finais
+  const subtotal = subtotalRoom + servicesTotal;
   const taxes = Math.round(subtotal * 0.05); // 5% de taxas
   const total = subtotal + taxes;
 
@@ -54,7 +67,7 @@ const ReservationForm = ({ selectedRoom, onSubmit }) => {
       style: 'currency',
       currency: 'MZN',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(value);
   };
 
@@ -89,9 +102,7 @@ const ReservationForm = ({ selectedRoom, onSubmit }) => {
         </div>
       </div>
 
-      {/* ============================================
-          LINHA PRINCIPAL: CHECK-IN/OUT (ESQUERDA) + HÓSPEDES (DIREITA)
-          ============================================ */}
+      {/* LINHA PRINCIPAL: CHECK-IN/OUT (ESQUERDA) + HÓSPEDES (DIREITA) */}
       <div className={styles.mainRow}>
         {/* Coluna Esquerda: CHECK-IN e CHECK-OUT */}
         <div className={styles.datesColumn}>
@@ -141,21 +152,25 @@ const ReservationForm = ({ selectedRoom, onSubmit }) => {
         {/* Coluna Direita: HÓSPEDES */}
         <div className={styles.guestsColumn}>
           <h3 className={styles.guestsTitle}>HÓSPEDES</h3>
-          
+
           {/* Adultos */}
           <div className={styles.guestRow}>
             <span className={styles.guestLabel}>Adultos</span>
             <div className={styles.guestControls}>
-              <button 
+              <button
                 className={styles.guestBtn}
                 onClick={() => handleGuestChange('adults', 'decrement')}
                 disabled={guests.adults <= 1}
-              >−</button>
+              >
+                −
+              </button>
               <span className={styles.guestCount}>{guests.adults}</span>
-              <button 
+              <button
                 className={styles.guestBtn}
                 onClick={() => handleGuestChange('adults', 'increment')}
-              >+</button>
+              >
+                +
+              </button>
             </div>
           </div>
 
@@ -163,16 +178,20 @@ const ReservationForm = ({ selectedRoom, onSubmit }) => {
           <div className={styles.guestRow}>
             <span className={styles.guestLabel}>Crianças (2 a 12 anos)</span>
             <div className={styles.guestControls}>
-              <button 
+              <button
                 className={styles.guestBtn}
                 onClick={() => handleGuestChange('children', 'decrement')}
                 disabled={guests.children <= 0}
-              >−</button>
+              >
+                −
+              </button>
               <span className={styles.guestCount}>{guests.children}</span>
-              <button 
+              <button
                 className={styles.guestBtn}
                 onClick={() => handleGuestChange('children', 'increment')}
-              >+</button>
+              >
+                +
+              </button>
             </div>
           </div>
 
@@ -180,16 +199,20 @@ const ReservationForm = ({ selectedRoom, onSubmit }) => {
           <div className={styles.guestRow}>
             <span className={styles.guestLabel}>Bebês (abaixo de 2 anos)</span>
             <div className={styles.guestControls}>
-              <button 
+              <button
                 className={styles.guestBtn}
                 onClick={() => handleGuestChange('babies', 'decrement')}
                 disabled={guests.babies <= 0}
-              >−</button>
+              >
+                −
+              </button>
               <span className={styles.guestCount}>{guests.babies}</span>
-              <button 
+              <button
                 className={styles.guestBtn}
                 onClick={() => handleGuestChange('babies', 'increment')}
-              >+</button>
+              >
+                +
+              </button>
             </div>
           </div>
 
@@ -217,39 +240,67 @@ const ReservationForm = ({ selectedRoom, onSubmit }) => {
       {checkIn && checkOut && (
         <div className={styles.summarySection}>
           <h3 className={styles.sectionTitle}>Resumo da Reserva</h3>
-          
+
           <div className={styles.summaryRow}>
             <span>Estadia</span>
             <span className={styles.summaryValue}>
               {formatDateShort(checkIn)} – {formatDateShort(checkOut)}
             </span>
           </div>
-          
+
           <div className={styles.summaryRow}>
             <span>Hóspedes</span>
             <span className={styles.summaryValue}>{totalGuests}</span>
           </div>
-          
+
           <div className={styles.summaryRow}>
             <span>Noites</span>
             <span className={styles.summaryValue}>{nights}</span>
           </div>
-          
+
           <div className={styles.summaryRow}>
-            <span>Preço por noite</span>
-            <span className={styles.summaryValue}>{formatCurrency(pricePerNight)}</span>
+            <span>Quarto</span>
+            <span className={styles.summaryValue}>
+              {formatCurrency(pricePerNight)} x {nights} noites
+            </span>
           </div>
-          
+
+          {/* SERVIÇOS SELECIONADOS */}
+          {selectedServices.length > 0 && (
+            <>
+              <div className={styles.servicesDivider}>
+                <span>Serviços Adicionais</span>
+              </div>
+
+              {selectedServices.map((service, index) => (
+                <div key={index} className={styles.serviceRow}>
+                  <span className={styles.serviceName}>{service.name}</span>
+                  <span className={styles.servicePrice}>
+                    {formatCurrency(calculateServicePrice(service))}
+                    <span className={styles.serviceType}>
+                      {service.type === 'daily' ? ' / ' + nights + ' noites' : ''}
+                    </span>
+                  </span>
+                </div>
+              ))}
+
+              <div className={styles.summaryRow}>
+                <span>Subtotal serviços</span>
+                <span className={styles.summaryValue}>{formatCurrency(servicesTotal)}</span>
+              </div>
+            </>
+          )}
+
           <div className={styles.summaryRow}>
             <span>Subtotal</span>
-            <span className={styles.summaryValue}>{formatCurrency(subtotal)}</span>
+            <span className={styles.summaryValue}>{formatCurrency(subtotalRoom)}</span>
           </div>
-          
+
           <div className={styles.summaryRow}>
             <span>Taxas (5%)</span>
             <span className={styles.summaryValue}>{formatCurrency(taxes)}</span>
           </div>
-          
+
           <div className={styles.summaryTotal}>
             <span>TOTAL</span>
             <span className={styles.totalValue}>{formatCurrency(total)}</span>
@@ -258,18 +309,37 @@ const ReservationForm = ({ selectedRoom, onSubmit }) => {
       )}
 
       {/* Botão Confirmar */}
-      <button 
+      <button
         className={styles.confirmButton}
-        onClick={() => onSubmit && onSubmit({
-          roomId: selectedRoom.id,
-          checkIn,
-          checkOut,
-          guests,
-          nights,
-          subtotal,
-          taxes,
-          total
-        })}
+        onClick={() =>
+          onSubmit &&
+          onSubmit({
+            // Dados do quarto
+            roomId: selectedRoom.id,
+            roomNumber: selectedRoom.number,
+            roomType: selectedRoom.typeLabel,
+            pricePerNight: selectedRoom.price.amount,
+
+            // Datas
+            checkIn,
+            checkOut,
+            nights,
+
+            // Hóspedes
+            guests,
+            totalGuests,
+
+            // Serviços
+            services: selectedServices,
+            servicesTotal,
+
+            // Valores
+            subtotal: subtotalRoom, // Apenas quarto
+            subtotalWithServices: subtotal, // Quarto + serviços
+            taxes,
+            total,
+          })
+        }
         disabled={!checkIn || !checkOut}
       >
         Confirmar Reserva
@@ -290,6 +360,7 @@ ReservationForm.propTypes = {
     }),
   }),
   onSubmit: PropTypes.func,
+  selectedServices: PropTypes.array,
 };
 
 export default ReservationForm;

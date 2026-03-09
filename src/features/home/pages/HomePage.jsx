@@ -122,6 +122,7 @@ const HomePage = () => {
                 <ReservationForm
                   selectedRoom={selectedRoom}
                   onSubmit={handleReservationSubmit}
+                   selectedServices={selectedServicesDetails || []}
                 />
               </div>
             </div>
