@@ -1,0 +1,90 @@
+-- DIAGRAMA ENTIDADE-RELACIONAMENTO (DER)
+-- HOTEL PARADISE
+
+-- NOTAÇÃO: https://dbdiagram.io/d
+
+Table users {
+  id UUID [pk, default: `gen_random_uuid()`]
+  name varchar(100) [not null]
+  email varchar(100) [unique, not null]
+  password_hash varchar(255) [not null]
+  role varchar(20) [not null, default: 'receptionist']
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table guests {
+  id UUID [pk, default: `gen_random_uuid()`]
+  name varchar(100) [not null]
+  email varchar(100)
+  phone varchar(20) [unique, not null]
+  document varchar(20)
+  address text
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table rooms {
+  id UUID [pk, default: `gen_random_uuid()`]
+  room_number varchar(10) [unique, not null]
+  type varchar(50) [not null]
+  price_per_night decimal(10,2) [not null]
+  capacity int [not null]
+  status varchar(20) [default: 'available']
+  floor int
+  description text
+  amenities jsonb
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table reservations {
+  id UUID [pk, default: `gen_random_uuid()`]
+  guest_id UUID [not null, ref: > guests.id]
+  room_id UUID [not null, ref: > rooms.id]
+  user_id UUID [not null, ref: > users.id]
+  check_in date [not null]
+  check_out date [not null]
+  total_price decimal(10,2) [not null]
+  status varchar(20) [default: 'pending']
+  notes text
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table payments {
+  id UUID [pk, default: `gen_random_uuid()`]
+  reservation_id UUID [not null, ref: > reservations.id]
+  amount decimal(10,2) [not null]
+  method varchar(30) [not null]
+  status varchar(20) [default: 'pending']
+  transaction_id varchar(100)
+  payment_data jsonb
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table receipts {
+  id UUID [pk, default: `gen_random_uuid()`]
+  payment_id UUID [not null, ref: > payments.id]
+  receipt_number varchar(50) [unique, not null]
+  pdf_url varchar(255)
+  sent_at timestamp
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  updated_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+-- RELACIONAMENTOS:
+-- users 1:N reservations (um usuário cria várias reservas)
+-- guests 1:N reservations (um hóspede faz várias reservas)
+-- rooms 1:N reservations (um quarto tem várias reservas ao longo do tempo)
+-- reservations 1:1 payments (uma reserva tem um pagamento)
+-- payments 1:1 receipts (um pagamento gera um recibo)
+
+-- ÍNDICES RECOMENDADOS:
+CREATE INDEX idx_reservations_dates ON reservations(check_in, check_out);
+CREATE INDEX idx_reservations_guest ON reservations(guest_id);
+CREATE INDEX idx_reservations_status ON reservations(status);
+CREATE INDEX idx_payments_reservation ON payments(reservation_id);
+CREATE INDEX idx_rooms_status ON rooms(status);
+CREATE INDEX idx_guests_phone ON guests(phone);
