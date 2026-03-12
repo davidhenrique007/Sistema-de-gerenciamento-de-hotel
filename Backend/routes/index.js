@@ -1,6 +1,6 @@
 // =====================================================
-// HOTEL PARADISE - MAIN ROUTES
-// Versão: 1.0.0
+// HOTEL PARADISE - MAIN ROUTES (CORRIGIDO)
+// Versão: 1.1.0
 // =====================================================
 
 const express = require('express');
@@ -14,17 +14,20 @@ const { authenticate } = require('../middlewares/auth');
 const usersRoutes = require('./users.routes');
 const roomsRoutes = require('./rooms.routes');
 const authRoutes = require('./auth.routes');
+const clienteRoutes = require('./clienteRoutes');
 
 // =====================================================
 // ROTAS PÚBLICAS
 // =====================================================
 router.use('/auth', apiLimiter, authRoutes);
+router.use('/clientes', clienteRoutes); // ✅ ROTA PÚBLICA (identificar)
 
 // =====================================================
 // ROTAS PROTEGIDAS (requerem autenticação)
 // =====================================================
 router.use('/users', authenticate, apiLimiter, usersRoutes);
 router.use('/rooms', authenticate, apiLimiter, roomsRoutes);
+router.use('/admin/clientes', authenticate, clienteRoutes); // ✅ ROTA ADMIN
 
 // =====================================================
 // ROTA DE SAÚDE (pública)
