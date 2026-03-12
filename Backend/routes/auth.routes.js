@@ -1,18 +1,21 @@
 // =====================================================
 // HOTEL PARADISE - AUTH ROUTES
-// Versão: 1.0.0
+// Versão: 1.1.0 (COMPLETO)
 // =====================================================
 
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/auth.controller');
+const authController = require('../controllers/authController');
 const { authLimiter } = require('../middlewares/security');
 
 // =====================================================
-// ROTAS PÚBLICAS DE AUTENTICAÇÃO
+// ROTAS PÚBLICAS
 // =====================================================
 
-// Login (com rate limit)
+// Login de admin (com rate limit) - NOVA ROTA!
+router.post('/admin/login', authLimiter, authController.loginAdmin);
+
+// Login normal (para clientes)
 router.post('/login', authLimiter, authController.login);
 
 // Refresh token

@@ -1,28 +1,8 @@
-// =====================================================
-// HOTEL PARADISE - JEST CONFIGURATION
-// Versão: 1.0.0
-// =====================================================
-
 module.exports = {
-  // Ambiente de teste
   testEnvironment: 'node',
-  
-  // Diretórios onde os testes estão localizados
   roots: ['<rootDir>/tests'],
-  
-  // Padrão de arquivos de teste
-  testMatch: [
-    '**/tests/**/*.test.js',
-    '**/?(*.)+(spec|test).js'
-  ],
-  
-  // Arquivos para ignorar
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    '/dist/'
-  ],
-  
-  // Cobertura de código
+  testMatch: ['**/tests/**/*.test.js'],
+  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   collectCoverage: true,
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
@@ -42,16 +22,9 @@ module.exports = {
       statements: 80
     }
   },
-  
-  // Relatórios de cobertura
   coverageReporters: ['text', 'lcov', 'html'],
-  
-  // Setup antes dos testes
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
-  
-  // Verbosidade
   verbose: true,
-  
-  // Timeout (10 segundos)
-  testTimeout: 10000
+  testTimeout: 10000,
+  forceExit: true,
+  detectOpenHandles: true
 };

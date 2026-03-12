@@ -1,19 +1,78 @@
 // =====================================================
 // HOTEL PARADISE - SERVIDOR PRINCIPAL (ATUALIZADO)
-// Versão: 1.1.0
+// Versão: 1.2.0 - COM SEED AUTOMÁTICO
 // =====================================================
 
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const morgan = require('morgan');
+const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const db = require('./config/database');
 const routes = require('./routes');
 const { securityMiddleware } = require('./middlewares/security');
+const { models } = require('./models');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// =====================================================
+// SEED AUTOMÁTICO DE USUÁRIOS
+// =====================================================
+const seedUsers = async () => {
+  try {
+    console.log('🌱 Verificando usuários padrão...');
+    
+    const users = [
+      { 
+        name: 'Administrador', 
+        email: 'admin@hotelparadise.com', 
+        pass: 'admin123', 
+        role: 'admin' 
+      },
+      { 
+        name: 'Recepcionista', 
+        email: 'recepcao@hotelparadise.com', 
+        pass: 'receptionist123', 
+        role: 'receptionist' 
+      },
+      { 
+        name: 'Financeiro', 
+        email: 'financeiro@hotelparadise.com', 
+        pass: 'financeiro123', 
+        role: 'financial' 
+      }
+    ];
+    
+    for (const u of users) {
+      const exists = await models.users.findByEmail(u.email);
+      
+      if (!exists) {
+        console.log(`  👤 Criando ${u.name}...`);
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(u.pass, salt);
+        
+        await models.users.create({ 
+          name: u.name, 
+          email: u.email, 
+          password_hash: hash, 
+          role: u.role, 
+          is_active: true 
+        });
+        
+        console.log(`  ✅ ${u.name} criado com sucesso!`);
+      } else {
+        console.log(`  ✅ ${u.name} já existe`);
+      }
+    }
+    
+    console.log('🌱 Seed de usuários concluído!\n');
+  } catch (error) {
+    console.error('❌ Erro no seed de usuários:', error);
+  }
+};
 
 // =====================================================
 // MIDDLEWARES
@@ -34,6 +93,7 @@ if (process.env.NODE_ENV === 'development') {
 
 // Parsing
 app.use(express.json({ limit: '10mb' }));
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // =====================================================
@@ -49,7 +109,7 @@ app.get('/', (req, res) => {
     success: true,
     data: {
       name: 'Hotel Paradise API',
-      version: '1.1.0',
+      version: '1.2.0',
       environment: process.env.NODE_ENV,
       timestamp: new Date().toISOString(),
       endpoints: {
@@ -92,7 +152,7 @@ app.use((err, req, res, next) => {
 // =====================================================
 // INICIALIZAÇÃO
 // =====================================================
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, async () => {
   console.log('\n=================================');
   console.log('🚀 HOTEL PARADISE - BACKEND');
   console.log('=================================');
@@ -101,6 +161,8 @@ const server = app.listen(PORT, () => {
   console.log(`📋 Documentação: http://localhost:${PORT}/`);
   console.log(`❤️ Health check: http://localhost:${PORT}/api/health`);
   console.log('=================================\n');
+
+  await seedUsers();
 });
 
 // Graceful shutdown
