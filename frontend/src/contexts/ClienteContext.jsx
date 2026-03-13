@@ -1,10 +1,5 @@
-// =====================================================
-// HOTEL PARADISE - CONTEXT DE CLIENTE
-// Versão: 1.0.0
-// =====================================================
-
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import api from '../services/api';
+import React, { createContext, useState, useContext, useEffect } from "react";
+import api from "../../frontend/src/services/api";  // ← CAMINHO CORRIGIDO!
 
 const ClienteContext = createContext({});
 
@@ -21,7 +16,6 @@ export const ClienteProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Carregar cliente do localStorage ao iniciar
   useEffect(() => {
     const storedCliente = localStorage.getItem('@HotelParadise:cliente');
     if (storedCliente) {
@@ -33,7 +27,6 @@ export const ClienteProvider = ({ children }) => {
     }
   }, []);
 
-  // Identificar cliente (fluxo principal)
   const identificarCliente = async (dados) => {
     try {
       setLoading(true);
@@ -42,7 +35,6 @@ export const ClienteProvider = ({ children }) => {
       const response = await api.post('/clientes/identificar', dados);
       const clienteData = response.data.data;
 
-      // Salvar no estado e localStorage
       setCliente(clienteData);
       localStorage.setItem('@HotelParadise:cliente', JSON.stringify(clienteData));
 
@@ -56,7 +48,6 @@ export const ClienteProvider = ({ children }) => {
     }
   };
 
-  // Buscar cliente por telefone
   const buscarCliente = async (telefone) => {
     try {
       setLoading(true);
@@ -75,7 +66,6 @@ export const ClienteProvider = ({ children }) => {
     }
   };
 
-  // Atualizar dados do cliente
   const atualizarCliente = async (id, dados) => {
     try {
       setLoading(true);
@@ -97,7 +87,6 @@ export const ClienteProvider = ({ children }) => {
     }
   };
 
-  // Limpar cliente (logout)
   const limparCliente = () => {
     setCliente(null);
     localStorage.removeItem('@HotelParadise:cliente');
