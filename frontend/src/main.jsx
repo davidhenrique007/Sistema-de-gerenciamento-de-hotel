@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+import { AppRouter } from './router';  // ← IMPORTANTE: importar AppRouter, não App
 
 // ✅ CORREÇÃO: Usar caminho relativo, não alias
 import './shared/styles/global.css';
@@ -10,6 +10,6 @@ document.documentElement.classList.add('light-theme');
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    <AppRouter />  {/* ← TROCAR <App /> por <AppRouter /> */}
   </React.StrictMode>
 );

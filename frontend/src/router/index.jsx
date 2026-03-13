@@ -8,6 +8,7 @@ import Spinner from '../shared/components/ui/Spinner';
 
 const HomePage = React.lazy(() => import('../features/home/pages/HomePage'));
 const CheckoutPage = React.lazy(() => import('../features/home/pages/CheckoutPage'));
+const LoginCliente = React.lazy(() => import('../features/home/pages/LoginCliente')); // ← NOVA LINHA!
 
 // ============================================================================
 // COMPONENTE DE FALLBACK PROFISSIONAL
@@ -44,6 +45,10 @@ export const router = createBrowserRouter([
   {
     path: '/checkout',
     element: withSuspense(CheckoutPage),
+  },
+  {
+    path: '/login-cliente',  // ← NOVA ROTA ADICIONADA!
+    element: withSuspense(LoginCliente),
   },
   {
     path: '*',

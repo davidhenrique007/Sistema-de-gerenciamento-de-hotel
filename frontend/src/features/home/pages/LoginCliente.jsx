@@ -1,13 +1,8 @@
-// =====================================================
-// HOTEL PARADISE - PÁGINA DE LOGIN DO CLIENTE
-// Versão: 1.0.0
-// =====================================================
-
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useCliente } from '../contexts/ClienteContext';
-import FormularioIdentificacao from '../components/FormularioIdentificacao';
-import styles from './LoginCliente.module.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCliente } from "../../../contexts/ClienteContext";  // ← CAMINHO CORRETO!
+import FormularioIdentificacao from "../components/FormularioIdentificacao";
+import styles from "./LoginCliente.module.css";
 
 const LoginCliente = () => {
   const navigate = useNavigate();
@@ -20,7 +15,6 @@ const LoginCliente = () => {
       const resultado = await identificarCliente(dados);
       
       if (resultado.success) {
-        // Redirecionar para página de quartos ou reserva
         const tipoSelecionado = localStorage.getItem('@HotelParadise:tipoQuarto');
         
         if (tipoSelecionado) {
@@ -39,7 +33,6 @@ const LoginCliente = () => {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        {/* Ilustração/Banner */}
         <div className={styles.illustration}>
           <img 
             src="/assets/images/login-illustration.svg" 
@@ -65,7 +58,6 @@ const LoginCliente = () => {
           </div>
         </div>
 
-        {/* Formulário */}
         <div className={styles.formWrapper}>
           {error && (
             <div className={styles.alertError}>
