@@ -7,15 +7,17 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useCliente } from '../hooks/useCliente';
 
-/**
- * Componente de rota protegida para clientes
- * Verifica se o cliente está identificado antes de permitir acesso
- */
 const ClienteRoute = ({ children, redirectTo = '/login-cliente' }) => {
-  const { isIdentificado, loading } = useCliente();
+  const { isIdentificado, loading, cliente } = useCliente();
   const location = useLocation();
 
-  // Mostrar loading enquanto verifica sessão
+  console.log('========== DEBUG ClienteRoute ==========');
+  console.log('📍 Path atual:', location.pathname);
+  console.log('👤 isIdentificado:', isIdentificado);
+  console.log('⏳ loading:', loading);
+  console.log('📦 cliente:', cliente);
+  console.log('========================================');
+
   if (loading) {
     return (
       <div style={{ 
@@ -29,7 +31,6 @@ const ClienteRoute = ({ children, redirectTo = '/login-cliente' }) => {
     );
   }
 
-  // Se não estiver identificado, redireciona para login
   if (!isIdentificado) {
     return (
       <Navigate 
@@ -43,7 +44,6 @@ const ClienteRoute = ({ children, redirectTo = '/login-cliente' }) => {
     );
   }
 
-  // Se estiver identificado, renderiza o conteúdo
   return children;
 };
 

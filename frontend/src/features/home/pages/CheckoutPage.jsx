@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useCart } from '../contexts/CartContext';
+import { useCliente } from '../hooks/useCliente';
 import ReceiptModal from '../../../shared/components/ui/ReceiptModal';
 import styles from './CheckoutPage.module.css';
 
@@ -11,71 +13,86 @@ const PaymentIcon = () => <span className={styles.icon}>💳</span>;
 const ReceiptIcon = () => <span className={styles.icon}>🧾</span>;
 
 const CheckoutPage = () => {
-  const location = useLocation();
   const navigate = useNavigate();
+  const { reservation, room, clearCart } = useCart();
+  const { cliente, isIdentificado } = useCliente();
 
   // ==========================================================================
-  // 1. DADOS DA RESERVA (RECUPERADOS DO ESTADO)
+  // 1. VERIFICAR SE HÁ DADOS DA RESERVA
   // ==========================================================================
-  const { reservation } = location.state || {};
+  useEffect(() => {
+    if (!reservation && !room) {
+      // Se não tiver dados da reserva, redireciona para página de quartos
+      navigate('/quartos/disponiveis', { replace: true });
+    }
+  }, [reservation, room, navigate]);
 
-  // Estado para dados do hóspede
+  // Se não tiver dados, não renderiza nada (aguarda redirecionamento)
+  if (!reservation && !room) return null;
+
+  // ==========================================================================
+  // 2. EXTRAIR DADOS DA RESERVA (prioriza reservation, depois room)
+  // ==========================================================================
+  const {
+    roomId,
+    roomNumber = reservation?.roomNumber || room?.room_number || '101',
+    roomType = reservation?.roomType || room?.type || 'Standard',
+    checkIn = reservation?.checkIn || '',
+    checkOut = reservation?.checkOut || '',
+    guests = reservation?.guests || { adults: 2, children: 0, babies: 0 },
+    nights = reservation?.nights || 1,
+    pricePerNight = reservation?.pricePerNight || room?.price_per_night || 1500,
+    servicesTotal = reservation?.servicesTotal || 0,
+    selectedServices = reservation?.selectedServices || [],
+    subtotal = reservation?.subtotal || pricePerNight * nights,
+    taxes = reservation?.taxes || Math.round(subtotal * 0.1), // 10% de taxa
+    total = reservation?.total || subtotal + taxes + servicesTotal,
+  } = reservation || room || {};
+
+  // ==========================================================================
+  // 3. ESTADO PARA DADOS DO HÓSPEDE (preenche com dados do cliente se logado)
+  // ==========================================================================
   const [guestData, setGuestData] = useState({
-    nome: '',
+    nome: cliente?.name || '',
     naturalidade: '',
     idade: '',
-    documento: '',
-    telefone: '',
-    email: '',
+    documento: cliente?.document || '',
+    telefone: cliente?.phone || '',
+    email: cliente?.email || '',
   });
 
-  // Estado para pagamento
+  // ==========================================================================
+  // 4. ESTADO PARA PAGAMENTO
+  // ==========================================================================
   const [paymentMethod, setPaymentMethod] = useState('');
   const [paymentDetails, setPaymentDetails] = useState({});
   const [paymentErrors, setPaymentErrors] = useState({});
 
-  // Estado para checkout confirmado
+  // ==========================================================================
+  // 5. ESTADO PARA CHECKOUT CONFIRMADO E MODAL
+  // ==========================================================================
   const [checkoutConfirmed, setCheckoutConfirmed] = useState(false);
-  const [receiptOptions, setReceiptOptions] = useState({
-    pdf: true,
-    print: false,
-    email: false,
-  });
-
-  // ==========================================================================
-  // NOVOS ESTADOS PARA O MODAL (ADICIONADOS)
-  // ==========================================================================
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [receiptData, setReceiptData] = useState({});
 
-  // Redirecionar se não houver dados da reserva
+  // ==========================================================================
+  // 6. ATUALIZAR GUEST DATA QUANDO CLIENTE MUDA
+  // ==========================================================================
   useEffect(() => {
-    if (!reservation) {
-      navigate('/', { replace: true });
+    if (isIdentificado && cliente) {
+      setGuestData(prev => ({
+        ...prev,
+        nome: cliente.name || prev.nome,
+        documento: cliente.document || prev.documento,
+        telefone: cliente.phone || prev.telefone,
+        email: cliente.email || prev.email,
+      }));
     }
-  }, [reservation, navigate]);
-
-  if (!reservation) return null;
+  }, [cliente, isIdentificado]);
 
   // ==========================================================================
-  // 2. EXTRAIR DADOS DA RESERVA
+  // 7. FUNÇÕES AUXILIARES DE FORMATAÇÃO
   // ==========================================================================
-  const {
-    roomId,
-    roomNumber = '40',
-    roomType = 'Familiar',
-    checkIn,
-    checkOut,
-    guests = { adults: 2, children: 1, babies: 0 },
-    nights = 3,
-    pricePerNight = 7000,
-    servicesTotal = 1000,
-    subtotal = 21000,
-    taxes = 500,
-    total = 22500,
-  } = reservation;
-
-  // Formatar datas
   const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -91,7 +108,7 @@ const CheckoutPage = () => {
   };
 
   // ==========================================================================
-  // 3. HANDLERS PARA DADOS DO HÓSPEDE
+  // 8. HANDLERS PARA DADOS DO HÓSPEDE
   // ==========================================================================
   const handleGuestChange = (e) => {
     const { name, value } = e.target;
@@ -99,7 +116,7 @@ const CheckoutPage = () => {
   };
 
   // ==========================================================================
-  // 4. HANDLERS PARA PAGAMENTO
+  // 9. HANDLERS PARA PAGAMENTO
   // ==========================================================================
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
@@ -110,8 +127,6 @@ const CheckoutPage = () => {
   const handlePaymentDetailChange = (e) => {
     const { name, value } = e.target;
     setPaymentDetails((prev) => ({ ...prev, [name]: value }));
-
-    // Validar em tempo real
     validatePaymentField(name, value);
   };
 
@@ -120,33 +135,19 @@ const CheckoutPage = () => {
 
     if (paymentMethod === 'mpesa' || paymentMethod === 'emola' || paymentMethod === 'mkesh') {
       if (field === 'phone') {
-        // Remove espaços e caracteres não numéricos
         const cleanNumber = value.replace(/\D/g, '');
-
-        // Verifica se tem 9 dígitos
         if (cleanNumber.length !== 9) {
           error = 'Número inválido. Deve ter 9 dígitos';
-        }
-        // Verifica se começa com 8
-        else if (!cleanNumber.startsWith('8')) {
+        } else if (!cleanNumber.startsWith('8')) {
           error = 'Número deve começar com 8';
-        }
-        // Validação por operadora
-        else {
+        } else {
           const prefix = cleanNumber.substring(0, 2);
-
-          if (paymentMethod === 'mpesa') {
-            if (!['84', '85'].includes(prefix)) {
-              error = 'M-Pesa: número deve começar com 84 ou 85 (Vodacom)';
-            }
-          } else if (paymentMethod === 'emola') {
-            if (!['86', '87'].includes(prefix)) {
-              error = 'e-Mola: número deve começar com 86 ou 87 (Movitel)';
-            }
-          } else if (paymentMethod === 'mkesh') {
-            if (!['82', '83'].includes(prefix)) {
-              error = 'mKesh: número deve começar com 82 ou 83 (Tmcel)';
-            }
+          if (paymentMethod === 'mpesa' && !['84', '85'].includes(prefix)) {
+            error = 'M-Pesa: número deve começar com 84 ou 85';
+          } else if (paymentMethod === 'emola' && !['86', '87'].includes(prefix)) {
+            error = 'e-Mola: número deve começar com 86 ou 87';
+          } else if (paymentMethod === 'mkesh' && !['82', '83'].includes(prefix)) {
+            error = 'mKesh: número deve começar com 82 ou 83';
           }
         }
       }
@@ -160,40 +161,6 @@ const CheckoutPage = () => {
     return Math.max(0, paid - total);
   };
 
-  // ==========================================================================
-  // 5. VALIDAÇÃO GERAL DO FORMULÁRIO
-  // ==========================================================================
-  const isFormValid = () => {
-    // Validar dados do hóspede
-    const guestValid = Object.values(guestData).every((val) => val.trim() !== '');
-
-    // Validar método de pagamento
-    if (!paymentMethod) return false;
-
-    // Validar detalhes do pagamento
-    const hasErrors = Object.values(paymentErrors).some((err) => err !== '');
-
-    let detailsValid = false;
-    if (paymentMethod === 'dinheiro') {
-      detailsValid = parseFloat(paymentDetails.paidAmount) >= total;
-    }
-    if (paymentMethod === 'cartao') {
-      detailsValid =
-        paymentDetails.cardNumber &&
-        paymentDetails.expiry &&
-        paymentDetails.cvv &&
-        paymentDetails.cardHolder;
-    }
-    if (paymentMethod === 'mpesa' || paymentMethod === 'emola' || paymentMethod === 'mkesh') {
-      detailsValid = paymentDetails.phone && paymentDetails.phone.length === 9;
-    }
-
-    return guestValid && !hasErrors && detailsValid;
-  };
-
-  // ==========================================================================
-  // FUNÇÃO AUXILIAR PARA NOME DO MÉTODO DE PAGAMENTO
-  // ==========================================================================
   const getPaymentMethodName = (method) => {
     const methods = {
       dinheiro: 'Dinheiro',
@@ -206,7 +173,42 @@ const CheckoutPage = () => {
   };
 
   // ==========================================================================
-  // 6. CONFIRMAR CHECKOUT (MODIFICADO PARA ABRIR O MODAL)
+  // 10. VALIDAÇÃO DO FORMULÁRIO
+  // ==========================================================================
+  const isFormValid = () => {
+    // Validar dados do hóspede (campos obrigatórios)
+    const guestValid = guestData.nome.trim() !== '' && 
+                      guestData.telefone.trim() !== '' && 
+                      guestData.documento.trim() !== '';
+
+    if (!guestValid) return false;
+
+    // Validar método de pagamento
+    if (!paymentMethod) return false;
+
+    // Validar se há erros
+    const hasErrors = Object.values(paymentErrors).some((err) => err !== '');
+    if (hasErrors) return false;
+
+    // Validar detalhes do pagamento por método
+    if (paymentMethod === 'dinheiro') {
+      return parseFloat(paymentDetails.paidAmount) >= total;
+    }
+    if (paymentMethod === 'cartao') {
+      return paymentDetails.cardNumber && 
+             paymentDetails.expiry && 
+             paymentDetails.cvv && 
+             paymentDetails.cardHolder;
+    }
+    if (paymentMethod === 'mpesa' || paymentMethod === 'emola' || paymentMethod === 'mkesh') {
+      return paymentDetails.phone && paymentDetails.phone.replace(/\D/g, '').length === 9;
+    }
+
+    return false;
+  };
+
+  // ==========================================================================
+  // 11. CONFIRMAR CHECKOUT
   // ==========================================================================
   const handleConfirmCheckout = () => {
     if (!isFormValid()) {
@@ -214,11 +216,12 @@ const CheckoutPage = () => {
       return;
     }
 
-    // Dados para o recibo - AGORA COMPLETOS!
+    // Preparar dados para o recibo
     const receiptInfo = {
       guestName: guestData.nome,
       document: guestData.documento,
       roomNumber,
+      roomType,
       checkIn: formatDate(checkIn),
       checkOut: formatDate(checkOut),
       nights,
@@ -226,33 +229,30 @@ const CheckoutPage = () => {
       servicesTotal,
       taxes,
       total,
-      selectedServices: reservation.selectedServices || [],
+      selectedServices,
       paymentMethod: getPaymentMethodName(paymentMethod),
-      // Campos adicionais para profissionalizar o recibo
       receiptNumber: `REC-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)
         .toString()
         .padStart(4, '0')}`,
       paymentDate: new Date().toLocaleDateString('pt-BR'),
+      guestEmail: guestData.email,
+      guestPhone: guestData.telefone,
     };
 
     setReceiptData(receiptInfo);
     setShowReceiptModal(true);
+    setCheckoutConfirmed(true);
 
-    // Simular processamento
+    // Aqui você faria a chamada para a API criar a reserva
     console.log('Checkout confirmado', {
       guest: guestData,
-      reservation,
-      payment: {
-        method: paymentMethod,
-        details: paymentDetails,
-      },
+      reservation: { roomId, roomNumber, checkIn, checkOut, nights, total },
+      payment: { method: paymentMethod, details: paymentDetails },
     });
-
-    setCheckoutConfirmed(true);
   };
 
   // ==========================================================================
-  // 7. RENDERIZAR CAMPOS DE PAGAMENTO DINÂMICOS
+  // 12. RENDERIZAR CAMPOS DE PAGAMENTO
   // ==========================================================================
   const renderPaymentFields = () => {
     switch (paymentMethod) {
@@ -370,7 +370,7 @@ const CheckoutPage = () => {
   };
 
   // ==========================================================================
-  // 8. RENDERIZAR RECIBO
+  // 13. RENDERIZAR RECIBO
   // ==========================================================================
   const renderReceipt = () => (
     <div className={styles.receiptPreview}>
@@ -387,7 +387,7 @@ const CheckoutPage = () => {
           <span>Documento:</span> {guestData.documento}
         </p>
         <p>
-          <span>Quarto:</span> {roomNumber}
+          <span>Quarto:</span> {roomNumber} - {roomType}
         </p>
         <p>
           <span>Período:</span> {formatDate(checkIn)} a {formatDate(checkOut)}
@@ -402,7 +402,7 @@ const CheckoutPage = () => {
           </thead>
           <tbody>
             <tr>
-              <td>{nights} noites</td>
+              <td>{nights} noite(s)</td>
               <td>{formatCurrency(pricePerNight * nights)}</td>
             </tr>
             {servicesTotal > 0 && (
@@ -425,19 +425,22 @@ const CheckoutPage = () => {
         </table>
       </div>
 
-      <div className={styles.receiptFooter}>Obrigado por escolher o Hotel Paradise.</div>
+      <div className={styles.receiptFooter}>
+        <p>Pagamento: {getPaymentMethodName(paymentMethod)}</p>
+        <p>Obrigado por escolher o Hotel Paradise.</p>
+      </div>
     </div>
   );
 
   return (
     <div className={styles.container}>
-      {/* HEADER - SEM O BOTÃO VOLTAR */}
+      {/* HEADER */}
       <header className={styles.header}>
         <h1 className={styles.hotelName}>HOTEL PARADISE</h1>
-        <h2 className={styles.mainTitle}>CHECK-OUT</h2>
-        <p className={styles.subtitle}>Finalizar Estadia do Hóspede</p>
+        <h2 className={styles.mainTitle}>CHECKOUT</h2>
+        <p className={styles.subtitle}>Finalizar Reserva</p>
         <p className={styles.description}>
-          Confirme os dados da estadia, finalize o checkout e gere o recibo do hóspede.
+          Confirme os dados da reserva, preencha suas informações e finalize o pagamento.
         </p>
       </header>
 
@@ -453,7 +456,7 @@ const CheckoutPage = () => {
             <div className={styles.cardContent}>
               <div className={styles.formGrid}>
                 <div className={styles.formGroup}>
-                  <label>Nome completo</label>
+                  <label>Nome completo *</label>
                   <input
                     type="text"
                     name="nome"
@@ -461,6 +464,7 @@ const CheckoutPage = () => {
                     onChange={handleGuestChange}
                     placeholder="Digite o nome completo"
                     className={styles.input}
+                    required
                   />
                 </div>
                 <div className={styles.formGroup}>
@@ -486,7 +490,7 @@ const CheckoutPage = () => {
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label>Documento de identificação</label>
+                  <label>Documento de identificação *</label>
                   <input
                     type="text"
                     name="documento"
@@ -494,17 +498,19 @@ const CheckoutPage = () => {
                     onChange={handleGuestChange}
                     placeholder="Ex: BI 12345678"
                     className={styles.input}
+                    required
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label>Telefone</label>
+                  <label>Telefone *</label>
                   <input
                     type="tel"
                     name="telefone"
                     value={guestData.telefone}
                     onChange={handleGuestChange}
-                    placeholder="+258 84 000 0000"
+                    placeholder="84XXXXXXX"
                     className={styles.input}
+                    required
                   />
                 </div>
                 <div className={styles.formGroup}>
@@ -519,6 +525,11 @@ const CheckoutPage = () => {
                   />
                 </div>
               </div>
+              {!isIdentificado && (
+                <p className={styles.loginInfo}>
+                  Já tem cadastro? <a href="/login-cliente">Faça login</a> para preencher automaticamente.
+                </p>
+              )}
             </div>
           </div>
 
@@ -540,14 +551,16 @@ const CheckoutPage = () => {
                 </div>
                 <div className={styles.summaryRow}>
                   <span>Subtotal</span>
-                  <strong>{formatCurrency(subtotal)}</strong>
+                  <strong>{formatCurrency(pricePerNight * nights)}</strong>
                 </div>
+                {servicesTotal > 0 && (
+                  <div className={styles.summaryRow}>
+                    <span>Serviços extras</span>
+                    <strong>{formatCurrency(servicesTotal)}</strong>
+                  </div>
+                )}
                 <div className={styles.summaryRow}>
-                  <span>Serviços extras</span>
-                  <strong>{formatCurrency(servicesTotal)}</strong>
-                </div>
-                <div className={styles.summaryRow}>
-                  <span>Taxa / IVA</span>
+                  <span>Taxas</span>
                   <strong>{formatCurrency(taxes)}</strong>
                 </div>
                 <div className={styles.totalRow}>
@@ -601,13 +614,28 @@ const CheckoutPage = () => {
                 </div>
                 <div className={styles.guestItem}>
                   <span>Crianças:</span>
-                  <span className={styles.guestCount}>{guests.children}</span>
+                  <span className={styles.guestCount}>{guests.children || 0}</span>
                 </div>
                 <div className={styles.guestItem}>
                   <span>Bebês:</span>
-                  <span className={styles.guestCount}>{guests.babies}</span>
+                  <span className={styles.guestCount}>{guests.babies || 0}</span>
                 </div>
               </div>
+
+              {selectedServices && selectedServices.length > 0 && (
+                <>
+                  <div className={styles.divider} />
+                  <div className={styles.servicesList}>
+                    <h4 className={styles.subsectionTitle}>Serviços Extras</h4>
+                    {selectedServices.map((service, index) => (
+                      <div key={index} className={styles.serviceItem}>
+                        <span>{service.name}</span>
+                        <span>{formatCurrency(service.price)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -664,7 +692,6 @@ const CheckoutPage = () => {
               <h3 className={styles.cardTitle}>RECIBO E COMPROVANTE</h3>
             </div>
             <div className={styles.cardContent}>
-              <div className={styles.receiptOptions}></div>
               {renderReceipt()}
               <div className={styles.receiptActions}>
                 <button className={styles.secondaryButton}>Gerar PDF</button>
@@ -676,9 +703,7 @@ const CheckoutPage = () => {
         </div>
       )}
 
-      {/* ==========================================================================
-        BOTÃO VOLTAR - NO FINAL DA PÁGINA (CANTO INFERIOR ESQUERDO)
-        ========================================================================== */}
+      {/* BOTÃO VOLTAR */}
       <div className={styles.backButtonContainer}>
         <button
           className={styles.backButton}
