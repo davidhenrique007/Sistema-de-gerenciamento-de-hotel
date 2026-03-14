@@ -9,17 +9,21 @@ const Cliente = require('../models/entities/Cliente');
 // VALIDAÇÕES
 // =====================================================
 const validarTelefone = (telefone) => {
-  // Regex para telefone internacional e nacional
-  // Aceita: +258841234567, 841234567, 258841234567
-  const regex = /^(\+?\d{1,3})?[\s-]?\(?\d{2,3}\)?[\s-]?\d{4,5}[\s-]?\d{4}$/;
-  return regex.test(telefone);
-};
+  // Remove caracteres não numéricos
+  const numeros = telefone.replace(/\D/g, '');
 
-const validarDocumento = (documento) => {
-  if (!documento) return true; // Opcional
-  // Aceita: BI (AB123456), Passaporte, etc.
-  const regex = /^[A-Z0-9]{6,20}$/i;
-  return regex.test(documento);
+  // Formato Moçambicano: 9 dígitos começando com 8 (84,85,86,87)
+  if (numeros.length === 9 && numeros[0] === '8' && ['4', '5', '6', '7'].includes(numeros[1])) {
+    return true;
+  }
+
+  // Formato internacional: 12 dígitos começando com 258
+  if (numeros.length === 12 && numeros.startsWith('258') &&
+    numeros[3] === '8' && ['4', '5', '6', '7'].includes(numeros[4])) {
+    return true;
+  }
+
+  return false;
 };
 
 // =====================================================
@@ -251,6 +255,8 @@ const atualizarCliente = async (req, res) => {
 // IDENTIFICAR CLIENTE (fluxo principal)
 // =====================================================
 const identificarCliente = async (req, res) => {
+  console.log('📦 Dados recebidos:', req.body);
+
   try {
     const { name, phone, document, email } = req.body;
 
@@ -262,14 +268,18 @@ const identificarCliente = async (req, res) => {
     }
 
     // Validar telefone
+    console.log('🔍 Validando telefone:', phone);
     if (!validarTelefone(phone)) {
+      console.log('❌ Telefone inválido segundo validação');
       return res.status(400).json({
         success: false,
         message: 'Telefone inválido'
       });
     }
+    console.log('✅ Telefone válido!');
 
-    const telefoneFormatado = Cliente.formatPhone(phone);
+    // Formatar telefone (remover caracteres não numéricos)
+    const telefoneFormatado = phone.replace(/\D/g, '');
 
     // Buscar cliente existente
     let cliente = await Cliente.query().findOne({ phone: telefoneFormatado });
@@ -278,7 +288,7 @@ const identificarCliente = async (req, res) => {
       // Atualizar dados se necessário
       const updates = {};
       if (name !== cliente.name) updates.name = name;
-      if (document && document !== cliente.document) updates.document = Cliente.formatDocument(document);
+      if (document && document !== cliente.document) updates.document = document;
       if (email && email !== cliente.email) updates.email = email;
 
       if (Object.keys(updates).length > 0) {
@@ -289,14 +299,14 @@ const identificarCliente = async (req, res) => {
       cliente = await Cliente.query().insert({
         name,
         phone: telefoneFormatado,
-        document: document ? Cliente.formatDocument(document) : null,
+        document: document || null,
         email: email || null
       });
     }
 
     res.json({
       success: true,
-      message: cliente.wasCreated ? 'Cliente criado com sucesso' : 'Cliente identificado com sucesso',
+      message: 'Cliente identificado com sucesso',
       data: cliente.toJSON()
     });
 

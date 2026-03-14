@@ -57,17 +57,16 @@ export const validateEmail = (email, options = {}) => {
 };
 
 /**
- * Valida um número de telefone
+ * Valida um número de telefone (formato Moçambicano)
  * @param {string} phone - Telefone a ser validado
  * @param {Object} options - Opções de validação
  * @param {boolean} options.required - Se o campo é obrigatório (default: true)
  * @param {boolean} options.sanitize - Se deve sanitizar antes de validar (default: true)
- * @param {Object} options.format - Formato esperado (br, us, etc)
  * @returns {boolean} true se válido
  * @throws {ValidationError} Quando o telefone é inválido
  */
 export const validatePhone = (phone, options = {}) => {
-  const { required = true, sanitize = true, format = 'br' } = options;
+  const { required = true, sanitize = true } = options;
 
   // Validação de campo obrigatório
   if (required && (phone === null || phone === undefined || phone === '')) {
@@ -79,23 +78,21 @@ export const validatePhone = (phone, options = {}) => {
     return true;
   }
 
-  // Sanitizar se necessário
-  const phoneToValidate = sanitize ? sanitizePhone(phone) : phone;
+  // Sanitizar se necessário (remover caracteres não numéricos)
+  const phoneToValidate = sanitize ? phone.replace(/\D/g, '') : phone;
 
-  // Validações por formato
-  const formats = {
-    br: /^[1-9]{2}9?[0-9]{8}$/, // Brasil: 11 dígitos (com ou sem 9)
-    us: /^[0-9]{10}$/, // EUA: 10 dígitos
-    international: /^[0-9]{10,15}$/ // Internacional: 10-15 dígitos
-  };
+  // VALIDAÇÃO PARA MOÇAMBIQUE 🇲🇿
+  // Formato nacional: 9 dígitos, começando com 8 (84, 85, 86, 87)
+  const mzRegex = /^[8][4-7][0-9]{7}$/;
 
-  const regex = formats[format] || formats.br;
+  // Formato internacional: 12 dígitos começando com 258
+  const mzInternationalRegex = /^258[8][4-7][0-9]{7}$/;
 
-  if (!regex.test(phoneToValidate)) {
-    throw new ValidationError('Telefone inválido', 'INVALID_PHONE', {
+  if (!mzRegex.test(phoneToValidate) && !mzInternationalRegex.test(phoneToValidate)) {
+    throw new ValidationError('Telefone inválido (use formato: 84 123 4567)', 'INVALID_PHONE', {
       providedPhone: phone,
       sanitizedPhone: phoneToValidate,
-      expectedFormat: format
+      expectedFormat: 'Moçambicano (9 dígitos)'
     });
   }
 

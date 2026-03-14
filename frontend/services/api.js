@@ -1,54 +1,71 @@
-import axios from 'axios'
+// =====================================================
+// HOTEL PARADISE - API SERVICE
+// =====================================================
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_URL,
   timeout: 10000,
-  headers: { 'Content-Type': 'application/json' },
-})
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-// Interceptors
+// Interceptor para adicionar token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('@HotelParadise:token')
-    if (token) config.headers.Authorization = `Bearer ${token}`
-    return config
+    const token = localStorage.getItem('@HotelParadise:token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
   },
   (error) => Promise.reject(error)
-)
+);
 
+// Interceptor para tratamento de erros
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
+  (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('@HotelParadise:token')
-      localStorage.removeItem('@HotelParadise:refreshToken')
-      localStorage.removeItem('@HotelParadise:user')
-      window.location.href = '/login'
+      localStorage.removeItem('@HotelParadise:token');
+      localStorage.removeItem('@HotelParadise:user');
+      window.location.href = '/login';
     }
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-)
+);
 
-// Serviços
+// ✅ EXPORTAÇÃO PADRÃO (default)
+export default api;
+
+// ✅ EXPORTAÇÕES NOMEADAS (opcionais)
+export const clienteService = {
+  identificar: (dados) => api.post('/clientes/identificar', dados),
+  buscarPorTelefone: (telefone) => api.get(`/clientes/${telefone}`),
+  criar: (dados) => api.post('/clientes', dados),
+  atualizar: (id, dados) => api.put(`/clientes/${id}`, dados),
+};
+
 export const authService = {
   login: (credentials) => api.post('/auth/login', credentials),
+  loginAdmin: (credentials) => api.post('/auth/admin/login', credentials),
   logout: () => api.post('/auth/logout'),
-}
-
-export const userService = {
-  getProfile: () => api.get('/users/profile'),
-}
+  refreshToken: () => api.post('/auth/refresh-token'),
+};
 
 export const roomService = {
-  getAll: (params) => api.get('/rooms', { params }),
-  getAvailable: (checkIn, checkOut, type) => 
-    api.get('/rooms/available', { params: { checkIn, checkOut, type } }),
-}
+  listar: (params) => api.get('/rooms', { params }),
+  buscarPorId: (id) => api.get(`/rooms/${id}`),
+  disponiveis: (checkIn, checkOut, tipo) => 
+    api.get('/rooms/available', { params: { checkIn, checkOut, tipo } }),
+};
 
 export const reservationService = {
-  create: (data) => api.post('/reservations', data),
-}
-
-export default api
+  criar: (dados) => api.post('/reservations', dados),
+  listar: (params) => api.get('/reservations', { params }),
+  cancelar: (id, motivo) => api.post(`/reservations/${id}/cancel`, { motivo }),
+};

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import api from "../../frontend/src/services/api";  // ← CAMINHO CORRIGIDO!
+import api from "../services/api"; 
 
 const ClienteContext = createContext({});
 

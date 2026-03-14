@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { validatePhone, validateRequired, validateMinLength } from '../../../shared/utils/validators';
+import {
+  validatePhone,
+  validateRequired,
+  validateMinLength,
+  validateEmail,
+} from '../../../shared/utils/validators';
 import { mascaraTelefone, mascaraDocumento, removerMascara } from '../../../shared/utils/mascaras';
 import styles from './FormularioIdentificacao.module.css';
 
@@ -8,32 +13,45 @@ const FormularioIdentificacao = ({ onSubmit, isLoading }) => {
     nome: '',
     telefone: '',
     documento: '',
-    email: ''
+    email: '',
   });
 
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
 
   const validarCampo = (name, value) => {
+    console.log(`🔍 Validando campo ${name}:`, value);
+
     try {
       switch (name) {
         case 'nome':
           validateRequired(value, 'Nome');
           validateMinLength(value, 3, 'Nome');
           break;
+
         case 'telefone':
+          console.log('📞 Telefone COM máscara:', value);
+          const semMascara = removerMascara(value);
+          console.log('📞 Telefone SEM máscara:', semMascara);
           validateRequired(value, 'Telefone');
-          validatePhone(value, { format: 'international' });
+          validatePhone(semMascara, { format: 'international' });
+          console.log('✅ Telefone válido!');
           break;
+
         case 'documento':
           if (value) validateMinLength(value, 6, 'Documento');
           break;
+
         case 'email':
           if (value) validateEmail(value);
+          break;
+
+        default:
           break;
       }
       return null;
     } catch (error) {
+      console.log('❌ Erro na validação:', error.message);
       return error.message;
     }
   };
@@ -41,48 +59,48 @@ const FormularioIdentificacao = ({ onSubmit, isLoading }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     let novoValor = value;
-    
+
     if (name === 'telefone') novoValor = mascaraTelefone(value);
     if (name === 'documento') novoValor = mascaraDocumento(value);
-    
-    setFormData(prev => ({ ...prev, [name]: novoValor }));
-    
+
+    setFormData((prev) => ({ ...prev, [name]: novoValor }));
+
     // Validação em tempo real
     const error = validarCampo(name, name === 'telefone' ? removerMascara(value) : value);
-    setErrors(prev => ({ ...prev, [name]: error }));
+    setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
   const handleBlur = (e) => {
     const { name } = e.target;
-    setTouched(prev => ({ ...prev, [name]: true }));
+    setTouched((prev) => ({ ...prev, [name]: true }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // Validar todos os campos
     const newErrors = {};
-    Object.keys(formData).forEach(key => {
+    Object.keys(formData).forEach((key) => {
       const value = key === 'telefone' ? removerMascara(formData[key]) : formData[key];
       const error = validarCampo(key, value);
       if (error) newErrors[key] = error;
     });
-    
+
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
-    
+
     onSubmit({
       name: formData.nome,
       phone: removerMascara(formData.telefone),
       document: formData.documento || undefined,
-      email: formData.email || undefined
+      email: formData.email || undefined,
     });
   };
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
       <h2>Identificação</h2>
-      
+
       <div className={styles.field}>
         <label>Nome Completo *</label>
         <input
@@ -92,9 +110,7 @@ const FormularioIdentificacao = ({ onSubmit, isLoading }) => {
           onBlur={handleBlur}
           disabled={isLoading}
         />
-        {touched.nome && errors.nome && (
-          <span className={styles.error}>{errors.nome}</span>
-        )}
+        {touched.nome && errors.nome && <span className={styles.error}>{errors.nome}</span>}
       </div>
 
       <div className={styles.field}>
@@ -107,6 +123,13 @@ const FormularioIdentificacao = ({ onSubmit, isLoading }) => {
           placeholder="84 123 4567"
           disabled={isLoading}
         />
+
+        {/* LOG PARA DEBUG */}
+        {console.log('📊 Estado do telefone:', {
+          touched: touched.telefone,
+          error: errors.telefone,
+        })}
+
         {touched.telefone && errors.telefone && (
           <span className={styles.error}>{errors.telefone}</span>
         )}
@@ -138,9 +161,7 @@ const FormularioIdentificacao = ({ onSubmit, isLoading }) => {
           placeholder="seu@email.com"
           disabled={isLoading}
         />
-        {touched.email && errors.email && (
-          <span className={styles.error}>{errors.email}</span>
-        )}
+        {touched.email && errors.email && <span className={styles.error}>{errors.email}</span>}
       </div>
 
       <button type="submit" disabled={isLoading}>
