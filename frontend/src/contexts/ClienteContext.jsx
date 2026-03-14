@@ -1,5 +1,10 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
-import api from "../services/api"; 
+// =====================================================
+// HOTEL PARADISE - CONTEXT DE CLIENTE
+// Versão: 2.0.0 (Completa - Sessão)
+// =====================================================
+
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import api from '../services/api';
 
 const ClienteContext = createContext({});
 
@@ -13,20 +18,73 @@ export const useCliente = () => {
 
 export const ClienteProvider = ({ children }) => {
   const [cliente, setCliente] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [ultimaAtualizacao, setUltimaAtualizacao] = useState(null);
 
+  // =====================================================
+  // CARREGAR CLIENTE DO LOCALSTORAGE AO INICIAR
+  // =====================================================
   useEffect(() => {
-    const storedCliente = localStorage.getItem('@HotelParadise:cliente');
-    if (storedCliente) {
+    const carregarCliente = async () => {
       try {
-        setCliente(JSON.parse(storedCliente));
+        const storedCliente = localStorage.getItem('@HotelParadise:cliente');
+        const storedTimestamp = localStorage.getItem('@HotelParadise:cliente_timestamp');
+        
+        if (storedCliente && storedTimestamp) {
+          const parsedCliente = JSON.parse(storedCliente);
+          const timestamp = parseInt(storedTimestamp);
+          const agora = Date.now();
+          const umaHora = 60 * 60 * 1000; // 1 hora em ms
+          
+          // Verificar se a sessão expirou (1 hora de inatividade)
+          if (agora - timestamp > umaHora) {
+            console.log('⏰ Sessão expirada - removendo');
+            localStorage.removeItem('@HotelParadise:cliente');
+            localStorage.removeItem('@HotelParadise:cliente_timestamp');
+            setCliente(null);
+          } else {
+            console.log('🔄 Sessão restaurada do localStorage');
+            setCliente(parsedCliente);
+            setUltimaAtualizacao(new Date(timestamp));
+            
+            // Opcional: validar com backend se cliente ainda existe
+            try {
+              await api.get(`/clientes/${parsedCliente.phone}`);
+            } catch (err) {
+              console.log('⚠️ Cliente não encontrado no backend, removendo sessão');
+              localStorage.removeItem('@HotelParadise:cliente');
+              localStorage.removeItem('@HotelParadise:cliente_timestamp');
+              setCliente(null);
+            }
+          }
+        }
       } catch (err) {
+        console.error('Erro ao carregar cliente:', err);
         localStorage.removeItem('@HotelParadise:cliente');
+        localStorage.removeItem('@HotelParadise:cliente_timestamp');
+      } finally {
+        setLoading(false);
       }
-    }
+    };
+
+    carregarCliente();
   }, []);
 
+  // =====================================================
+  // ATUALIZAR TIMESTAMP QUANDO CLIENTE MUDA
+  // =====================================================
+  useEffect(() => {
+    if (cliente) {
+      localStorage.setItem('@HotelParadise:cliente', JSON.stringify(cliente));
+      localStorage.setItem('@HotelParadise:cliente_timestamp', Date.now().toString());
+      setUltimaAtualizacao(new Date());
+    }
+  }, [cliente]);
+
+  // =====================================================
+  // FUNÇÃO PARA IDENTIFICAR CLIENTE
+  // =====================================================
   const identificarCliente = async (dados) => {
     try {
       setLoading(true);
@@ -36,8 +94,7 @@ export const ClienteProvider = ({ children }) => {
       const clienteData = response.data.data;
 
       setCliente(clienteData);
-      localStorage.setItem('@HotelParadise:cliente', JSON.stringify(clienteData));
-
+      
       return { success: true, data: clienteData };
     } catch (err) {
       const message = err.response?.data?.message || 'Erro ao identificar cliente';
@@ -48,24 +105,28 @@ export const ClienteProvider = ({ children }) => {
     }
   };
 
-  const buscarCliente = async (telefone) => {
-    try {
-      setLoading(true);
-      setError(null);
+  // =====================================================
+  // FUNÇÃO PARA LOGOUT
+  // =====================================================
+  const logoutCliente = useCallback(() => {
+    console.log('👋 Cliente fazendo logout');
+    setCliente(null);
+    localStorage.removeItem('@HotelParadise:cliente');
+    localStorage.removeItem('@HotelParadise:cliente_timestamp');
+    setUltimaAtualizacao(null);
+  }, []);
 
-      const response = await api.get(`/clientes/${telefone}`);
-      return { success: true, data: response.data.data };
-    } catch (err) {
-      if (err.response?.status === 404) {
-        return { success: false, error: 'Cliente não encontrado' };
-      }
-      const message = err.response?.data?.message || 'Erro ao buscar cliente';
-      return { success: false, error: message };
-    } finally {
-      setLoading(false);
-    }
-  };
+  // =====================================================
+  // FUNÇÃO PARA TROCAR DE CLIENTE
+  // =====================================================
+  const trocarCliente = useCallback(() => {
+    logoutCliente();
+    // Redirecionamento será feito pelo componente que chamar
+  }, [logoutCliente]);
 
+  // =====================================================
+  // FUNÇÃO PARA ATUALIZAR DADOS DO CLIENTE
+  // =====================================================
   const atualizarCliente = async (id, dados) => {
     try {
       setLoading(true);
@@ -75,8 +136,7 @@ export const ClienteProvider = ({ children }) => {
       const clienteData = response.data.data;
 
       setCliente(clienteData);
-      localStorage.setItem('@HotelParadise:cliente', JSON.stringify(clienteData));
-
+      
       return { success: true, data: clienteData };
     } catch (err) {
       const message = err.response?.data?.message || 'Erro ao atualizar cliente';
@@ -87,22 +147,65 @@ export const ClienteProvider = ({ children }) => {
     }
   };
 
-  const limparCliente = () => {
-    setCliente(null);
-    localStorage.removeItem('@HotelParadise:cliente');
-  };
+  // =====================================================
+  // FUNÇÃO PARA VERIFICAR SE TEM PERMISSÃO
+  // =====================================================
+  const verificarAcesso = useCallback(() => {
+    if (!cliente) {
+      return {
+        permitido: false,
+        motivo: 'nao_identificado',
+        redirectTo: '/login-cliente'
+      };
+    }
+    
+    return {
+      permitido: true,
+      motivo: null,
+      redirectTo: null
+    };
+  }, [cliente]);
+
+  // =====================================================
+  // FUNÇÃO PARA RENOVAR SESSÃO
+  // =====================================================
+  const renovarSessao = useCallback(() => {
+    if (cliente) {
+      localStorage.setItem('@HotelParadise:cliente_timestamp', Date.now().toString());
+      setUltimaAtualizacao(new Date());
+    }
+  }, [cliente]);
 
   return (
     <ClienteContext.Provider
       value={{
+        // Estado
         cliente,
         loading,
         error,
+        ultimaAtualizacao,
+        
+        // Funções principais
         identificarCliente,
-        buscarCliente,
+        logoutCliente,
+        trocarCliente,
         atualizarCliente,
-        limparCliente,
-        isIdentificado: !!cliente
+        renovarSessao,
+        
+        // Utilitários
+        verificarAcesso,
+        
+        // Flags
+        isIdentificado: !!cliente,
+        isAuthenticated: !!cliente, // alias para compatibilidade
+        
+        // Dados formatados
+        nome: cliente?.name?.split(' ')[0] || null,
+        nomeCompleto: cliente?.name || null,
+        primeiroNome: cliente?.name?.split(' ')[0] || null,
+        telefone: cliente?.phone || null,
+        documento: cliente?.document || null,
+        email: cliente?.email || null,
       }}
     >
       {children}
