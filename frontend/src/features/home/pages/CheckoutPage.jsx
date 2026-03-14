@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCart } from '../contexts/CartContext';
-import { useCliente } from '../hooks/useCliente';
+import { useCart } from '../../../contexts/CartContext';  
+import { useCliente } from '../../../hooks/useCliente';    
 import ReceiptModal from '../../../shared/components/ui/ReceiptModal';
 import styles from './CheckoutPage.module.css';
 
