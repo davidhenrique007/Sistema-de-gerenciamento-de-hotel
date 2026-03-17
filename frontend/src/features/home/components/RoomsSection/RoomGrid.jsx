@@ -7,6 +7,7 @@ import styles from './RoomGrid.module.css';
  * RoomGrid Component - Grid responsivo de quartos
  */
 const RoomGrid = ({ rooms, selectedRoomId, onSelect, onDetails, columns = 3 }) => {
+
   if (!rooms || rooms.length === 0) {
     return (
       <div className={styles.emptyState}>

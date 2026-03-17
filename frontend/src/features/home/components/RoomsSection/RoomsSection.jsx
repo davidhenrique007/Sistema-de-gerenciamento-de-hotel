@@ -8,7 +8,7 @@ import Button from '../../../../shared/components/ui/Button';
 import styles from './RoomsSection.module.css';
 
 /**
- * RoomsSection Component - SeÃ§Ã£o principal de quartos
+ * RoomsSection Component - Seção principal de quartos
  */
 const RoomsSection = ({ 
   onSelectRoom, 
@@ -25,6 +25,8 @@ const RoomsSection = ({
   }, []);
 
   const handleSelectRoom = useCallback((room) => {
+    console.log("?? handleSelectRoom FOI CHAMADO!", room);
+    console.log('?? Quarto selecionado no RoomsSection:', room);
     selectRoom(room);
     if (onSelectRoom) {
       onSelectRoom(room);
@@ -32,6 +34,7 @@ const RoomsSection = ({
   }, [selectRoom, onSelectRoom]);
 
   const handleDetailsRoom = useCallback((room) => {
+    console.log('?? Detalhes do quarto:', room);
     if (onDetailsRoom) {
       onDetailsRoom(room);
     }
@@ -87,7 +90,7 @@ const RoomsSection = ({
               <strong>{stats.total}</strong> total
             </span>
             <span className={styles.statItem}>
-              <strong>{stats.available}</strong> disponÃ­veis
+              <strong>{stats.available}</strong> disponíveis
             </span>
             
             <div className={styles.filters}>
@@ -101,17 +104,19 @@ const RoomsSection = ({
                 className={`${styles.filterButton} ${filter === 'available' ? styles.active : ''}`}
                 onClick={() => handleFilterChange('available')}
               >
-                DisponÃ­veis
+                Disponíveis
               </button>
             </div>
           </div>
         </div>
 
+        {/* ? CORRIGIDO: APENAS UMA VEZ onSelect e onDetails */}
         <RoomGrid
           rooms={filteredRooms}
           selectedRoomId={selectedRoomId}
           onSelect={handleSelectRoom}
           onDetails={handleDetailsRoom}
+          columns={3}
         />
       </div>
     </section>

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+﻿import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
@@ -12,10 +12,14 @@ import useScrollToForm from '../hooks/useScrollToForm';
 import useServices from '../hooks/useServices';
 import useRooms from '../hooks/useRooms';
 import useNotification from "../../../shared/components/ui/Notification/useNotification";
+import { useCart } from '../../../contexts/CartContext';
 import './home.css';
 
 const HomePage = () => {
-  const navigate = useNavigate();
+  const { selectRoom: selectRoomCart } = useCart();
+  console.log("🔥🔥🔥 useCart retornou:", useCart());
+  console.log("🔥🔥🔥 selectRoomCart:", selectRoomCart);
+      const navigate = useNavigate();
   const { notifySuccess, notifyError } = useNotification();
   const { formRef, scrollToForm, scrollToFormWithDelay } = useScrollToForm({ 
     offset: 80,
@@ -38,51 +42,59 @@ const HomePage = () => {
 
   // Logs de debug
   useEffect(() => {
-    console.log('🏠 [HomePage] Estado:');
+    console.log('ðŸ  [HomePage] Estado:');
     console.log('   rooms:', rooms?.length || 0);
     console.log('   selectedRoom:', selectedRoom?.number || 'nenhum');
   }, [rooms, selectedRoom]);
 
   const handleRoomSelect = useCallback((room) => {
-    console.log('🛏️ Quarto selecionado:', room?.number);
-    if (room) {
-      selectRoom(room);
-      scrollToFormWithDelay(300);
-    }
-  }, [selectRoom, scrollToFormWithDelay]);
+  console.log('🛒 Quarto selecionado:', room?.number);
+  if (room) {
+    selectRoom(room);
+    scrollToFormWithDelay(300);
+  }
+}, [selectRoom, scrollToFormWithDelay]);
 
   const handleDetailsRoom = useCallback((room) => {
-    console.log('🔍 Ver detalhes do quarto:', room?.number);
+    console.log('ðŸ” Ver detalhes do quarto:', room?.number);
     setSelectedRoomForDetails(room);
     setIsModalOpen(true);
   }, []);
 
   const handleReservationSubmit = useCallback(async (reservationData) => {
-    try {
-      const completeReservation = {
-        ...reservationData,
-        selectedServices: selectedServicesDetails || [],
-        servicesTotal: selectedServicesTotal || 0,
-        createdAt: new Date().toISOString(),
-        reservationId: `RES-${Date.now()}`,
-      };
+  try {
+    const completeReservation = {
+      ...reservationData,
+      selectedServices: selectedServicesDetails || [],
+      servicesTotal: selectedServicesTotal || 0,
+      createdAt: new Date().toISOString(),
+      reservationId: `RES-${Date.now()}`,
+    };
 
-      await new Promise(resolve => setTimeout(resolve, 800));
-      notifySuccess('Reserva processada com sucesso!');
-      
-      if (clearSelectedServices) clearSelectedServices();
+    selectRoomCart(
+      {
+        id: reservationData.roomId,
+        room_number: reservationData.roomNumber,
+        type: reservationData.roomType,
+        price_per_night: reservationData.pricePerNight
+      },
+      new Date(reservationData.checkIn),
+      new Date(reservationData.checkOut),
+      reservationData.guests
+    );
 
-      setTimeout(() => {
-        navigate('/checkout', { 
-          state: { reservation: completeReservation },
-        });
-      }, 1000);
+    await new Promise(resolve => setTimeout(resolve, 800));
+    notifySuccess('Reserva processada com sucesso!');
 
-    } catch (error) {
-      console.error('❌ Erro:', error);
-      notifyError('Erro ao processar reserva.');
-    }
-  }, [navigate, notifySuccess, notifyError, selectedServicesDetails, selectedServicesTotal, clearSelectedServices]);
+    if (clearSelectedServices) clearSelectedServices();
+
+    navigate('/checkout');
+
+  } catch (error) {
+    console.error('Erro:', error);
+    notifyError('Erro ao processar reserva.');
+  }
+}, [selectRoomCart, navigate, notifySuccess, notifyError, selectedServicesDetails, selectedServicesTotal, clearSelectedServices]);
 
   const handleServiceToggle = useCallback((serviceId) => {
     if (toggleService) toggleService(serviceId);
@@ -98,7 +110,7 @@ const HomePage = () => {
           size="small"     
           parallax={true}
           title="Hotel Paradise"
-          subtitle="O paraíso perfeito para suas férias dos sonhos"
+          subtitle="O paraÃ­so perfeito para suas fÃ©rias dos sonhos"
           ctaText="Reservar Agora"
         />
 
@@ -115,7 +127,7 @@ const HomePage = () => {
           ref={formRef}
         >
           <div className="container">
-            <h2 className="section-title">Faça sua Reserva</h2>
+            <h2 className="section-title">FaÃ§a sua Reserva</h2>
             
             <div className="reservation-layout">
               <div className="reservation-form-wrapper">
@@ -132,7 +144,7 @@ const HomePage = () => {
         <ServicesSection
           onServiceToggle={handleServiceToggle}
           selectedServiceIds={selectedServices || []}
-          title="Serviços Adicionais"
+          title="ServiÃ§os Adicionais"
           subtitle="Personalize sua estadia"
         />
       </main>
@@ -153,3 +165,24 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

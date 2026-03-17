@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+﻿import React, { useState, memo } from 'react';
 import PropTypes from 'prop-types';
 import Button from '../../../../shared/components/ui/Button';
 import RoomStatusBadge from './RoomStatusBadge';
@@ -6,7 +6,7 @@ import { ROOM_STATUS } from '../../constants/room.types';
 import styles from './RoomCard.module.css';
 
 /**
- * RoomCard Component - Card de exibição de quarto com dois botões
+ * RoomCard Component - Card de exibiÃ§Ã£o de quarto com dois botÃµes
  */
 const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
   // ==========================================================================
@@ -21,6 +21,9 @@ const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
   // ==========================================================================
 
   const handleSelect = () => {
+    console.log("🟢🟢🟢 handleSelect CLICADO no RoomCard!", room.number);
+    console.log("?? Botão SELECIONAR clicado no RoomCard!");
+    console.log("?? Botão SELECIONAR clicado no RoomCard!");
     if (room.status === ROOM_STATUS.AVAILABLE && onSelect) {
       onSelect(room);
     }
@@ -120,15 +123,15 @@ const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
 
         <div className={styles.details}>
           <div className={styles.detailItem}>
-            <span className={styles.detailIcon}>👥</span>
-            <span>{room.capacity} {room.capacity === 1 ? 'hóspede' : 'hóspedes'}</span>
+            <span className={styles.detailIcon}>ðŸ‘¥</span>
+            <span>{room.capacity} {room.capacity === 1 ? 'hÃ³spede' : 'hÃ³spedes'}</span>
           </div>
           <div className={styles.detailItem}>
-            <span className={styles.detailIcon}>📏</span>
-            <span>{room.size}m²</span>
+            <span className={styles.detailIcon}>ðŸ“</span>
+            <span>{room.size}mÂ²</span>
           </div>
           <div className={styles.detailItem}>
-            <span className={styles.detailIcon}>🛏️</span>
+            <span className={styles.detailIcon}>ðŸ›ï¸</span>
             <span>{room.bedType}</span>
           </div>
         </div>
@@ -146,7 +149,7 @@ const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
           )}
         </div>
 
-        {/* DOIS BOTÕES: DETALHES E SELECIONAR */}
+        {/* DOIS BOTÃ•ES: DETALHES E SELECIONAR */}
         <div className={styles.buttonGroup}>
           <Button
             variant="outline"
@@ -164,7 +167,7 @@ const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
             disabled={!isAvailable}
             className={styles.selectButton}
           >
-            {isAvailable ? 'Selecionar' : 'Indisponível'}
+            {isAvailable ? 'Selecionar' : 'IndisponÃ­vel'}
           </Button>
         </div>
       </div>
@@ -204,3 +207,5 @@ RoomCard.defaultProps = {
 };
 
 export default memo(RoomCard);
+
+

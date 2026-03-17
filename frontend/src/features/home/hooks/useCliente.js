@@ -3,7 +3,7 @@
 // Versão: 1.0.0
 // =====================================================
 
-import { useCliente as useClienteContext } from '../contexts/ClienteContext';
+import { useCliente as useClienteContext } from '../../../contexts/ClienteContext'; 
 
 /**
  * Hook personalizado para acessar o contexto do cliente

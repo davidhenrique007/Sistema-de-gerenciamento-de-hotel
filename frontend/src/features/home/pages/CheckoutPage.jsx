@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCart } from '../../../contexts/CartContext';  
-import { useCliente } from '../../../home/hooks/useCliente';    
+import { useCart } from '@contexts/CartContext';  
+import { useCliente } from '../../../features/home/hooks/useCliente';   
 import ReceiptModal from '../../../shared/components/ui/ReceiptModal';
 import styles from './CheckoutPage.module.css';
 
@@ -13,8 +13,14 @@ const PaymentIcon = () => <span className={styles.icon}>💳</span>;
 const ReceiptIcon = () => <span className={styles.icon}>🧾</span>;
 
 const CheckoutPage = () => {
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+      const navigate = useNavigate();
   const { reservation, room, clearCart } = useCart();
+
+  // LOGS PARA DEBUG
+  console.log('?? CartContext - reservation:', reservation);
+  console.log('?? CartContext - room:', room);
+  console.log('?? CartContext - tem dados:', !!(reservation || room));
   const { cliente, isIdentificado } = useCliente();
 
   // ==========================================================================
@@ -726,3 +732,6 @@ const CheckoutPage = () => {
 };
 
 export default CheckoutPage;
+
+
+

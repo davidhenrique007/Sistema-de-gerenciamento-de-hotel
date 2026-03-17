@@ -1,37 +1,19 @@
-import React, { memo } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import RoomCard from './RoomCard';
 import styles from './RoomGrid.module.css';
 
-/**
- * RoomGridItem Component - Célula do grid que encapsula um RoomCard
- */
 const RoomGridItem = ({ room, isSelected, onSelect, onDetails }) => {
   return (
-    <div
-      className={`${styles.gridItem} ${isSelected ? styles.selected : ''}`}
-    >
+    <div className={`${styles.gridItem} ${isSelected ? styles.selected : ''}`}>
       <RoomCard
         room={room}
         isSelected={isSelected}
         onSelect={onSelect}
         onDetails={onDetails}
       />
+      {console.log("?? RoomGridItem - onSelect passada:", !!onSelect)}
     </div>
   );
 };
 
-RoomGridItem.propTypes = {
-  room: PropTypes.object.isRequired,
-  isSelected: PropTypes.bool,
-  onSelect: PropTypes.func,
-  onDetails: PropTypes.func,
-};
-
-RoomGridItem.defaultProps = {
-  isSelected: false,
-  onSelect: undefined,
-  onDetails: undefined,
-};
-
-export default memo(RoomGridItem);
+export default RoomGridItem;
