@@ -27,6 +27,7 @@ const App = () => {
     <BrowserRouter>
       <ClienteProvider>
         <CartProvider>
+        <TestCartProvider>
           <Layout>
             <Routes>
               {/* Rotas Públicas */}
@@ -84,10 +85,13 @@ const App = () => {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Layout>
-        </CartProvider>
+        </TestCartProvider>
+      </CartProvider>
       </ClienteProvider>
     </BrowserRouter>
   );
 };
 
 export default App;
+
+

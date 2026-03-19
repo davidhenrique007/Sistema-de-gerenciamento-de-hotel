@@ -12,89 +12,75 @@ import useScrollToForm from '../hooks/useScrollToForm';
 import useServices from '../hooks/useServices';
 import useRooms from '../hooks/useRooms';
 import useNotification from "../../../shared/components/ui/Notification/useNotification";
-import { useCart } from '../../../contexts/CartContext';
 import './home.css';
 
 const HomePage = () => {
-  const { selectRoom: selectRoomCart } = useCart();
-  console.log("🔥🔥🔥 useCart retornou:", useCart());
-  console.log("🔥🔥🔥 selectRoomCart:", selectRoomCart);
-      const navigate = useNavigate();
+  const navigate = useNavigate();
   const { notifySuccess, notifyError } = useNotification();
-  const { formRef, scrollToForm, scrollToFormWithDelay } = useScrollToForm({ 
+  const { formRef, scrollToForm, scrollToFormWithDelay } = useScrollToForm({
     offset: 80,
     behavior: 'smooth',
   });
 
   const { rooms } = useRooms();
   const { selectedRoom, selectRoom, selectedRoomId } = useRoomSelection(rooms || []);
-  const { 
-    selectedServices, 
-    toggleService, 
+  const {
+    selectedServices,
+    toggleService,
     selectedServicesDetails,
     selectedServicesTotal,
     clearSelectedServices,
   } = useServices();
 
-  // State para o modal de detalhes
   const [selectedRoomForDetails, setSelectedRoomForDetails] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Logs de debug
   useEffect(() => {
-    console.log('ðŸ  [HomePage] Estado:');
+    console.log('🏠 [HomePage] Estado:');
     console.log('   rooms:', rooms?.length || 0);
     console.log('   selectedRoom:', selectedRoom?.number || 'nenhum');
   }, [rooms, selectedRoom]);
 
   const handleRoomSelect = useCallback((room) => {
-  console.log('🛒 Quarto selecionado:', room?.number);
-  if (room) {
-    selectRoom(room);
-    scrollToFormWithDelay(300);
-  }
-}, [selectRoom, scrollToFormWithDelay]);
+    console.log('🛒 Quarto selecionado:', room?.number);
+    if (room) {
+      selectRoom(room);
+      scrollToFormWithDelay(300);
+    }
+  }, [selectRoom, scrollToFormWithDelay]);
 
   const handleDetailsRoom = useCallback((room) => {
-    console.log('ðŸ” Ver detalhes do quarto:', room?.number);
+    console.log('🔍 Ver detalhes do quarto:', room?.number);
     setSelectedRoomForDetails(room);
     setIsModalOpen(true);
   }, []);
 
   const handleReservationSubmit = useCallback(async (reservationData) => {
-  try {
-    const completeReservation = {
-      ...reservationData,
-      selectedServices: selectedServicesDetails || [],
-      servicesTotal: selectedServicesTotal || 0,
-      createdAt: new Date().toISOString(),
-      reservationId: `RES-${Date.now()}`,
-    };
+    try {
+      const completeReservation = {
+        ...reservationData,
+        selectedServices: selectedServicesDetails || [],
+        servicesTotal: selectedServicesTotal || 0,
+        createdAt: new Date().toISOString(),
+        reservationId: `RES-${Date.now()}`,
+      };
 
-    selectRoomCart(
-      {
-        id: reservationData.roomId,
-        room_number: reservationData.roomNumber,
-        type: reservationData.roomType,
-        price_per_night: reservationData.pricePerNight
-      },
-      new Date(reservationData.checkIn),
-      new Date(reservationData.checkOut),
-      reservationData.guests
-    );
+      await new Promise(resolve => setTimeout(resolve, 800));
+      notifySuccess('Reserva processada com sucesso!');
 
-    await new Promise(resolve => setTimeout(resolve, 800));
-    notifySuccess('Reserva processada com sucesso!');
+      if (clearSelectedServices) clearSelectedServices();
 
-    if (clearSelectedServices) clearSelectedServices();
+      setTimeout(() => {
+        navigate('/checkout', {
+          state: { reservation: completeReservation },
+        });
+      }, 1000);
 
-    navigate('/checkout');
-
-  } catch (error) {
-    console.error('Erro:', error);
-    notifyError('Erro ao processar reserva.');
-  }
-}, [selectRoomCart, navigate, notifySuccess, notifyError, selectedServicesDetails, selectedServicesTotal, clearSelectedServices]);
+    } catch (error) {
+      console.error('❌ Erro:', error);
+      notifyError('Erro ao processar reserva.');
+    }
+  }, [navigate, notifySuccess, notifyError, selectedServicesDetails, selectedServicesTotal, clearSelectedServices]);
 
   const handleServiceToggle = useCallback((serviceId) => {
     if (toggleService) toggleService(serviceId);
@@ -105,12 +91,12 @@ const HomePage = () => {
       <Header transparent={true} />
 
       <main className="home-page__main">
-        <Hero 
+        <Hero
           onCtaClick={scrollToForm}
-          size="small"     
+          size="small"
           parallax={true}
           title="Hotel Paradise"
-          subtitle="O paraÃ­so perfeito para suas fÃ©rias dos sonhos"
+          subtitle="O paraíso perfeito para suas férias dos sonhos"
           ctaText="Reservar Agora"
         />
 
@@ -121,20 +107,20 @@ const HomePage = () => {
           subtitle="Escolha o quarto perfeito para sua estadia"
         />
 
-        <section 
-          id="reservation" 
+        <section
+          id="reservation"
           className="home-page__section home-page__section--highlight"
           ref={formRef}
         >
           <div className="container">
-            <h2 className="section-title">FaÃ§a sua Reserva</h2>
-            
+            <h2 className="section-title">Faça sua Reserva</h2>
+
             <div className="reservation-layout">
               <div className="reservation-form-wrapper">
                 <ReservationForm
                   selectedRoom={selectedRoom}
                   onSubmit={handleReservationSubmit}
-                   selectedServices={selectedServicesDetails || []}
+                  selectedServices={selectedServicesDetails || []}
                 />
               </div>
             </div>
@@ -144,17 +130,16 @@ const HomePage = () => {
         <ServicesSection
           onServiceToggle={handleServiceToggle}
           selectedServiceIds={selectedServices || []}
-          title="ServiÃ§os Adicionais"
+          title="Serviços Adicionais"
           subtitle="Personalize sua estadia"
         />
       </main>
 
-      <Footer 
+      <Footer
         companyName="Hotel Paradise"
         showNewsletter={true}
       />
 
-      {/* Modal de Detalhes */}
       <RoomDetailsModal
         room={selectedRoomForDetails}
         isOpen={isModalOpen}
@@ -165,24 +150,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
