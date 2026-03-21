@@ -1,37 +1,20 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+﻿import { useState, useEffect, useMemo, useCallback } from 'react';
 import { roomsData } from '../data/roomsData';
 import { ROOM_STATUS } from '../constants/room.types';
 
-/**
- * Hook personalizado para gerenciar dados dos quartos
- * 
- * Responsabilidades:
- * - Fornecer lista de quartos
- * - Simular carregamento assíncrono
- * - Expor funções de filtragem
- * - Preparado para futura integração com API
- * 
- * @returns {Object} Estado e funções dos quartos
- */
 const useRooms = () => {
   const [rooms, setRooms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // ==========================================================================
-  // SIMULA CARREGAMENTO DE API
-  // ==========================================================================
 
   useEffect(() => {
     const fetchRooms = async () => {
       try {
         setIsLoading(true);
         
-        // Simula chamada de API
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        // Em produção, aqui seria: const response = await api.get('/rooms')
+        // REMOVIDO O setTimeout - carrega imediatamente
         setRooms(roomsData);
+        console.log("📋 useRooms: quartos carregados, total:", roomsData.length);
         setError(null);
       } catch (err) {
         setError('Erro ao carregar quartos. Tente novamente.');
@@ -44,10 +27,7 @@ const useRooms = () => {
     fetchRooms();
   }, []);
 
-  // ==========================================================================
-  // FUNÇÕES DE FILTRAGEM (MEMOIZADAS)
-  // ==========================================================================
-
+  // ... resto do código permanece igual
   const getAvailableRooms = useCallback(() => {
     return rooms.filter(room => room.status === ROOM_STATUS.AVAILABLE);
   }, [rooms]);
@@ -69,10 +49,6 @@ const useRooms = () => {
       room.price.amount >= minPrice && room.price.amount <= maxPrice
     );
   }, [rooms]);
-
-  // ==========================================================================
-  // ESTATÍSTICAS (MEMOIZADAS)
-  // ==========================================================================
 
   const stats = useMemo(() => {
     const available = rooms.filter(r => r.status === ROOM_STATUS.AVAILABLE).length;
@@ -97,10 +73,6 @@ const useRooms = () => {
     };
   }, [rooms]);
 
-  // ==========================================================================
-  // FORMATAÇÃO DE PREÇO
-  // ==========================================================================
-
   const formatPrice = useCallback((amount, currency = 'MZN') => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -110,31 +82,17 @@ const useRooms = () => {
     }).format(amount).replace('MZN', 'MZN').trim();
   }, []);
 
-  // ==========================================================================
-  // RETORNO
-  // ==========================================================================
-
   return {
-    // Dados
     rooms,
     isLoading,
     error,
-    
-    // Estatísticas
     stats,
-    
-    // Funções de filtragem
     getAvailableRooms,
     getRoomById,
     getRoomsByType,
     getRoomsByCapacity,
     getRoomsByPriceRange,
-    
-    // Utilitários
     formatPrice,
-    
-    // Refresh (para futura implementação)
-    // refreshRooms: () => { ... }
   };
 };
 

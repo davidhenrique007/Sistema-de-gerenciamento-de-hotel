@@ -1,5 +1,8 @@
-import React from 'react';
+﻿import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { ClienteProvider } from '../contexts/ClienteContext';
+import { CartProvider } from '../contexts/CartContext';
+import ClienteRoute from '../middlewares/ClienteRoute';
 import Spinner from '../shared/components/ui/Spinner';
 
 // ============================================================================
@@ -7,11 +10,10 @@ import Spinner from '../shared/components/ui/Spinner';
 // ============================================================================
 
 const HomePage = React.lazy(() => import('../features/home/pages/HomePage'));
-const CheckoutPage = React.lazy(() => import('../features/home/pages/CheckoutPage'));
-const LoginCliente = React.lazy(() => import('../features/home/pages/LoginCliente')); // ← NOVA LINHA!
+const Checkout = React.lazy(() => import('../features/home/pages/Checkout'));
 
 // ============================================================================
-// COMPONENTE DE FALLBACK PROFISSIONAL
+// COMPONENTE DE FALLBACK
 // ============================================================================
 
 const LoadingFallback = () => (
@@ -44,11 +46,11 @@ export const router = createBrowserRouter([
   },
   {
     path: '/checkout',
-    element: withSuspense(CheckoutPage),
-  },
-  {
-    path: '/login-cliente',  // ← NOVA ROTA ADICIONADA!
-    element: withSuspense(LoginCliente),
+    element: withSuspense(() => (
+      <ClienteRoute>
+        <Checkout />
+      </ClienteRoute>
+    )),
   },
   {
     path: '*',
@@ -57,9 +59,15 @@ export const router = createBrowserRouter([
 ]);
 
 // ============================================================================
-// PROVIDER DAS ROTAS
+// PROVIDER DAS ROTAS COM CONTEXTOS
 // ============================================================================
 
-export const AppRouter = () => <RouterProvider router={router} />;
+export const AppRouter = () => (
+  <ClienteProvider>
+    <CartProvider>
+      <RouterProvider router={router} />
+    </CartProvider>
+  </ClienteProvider>
+);
 
 export default router;

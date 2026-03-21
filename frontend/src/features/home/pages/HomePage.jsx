@@ -12,10 +12,15 @@ import useScrollToForm from '../hooks/useScrollToForm';
 import useServices from '../hooks/useServices';
 import useRooms from '../hooks/useRooms';
 import useNotification from "../../../shared/components/ui/Notification/useNotification";
+import { useCart } from '../../../contexts/CartContext';
 import './home.css';
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const cart = useCart();
+  console.log("🔥🔥🔥 useCart retornou:", cart);
+  console.log("🔥🔥🔥 selectRoom existe?", !!cart.selectRoom);
+  const { selectRoom } = cart;
   const { notifySuccess, notifyError } = useNotification();
   const { formRef, scrollToForm, scrollToFormWithDelay } = useScrollToForm({
     offset: 80,
@@ -23,7 +28,7 @@ const HomePage = () => {
   });
 
   const { rooms } = useRooms();
-  const { selectedRoom, selectRoom, selectedRoomId } = useRoomSelection(rooms || []);
+  const { selectedRoom, selectRoom: selectLocalRoom, selectedRoomId } = useRoomSelection(rooms || []);
   const {
     selectedServices,
     toggleService,
@@ -42,12 +47,13 @@ const HomePage = () => {
   }, [rooms, selectedRoom]);
 
   const handleRoomSelect = useCallback((room) => {
+    console.log("🔥🔥🔥 handleRoomSelect CHAMADO com quarto:", room);
     console.log('🛒 Quarto selecionado:', room?.number);
     if (room) {
-      selectRoom(room);
+      selectLocalRoom(room);
       scrollToFormWithDelay(300);
     }
-  }, [selectRoom, scrollToFormWithDelay]);
+  }, [selectLocalRoom, scrollToFormWithDelay]);
 
   const handleDetailsRoom = useCallback((room) => {
     console.log('🔍 Ver detalhes do quarto:', room?.number);
@@ -57,30 +63,32 @@ const HomePage = () => {
 
   const handleReservationSubmit = useCallback(async (reservationData) => {
     try {
-      const completeReservation = {
-        ...reservationData,
-        selectedServices: selectedServicesDetails || [],
-        servicesTotal: selectedServicesTotal || 0,
-        createdAt: new Date().toISOString(),
-        reservationId: `RES-${Date.now()}`,
-      };
+      // Salvar no CartContext
+      selectRoom(
+        {
+          id: reservationData.roomId,
+          room_number: reservationData.roomNumber,
+          type: reservationData.roomType,
+          price_per_night: reservationData.pricePerNight
+        },
+        new Date(reservationData.checkIn),
+        new Date(reservationData.checkOut),
+        reservationData.guests
+      );
 
       await new Promise(resolve => setTimeout(resolve, 800));
       notifySuccess('Reserva processada com sucesso!');
 
       if (clearSelectedServices) clearSelectedServices();
 
-      setTimeout(() => {
-        navigate('/checkout', {
-          state: { reservation: completeReservation },
-        });
-      }, 1000);
+      // Navegar para checkout (sem state)
+      navigate('/checkout');
 
     } catch (error) {
       console.error('❌ Erro:', error);
       notifyError('Erro ao processar reserva.');
     }
-  }, [navigate, notifySuccess, notifyError, selectedServicesDetails, selectedServicesTotal, clearSelectedServices]);
+  }, [selectRoom, navigate, notifySuccess, notifyError, clearSelectedServices]);
 
   const handleServiceToggle = useCallback((serviceId) => {
     if (toggleService) toggleService(serviceId);
@@ -150,3 +158,5 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
+
