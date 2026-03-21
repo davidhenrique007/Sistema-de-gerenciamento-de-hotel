@@ -9,33 +9,31 @@ const ModalSelecionarQuarto = ({
   onConfirm,
   quartoTemp,
   onSelectTemp,
-  tipoQuarto,
+  tipoQuarto
 }) => {
   const [quartos, setQuartos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Normalizar tipo para o banco
+  // NORMALIZAÇÃO DE TIPOS - CORRIGIDA!
   const normalizarTipo = (tipo) => {
     const tipos = {
-      // Mapeamentos corretos
-      Família: 'family',
-      Familia: 'family',
-      family: 'family',
-      Standard: 'standard',
-      standard: 'standard',
-      Deluxe: 'deluxe',
-      deluxe: 'deluxe',
-      // 🔴 IMPORTANTE: Executivo mapeia para suite
-      Executivo: 'suite',
-      executivo: 'suite',
-      Suíte: 'suite',
-      Suite: 'suite',
-      suite: 'suite',
-      Presidencial: 'presidential',
-      presidential: 'presidential',
+      'Família': 'family',
+      'Familia': 'family',
+      'family': 'family',
+      'Standard': 'standard',
+      'standard': 'standard',
+      'Deluxe': 'deluxe',
+      'deluxe': 'deluxe',
+      'Executivo': 'suite',        // ← EXECUTIVO VIRA SUITE
+      'executivo': 'suite',
+      'Suíte': 'suite',
+      'Suite': 'suite',
+      'suite': 'suite',
+      'Presidencial': 'presidential',
+      'presidential': 'presidential'
     };
-
+    
     const resultado = tipos[tipo] || tipo?.toLowerCase();
     console.log('🔄 Normalizando tipo:', tipo, '→', resultado);
     return resultado;
@@ -54,14 +52,15 @@ const ModalSelecionarQuarto = ({
       const tipoNormalizado = normalizarTipo(tipoQuarto);
       console.log('🔍 Buscando quartos do tipo:', tipoNormalizado);
       const response = await api.get(`/quartos/disponiveis?tipo=${tipoNormalizado}`);
-
+      
       // Adicionar andar baseado no número do quarto
-      const quartosComAndar = response.data.data.map((q) => ({
+      const quartosComAndar = response.data.data.map(q => ({
         ...q,
-        andar: calcularAndar(q.numero),
+        andar: calcularAndar(q.numero)
       }));
-
+      
       setQuartos(quartosComAndar);
+      console.log(`✅ Encontrados ${quartosComAndar.length} quartos`);
     } catch (err) {
       console.error('Erro ao carregar quartos:', err);
       setError('Não foi possível carregar os quartos. Tente novamente.');
@@ -72,15 +71,16 @@ const ModalSelecionarQuarto = ({
 
   const calcularAndar = (numero) => {
     const num = parseInt(numero);
-    if (num <= 24) return 1;
-    if (num <= 34) return 2;
-    if (num <= 39) return 3;
-    if (num <= 42) return 4;
-    return 4;
+    if (num <= 14) return num <= 7 ? 1 : 2;
+    if (num <= 24) return num <= 20 ? 2 : 3;
+    if (num <= 34) return 3;
+    if (num <= 39) return 3;  // Suite/Executivo no 3º andar
+    if (num <= 42) return 3;  // Family no 3º andar
+    return 4;  // Presidential no 4º andar
   };
 
-  const totalDisponiveis = quartos.filter(
-    (q) => q.status === 'disponível' || q.status === 'available'
+  const totalDisponiveis = quartos.filter(q => 
+    q.status === 'disponível' || q.status === 'available'
   ).length;
 
   if (!isOpen) return null;
@@ -96,7 +96,7 @@ const ModalSelecionarQuarto = ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1000,
+    zIndex: 1000
   };
 
   const modalContainerStyle = {
@@ -108,7 +108,7 @@ const ModalSelecionarQuarto = ({
     display: 'flex',
     flexDirection: 'column',
     boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
-    animation: 'modalFadeIn 0.2s ease-out',
+    animation: 'modalFadeIn 0.2s ease-out'
   };
 
   const modalHeaderStyle = {
@@ -119,14 +119,14 @@ const ModalSelecionarQuarto = ({
     alignItems: 'flex-start',
     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     borderRadius: '16px 16px 0 0',
-    color: 'white',
+    color: 'white'
   };
 
   const modalBodyStyle = {
     flex: 1,
     overflowY: 'auto',
     padding: '20px 24px',
-    maxHeight: 'calc(85vh - 140px)',
+    maxHeight: 'calc(85vh - 140px)'
   };
 
   const modalFooterStyle = {
@@ -136,7 +136,7 @@ const ModalSelecionarQuarto = ({
     justifyContent: 'flex-end',
     gap: '12px',
     background: '#fafafa',
-    borderRadius: '0 0 16px 16px',
+    borderRadius: '0 0 16px 16px'
   };
 
   const buttonCancelStyle = {
@@ -148,7 +148,7 @@ const ModalSelecionarQuarto = ({
     border: '1px solid #dee2e6',
     color: '#495057',
     cursor: 'pointer',
-    transition: 'all 0.2s',
+    transition: 'all 0.2s'
   };
 
   const buttonConfirmStyle = {
@@ -161,7 +161,7 @@ const ModalSelecionarQuarto = ({
     color: 'white',
     cursor: quartoTemp ? 'pointer' : 'not-allowed',
     opacity: quartoTemp ? 1 : 0.6,
-    transition: 'all 0.2s',
+    transition: 'all 0.2s'
   };
 
   return (
@@ -169,7 +169,9 @@ const ModalSelecionarQuarto = ({
       <div style={modalContainerStyle} onClick={(e) => e.stopPropagation()}>
         <div style={modalHeaderStyle}>
           <div>
-            <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Selecionar Quarto {tipoQuarto}</h2>
+            <h2 style={{ margin: 0, fontSize: '1.5rem' }}>
+              Selecionar Quarto {tipoQuarto}
+            </h2>
             <p style={{ margin: '8px 0 0', opacity: 0.9, fontSize: '0.9rem' }}>
               Escolha um quarto disponível para sua reserva
             </p>
@@ -185,7 +187,7 @@ const ModalSelecionarQuarto = ({
               fontSize: '1.5rem',
               cursor: 'pointer',
               color: 'white',
-              padding: '4px 8px',
+              padding: '4px 8px'
             }}
           >
             ✕
@@ -206,7 +208,7 @@ const ModalSelecionarQuarto = ({
                   color: 'white',
                   border: 'none',
                   borderRadius: '4px',
-                  cursor: 'pointer',
+                  cursor: 'pointer'
                 }}
               >
                 Tentar novamente
@@ -214,7 +216,11 @@ const ModalSelecionarQuarto = ({
             </div>
           )}
           {!loading && !error && (
-            <TabelaQuartosModal quartos={quartos} quartoTemp={quartoTemp} onSelect={onSelectTemp} />
+            <TabelaQuartosModal
+              quartos={quartos}
+              quartoTemp={quartoTemp}
+              onSelect={onSelectTemp}
+            />
           )}
         </div>
 
