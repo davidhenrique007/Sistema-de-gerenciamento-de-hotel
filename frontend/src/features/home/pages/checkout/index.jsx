@@ -1,5 +1,5 @@
 ﻿// =====================================================
-// HOTEL PARADISE - CHECKOUT (NOVO)
+// HOTEL PARADISE - CHECKOUT (COM MODAL DE SELEÇÃO DE QUARTO)
 // =====================================================
 
 import React, { useState, useEffect } from 'react';
@@ -27,7 +27,7 @@ const Checkout = () => {
     email: cliente?.email || ''
   });
 
-  // Redirecionar se nÃ£o houver reserva
+  // Redirecionar se não houver reserva
   useEffect(() => {
     if (!reservation && !room) {
       navigate('/');
@@ -48,31 +48,33 @@ const Checkout = () => {
     <div className={styles.container}>
       {/* Breadcrumb */}
       <div className={styles.breadcrumb}>
-        <span>InÃ­cio</span> &gt; <span>IdentificaÃ§Ã£o</span> &gt; <span className={styles.active}>Checkout</span>
+        <span>Início</span> &gt; <span>Identificação</span> &gt; <span className={styles.active}>Checkout</span>
       </div>
 
       <h1 className={styles.title}>Checkout</h1>
 
-      {/* STEP 1: SeleÃ§Ã£o de Quarto */}
+      {/* STEP 1: Seleção de Quarto */}
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>1. Escolha seu quarto</h2>
+        
+        {/* Botão para abrir modal ou mostrar quarto selecionado */}
         {modalQuarto.quartoSelecionado ? (
           <div className={styles.quartoSelecionado}>
-            <span>Quarto {modalQuarto.quartoSelecionado.numero} âœ…</span>
+            <span>Quarto {modalQuarto.quartoSelecionado.numero} ✅</span>
             <button onClick={modalQuarto.abrirModal} className={styles.trocarButton}>
               Trocar
             </button>
           </div>
         ) : (
           <button onClick={modalQuarto.abrirModal} className={styles.escolherButton}>
-            Escolher NÃºmero do Quarto
+            Escolher Número do Quarto
           </button>
         )}
       </div>
 
-      {/* STEP 2: Dados do HÃ³spede */}
+      {/* STEP 2: Dados do Hóspede */}
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>2. Dados do hÃ³spede</h2>
+        <h2 className={styles.sectionTitle}>2. Dados do hóspede</h2>
         <FormularioHospede 
           guestData={guestData}
           setGuestData={setGuestData}
@@ -96,7 +98,7 @@ const Checkout = () => {
         total={total}
       />
 
-      {/* Modal de SeleÃ§Ã£o */}
+      {/* Modal de Seleção de Quarto */}
       <ModalSelecionarQuarto
         isOpen={modalQuarto.isOpen}
         onClose={modalQuarto.cancelarSelecao}
@@ -110,4 +112,3 @@ const Checkout = () => {
 };
 
 export default Checkout;
-
