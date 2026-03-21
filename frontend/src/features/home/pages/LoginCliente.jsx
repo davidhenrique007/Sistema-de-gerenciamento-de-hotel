@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useCliente } from "../../../contexts/ClienteContext";  // ← CAMINHO CORRETO!
+﻿import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useCliente } from "../../../contexts/ClienteContext";
 import FormularioIdentificacao from "../components/FormularioIdentificacao";
 import styles from "./LoginCliente.module.css";
 
 const LoginCliente = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { identificarCliente, cliente, loading } = useCliente();
   const [error, setError] = useState(null);
 
@@ -15,13 +16,9 @@ const LoginCliente = () => {
       const resultado = await identificarCliente(dados);
       
       if (resultado.success) {
-        const tipoSelecionado = localStorage.getItem('@HotelParadise:tipoQuarto');
-        
-        if (tipoSelecionado) {
-          navigate('/quartos/disponiveis');
-        } else {
-          navigate('/quartos');
-        }
+        // ✅ Volta para onde o cliente estava antes do login
+        const destino = location.state?.from || '/';
+        navigate(destino, { replace: true });
       } else {
         setError(resultado.error);
       }
