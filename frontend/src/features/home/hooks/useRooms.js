@@ -11,10 +11,8 @@ const useRooms = () => {
     const fetchRooms = async () => {
       try {
         setIsLoading(true);
-        
-        // REMOVIDO O setTimeout - carrega imediatamente
+        await new Promise(resolve => setTimeout(resolve, 800));
         setRooms(roomsData);
-        console.log("📋 useRooms: quartos carregados, total:", roomsData.length);
         setError(null);
       } catch (err) {
         setError('Erro ao carregar quartos. Tente novamente.');
@@ -27,7 +25,6 @@ const useRooms = () => {
     fetchRooms();
   }, []);
 
-  // ... resto do código permanece igual
   const getAvailableRooms = useCallback(() => {
     return rooms.filter(room => room.status === ROOM_STATUS.AVAILABLE);
   }, [rooms]);
