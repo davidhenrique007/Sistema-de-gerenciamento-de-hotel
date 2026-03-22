@@ -10,9 +10,9 @@ const FormaPagamentoMPesa = ({ paymentDetails, setPaymentDetails, errors }) => {
   const [operadora, setOperadora] = useState('mpesa');
 
   const operadoras = [
-    { id: 'mpesa', label: 'M-Pesa', prefixos: ['84', '85'] },
-    { id: 'emola', label: 'E-mola', prefixos: ['86', '87'] },
-    { id: 'mkesh', label: 'mKesh', prefixos: ['82', '83'] }
+    { id: 'mpesa', label: 'M-Pesa', prefixos: ['84', '85'], icon: '📱', cor: '#4CAF50' },
+    { id: 'emola', label: 'E-mola', prefixos: ['86', '87'], icon: '📲', cor: '#2196F3' },
+    { id: 'mkesh', label: 'mKesh', prefixos: ['82', '83'], icon: '💳', cor: '#FF9800' }
   ];
 
   const handlePhoneChange = (e) => {
@@ -31,21 +31,46 @@ const FormaPagamentoMPesa = ({ paymentDetails, setPaymentDetails, errors }) => {
     }
   };
 
+  const operadoraAtual = operadoras.find(op => op.id === operadora);
+
   return (
     <div className={styles.paymentMethodContent}>
-      <div className={styles.operadoraInfo}>
-        <div className={styles.operadoraBadge}>
-          {operadora === 'mpesa' && '📱 M-Pesa'}
-          {operadora === 'emola' && '📱 E-mola'}
-          {operadora === 'mkesh' && '📱 mKesh'}
-        </div>
-        <p className={styles.operadoraHint}>
-          Digite seu número de telefone. A operadora será detectada automaticamente.
-        </p>
+      {/* Seletor de Operadora Visual */}
+      <div className={styles.operadoraSelector}>
+        {operadoras.map(op => (
+          <button
+            key={op.id}
+            className={`${styles.operadoraButton} ${operadora === op.id ? styles.operadoraActive : ''}`}
+            onClick={() => setOperadora(op.id)}
+            style={{
+              borderColor: operadora === op.id ? op.cor : '#e0e0e0',
+              background: operadora === op.id ? `${op.cor}10` : 'white'
+            }}
+          >
+            <span className={styles.operadoraIcon}>{op.icon}</span>
+            <span className={styles.operadoraLabel}>{op.label}</span>
+          </button>
+        ))}
       </div>
 
+      {/* Card de Informação da Operadora */}
+      <div className={styles.operadoraInfoCard}>
+        <div className={styles.operadoraInfoIcon}>{operadoraAtual?.icon}</div>
+        <div>
+          <h4 className={styles.operadoraInfoTitle}>{operadoraAtual?.label}</h4>
+          <p className={styles.operadoraInfoDesc}>
+            {operadora === 'mpesa' && 'Pagamento via M-Pesa (Vodacom)'}
+            {operadora === 'emola' && 'Pagamento via E-mola (Movitel)'}
+            {operadora === 'mkesh' && 'Pagamento via mKesh (Tmcel)'}
+          </p>
+        </div>
+      </div>
+
+      {/* Campo de Telefone */}
       <div className={styles.formGroup}>
-        <label htmlFor="phone">Número de telefone</label>
+        <label htmlFor="phone">
+          Número de telefone <span className={styles.required}>*</span>
+        </label>
         <input
           type="tel"
           id="phone"
@@ -59,10 +84,23 @@ const FormaPagamentoMPesa = ({ paymentDetails, setPaymentDetails, errors }) => {
           <span className={styles.errorMessage}>{errors.payment}</span>
         )}
         <span className={styles.hint}>
-          Você receberá uma notificação no seu telefone para confirmar o pagamento
+          {operadora === 'mpesa' && 'Digite seu número M-Pesa (84 ou 85)'}
+          {operadora === 'emola' && 'Digite seu número E-mola (86 ou 87)'}
+          {operadora === 'mkesh' && 'Digite seu número mKesh (82 ou 83)'}
         </span>
       </div>
 
+      {/* Instruções de pagamento */}
+      <div className={styles.paymentInstructions}>
+        <p className={styles.instructionsTitle}>📌 Como funciona:</p>
+        <ol className={styles.instructionsList}>
+          <li>Você receberá uma notificação no seu telefone</li>
+          <li>Confirme a transação no seu aplicativo</li>
+          <li>O pagamento será processado em segundos</li>
+        </ol>
+      </div>
+
+      {/* Botão de simulação */}
       <div className={styles.simulateButton}>
         <button className={styles.mockButton} type="button">
           Simular Pagamento (Demo)
