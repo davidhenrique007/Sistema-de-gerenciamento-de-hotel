@@ -5,13 +5,9 @@
 const express = require('express');
 const router = express.Router();
 const quartoController = require('../controllers/quartoController');
-const { authenticate } = require('../middlewares/auth');
 
-// Rotas públicas
+// Rotas públicas (sem autenticação)
+router.get('/', quartoController.listarTodos);
 router.get('/disponiveis', quartoController.listarDisponiveis);
-
-// Rotas protegidas (admin)
-router.get('/', authenticate, quartoController.listarTodos);
-router.get('/:id', authenticate, quartoController.buscarPorId);
 
 module.exports = router;

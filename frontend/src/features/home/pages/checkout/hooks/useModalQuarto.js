@@ -1,8 +1,4 @@
-﻿// =====================================================
-// HOOK - CONTROLE DO MODAL DE SELEÇÃO DE QUARTO
-// =====================================================
-
-import { useState, useCallback } from 'react';
+﻿import { useState, useCallback } from 'react';
 
 export const useModalQuarto = () => {
   const [isOpen, setIsOpen] = useState(false);

@@ -2,7 +2,9 @@
 import StatusBadge from './StatusBadge';
 
 const TabelaQuartosModal = ({ quartos, quartoTemp, onSelect }) => {
-  const isQuartoDisponivel = (status) => status === 'disponível';
+  const isQuartoDisponivel = (status) => {
+    return status === 'disponível' || status === 'available';
+  };
 
   const handleRowClick = (quarto) => {
     if (isQuartoDisponivel(quarto.status)) {
@@ -10,15 +12,48 @@ const TabelaQuartosModal = ({ quartos, quartoTemp, onSelect }) => {
     }
   };
 
+  const styles = {
+    table: {
+      width: '100%',
+      borderCollapse: 'collapse',
+      fontSize: '0.9rem'
+    },
+    th: {
+      textAlign: 'left',
+      padding: '12px 8px',
+      backgroundColor: '#f8f9fa',
+      fontWeight: '600',
+      color: '#495057',
+      borderBottom: '2px solid #dee2e6'
+    },
+    td: {
+      padding: '12px 8px',
+      borderBottom: '1px solid #eaeaea'
+    },
+    trDisabled: {
+      opacity: 0.5,
+      cursor: 'not-allowed',
+      backgroundColor: '#f5f5f5'
+    },
+    trAvailable: {
+      cursor: 'pointer',
+      transition: 'background-color 0.2s'
+    },
+    trSelected: {
+      backgroundColor: '#e3f2fd'
+    }
+  };
+
   return (
     <div style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <table style={styles.table}>
         <thead>
-          <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
-            <th style={{ padding: '12px 8px', textAlign: 'left' }}>Selecionar</th>
-            <th style={{ padding: '12px 8px', textAlign: 'left' }}>Nº Quarto</th>
-            <th style={{ padding: '12px 8px', textAlign: 'left' }}>Tipo</th>
-            <th style={{ padding: '12px 8px', textAlign: 'left' }}>Status</th>
+          <tr>
+            <th style={styles.th}>Selecionar</th>
+            <th style={styles.th}>Nº Quarto</th>
+            <th style={styles.th}>Tipo</th>
+            <th style={styles.th}>Andar</th>
+            <th style={styles.th}>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -26,31 +61,46 @@ const TabelaQuartosModal = ({ quartos, quartoTemp, onSelect }) => {
             const disponivel = isQuartoDisponivel(quarto.status);
             const selecionado = quartoTemp?.id === quarto.id;
 
+            const rowStyle = {
+              ...styles.td,
+              ...(!disponivel ? styles.trDisabled : styles.trAvailable),
+              ...(selecionado ? styles.trSelected : {}),
+              ...(selecionado ? { borderLeft: '3px solid #28a745' } : {})
+            };
+
             return (
               <tr
                 key={quarto.id}
                 onClick={() => handleRowClick(quarto)}
-                style={{
-                  cursor: disponivel ? 'pointer' : 'not-allowed',
-                  opacity: disponivel ? 1 : 0.5,
-                  backgroundColor: selecionado ? '#e3f2fd' : 'transparent',
-                  borderBottom: '1px solid #eaeaea'
-                }}
+                style={rowStyle}
                 onMouseEnter={(e) => {
-                  if (disponivel) e.currentTarget.style.backgroundColor = '#f8f9fa';
+                  if (disponivel && !selecionado) {
+                    e.currentTarget.style.backgroundColor = '#f8f9fa';
+                  }
                 }}
                 onMouseLeave={(e) => {
-                  if (disponivel) e.currentTarget.style.backgroundColor = selecionado ? '#e3f2fd' : 'transparent';
+                  if (disponivel && !selecionado) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
                 }}
               >
-                <td style={{ padding: '12px 8px' }}>
+                <td style={styles.td}>
                   {disponivel ? (
-                    selecionado ? '✅' : '○'
-                  ) : '❌'}
+                    selecionado ? (
+                      <span style={{ color: '#28a745', fontSize: '1.2rem' }}>✅</span>
+                    ) : (
+                      <span style={{ color: '#6c757d' }}>○</span>
+                    )
+                  ) : (
+                    <span style={{ color: '#dc3545' }}>❌</span>
+                  )}
                 </td>
-                <td style={{ padding: '12px 8px' }}>{quarto.numero}</td>
-                <td style={{ padding: '12px 8px' }}>{quarto.tipo}</td>
-                <td style={{ padding: '12px 8px' }}>
+                <td style={styles.td}>
+                  <strong>{quarto.numero}</strong>
+                </td>
+                <td style={styles.td}>{quarto.tipo}</td>
+                <td style={styles.td}>{quarto.andar || '-'}</td>
+                <td style={styles.td}>
                   <StatusBadge status={quarto.status} />
                 </td>
               </tr>
