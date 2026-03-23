@@ -1,14 +1,22 @@
-﻿import React from 'react';
+﻿// =====================================================
+// COMPONENTE - TABELA DE QUARTOS (COM MÚLTIPLA SELEÇÃO)
+// =====================================================
+
+import React from 'react';
 import StatusBadge from './StatusBadge';
 
-const TabelaQuartosModal = ({ quartos, quartoTemp, onSelect }) => {
+const TabelaQuartosModal = ({ quartos, quartosTemp, onToggle }) => {
   const isQuartoDisponivel = (status) => {
     return status === 'disponível' || status === 'available';
   };
 
+  const isQuartoSelecionado = (quartoId) => {
+    return quartosTemp.some(q => q.id === quartoId);
+  };
+
   const handleRowClick = (quarto) => {
     if (isQuartoDisponivel(quarto.status)) {
-      onSelect(quarto);
+      onToggle(quarto);
     }
   };
 
@@ -59,13 +67,12 @@ const TabelaQuartosModal = ({ quartos, quartoTemp, onSelect }) => {
         <tbody>
           {quartos.map((quarto) => {
             const disponivel = isQuartoDisponivel(quarto.status);
-            const selecionado = quartoTemp?.id === quarto.id;
+            const selecionado = isQuartoSelecionado(quarto.id);
 
             const rowStyle = {
               ...styles.td,
               ...(!disponivel ? styles.trDisabled : styles.trAvailable),
-              ...(selecionado ? styles.trSelected : {}),
-              ...(selecionado ? { borderLeft: '3px solid #28a745' } : {})
+              ...(selecionado ? styles.trSelected : {})
             };
 
             return (
@@ -84,15 +91,20 @@ const TabelaQuartosModal = ({ quartos, quartoTemp, onSelect }) => {
                   }
                 }}
               >
-                <td style={styles.td}>
+                {/* CORRIGIDO: Combinando os estilos em um único objeto */}
+                <td style={{ 
+                  ...styles.td, 
+                  textAlign: 'center', 
+                  width: '50px' 
+                }}>
                   {disponivel ? (
                     selecionado ? (
                       <span style={{ color: '#28a745', fontSize: '1.2rem' }}>✅</span>
                     ) : (
-                      <span style={{ color: '#6c757d' }}>○</span>
+                      <span style={{ color: '#6c757d', fontSize: '1rem' }}>○</span>
                     )
                   ) : (
-                    <span style={{ color: '#dc3545' }}>❌</span>
+                    <span style={{ color: '#dc3545', fontSize: '1rem' }}>❌</span>
                   )}
                 </td>
                 <td style={styles.td}>
