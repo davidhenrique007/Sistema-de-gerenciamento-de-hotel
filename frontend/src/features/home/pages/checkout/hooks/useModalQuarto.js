@@ -1,45 +1,83 @@
-﻿import { useState, useCallback } from 'react';
+﻿// =====================================================
+// HOOK - CONTROLE DO MODAL DE SELEÇÃO DE QUARTO (MÚLTIPLA)
+// =====================================================
+
+import { useState, useCallback } from 'react';
 
 export const useModalQuarto = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [quartoSelecionado, setQuartoSelecionado] = useState(null);
-  const [quartoTemp, setQuartoTemp] = useState(null);
+  const [quartosSelecionados, setQuartosSelecionados] = useState([]);
+  const [quartosTemp, setQuartosTemp] = useState([]);
 
   const abrirModal = useCallback(() => {
     setIsOpen(true);
-    setQuartoTemp(quartoSelecionado);
-  }, [quartoSelecionado]);
+    setQuartosTemp([...quartosSelecionados]);
+  }, [quartosSelecionados]);
 
   const fecharModal = useCallback(() => {
     setIsOpen(false);
-    setQuartoTemp(null);
+    setQuartosTemp([]);
   }, []);
 
-  const selecionarQuartoTemp = useCallback((quarto) => {
-    setQuartoTemp(quarto);
+  // Selecionar/Deselecionar quarto (toggle)
+  const toggleQuartoTemp = useCallback((quarto) => {
+    setQuartosTemp(prev => {
+      const existe = prev.find(q => q.id === quarto.id);
+      if (existe) {
+        return prev.filter(q => q.id !== quarto.id);
+      } else {
+        return [...prev, quarto];
+      }
+    });
   }, []);
 
   const confirmarSelecao = useCallback(() => {
-    if (quartoTemp) {
-      setQuartoSelecionado(quartoTemp);
-      setIsOpen(false);
-      setQuartoTemp(null);
-    }
-  }, [quartoTemp]);
+    setQuartosSelecionados([...quartosTemp]);
+    setIsOpen(false);
+    setQuartosTemp([]);
+  }, [quartosTemp]);
 
   const cancelarSelecao = useCallback(() => {
-    setQuartoTemp(null);
+    setQuartosTemp([]);
     setIsOpen(false);
   }, []);
 
+  // Remover um quarto da seleção (fora do modal)
+  const removerQuarto = useCallback((quartoId) => {
+    setQuartosSelecionados(prev => prev.filter(q => q.id !== quartoId));
+  }, []);
+
+  // Adicionar um quarto manualmente (fora do modal)
+  const adicionarQuarto = useCallback((quarto) => {
+    setQuartosSelecionados(prev => [...prev, quarto]);
+  }, []);
+
+  // Limpar todos os quartos
+  const limparQuartos = useCallback(() => {
+    setQuartosSelecionados([]);
+    setQuartosTemp([]);
+  }, []);
+
   return {
+    // Estado
     isOpen,
-    quartoSelecionado,
-    quartoTemp,
+    quartosSelecionados,
+    quartosTemp,
+    
+    // Funções do modal
     abrirModal,
     fecharModal,
-    selecionarQuartoTemp,
+    toggleQuartoTemp,
     confirmarSelecao,
-    cancelarSelecao
+    cancelarSelecao,
+    
+    // Funções de gestão
+    removerQuarto,
+    adicionarQuarto,
+    limparQuartos,
+    
+    // Utilitários
+    totalQuartos: quartosSelecionados.length,
+    temQuartos: quartosSelecionados.length > 0
   };
 };
