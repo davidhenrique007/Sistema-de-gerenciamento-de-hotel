@@ -1,28 +1,12 @@
-// =====================================================
+﻿// =====================================================
 // HOTEL PARADISE - CONEXÃO COM POSTGRESQL
-// Versão: 1.0.0
-// Descrição: Configuração do pool de conexões com o banco
+// Versão: 2.0.0 (Com suporte a concorrência)
 // =====================================================
 
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// =====================================================
-// VALIDAÇÃO DAS VARIÁVEIS DE AMBIENTE
-// =====================================================
-const requiredEnvVars = ['DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'];
-
-const missingVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
-if (missingVars.length > 0) {
-    console.error('❌ Erro: Variáveis de ambiente obrigatórias não definidas:');
-    missingVars.forEach(v => console.error(`   - ${v}`));
-    console.error('Por favor, configure o arquivo .env');
-    process.exit(1);
-}
-
-// =====================================================
-// CONFIGURAÇÃO DO POOL DE CONEXÕES
-// =====================================================
+// Configuração do pool otimizada para concorrência
 const poolConfig = {
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT, 10),
@@ -30,165 +14,121 @@ const poolConfig = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     
-    // Configurações do pool
+    // Configurações do pool (OTIMIZADO PARA CONCORRÊNCIA)
     max: parseInt(process.env.DB_POOL_MAX, 10) || 20,
     min: parseInt(process.env.DB_POOL_MIN, 10) || 2,
     idleTimeoutMillis: parseInt(process.env.DB_IDLE_TIMEOUT, 10) || 30000,
     connectionTimeoutMillis: parseInt(process.env.DB_CONNECTION_TIMEOUT, 10) || 5000,
     
-    // SSL apenas em produção
-    ssl: process.env.NODE_ENV === 'production' 
-        ? { rejectUnauthorized: false } 
-        : false,
+    keepAlive: true,
+    keepAliveInitialDelayMillis: 10000,
 };
 
-// Criar pool de conexões
 const pool = new Pool(poolConfig);
 
-// =====================================================
-// EVENTOS DO POOL
-// =====================================================
+// Eventos do pool
 pool.on('connect', () => {
     if (process.env.NODE_ENV === 'development') {
-        console.log('🔄 Nova conexão estabelecida com o PostgreSQL');
+        console.log('🔄 Nova conexão PostgreSQL');
     }
 });
 
 pool.on('error', (err) => {
-    console.error('❌ Erro inesperado no pool do PostgreSQL:', err);
-    if (err.code === 'ECONNREFUSED') {
-        console.error('🔴 PostgreSQL não está disponível. Verifique se o serviço está rodando.');
-        console.error('   Comando: docker-compose up -d postgres');
-    }
+    console.error('❌ Erro no PostgreSQL:', err.message);
 });
 
-pool.on('remove', () => {
-    if (process.env.NODE_ENV === 'development') {
-        console.log('🔄 Cliente removido do pool');
-    }
-});
+// Função query direta
+const query = (text, params) => pool.query(text, params);
 
-// =====================================================
-// TESTE DE CONEXÃO INICIAL
-// =====================================================
-const testConnection = async () => {
-    try {
+// Função para conectar
+const connect = () => pool.connect();
+
+/**
+ * Executa transação com retry automático para conflitos
+ */
+const transactionWithRetry = async (callback, maxRetries = 3) => {
+    let lastError;
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
         const client = await pool.connect();
-        console.log('✅ Conectado ao PostgreSQL com sucesso!');
-        console.log(`📊 Database: ${process.env.DB_NAME} em ${process.env.DB_HOST}:${process.env.DB_PORT}`);
         
-        // Testar query simples
-        const result = await client.query('SELECT NOW() as current_time');
-        console.log(`🕒 Hora do servidor: ${result.rows[0].current_time}`);
-        
-        client.release();
-        return true;
-    } catch (err) {
-        console.error('❌ Erro ao conectar ao PostgreSQL:', err.message);
-        console.error('   Verifique:');
-        console.error('   1. Se o PostgreSQL está rodando: docker-compose ps');
-        console.error('   2. Se as credenciais no .env estão corretas');
-        console.error('   3. Se a porta 5432 não está ocupada');
-        return false;
-    }
-};
-
-// Executar teste de conexão (não bloqueante)
-testConnection().then(success => {
-    if (!success && process.env.NODE_ENV === 'development') {
-        console.log('\n⚠️  Dica: Execute "docker-compose up -d postgres" para iniciar o banco');
-    }
-});
-
-// =====================================================
-// FUNÇÕES DE UTILIDADE PARA QUERIES
-// =====================================================
-
-/**
- * Executa uma query no banco de dados
- * @param {string} text - SQL da query
- * @param {Array} params - Parâmetros da query
- * @returns {Promise<Object>} Resultado da query
- */
-const query = async (text, params) => {
-    const start = Date.now();
-    try {
-        const result = await pool.query(text, params);
-        const duration = Date.now() - start;
-        
-        // Log lento apenas em desenvolvimento
-        if (process.env.NODE_ENV === 'development' && duration > 100) {
-            console.warn(`⚠️ Query lenta (${duration}ms):`, text.substring(0, 100) + '...');
-        }
-        
-        return result;
-    } catch (error) {
-        console.error('❌ Erro na query:', { 
-            text: text.substring(0, 200), 
-            error: error.message,
-            code: error.code 
-        });
-        throw error;
-    }
-};
-
-/**
- * Executa uma transação com múltiplas queries
- * @param {Function} callback - Função que recebe o client
- * @returns {Promise<any>} Resultado da transação
- */
-const transaction = async (callback) => {
-    const client = await pool.connect();
-    try {
-        await client.query('BEGIN');
-        const result = await callback(client);
-        await client.query('COMMIT');
-        return result;
-    } catch (error) {
-        await client.query('ROLLBACK');
-        throw error;
-    } finally {
-        client.release();
-    }
-};
-
-/**
- * Verifica a saúde da conexão com o banco
- * @returns {Promise<Object>} Status da conexão
- */
-const healthCheck = async () => {
-    try {
-        const start = Date.now();
-        const result = await pool.query('SELECT 1 as health_check');
-        const duration = Date.now() - start;
-        
-        return {
-            status: 'healthy',
-            database: 'connected',
-            responseTime: `${duration}ms`,
-            timestamp: new Date().toISOString(),
-            pool: {
-                total: pool.totalCount,
-                idle: pool.idleCount,
-                waiting: pool.waitingCount
+        try {
+            await client.query('BEGIN');
+            await client.query('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
+            
+            const result = await callback(client);
+            
+            await client.query('COMMIT');
+            return result;
+            
+        } catch (error) {
+            await client.query('ROLLBACK');
+            lastError = error;
+            
+            const isConcurrencyError = error.code === '40001' || 
+                                        error.code === '40P01' ||
+                                        error.message.includes('conflito');
+            
+            if (isConcurrencyError && attempt < maxRetries) {
+                const delay = Math.pow(2, attempt) * 100;
+                console.log(`🔄 Conflito, tentativa ${attempt}/${maxRetries}, aguardando ${delay}ms`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                continue;
             }
-        };
-    } catch (error) {
-        return {
-            status: 'unhealthy',
-            database: 'disconnected',
-            error: error.message,
-            timestamp: new Date().toISOString()
-        };
+            
+            throw error;
+        } finally {
+            client.release();
+        }
     }
+    
+    throw lastError;
 };
 
-// =====================================================
-// EXPORTAÇÕES
-// =====================================================
+/**
+ * Lock pessimista no registro
+ */
+const lockRecord = async (table, id, lockType = 'FOR UPDATE') => {
+    const queryText = `
+        SELECT * FROM ${table} 
+        WHERE id = $1 
+        ${lockType}
+    `;
+    const result = await pool.query(queryText, [id]);
+    return result.rows[0];
+};
+
+/**
+ * Atualização com lock otimista (versão)
+ */
+const updateWithVersion = async (table, id, updates, currentVersion) => {
+    const setClause = Object.keys(updates)
+        .map((key, index) => `${key} = $${index + 2}`)
+        .join(', ');
+    
+    const values = [id, ...Object.values(updates), currentVersion];
+    
+    const queryText = `
+        UPDATE ${table} 
+        SET ${setClause}, version = version + 1, updated_at = NOW()
+        WHERE id = $1 AND version = $${values.length}
+        RETURNING *
+    `;
+    
+    const result = await pool.query(queryText, values);
+    
+    if (result.rows.length === 0) {
+        throw new Error('CONFLITO_VERSAO');
+    }
+    
+    return result.rows[0];
+};
+
 module.exports = {
     pool,
     query,
-    transaction,
-    healthCheck
+    connect,
+    transactionWithRetry,
+    lockRecord,
+    updateWithVersion
 };

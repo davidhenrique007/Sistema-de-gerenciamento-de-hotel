@@ -1,6 +1,6 @@
 // =====================================================
 // HOTEL PARADISE - SERVIDOR PRINCIPAL (ATUALIZADO)
-// Versão: 1.2.0 - COM SEED AUTOMÁTICO
+// Versão: 1.2.0 - COM SEED AUTOMÁTICO E CONTROLE DE CONCORRÊNCIA
 // =====================================================
 
 const express = require('express');
@@ -14,6 +14,11 @@ const db = require('./config/database');
 const routes = require('./routes');
 const { securityMiddleware } = require('./middlewares/security');
 const { models } = require('./models');
+
+// =====================================================
+// IMPORTAÇÃO DAS NOVAS ROTAS DE RESERVA
+// =====================================================
+const reservaRoutes = require('./routes/reservaRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -100,8 +105,13 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // ROTAS
 // =====================================================
 
-// Rotas da API
+// Rotas da API existentes
 app.use('/api', routes);
+
+// =====================================================
+// NOVAS ROTAS DE RESERVA COM CONTROLE DE CONCORRÊNCIA
+// =====================================================
+app.use('/api', reservaRoutes);
 
 // Rota raiz
 app.get('/', (req, res) => {
@@ -116,6 +126,8 @@ app.get('/', (req, res) => {
         auth: '/api/auth',
         users: '/api/users',
         rooms: '/api/rooms',
+        reservas: '/api/reservas',
+        quartos: '/api/quartos/disponiveis',
         health: '/api/health'
       }
     }
@@ -160,6 +172,8 @@ const server = app.listen(PORT, async () => {
   console.log(`🔧 Ambiente: ${process.env.NODE_ENV || 'development'}`);
   console.log(`📋 Documentação: http://localhost:${PORT}/`);
   console.log(`❤️ Health check: http://localhost:${PORT}/api/health`);
+  console.log(`🏨 Quartos disponíveis: http://localhost:${PORT}/api/quartos/disponiveis`);
+  console.log(`📝 Reservas: http://localhost:${PORT}/api/reservas`);
   console.log('=================================\n');
 
   await seedUsers();
