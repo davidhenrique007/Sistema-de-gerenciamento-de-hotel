@@ -18,7 +18,7 @@ const ResumoFinal = ({
       cartao: 'Cartão de Crédito',
       dinheiro: 'Dinheiro (na chegada)'
     };
-    return methods[method] || method;
+    return methods[method] || method || 'Não selecionado';
   };
 
   const formatCurrency = (value) => {
@@ -28,7 +28,7 @@ const ResumoFinal = ({
     }).format(value);
   };
 
-  const subtotalQuartos = pricePerNight * nights * quartos.length;
+  const subtotalQuartos = pricePerNight * nights * (quartos?.length || 1);
   const subtotalServicos = servicosAdicionais.reduce((sum, s) => sum + (s.preco * nights), 0);
   const subtotal = subtotalQuartos + subtotalServicos;
   const taxas = subtotal * taxaImposto;

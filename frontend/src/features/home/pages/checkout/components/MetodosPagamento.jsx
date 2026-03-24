@@ -1,8 +1,8 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import styles from '../styles/Checkout.module.css';
 
 // Componentes de cada método de pagamento
-const FormaPagamentoMPesa = ({ paymentDetails, setPaymentDetails, errors }) => {
+const FormaPagamentoMPesa = ({ paymentDetails, setPaymentDetails, errors, setPaymentMethod }) => {
   const [operadora, setOperadora] = useState('mpesa');
 
   const operadoras = [
@@ -13,7 +13,6 @@ const FormaPagamentoMPesa = ({ paymentDetails, setPaymentDetails, errors }) => {
 
   const handlePhoneChange = (e) => {
     const valor = e.target.value;
-    // Aplica máscara de telefone
     const numeros = valor.replace(/\D/g, '');
     let mascara = numeros;
     
@@ -23,21 +22,29 @@ const FormaPagamentoMPesa = ({ paymentDetails, setPaymentDetails, errors }) => {
     
     setPaymentDetails({ phone: mascara.trim() });
     
-    // Detectar operadora
+    // Detectar operadora e atualizar o método de pagamento
     if (numeros.length >= 2) {
       const prefixo = numeros.substring(0, 2);
       const op = operadoras.find(o => o.prefixos.includes(prefixo));
-      if (op) setOperadora(op.id);
+      if (op) {
+        setOperadora(op.id);
+        setPaymentMethod(op.id); // Atualiza o método de pagamento para a operadora específica
+      }
     }
+  };
+
+  const getOperadoraNome = () => {
+    if (operadora === 'mpesa') return 'M-Pesa';
+    if (operadora === 'emola') return 'E-mola';
+    if (operadora === 'mkesh') return 'mKesh';
+    return 'Pagamento Móvel';
   };
 
   return (
     <div>
       <div className={styles.operadoraInfo}>
         <span className={styles.operadoraBadge}>
-          {operadora === 'mpesa' && '📱 M-Pesa'}
-          {operadora === 'emola' && '📱 E-mola'}
-          {operadora === 'mkesh' && '📱 mKesh'}
+          📱 {getOperadoraNome()}
         </span>
       </div>
       
@@ -192,6 +199,7 @@ const MetodosPagamento = ({ paymentMethod, setPaymentMethod, paymentDetails, set
             paymentDetails={paymentDetails}
             setPaymentDetails={setPaymentDetails}
             errors={errors}
+            setPaymentMethod={setPaymentMethod}
           />
         )}
         
