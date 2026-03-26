@@ -16,9 +16,11 @@ const { securityMiddleware } = require('./middlewares/security');
 const { models } = require('./models');
 
 // =====================================================
-// IMPORTAÇÃO DAS NOVAS ROTAS DE RESERVA
+// IMPORTAÇÃO DAS NOVAS ROTAS
 // =====================================================
 const reservaRoutes = require('./routes/reservaRoutes');
+const pagamentoRoutes = require('./routes/pagamentoRoutes');  // <-- ADICIONADO
+const webhookRoutes = require('./routes/webhookRoutes');      // <-- ADICIONADO
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -108,10 +110,12 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Rotas da API existentes
 app.use('/api', routes);
 
-// =====================================================
-// NOVAS ROTAS DE RESERVA COM CONTROLE DE CONCORRÊNCIA
-// =====================================================
+// Rotas de reserva com controle de concorrência
 app.use('/api', reservaRoutes);
+
+// Rotas de pagamento M-Pesa
+app.use('/api/pagamentos', pagamentoRoutes);  // <-- ADICIONADO
+app.use('/api/webhooks', webhookRoutes);      // <-- ADICIONADO
 
 // Rota raiz
 app.get('/', (req, res) => {
@@ -128,6 +132,8 @@ app.get('/', (req, res) => {
         rooms: '/api/rooms',
         reservas: '/api/reservas',
         quartos: '/api/quartos/disponiveis',
+        pagamentos: '/api/pagamentos/mpesa/iniciar',
+        webhook: '/api/webhooks/mpesa/confirmar',
         health: '/api/health'
       }
     }
@@ -174,6 +180,8 @@ const server = app.listen(PORT, async () => {
   console.log(`❤️ Health check: http://localhost:${PORT}/api/health`);
   console.log(`🏨 Quartos disponíveis: http://localhost:${PORT}/api/quartos/disponiveis`);
   console.log(`📝 Reservas: http://localhost:${PORT}/api/reservas`);
+  console.log(`💰 Pagamento M-Pesa: http://localhost:${PORT}/api/pagamentos/mpesa/iniciar`);
+  console.log(`🔔 Webhook M-Pesa: http://localhost:${PORT}/api/webhooks/mpesa/confirmar`);
   console.log('=================================\n');
 
   await seedUsers();
