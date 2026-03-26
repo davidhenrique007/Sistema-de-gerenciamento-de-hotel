@@ -1,31 +1,16 @@
-// =====================================================
-// HOTEL PARADISE - ROTAS DE CLIENTE
-// Versão: 1.0.0
-// =====================================================
-
+// backend/routes/clienteRoutes.js
 const express = require('express');
 const router = express.Router();
 const clienteController = require('../controllers/clienteController');
-const { authenticate } = require('../middlewares/auth');
+const authMiddleware = require('../middlewares/auth');
 
-// =====================================================
-// ROTAS PÚBLICAS (para identificação)
-// =====================================================
-
-// Identificar cliente (fluxo principal)
+// Rotas públicas
 router.post('/identificar', clienteController.identificarCliente);
+router.get('/buscar/:telefone', clienteController.buscarPorTelefone);
 
-// =====================================================
-// ROTAS PROTEGIDAS (apenas admin)
-// =====================================================
-
-// Buscar cliente por telefone
-router.get('/:telefone', authenticate, clienteController.buscarPorTelefone);
-
-// Criar novo cliente
-router.post('/', authenticate, clienteController.criarCliente);
-
-// Atualizar cliente
-router.put('/:id', authenticate, clienteController.atualizarCliente);
+// Rotas protegidas (opcional)
+router.get('/:id', authMiddleware, clienteController.buscarPorId);
+router.put('/:id', authMiddleware, clienteController.atualizarCliente);
+router.get('/', authMiddleware, clienteController.listarClientes);
 
 module.exports = router;

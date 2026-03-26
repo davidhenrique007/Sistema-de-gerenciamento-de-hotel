@@ -9,21 +9,21 @@ const Cliente = require('../models/entities/Cliente');
 // VALIDAÇÕES
 // =====================================================
 const validarTelefone = (telefone) => {
-  // Remove caracteres não numéricos
   const numeros = telefone.replace(/\D/g, '');
-
-  // Formato Moçambicano: 9 dígitos começando com 8 (84,85,86,87)
   if (numeros.length === 9 && numeros[0] === '8' && ['4', '5', '6', '7'].includes(numeros[1])) {
     return true;
   }
-
-  // Formato internacional: 12 dígitos começando com 258
   if (numeros.length === 12 && numeros.startsWith('258') &&
     numeros[3] === '8' && ['4', '5', '6', '7'].includes(numeros[4])) {
     return true;
   }
-
   return false;
+};
+
+const validarDocumento = (documento) => {
+  if (!documento) return true;
+  const doc = documento.replace(/[\s-]/g, '');
+  return doc.length >= 6 && doc.length <= 20 && /^[A-Z0-9]+$/i.test(doc);
 };
 
 // =====================================================
@@ -40,9 +40,7 @@ const buscarPorTelefone = async (req, res) => {
       });
     }
 
-    // Formatar telefone (remover caracteres especiais)
     const telefoneFormatado = Cliente.formatPhone(telefone);
-
     const cliente = await Cliente.query().findOne({ phone: telefoneFormatado });
 
     if (!cliente) {
@@ -67,13 +65,71 @@ const buscarPorTelefone = async (req, res) => {
 };
 
 // =====================================================
+// BUSCAR CLIENTE POR ID
+// =====================================================
+const buscarPorId = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID é obrigatório'
+      });
+    }
+
+    const cliente = await Cliente.query().findById(id);
+
+    if (!cliente) {
+      return res.status(404).json({
+        success: false,
+        message: 'Cliente não encontrado'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: cliente.toJSON()
+    });
+
+  } catch (error) {
+    console.error('🔥 Erro ao buscar cliente por ID:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno no servidor'
+    });
+  }
+};
+
+// =====================================================
+// LISTAR TODOS OS CLIENTES
+// =====================================================
+const listarClientes = async (req, res) => {
+  try {
+    const clientes = await Cliente.query().orderBy('created_at', 'DESC').limit(100);
+
+    res.json({
+      success: true,
+      data: clientes.map(c => c.toJSON()),
+      total: clientes.length
+    });
+
+  } catch (error) {
+    console.error('🔥 Erro ao listar clientes:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno no servidor'
+    });
+  }
+};
+
+// =====================================================
 // CRIAR NOVO CLIENTE
 // =====================================================
 const criarCliente = async (req, res) => {
   try {
     const { name, phone, document, email, birth_date, address } = req.body;
 
-    // Validações
     if (!name || !phone) {
       return res.status(400).json({
         success: false,
@@ -109,7 +165,6 @@ const criarCliente = async (req, res) => {
       });
     }
 
-    // Verificar se telefone já existe
     const telefoneFormatado = Cliente.formatPhone(phone);
     const existente = await Cliente.query().findOne({ phone: telefoneFormatado });
 
@@ -121,7 +176,6 @@ const criarCliente = async (req, res) => {
       });
     }
 
-    // Preparar dados do cliente
     const clienteData = {
       name,
       phone: telefoneFormatado,
@@ -138,7 +192,6 @@ const criarCliente = async (req, res) => {
       address_country: address?.country || 'Brasil'
     };
 
-    // Criar cliente
     const novoCliente = await Cliente.query().insert(clienteData);
 
     res.status(201).json({
@@ -164,7 +217,6 @@ const atualizarCliente = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
-    // Verificar se cliente existe
     const cliente = await Cliente.query().findById(id);
 
     if (!cliente) {
@@ -174,7 +226,6 @@ const atualizarCliente = async (req, res) => {
       });
     }
 
-    // Validações básicas
     if (updates.name && updates.name.length < 3) {
       return res.status(400).json({
         success: false,
@@ -209,7 +260,6 @@ const atualizarCliente = async (req, res) => {
       });
     }
 
-    // Se estiver atualizando telefone, verificar se já existe
     if (updates.phone && updates.phone !== cliente.phone) {
       const existente = await Cliente.query().findOne({ phone: updates.phone });
       if (existente) {
@@ -220,7 +270,6 @@ const atualizarCliente = async (req, res) => {
       }
     }
 
-    // Mapear campos de endereço
     if (updates.address) {
       updates.address_street = updates.address.street;
       updates.address_number = updates.address.number;
@@ -233,7 +282,6 @@ const atualizarCliente = async (req, res) => {
       delete updates.address;
     }
 
-    // Atualizar cliente
     const clienteAtualizado = await Cliente.query().patchAndFetchById(id, updates);
 
     res.json({
@@ -267,7 +315,6 @@ const identificarCliente = async (req, res) => {
       });
     }
 
-    // Validar telefone
     console.log('🔍 Validando telefone:', phone);
     if (!validarTelefone(phone)) {
       console.log('❌ Telefone inválido segundo validação');
@@ -278,14 +325,10 @@ const identificarCliente = async (req, res) => {
     }
     console.log('✅ Telefone válido!');
 
-    // Formatar telefone (remover caracteres não numéricos)
     const telefoneFormatado = phone.replace(/\D/g, '');
-
-    // Buscar cliente existente
     let cliente = await Cliente.query().findOne({ phone: telefoneFormatado });
 
     if (cliente) {
-      // Atualizar dados se necessário
       const updates = {};
       if (name !== cliente.name) updates.name = name;
       if (document && document !== cliente.document) updates.document = document;
@@ -295,7 +338,6 @@ const identificarCliente = async (req, res) => {
         cliente = await Cliente.query().patchAndFetchById(cliente.id, updates);
       }
     } else {
-      // Criar novo cliente
       cliente = await Cliente.query().insert({
         name,
         phone: telefoneFormatado,
@@ -319,8 +361,13 @@ const identificarCliente = async (req, res) => {
   }
 };
 
+// =====================================================
+// EXPORTAÇÕES
+// =====================================================
 module.exports = {
   buscarPorTelefone,
+  buscarPorId,
+  listarClientes,
   criarCliente,
   atualizarCliente,
   identificarCliente
