@@ -7,6 +7,7 @@ import ClienteRoute from './middlewares/ClienteRoute';
 import HomePage from './features/home/pages/HomePage';
 import LoginCliente from './features/home/pages/LoginCliente';
 import Checkout from './features/home/pages/Checkout';
+import ReciboPage from './features/home/pages/checkout/recibo/ReciboPage';
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
                   <Checkout />
                 </ClienteRoute>
               } />
+              <Route path="/recibo" element={<ReciboPage />} />  {/* <-- ADICIONADO */}
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </ServicesProvider>

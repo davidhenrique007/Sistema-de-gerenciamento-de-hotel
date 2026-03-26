@@ -2,7 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@contexts/CartContext';
 import { useServices } from '@contexts/ServicesContext';
-import { useCliente } from "@hooks/useCliente";
+import { useCliente } from '@hooks/useCliente';
 import { useModalQuarto } from './hooks/useModalQuarto';
 import ResumoReserva from './components/ResumoReserva';
 import ModalSelecionarQuarto from './components/room-selection/ModalSelecionarQuarto';
@@ -11,6 +11,7 @@ import MetodosPagamento from './components/MetodosPagamento';
 import BotaoConfirmarPagamento from './components/BotaoConfirmarPagamento';
 import ResumoFinal from './components/ResumoFinal';
 import ServicosAdicionais from './components/ServicosAdicionais';
+import PagamentoMpesa from './components/PagamentoMpesa';
 import { useValidacaoCheckout } from './hooks/useValidacaoCheckout';
 import styles from './styles/Checkout.module.css';
 
@@ -25,20 +26,18 @@ const Checkout = () => {
     nome: cliente?.name || '',
     telefone: cliente?.phone || '',
     documento: cliente?.document || '',
-    email: cliente?.email || ''
+    email: cliente?.email || '',
   });
-  
+
   const [paymentMethod, setPaymentMethod] = useState('');
   const [paymentDetails, setPaymentDetails] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [servicosSelecionados, setServicosSelecionados] = useState([]);
   const [taxaImposto] = useState(0.05);
+  const [reservaId, setReservaId] = useState(null);
+  const [pagamentoStatus, setPagamentoStatus] = useState(null);
 
-  const { errors, isFormValid } = useValidacaoCheckout(
-    guestData,
-    paymentMethod,
-    paymentDetails
-  );
+  const { errors, isFormValid } = useValidacaoCheckout(guestData, paymentMethod, paymentDetails);
 
   useEffect(() => {
     if (!reservation && !room) {
@@ -62,40 +61,71 @@ const Checkout = () => {
   const quantidadeQuartos = modalQuarto.quartosSelecionados.length || 1;
 
   const subtotalQuartos = pricePerNight * nights * quantidadeQuartos;
-  
+
   const subtotalServicos = servicosSelecionados.reduce((total, servico) => {
-    const preco = servico.tipo === 'por_noite' 
-      ? servico.preco * nights 
-      : servico.preco;
+    const preco = servico.tipo === 'por_noite' ? servico.preco * nights : servico.preco;
     return total + preco;
   }, 0);
-  
+
   const subtotal = subtotalQuartos + subtotalServicos;
   const taxas = subtotal * taxaImposto;
   const total = subtotal + taxas;
 
+  // Handler para quando o pagamento é confirmado
+  const handlePagamentoConfirmado = (data) => {
+    console.log('✅ Pagamento confirmado!', data);
+    setPagamentoStatus('confirmed');
+    alert('Pagamento confirmado! Sua reserva foi concluída com sucesso.');
+    // Redirecionar para página de confirmação após 2 segundos
+    setTimeout(() => {
+      navigate('/recibo');
+    }, 2000);
+  };
+
+  // Handler para quando o pagamento falha
+  const handlePagamentoFalhou = (error) => {
+    console.error('❌ Pagamento falhou:', error);
+    setPagamentoStatus('failed');
+    // Não fecha o modal, permite tentar novamente
+  };
+
+  // Handler para quando o pagamento está pendente
+  const handlePagamentoPendente = (data) => {
+    console.log('⏳ Pagamento pendente:', data);
+    setPagamentoStatus('pending');
+  };
+
+  // Handler para o botão de confirmar pagamento (para métodos que não são M-Pesa)
   const handleConfirmPayment = async () => {
     if (!isFormValid) return;
     if (modalQuarto.quartosSelecionados.length === 0) {
       alert('Por favor, selecione pelo menos um quarto');
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log('Pagamento confirmado:', {
-        quartos: modalQuarto.quartosSelecionados,
-        guestData,
-        paymentMethod,
-        servicos: servicosSelecionados,
-        subtotalQuartos,
-        subtotalServicos,
-        taxas,
-        total
-      });
-      alert('Reserva confirmada com sucesso!');
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Preparar dados da reserva para o recibo
+      const reservaData = {
+        codigo: `RES-${Date.now()}`,
+        quantidadeQuartos: modalQuarto.quartosSelecionados.length,
+        hospedes: guestData.nome,
+        checkIn: checkIn,
+        checkOut: checkOut,
+        noites: nights,
+        total: total,
+        email: guestData.email,
+        metodoPagamento: paymentMethod,
+      };
+
+      // Salvar no localStorage
+      localStorage.setItem('ultima_reserva', JSON.stringify(reservaData));
+
+      // Redirecionar para a página de recibo
+      navigate('/recibo', { state: { reserva: reservaData } });
     } catch (error) {
       console.error('Erro no pagamento:', error);
       alert('Erro ao processar pagamento. Tente novamente.');
@@ -107,7 +137,8 @@ const Checkout = () => {
   return (
     <div className={styles.container}>
       <div className={styles.breadcrumb}>
-        <span>Início</span> &gt; <span>Identificação</span> &gt; <span className={styles.active}>Checkout</span>
+        <span>Início</span> &gt; <span>Identificação</span> &gt;{' '}
+        <span className={styles.active}>Checkout</span>
       </div>
 
       <h1 className={styles.title}>Checkout</h1>
@@ -118,14 +149,14 @@ const Checkout = () => {
         <div className={styles.columnLeft}>
           <div className={styles.sectionCompact}>
             <h2 className={styles.sectionTitle}>1. Escolha seus quartos</h2>
-            
+
             {modalQuarto.quartosSelecionados.length > 0 ? (
               <div className={styles.quartosSelecionados}>
                 <div className={styles.quartosList}>
-                  {modalQuarto.quartosSelecionados.map(quarto => (
+                  {modalQuarto.quartosSelecionados.map((quarto) => (
                     <div key={quarto.id} className={styles.quartoSelecionadoItem}>
                       <span>🏨 Quarto {quarto.numero} ✅</span>
-                      <button 
+                      <button
                         onClick={() => modalQuarto.removerQuarto(quarto.id)}
                         className={styles.removerQuartoButton}
                       >
@@ -179,13 +210,25 @@ const Checkout = () => {
         <div className={styles.columnLeft}>
           <div className={styles.sectionCompact}>
             <h2 className={styles.sectionTitle}>4. Pagamento</h2>
-            <MetodosPagamento
-              paymentMethod={paymentMethod}
-              setPaymentMethod={setPaymentMethod}
-              paymentDetails={paymentDetails}
-              setPaymentDetails={setPaymentDetails}
-              errors={errors}
-            />
+
+            {/* Mostrar componente específico do M-Pesa quando selecionado */}
+            {paymentMethod === 'mpesa' && reservaId ? (
+              <PagamentoMpesa
+                reservaId={reservaId}
+                valor={total}
+                onSuccess={handlePagamentoConfirmado}
+                onError={handlePagamentoFalhou}
+                onPending={handlePagamentoPendente}
+              />
+            ) : (
+              <MetodosPagamento
+                paymentMethod={paymentMethod}
+                setPaymentMethod={setPaymentMethod}
+                paymentDetails={paymentDetails}
+                setPaymentDetails={setPaymentDetails}
+                errors={errors}
+              />
+            )}
           </div>
         </div>
 
@@ -205,24 +248,29 @@ const Checkout = () => {
       </div>
 
       {/* Resumo Final */}
-      {isFormValid && paymentMethod && modalQuarto.quartosSelecionados.length > 0 && (
-        <ResumoFinal
-          quartos={modalQuarto.quartosSelecionados}
-          guestData={guestData}
-          paymentMethod={paymentMethod}
-          nights={nights}
-          pricePerNight={pricePerNight}
-          servicosAdicionais={servicosSelecionados}
-          taxaImposto={taxaImposto}
+      {isFormValid &&
+        paymentMethod &&
+        modalQuarto.quartosSelecionados.length > 0 &&
+        paymentMethod !== 'mpesa' && (
+          <ResumoFinal
+            quartos={modalQuarto.quartosSelecionados}
+            guestData={guestData}
+            paymentMethod={paymentMethod}
+            nights={nights}
+            pricePerNight={pricePerNight}
+            servicosAdicionais={servicosSelecionados}
+            taxaImposto={taxaImposto}
+          />
+        )}
+
+      {/* Botão Confirmar Pagamento - apenas para métodos que não são M-Pesa */}
+      {paymentMethod !== 'mpesa' && (
+        <BotaoConfirmarPagamento
+          isFormValid={isFormValid && modalQuarto.quartosSelecionados.length > 0}
+          isLoading={isLoading}
+          onClick={handleConfirmPayment}
         />
       )}
-
-      {/* Botão Confirmar Pagamento */}
-      <BotaoConfirmarPagamento
-        isFormValid={isFormValid && modalQuarto.quartosSelecionados.length > 0}
-        isLoading={isLoading}
-        onClick={handleConfirmPayment}
-      />
 
       <ModalSelecionarQuarto
         isOpen={modalQuarto.isOpen}
