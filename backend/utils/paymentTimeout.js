@@ -12,7 +12,7 @@ function startPaymentTimeout(reservaId, transactionId) {
     
     const timeout = setTimeout(async () => {
         await handlePaymentTimeout(reservaId, transactionId);
-    }, 120000); // 2 minutos
+    }, 120000);
     
     activeTimeouts.set(reservaId, timeout);
 }
@@ -43,9 +43,11 @@ async function handlePaymentTimeout(reservaId, transactionId) {
         if (payment_status === 'pending') {
             await pool.query(
                 `UPDATE reservations 
-                 SET payment_status = 'expired',
-                     payment_expired_at = NOW(),
-                     status = 'expired'
+                 SET payment_status = 'cancelled',
+                     status = 'cancelled',
+                     cancellation_reason = 'Pagamento não confirmado em 2 minutos',
+                     cancellation_date = NOW(),
+                     updated_at = NOW()
                  WHERE id = $1`,
                 [reservaId]
             );
