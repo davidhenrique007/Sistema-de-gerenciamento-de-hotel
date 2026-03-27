@@ -13,6 +13,8 @@
     "test": "node test-fase1.js"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^6.0.0",
+    "@stripe/stripe-js": "^9.0.0",
     "axios": "^1.13.6",
     "date-fns": "^4.1.0",
     "html2canvas": "^1.4.1",
