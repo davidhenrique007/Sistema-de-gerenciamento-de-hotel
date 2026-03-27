@@ -7,7 +7,7 @@ import StatusBadge from './StatusBadge';
 
 const TabelaQuartosModal = ({ quartos, quartosTemp, onToggle }) => {
   const isQuartoDisponivel = (status) => {
-    return status === 'disponível' || status === 'available';
+    return status === 'available' || status === 'disponível';
   };
 
   const isQuartoSelecionado = (quartoId) => {
@@ -69,17 +69,16 @@ const TabelaQuartosModal = ({ quartos, quartosTemp, onToggle }) => {
             const disponivel = isQuartoDisponivel(quarto.status);
             const selecionado = isQuartoSelecionado(quarto.id);
 
-            const rowStyle = {
-              ...styles.td,
-              ...(!disponivel ? styles.trDisabled : styles.trAvailable),
-              ...(selecionado ? styles.trSelected : {})
-            };
-
             return (
               <tr
                 key={quarto.id}
                 onClick={() => handleRowClick(quarto)}
-                style={rowStyle}
+                style={{
+                  ...styles.td,
+                  ...(!disponivel ? styles.trDisabled : styles.trAvailable),
+                  ...(selecionado ? styles.trSelected : {}),
+                  cursor: disponivel ? 'pointer' : 'not-allowed'
+                }}
                 onMouseEnter={(e) => {
                   if (disponivel && !selecionado) {
                     e.currentTarget.style.backgroundColor = '#f8f9fa';
@@ -91,12 +90,7 @@ const TabelaQuartosModal = ({ quartos, quartosTemp, onToggle }) => {
                   }
                 }}
               >
-                {/* CORRIGIDO: Combinando os estilos em um único objeto */}
-                <td style={{ 
-                  ...styles.td, 
-                  textAlign: 'center', 
-                  width: '50px' 
-                }}>
+                <td style={{ ...styles.td, textAlign: 'center', width: '50px' }}>
                   {disponivel ? (
                     selecionado ? (
                       <span style={{ color: '#28a745', fontSize: '1.2rem' }}>✅</span>
@@ -108,10 +102,14 @@ const TabelaQuartosModal = ({ quartos, quartosTemp, onToggle }) => {
                   )}
                 </td>
                 <td style={styles.td}>
-                  <strong>{quarto.numero}</strong>
+                  <strong>{quarto.numero || '-'}</strong>
                 </td>
-                <td style={styles.td}>{quarto.tipo}</td>
-                <td style={styles.td}>{quarto.andar || '-'}</td>
+                <td style={styles.td}>
+                  {quarto.tipo || 'standard'}
+                </td>
+                <td style={styles.td}>
+                  {quarto.andar || '-'}
+                </td>
                 <td style={styles.td}>
                   <StatusBadge status={quarto.status} />
                 </td>

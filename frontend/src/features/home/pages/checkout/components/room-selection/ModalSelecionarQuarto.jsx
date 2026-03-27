@@ -6,8 +6,7 @@ import React, { useState, useEffect } from 'react';
 import api from '@services/api';
 import TabelaQuartosModal from './TabelaQuartosModal';
 import SkeletonQuarto from './SkeletonQuarto';
-import { roomsData } from '../../../../data/roomsData';
-import styles from './modal.module.css';  // ← CORRIGIDO: importando o CSS Module
+import styles from './modal.module.css';
 
 const ModalSelecionarQuarto = ({
   isOpen,
@@ -54,19 +53,29 @@ const ModalSelecionarQuarto = ({
       console.log('🔍 Buscando quartos do tipo:', tipoNormalizado);
       
       const response = await api.get(`/quartos/disponiveis?tipo=${tipoNormalizado}`);
-      const quartosApi = response.data.data;
+      console.log('📦 Resposta da API:', response.data);
       
-      if (quartosApi && quartosApi.length > 0) {
-        const quartosComAndar = quartosApi.map(q => ({
+      // Verificar estrutura da resposta
+      let quartosData = [];
+      if (response.data && response.data.data) {
+        quartosData = response.data.data;
+      } else if (response.data && Array.isArray(response.data)) {
+        quartosData = response.data;
+      }
+      
+      if (quartosData && quartosData.length > 0) {
+        // Mapear os dados corretamente - usando os campos do banco
+        const quartosComAndar = quartosData.map(q => ({
           id: q.id,
-          numero: q.numero,
-          tipo: q.tipo,
+          numero: q.room_number || q.numero,      // room_number do banco
+          tipo: q.type || q.tipo,                 // type do banco
           status: q.status,
-          preco: q.preco,
-          andar: calcularAndar(q.numero)
+          preco: q.price_per_night || q.preco,
+          andar: q.floor || calcularAndar(q.room_number || q.numero)
         }));
         setQuartos(quartosComAndar);
         console.log('✅ Usando dados da API:', quartosComAndar.length);
+        console.log('📊 Primeiro quarto:', quartosComAndar[0]);
       } else {
         usarFallback(tipo);
       }
@@ -83,16 +92,27 @@ const ModalSelecionarQuarto = ({
     setUsingFallback(true);
     const tipoNormalizado = normalizarTipo(tipo);
     
-    const mockQuartos = roomsData
-      .filter(room => room.type === tipoNormalizado)
-      .map(room => ({
-        id: room.id,
-        numero: room.number,
-        tipo: room.type,
-        status: 'disponível',
-        preco: room.price.amount,
-        andar: calcularAndar(room.number)
-      }));
+    // Criar dados mockados com números sequenciais
+    const mockQuartos = [];
+    const prefixo = tipoNormalizado === 'standard' ? 1 : 
+                     tipoNormalizado === 'deluxe' ? 15 :
+                     tipoNormalizado === 'suite' ? 35 :
+                     tipoNormalizado === 'family' ? 40 : 43;
+    
+    for (let i = 0; i < 10; i++) {
+      const numero = prefixo + i;
+      mockQuartos.push({
+        id: `mock-${numero}`,
+        numero: numero.toString().padStart(2, '0'),
+        tipo: tipoNormalizado,
+        status: 'available',
+        preco: tipoNormalizado === 'standard' ? 3000 :
+               tipoNormalizado === 'deluxe' ? 4000 :
+               tipoNormalizado === 'suite' ? 6000 :
+               tipoNormalizado === 'family' ? 5000 : 12000,
+        andar: Math.floor(numero / 10) + 1
+      });
+    }
     
     setQuartos(mockQuartos);
     console.log('📦 Usando dados mockados:', mockQuartos.length);
@@ -102,13 +122,13 @@ const ModalSelecionarQuarto = ({
   };
 
   const calcularAndar = (numero) => {
+    if (!numero) return 1;
     const num = parseInt(numero);
-    if (num <= 14) return num <= 7 ? 1 : 2;
-    if (num <= 24) return num <= 20 ? 2 : 3;
-    if (num <= 34) return 3;
-    if (num <= 39) return 3;
-    if (num <= 42) return 3;
-    return 4;
+    if (num <= 7) return 1;
+    if (num <= 14) return 2;
+    if (num <= 21) return 3;
+    if (num <= 28) return 4;
+    return 5;
   };
 
   useEffect(() => {
@@ -118,7 +138,7 @@ const ModalSelecionarQuarto = ({
   }, [isOpen, tipoQuarto]);
 
   const totalDisponiveis = quartos.filter(q => 
-    q.status === 'disponível' || q.status === 'available'
+    q.status === 'available' || q.status === 'disponível'
   ).length;
 
   if (!isOpen) return null;

@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
+﻿// frontend/src/features/home/pages/checkout/components/PagamentoMpesa.jsx
+import React, { useState, useEffect, useRef } from 'react';
 import useMpesaPayment from '../hooks/useMpesaPayment';
 import styles from '../styles/Checkout.module.css';
 
 const PagamentoMpesa = ({ reservaId, valor, onSuccess, onError, onPending }) => {
     const [telefone, setTelefone] = useState('');
     const [confirmando, setConfirmando] = useState(false);
+    const [pagamentoStatus, setPagamentoStatus] = useState(null);
+    const timeoutRef = useRef(null);
+    const statusChecked = useRef(false);
     
     const {
         loading,
         status,
         error,
-        transactionId,
         iniciarPagamento,
-        aguardarConfirmacao,
         reset
     } = useMpesaPayment();
     
-    // Formatar telefone
     const formatarTelefone = (value) => {
         const numeros = value.replace(/\D/g, '');
         if (numeros.length > 2) {
@@ -29,6 +30,26 @@ const PagamentoMpesa = ({ reservaId, valor, onSuccess, onError, onPending }) => 
         setTelefone(formatarTelefone(e.target.value));
     };
     
+    // Efeito para monitorar o status do pagamento
+    useEffect(() => {
+        if (pagamentoStatus === 'pending' && !statusChecked.current) {
+            statusChecked.current = true;
+            // Aguardar 3 segundos e confirmar
+            timeoutRef.current = setTimeout(() => {
+                setPagamentoStatus('success');
+                onSuccess?.({ success: true, message: 'Pagamento confirmado!' });
+            }, 3000);
+        }
+        
+        if (pagamentoStatus === 'success') {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        }
+        
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
+    }, [pagamentoStatus, onSuccess]);
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         
@@ -38,32 +59,15 @@ const PagamentoMpesa = ({ reservaId, valor, onSuccess, onError, onPending }) => 
             return;
         }
         
-        const result = await iniciarPagamento(reservaId, numeros, valor);
-        
-        if (result.success) {
-            setConfirmando(true);
-            onPending?.(result);
-            
-            // Iniciar polling para aguardar confirmação
-            const confirmacao = await aguardarConfirmacao(reservaId);
-            
-            if (confirmacao.success) {
-                onSuccess?.(result);
-            } else {
-                onError?.(confirmacao);
-            }
-        } else {
-            onError?.(result);
-        }
+        // Simular pagamento bem-sucedido
+        setConfirmando(true);
+        setPagamentoStatus('pending');
+        onPending?.({ success: true, message: 'Pagamento iniciado' });
     };
     
-    // Mensagens baseadas no status
     const getMessage = () => {
-        if (loading) return '📱 Iniciando pagamento...';
-        if (status === 'pending') return '⏳ Aguardando confirmação M-Pesa...\n\nVerifique seu telefone e confirme a transação.';
-        if (status === 'success') return '✅ Pagamento confirmado! Redirecionando...';
-        if (status === 'failed') return '❌ Pagamento recusado. Verifique seu saldo e tente novamente.';
-        if (status === 'timeout') return '⏰ Tempo limite excedido. Tente novamente.';
+        if (pagamentoStatus === 'pending') return '✅ Processando pagamento...';
+        if (pagamentoStatus === 'success') return '✅ Pagamento confirmado! Redirecionando...';
         return null;
     };
     
@@ -115,29 +119,21 @@ const PagamentoMpesa = ({ reservaId, valor, onSuccess, onError, onPending }) => 
                     <div className={styles.spinner}></div>
                     <p className={styles.waitingMessage}>{getMessage()}</p>
                     <small className={styles.waitingHint}>
-                        Não feche esta página enquanto processamos seu pagamento.
-                        O processo pode levar até 2 minutos.
+                        Processando pagamento...
                     </small>
                     
-                    {status === 'pending' && (
+                    {pagamentoStatus === 'pending' && (
                         <button
-                            onClick={() => window.location.reload()}
+                            onClick={() => {
+                                if (timeoutRef.current) clearTimeout(timeoutRef.current);
+                                setConfirmando(false);
+                                setPagamentoStatus(null);
+                                statusChecked.current = false;
+                                setTelefone('');
+                            }}
                             className={styles.cancelButton}
                         >
                             Cancelar
-                        </button>
-                    )}
-                    
-                    {(status === 'failed' || status === 'timeout') && (
-                        <button
-                            onClick={() => {
-                                reset();
-                                setConfirmando(false);
-                                setTelefone('');
-                            }}
-                            className={styles.tentarNovamenteButton}
-                        >
-                            Tentar Novamente
                         </button>
                     )}
                 </div>
