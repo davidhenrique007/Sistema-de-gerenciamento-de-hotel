@@ -1,6 +1,5 @@
-// =====================================================
-// HOTEL PARADISE - SERVIDOR PRINCIPAL (ATUALIZADO)
-// Versão: 1.2.0 - COM SEED AUTOMÁTICO E CONTROLE DE CONCORRÊNCIA
+﻿// =====================================================
+// HOTEL PARADISE - SERVIDOR PRINCIPAL
 // =====================================================
 
 const express = require('express');
@@ -15,19 +14,14 @@ const routes = require('./routes');
 const { securityMiddleware } = require('./middlewares/security');
 const { models } = require('./models');
 
-// =====================================================
-// IMPORTAÇÃO DAS NOVAS ROTAS
-// =====================================================
 const reservaRoutes = require('./routes/reservaRoutes');
-const pagamentoRoutes = require('./routes/pagamentoRoutes');  // <-- ADICIONADO
-const webhookRoutes = require('./routes/webhookRoutes');      // <-- ADICIONADO
+const pagamentoRoutes = require('./routes/pagamentoRoutes');
+const webhookRoutes = require('./routes/webhookRoutes');
+const stripeRoutes = require('./routes/stripeRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// =====================================================
-// SEED AUTOMÁTICO DE USUÁRIOS
-// =====================================================
 const seedUsers = async () => {
   try {
     console.log('🌱 Verificando usuários padrão...');
@@ -81,43 +75,25 @@ const seedUsers = async () => {
   }
 };
 
-// =====================================================
-// MIDDLEWARES
-// =====================================================
-
-// Segurança (Helmet + CORS)
 securityMiddleware(app);
-
-// Compressão
 app.use(compression());
 
-// Logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 } else {
   app.use(morgan('combined'));
 }
 
-// Parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// =====================================================
-// ROTAS
-// =====================================================
-
-// Rotas da API existentes
 app.use('/api', routes);
-
-// Rotas de reserva com controle de concorrência
 app.use('/api', reservaRoutes);
+app.use('/api/pagamentos', pagamentoRoutes);
+app.use('/api/webhooks', webhookRoutes);
+app.use('/api/stripe', stripeRoutes);
 
-// Rotas de pagamento M-Pesa
-app.use('/api/pagamentos', pagamentoRoutes);  // <-- ADICIONADO
-app.use('/api/webhooks', webhookRoutes);      // <-- ADICIONADO
-
-// Rota raiz
 app.get('/', (req, res) => {
   res.json({
     success: true,
@@ -140,11 +116,14 @@ app.get('/', (req, res) => {
   });
 });
 
-// =====================================================
-// TRATAMENTO DE ERROS
-// =====================================================
+app.get('/api/test-stripe', (req, res) => {
+    res.json({ 
+        success: true, 
+        message: 'Stripe endpoint funcionando!',
+        stripeKey: process.env.STRIPE_SECRET_KEY ? 'Configurada' : 'Não configurada'
+    });
+});
 
-// 404
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -152,7 +131,6 @@ app.use((req, res) => {
   });
 });
 
-// Erro global
 app.use((err, req, res, next) => {
   console.error('❌ Erro:', err);
   
@@ -167,9 +145,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// =====================================================
-// INICIALIZAÇÃO
-// =====================================================
 const server = app.listen(PORT, async () => {
   console.log('\n=================================');
   console.log('🚀 HOTEL PARADISE - BACKEND');
@@ -187,7 +162,6 @@ const server = app.listen(PORT, async () => {
   await seedUsers();
 });
 
-// Graceful shutdown
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
