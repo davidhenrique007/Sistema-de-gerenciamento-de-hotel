@@ -12,8 +12,14 @@ import BotaoConfirmarPagamento from './components/BotaoConfirmarPagamento';
 import ResumoFinal from './components/ResumoFinal';
 import ServicosAdicionais from './components/ServicosAdicionais';
 import PagamentoMpesa from './components/PagamentoMpesa';
+import StripeElements from './components/StripeElements';
 import { useValidacaoCheckout } from './hooks/useValidacaoCheckout';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import styles from './styles/Checkout.module.css';
+
+// Carregar Stripe com a chave pública
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -51,6 +57,43 @@ const Checkout = () => {
     }
   }, [servicosContexto]);
 
+
+  // Criar um ID de reserva temporário quando o checkout carregar
+  useEffect(() => {
+    if (!reservaId && reservation) {
+      const tempId = `TEMP_${Date.now()}`;
+      setReservaId(tempId);
+      console.log('📝 Reserva ID temporário criado:', tempId);
+    }
+  }, [reservation, reservaId]);
+
+  // Atualizar reservaId quando quartos são selecionados
+  useEffect(() => {
+    if (modalQuarto.quartosSelecionados.length > 0 && !reservaId) {
+      const tempId = `TEMP_${Date.now()}_${modalQuarto.quartosSelecionados[0].numero}`;
+      setReservaId(tempId);
+      console.log('📝 Reserva ID atualizado:', tempId);
+    }
+  }, [modalQuarto.quartosSelecionados]);
+
+  // Criar um ID de reserva temporário quando o checkout carregar
+  useEffect(() => {
+    if (!reservaId && reservation) {
+      const tempId = `TEMP_${Date.now()}`;
+      setReservaId(tempId);
+      console.log('📝 Reserva ID temporário criado:', tempId);
+    }
+  }, [reservation, reservaId]);
+
+  // Atualizar reservaId quando quartos são selecionados
+  useEffect(() => {
+    if (modalQuarto.quartosSelecionados.length > 0 && !reservaId) {
+      const tempId = `TEMP_${Date.now()}_${modalQuarto.quartosSelecionados[0].numero}`;
+      setReservaId(tempId);
+      console.log('📝 Reserva ID atualizado:', tempId);
+    }
+  }, [modalQuarto.quartosSelecionados]);
+
   if (!reservation && !room) return null;
 
   const tipoQuarto = reservation?.roomType || room?.type || 'Standard';
@@ -75,10 +118,27 @@ const Checkout = () => {
   const handlePagamentoConfirmado = (data) => {
     console.log('✅ Pagamento confirmado!', data);
     setPagamentoStatus('confirmed');
+
+    // Preparar dados da reserva para o recibo
+    const reservaData = {
+      codigo: `RES-${Date.now()}`,
+      quantidadeQuartos: modalQuarto.quartosSelecionados.length,
+      hospedes: guestData.nome,
+      checkIn: checkIn,
+      checkOut: checkOut,
+      noites: nights,
+      total: total,
+      email: guestData.email,
+      metodoPagamento: paymentMethod === 'cartao' ? 'Cartão de Crédito' : paymentMethod,
+    };
+
+    // Salvar no localStorage
+    localStorage.setItem('ultima_reserva', JSON.stringify(reservaData));
+
     alert('Pagamento confirmado! Sua reserva foi concluída com sucesso.');
     // Redirecionar para página de confirmação após 2 segundos
     setTimeout(() => {
-      navigate('/recibo');
+      navigate('/recibo', { state: { reserva: reservaData } });
     }, 2000);
   };
 
@@ -95,7 +155,7 @@ const Checkout = () => {
     setPagamentoStatus('pending');
   };
 
-  // Handler para o botão de confirmar pagamento (para métodos que não são M-Pesa)
+  // Handler para o botão de confirmar pagamento (para métodos que não são M-Pesa e não são cartão)
   const handleConfirmPayment = async () => {
     if (!isFormValid) return;
     if (modalQuarto.quartosSelecionados.length === 0) {
@@ -229,6 +289,19 @@ const Checkout = () => {
                 errors={errors}
               />
             )}
+
+            {/* Componente Stripe - mostra quando cartão é selecionado */}
+            {paymentMethod === 'cartao' && (
+              <Elements stripe={stripePromise}>
+                <StripeElements
+                  reservaId={reservaId}
+                  valor={total}
+                  onSuccess={handlePagamentoConfirmado}
+                  onError={handlePagamentoFalhou}
+                  onPending={handlePagamentoPendente}
+                />
+              </Elements>
+            )}
           </div>
         </div>
 
@@ -247,11 +320,12 @@ const Checkout = () => {
         </div>
       </div>
 
-      {/* Resumo Final */}
+      {/* Resumo Final - para métodos que não são M-Pesa e não são cartão */}
       {isFormValid &&
         paymentMethod &&
         modalQuarto.quartosSelecionados.length > 0 &&
-        paymentMethod !== 'mpesa' && (
+        paymentMethod !== 'mpesa' &&
+        paymentMethod !== 'cartao' && (
           <ResumoFinal
             quartos={modalQuarto.quartosSelecionados}
             guestData={guestData}
@@ -263,8 +337,8 @@ const Checkout = () => {
           />
         )}
 
-      {/* Botão Confirmar Pagamento - apenas para métodos que não são M-Pesa */}
-      {paymentMethod !== 'mpesa' && (
+      {/* Botão Confirmar Pagamento - apenas para métodos que não são M-Pesa e não são cartão */}
+      {paymentMethod !== 'mpesa' && paymentMethod !== 'cartao' && (
         <BotaoConfirmarPagamento
           isFormValid={isFormValid && modalQuarto.quartosSelecionados.length > 0}
           isLoading={isLoading}
@@ -285,3 +359,6 @@ const Checkout = () => {
 };
 
 export default Checkout;
+
+
+
