@@ -10,11 +10,14 @@ class WebhookController {
             const { TransactionID, TransactionStatus, Amount, ThirdPartyReference } = req.body;
             
             // Extrair reservaId do ThirdPartyReference
-            const match = ThirdPartyReference?.match(/HOTEL_(\d+)_/);
-            const reservaId = match ? parseInt(match[1]) : null;
+            let reservaId = null;
+            if (ThirdPartyReference) {
+                const match = ThirdPartyReference.match(/RES_(\d+)/);
+                if (match) reservaId = match[1];
+            }
             
             if (!reservaId) {
-                console.log('⚠️ Não foi possível extrair reservaId do webhook');
+                console.log('⚠️ Não foi possível extrair reservaId');
                 return res.status(200).json({ success: true, message: 'Webhook recebido' });
             }
             
@@ -22,49 +25,24 @@ class WebhookController {
             cancelPaymentTimeout(reservaId);
             
             if (TransactionStatus === 'SUCCESS') {
-                // Pagamento confirmado
                 await pool.query(
                     `UPDATE reservations 
                      SET payment_status = 'paid',
-                         payment_confirmed_at = NOW(),
                          status = 'confirmed',
-                         payment_details = $2::jsonb
+                         updated_at = NOW()
                      WHERE id = $1`,
-                    [reservaId, JSON.stringify({
-                        transactionId: TransactionID,
-                        amount: Amount,
-                        confirmedAt: new Date().toISOString()
-                    })]
+                    [reservaId]
                 );
-                
-                console.log(`✅ Reserva ${reservaId} confirmada com sucesso!`);
-                
+                console.log(`✅ Reserva ${reservaId} confirmada!`);
             } else if (TransactionStatus === 'FAILED') {
-                // Pagamento falhou
                 await pool.query(
                     `UPDATE reservations 
                      SET payment_status = 'failed',
-                         payment_failed_at = NOW(),
-                         status = 'cancelled'
+                         status = 'cancelled',
+                         updated_at = NOW()
                      WHERE id = $1`,
                     [reservaId]
                 );
-                
-                // Liberar quarto
-                const reserva = await pool.query(
-                    `SELECT room_id FROM reservations WHERE id = $1`,
-                    [reservaId]
-                );
-                
-                if (reserva.rows.length > 0 && reserva.rows[0].room_id) {
-                    await pool.query(
-                        `UPDATE rooms 
-                         SET status = 'available', updated_at = NOW()
-                         WHERE id = $1`,
-                        [reserva.rows[0].room_id]
-                    );
-                }
-                
                 console.log(`❌ Pagamento da reserva ${reservaId} falhou`);
             }
             
@@ -86,15 +64,18 @@ class WebhookController {
         if (process.env.NODE_ENV !== 'production') {
             const { reservaId, status = 'SUCCESS', valor = 5000, telefone = '841234567' } = req.body;
             
+            console.log(`🧪 Simulando webhook para reserva ${reservaId} com status ${status}`);
+            
             const webhookData = {
                 TransactionID: `SIM_${Date.now()}`,
                 TransactionStatus: status,
                 Amount: valor,
                 CustomerMSISDN: `258${telefone}`,
                 TransactionReference: `REF_${reservaId}`,
-                ThirdPartyReference: `HOTEL_${reservaId}_${Date.now()}`
+                ThirdPartyReference: `RES_${reservaId}`
             };
             
+            // Processar o webhook
             await this.confirmarPagamento({ body: webhookData });
             
             return res.json({
