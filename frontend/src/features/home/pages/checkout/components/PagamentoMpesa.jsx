@@ -1,6 +1,9 @@
 ﻿// frontend/src/features/home/pages/checkout/components/PagamentoMpesa.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import useMpesaPayment from '../hooks/useMpesaPayment';
+import { useToast } from '../../../../../shared/components/contexts/ToastContext';
+import { tratarErro } from '../../../../../shared/utils/tratamentoErros';
+
 import styles from '../styles/Checkout.module.css';
 
 const PagamentoMpesa = ({ reservaId, valor, onSuccess, onError, onPending }) => {
@@ -16,7 +19,8 @@ const PagamentoMpesa = ({ reservaId, valor, onSuccess, onError, onPending }) => 
         error,
         iniciarPagamento,
         reset
-    } = useMpesaPayment();
+    } = useMpesaPayment();  
+  const { showErrorFromException, showSuccess, showWarning } = useToast();
     
     const formatarTelefone = (value) => {
         const numeros = value.replace(/\D/g, '');
@@ -143,3 +147,4 @@ const PagamentoMpesa = ({ reservaId, valor, onSuccess, onError, onPending }) => 
 };
 
 export default PagamentoMpesa;
+
