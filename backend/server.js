@@ -18,6 +18,8 @@ const reservaRoutes = require('./routes/reservaRoutes');
 const pagamentoRoutes = require('./routes/pagamentoRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
 const stripeRoutes = require('./routes/stripeRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const liberarQuartosJob = require('./services/jobs/liberarQuartosJob');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -93,6 +95,7 @@ app.use('/api', reservaRoutes);
 app.use('/api/pagamentos', pagamentoRoutes);
 app.use('/api/webhooks', webhookRoutes);
 app.use('/api/stripe', stripeRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.get('/', (req, res) => {
   res.json({
@@ -145,6 +148,9 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Iniciar job de liberação de quartos
+liberarQuartosJob.start('*/30 * * * *'); // A cada 30 minutos
+
 const server = app.listen(PORT, async () => {
   console.log('\n=================================');
   console.log('🚀 HOTEL PARADISE - BACKEND');
@@ -183,3 +189,4 @@ async function gracefulShutdown(signal) {
 }
 
 module.exports = app;
+
