@@ -1,85 +1,191 @@
-﻿// =====================================================
-// HOTEL PARADISE - CHECKOUT (COM DADOS PESSOAIS E PAGAMENTO)
-// =====================================================
-
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@contexts/CartContext';
-import { useCliente } from "@hooks/useCliente";
+import { useServices } from '@contexts/ServicesContext';
+import { useCliente } from '@hooks/useCliente';
 import { useModalQuarto } from './hooks/useModalQuarto';
 import ResumoReserva from './components/ResumoReserva';
 import ModalSelecionarQuarto from './components/room-selection/ModalSelecionarQuarto';
-
-// NOVOS IMPORTS
 import FormularioDadosPessoais from './components/FormularioDadosPessoais';
 import MetodosPagamento from './components/MetodosPagamento';
 import BotaoConfirmarPagamento from './components/BotaoConfirmarPagamento';
 import ResumoFinal from './components/ResumoFinal';
+import ServicosAdicionais from './components/ServicosAdicionais';
+import PagamentoMpesa from './components/PagamentoMpesa';
+import StripeElements from './components/StripeElements';
 import { useValidacaoCheckout } from './hooks/useValidacaoCheckout';
-
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import styles from './styles/Checkout.module.css';
+
+// Carregar Stripe com a chave pública
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 const Checkout = () => {
   const navigate = useNavigate();
   const { reservation, room } = useCart();
+  const { servicosSelecionados: servicosContexto } = useServices();
   const { cliente, isIdentificado } = useCliente();
   const modalQuarto = useModalQuarto();
 
-  // Estados para dados pessoais e pagamento
   const [guestData, setGuestData] = useState({
     nome: cliente?.name || '',
     telefone: cliente?.phone || '',
     documento: cliente?.document || '',
-    email: cliente?.email || ''
+    email: cliente?.email || '',
   });
-  
+
   const [paymentMethod, setPaymentMethod] = useState('');
   const [paymentDetails, setPaymentDetails] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [checkoutConfirmed, setCheckoutConfirmed] = useState(false);
+  const [servicosSelecionados, setServicosSelecionados] = useState([]);
+  const [taxaImposto] = useState(0.05);
+  const [reservaId, setReservaId] = useState(null);
+  const [pagamentoStatus, setPagamentoStatus] = useState(null);
 
-  // Validação do formulário
-  const { errors, isFormValid } = useValidacaoCheckout(
-    guestData,
-    paymentMethod,
-    paymentDetails
-  );
+  const { errors, isFormValid } = useValidacaoCheckout(guestData, paymentMethod, paymentDetails);
 
-  // Redirecionar se não houver reserva
   useEffect(() => {
     if (!reservation && !room) {
       navigate('/');
     }
   }, [reservation, room, navigate]);
 
+  useEffect(() => {
+    if (servicosContexto && servicosContexto.length > 0) {
+      setServicosSelecionados(servicosContexto);
+    }
+  }, [servicosContexto]);
+
+
+  // Criar um ID de reserva temporário quando o checkout carregar
+  useEffect(() => {
+    if (!reservaId && reservation) {
+      const tempId = `TEMP_${Date.now()}`;
+      setReservaId(tempId);
+      console.log('📝 Reserva ID temporário criado:', tempId);
+    }
+  }, [reservation, reservaId]);
+
+  // Atualizar reservaId quando quartos são selecionados
+  useEffect(() => {
+    if (modalQuarto.quartosSelecionados.length > 0 && !reservaId) {
+      const tempId = `TEMP_${Date.now()}_${modalQuarto.quartosSelecionados[0].numero}`;
+      setReservaId(tempId);
+      console.log('📝 Reserva ID atualizado:', tempId);
+    }
+  }, [modalQuarto.quartosSelecionados]);
+
+  // Criar um ID de reserva temporário quando o checkout carregar
+  useEffect(() => {
+    if (!reservaId && reservation) {
+      const tempId = `TEMP_${Date.now()}`;
+      setReservaId(tempId);
+      console.log('📝 Reserva ID temporário criado:', tempId);
+    }
+  }, [reservation, reservaId]);
+
+  // Atualizar reservaId quando quartos são selecionados
+  useEffect(() => {
+    if (modalQuarto.quartosSelecionados.length > 0 && !reservaId) {
+      const tempId = `TEMP_${Date.now()}_${modalQuarto.quartosSelecionados[0].numero}`;
+      setReservaId(tempId);
+      console.log('📝 Reserva ID atualizado:', tempId);
+    }
+  }, [modalQuarto.quartosSelecionados]);
+
   if (!reservation && !room) return null;
 
-  // Dados da reserva
   const tipoQuarto = reservation?.roomType || room?.type || 'Standard';
   const checkIn = reservation?.checkIn || '';
   const checkOut = reservation?.checkOut || '';
   const nights = reservation?.nights || 1;
   const pricePerNight = reservation?.pricePerNight || room?.price_per_night || 0;
-  const total = reservation?.total || pricePerNight * nights;
+  const quantidadeQuartos = modalQuarto.quartosSelecionados.length || 1;
 
-  // Confirmar pagamento
+  const subtotalQuartos = pricePerNight * nights * quantidadeQuartos;
+
+  const subtotalServicos = servicosSelecionados.reduce((total, servico) => {
+    const preco = servico.tipo === 'por_noite' ? servico.preco * nights : servico.preco;
+    return total + preco;
+  }, 0);
+
+  const subtotal = subtotalQuartos + subtotalServicos;
+  const taxas = subtotal * taxaImposto;
+  const total = subtotal + taxas;
+
+  // Handler para quando o pagamento é confirmado
+  const handlePagamentoConfirmado = (data) => {
+    console.log('✅ Pagamento confirmado!', data);
+    setPagamentoStatus('confirmed');
+
+    // Preparar dados da reserva para o recibo
+    const reservaData = {
+      codigo: `RES-${Date.now()}`,
+      quantidadeQuartos: modalQuarto.quartosSelecionados.length,
+      hospedes: guestData.nome,
+      checkIn: checkIn,
+      checkOut: checkOut,
+      noites: nights,
+      total: total,
+      email: guestData.email,
+      metodoPagamento: paymentMethod === 'cartao' ? 'Cartão de Crédito' : paymentMethod,
+    };
+
+    // Salvar no localStorage
+    localStorage.setItem('ultima_reserva', JSON.stringify(reservaData));
+
+    alert('Pagamento confirmado! Sua reserva foi concluída com sucesso.');
+    // Redirecionar para página de confirmação após 2 segundos
+    setTimeout(() => {
+      navigate('/recibo', { state: { reserva: reservaData } });
+    }, 2000);
+  };
+
+  // Handler para quando o pagamento falha
+  const handlePagamentoFalhou = (error) => {
+    console.error('❌ Pagamento falhou:', error);
+    setPagamentoStatus('failed');
+    // Não fecha o modal, permite tentar novamente
+  };
+
+  // Handler para quando o pagamento está pendente
+  const handlePagamentoPendente = (data) => {
+    console.log('⏳ Pagamento pendente:', data);
+    setPagamentoStatus('pending');
+  };
+
+  // Handler para o botão de confirmar pagamento (para métodos que não são M-Pesa e não são cartão)
   const handleConfirmPayment = async () => {
     if (!isFormValid) return;
-    if (!modalQuarto.quartoSelecionado) {
-      alert('Por favor, selecione um quarto primeiro');
+    if (modalQuarto.quartosSelecionados.length === 0) {
+      alert('Por favor, selecione pelo menos um quarto');
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     try {
-      // Simular processamento de pagamento
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setCheckoutConfirmed(true);
-      // Aqui você pode redirecionar para a página de recibo
-      // navigate('/recibo');
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Preparar dados da reserva para o recibo
+      const reservaData = {
+        codigo: `RES-${Date.now()}`,
+        quantidadeQuartos: modalQuarto.quartosSelecionados.length,
+        hospedes: guestData.nome,
+        checkIn: checkIn,
+        checkOut: checkOut,
+        noites: nights,
+        total: total,
+        email: guestData.email,
+        metodoPagamento: paymentMethod,
+      };
+
+      // Salvar no localStorage
+      localStorage.setItem('ultima_reserva', JSON.stringify(reservaData));
+
+      // Redirecionar para a página de recibo
+      navigate('/recibo', { state: { reserva: reservaData } });
     } catch (error) {
       console.error('Erro no pagamento:', error);
       alert('Erro ao processar pagamento. Tente novamente.');
@@ -90,88 +196,162 @@ const Checkout = () => {
 
   return (
     <div className={styles.container}>
-      {/* Breadcrumb */}
       <div className={styles.breadcrumb}>
-        <span>Início</span> &gt; <span>Identificação</span> &gt; <span className={styles.active}>Checkout</span>
+        <span>Início</span> &gt; <span>Identificação</span> &gt;{' '}
+        <span className={styles.active}>Checkout</span>
       </div>
 
       <h1 className={styles.title}>Checkout</h1>
 
-      {/* STEP 1: Seleção de Quarto */}
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>1. Escolha seu quarto</h2>
-        
-        {modalQuarto.quartoSelecionado ? (
-          <div className={styles.quartoSelecionado}>
-            <span>Quarto {modalQuarto.quartoSelecionado.numero} ✅</span>
-            <button onClick={modalQuarto.abrirModal} className={styles.trocarButton}>
-              Trocar
-            </button>
+      {/* LINHA 1: Quartos (ESQUERDA) + Dados do Hóspede (DIREITA) */}
+      <div className={styles.twoColumns}>
+        {/* Coluna Esquerda - Seleção de Quartos */}
+        <div className={styles.columnLeft}>
+          <div className={styles.sectionCompact}>
+            <h2 className={styles.sectionTitle}>1. Escolha seus quartos</h2>
+
+            {modalQuarto.quartosSelecionados.length > 0 ? (
+              <div className={styles.quartosSelecionados}>
+                <div className={styles.quartosList}>
+                  {modalQuarto.quartosSelecionados.map((quarto) => (
+                    <div key={quarto.id} className={styles.quartoSelecionadoItem}>
+                      <span>🏨 Quarto {quarto.numero} ✅</span>
+                      <button
+                        onClick={() => modalQuarto.removerQuarto(quarto.id)}
+                        className={styles.removerQuartoButton}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button onClick={modalQuarto.abrirModal} className={styles.adicionarQuartoButton}>
+                  + Adicionar outro quarto
+                </button>
+                <p className={styles.totalQuartosHint}>
+                  Total: {modalQuarto.quartosSelecionados.length} quarto(s)
+                </p>
+              </div>
+            ) : (
+              <button onClick={modalQuarto.abrirModal} className={styles.escolherButton}>
+                Escolher Números dos Quartos
+              </button>
+            )}
           </div>
-        ) : (
-          <button onClick={modalQuarto.abrirModal} className={styles.escolherButton}>
-            Escolher Número do Quarto
-          </button>
+        </div>
+
+        {/* Coluna Direita - Dados do Hóspede */}
+        <div className={styles.columnRight}>
+          <div className={styles.sectionCompact}>
+            <h2 className={styles.sectionTitle}>2. Dados do hóspede</h2>
+            <FormularioDadosPessoais
+              guestData={guestData}
+              setGuestData={setGuestData}
+              errors={errors}
+              isIdentificado={isIdentificado}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* LINHA 2: Serviços Adicionais (Largura Total) */}
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>3. Serviços Adicionais</h2>
+        <ServicosAdicionais
+          nights={nights}
+          servicosSelecionados={servicosSelecionados}
+          onServicosChange={setServicosSelecionados}
+        />
+      </div>
+
+      {/* LINHA 3: Pagamento (ESQUERDA) + Resumo da Reserva (DIREITA) */}
+      <div className={styles.twoColumns}>
+        {/* Coluna Esquerda - Pagamento */}
+        <div className={styles.columnLeft}>
+          <div className={styles.sectionCompact}>
+            <h2 className={styles.sectionTitle}>4. Pagamento</h2>
+
+            {/* Mostrar componente específico do M-Pesa quando selecionado */}
+            {paymentMethod === 'mpesa' && reservaId ? (
+              <PagamentoMpesa
+                reservaId={reservaId}
+                valor={total}
+                onSuccess={handlePagamentoConfirmado}
+                onError={handlePagamentoFalhou}
+                onPending={handlePagamentoPendente}
+              />
+            ) : (
+              <MetodosPagamento
+                paymentMethod={paymentMethod}
+                setPaymentMethod={setPaymentMethod}
+                paymentDetails={paymentDetails}
+                setPaymentDetails={setPaymentDetails}
+                errors={errors}
+              />
+            )}
+
+            {/* Componente Stripe - mostra quando cartão é selecionado */}
+            {paymentMethod === 'cartao' && (
+              <Elements stripe={stripePromise}>
+                <StripeElements
+                  reservaId={reservaId}
+                  valor={total}
+                  onSuccess={handlePagamentoConfirmado}
+                  onError={handlePagamentoFalhou}
+                  onPending={handlePagamentoPendente}
+                />
+              </Elements>
+            )}
+          </div>
+        </div>
+
+        {/* Coluna Direita - Resumo da Reserva */}
+        <div className={styles.columnRight}>
+          <ResumoReserva
+            tipoQuarto={tipoQuarto}
+            checkIn={checkIn}
+            checkOut={checkOut}
+            nights={nights}
+            pricePerNight={pricePerNight}
+            quantidadeQuartos={quantidadeQuartos}
+            servicosAdicionais={servicosSelecionados}
+            taxaImposto={taxaImposto}
+          />
+        </div>
+      </div>
+
+      {/* Resumo Final - para métodos que não são M-Pesa e não são cartão */}
+      {isFormValid &&
+        paymentMethod &&
+        modalQuarto.quartosSelecionados.length > 0 &&
+        paymentMethod !== 'mpesa' &&
+        paymentMethod !== 'cartao' && (
+          <ResumoFinal
+            quartos={modalQuarto.quartosSelecionados}
+            guestData={guestData}
+            paymentMethod={paymentMethod}
+            nights={nights}
+            pricePerNight={pricePerNight}
+            servicosAdicionais={servicosSelecionados}
+            taxaImposto={taxaImposto}
+          />
         )}
-      </div>
 
-      {/* STEP 2: Dados do Hóspede */}
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>2. Dados do hóspede</h2>
-        <FormularioDadosPessoais
-          guestData={guestData}
-          setGuestData={setGuestData}
-          errors={errors}
-          isIdentificado={isIdentificado}
-        />
-      </div>
-
-      {/* STEP 3: Pagamento */}
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>3. Pagamento</h2>
-        <MetodosPagamento
-          paymentMethod={paymentMethod}
-          setPaymentMethod={setPaymentMethod}
-          paymentDetails={paymentDetails}
-          setPaymentDetails={setPaymentDetails}
-          errors={errors}
-        />
-      </div>
-
-      {/* Resumo da Reserva */}
-      <ResumoReserva
-        tipoQuarto={tipoQuarto}
-        checkIn={checkIn}
-        checkOut={checkOut}
-        nights={nights}
-        pricePerNight={pricePerNight}
-        total={total}
-      />
-
-      {/* Resumo Final (aparece quando formulário está preenchido) */}
-      {isFormValid && paymentMethod && modalQuarto.quartoSelecionado && (
-        <ResumoFinal
-          quarto={modalQuarto.quartoSelecionado}
-          guestData={guestData}
-          paymentMethod={paymentMethod}
-          total={total}
+      {/* Botão Confirmar Pagamento - apenas para métodos que não são M-Pesa e não são cartão */}
+      {paymentMethod !== 'mpesa' && paymentMethod !== 'cartao' && (
+        <BotaoConfirmarPagamento
+          isFormValid={isFormValid && modalQuarto.quartosSelecionados.length > 0}
+          isLoading={isLoading}
+          onClick={handleConfirmPayment}
         />
       )}
 
-      {/* Botão Confirmar Pagamento */}
-      <BotaoConfirmarPagamento
-        isFormValid={isFormValid && modalQuarto.quartoSelecionado}
-        isLoading={isLoading}
-        onClick={handleConfirmPayment}
-      />
-
-      {/* Modal de Seleção de Quarto */}
       <ModalSelecionarQuarto
         isOpen={modalQuarto.isOpen}
         onClose={modalQuarto.cancelarSelecao}
         onConfirm={modalQuarto.confirmarSelecao}
-        quartoTemp={modalQuarto.quartoTemp}
-        onSelectTemp={modalQuarto.selecionarQuartoTemp}
+        quartosTemp={modalQuarto.quartosTemp}
+        onToggleTemp={modalQuarto.toggleQuartoTemp}
         tipoQuarto={tipoQuarto}
       />
     </div>
@@ -179,3 +359,6 @@ const Checkout = () => {
 };
 
 export default Checkout;
+
+
+

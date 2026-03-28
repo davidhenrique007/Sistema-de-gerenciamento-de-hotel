@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+ï»¿import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import useRooms from '../../hooks/useRooms';
 import useRoomSelection from '../../hooks/useRoomSelection';
@@ -8,7 +8,7 @@ import Button from '../../../../shared/components/ui/Button';
 import styles from './RoomsSection.module.css';
 
 /**
- * RoomsSection Component - Seção principal de quartos
+ * RoomsSection Component - SeÃ§Ã£o principal de quartos
  */
 const RoomsSection = ({ 
   onSelectRoom, 
@@ -90,7 +90,7 @@ const RoomsSection = ({
               <strong>{stats.total}</strong> total
             </span>
             <span className={styles.statItem}>
-              <strong>{stats.available}</strong> disponíveis
+              <strong>{stats.available}</strong> disponÃ­veis
             </span>
             
             <div className={styles.filters}>
@@ -104,7 +104,7 @@ const RoomsSection = ({
                 className={`${styles.filterButton} ${filter === 'available' ? styles.active : ''}`}
                 onClick={() => handleFilterChange('available')}
               >
-                Disponíveis
+                DisponÃ­veis
               </button>
             </div>
           </div>
@@ -138,3 +138,4 @@ RoomsSection.defaultProps = {
 };
 
 export default React.memo(RoomsSection);
+

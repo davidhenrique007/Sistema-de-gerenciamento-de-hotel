@@ -1,11 +1,15 @@
-// =====================================================
-// COMPONENTE - RESUMO FINAL DA RESERVA
-// =====================================================
-
-import React from 'react';
+﻿import React from 'react';
 import styles from '../styles/Checkout.module.css';
 
-const ResumoFinal = ({ quarto, guestData, paymentMethod, total }) => {
+const ResumoFinal = ({ 
+  quartos, 
+  guestData, 
+  paymentMethod, 
+  nights,
+  pricePerNight,
+  servicosAdicionais = [],
+  taxaImposto = 0.05
+}) => {
   const getPaymentMethodName = (method) => {
     const methods = {
       mpesa: 'M-Pesa',
@@ -14,15 +18,21 @@ const ResumoFinal = ({ quarto, guestData, paymentMethod, total }) => {
       cartao: 'Cartão de Crédito',
       dinheiro: 'Dinheiro (na chegada)'
     };
-    return methods[method] || method;
+    return methods[method] || method || 'Não selecionado';
   };
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('pt-BR', {
+    return new Intl.NumberFormat('pt-MZ', {
       style: 'currency',
       currency: 'MZN'
     }).format(value);
   };
+
+  const subtotalQuartos = pricePerNight * nights * (quartos?.length || 1);
+  const subtotalServicos = servicosAdicionais.reduce((sum, s) => sum + (s.preco * nights), 0);
+  const subtotal = subtotalQuartos + subtotalServicos;
+  const taxas = subtotal * taxaImposto;
+  const total = subtotal + taxas;
 
   return (
     <div className={styles.resumoFinal}>
@@ -30,10 +40,22 @@ const ResumoFinal = ({ quarto, guestData, paymentMethod, total }) => {
       
       <div className={styles.resumoFinalGrid}>
         <div className={styles.resumoFinalCard}>
-          <h4>🏨 Quarto</h4>
-          <p><strong>Número:</strong> {quarto?.numero || 'Não selecionado'}</p>
-          <p><strong>Tipo:</strong> {quarto?.tipo || '-'}</p>
-          <p><strong>Andar:</strong> {quarto?.andar || '-'}</p>
+          <h4>🏨 Quartos Selecionados</h4>
+          {quartos && quartos.length > 0 ? (
+            <>
+              {quartos.map(quarto => (
+                <p key={quarto.id}>
+                  <strong>Quarto {quarto.numero}</strong> - {quarto.tipo}
+                </p>
+              ))}
+              <p className={styles.totalQuartosResumo}>
+                <strong>Total:</strong> {quartos.length} quarto(s) | {nights} noite(s)
+              </p>
+              <p><strong>Subtotal quartos:</strong> {formatCurrency(subtotalQuartos)}</p>
+            </>
+          ) : (
+            <p>Nenhum quarto selecionado</p>
+          )}
         </div>
         
         <div className={styles.resumoFinalCard}>
@@ -46,6 +68,10 @@ const ResumoFinal = ({ quarto, guestData, paymentMethod, total }) => {
         <div className={styles.resumoFinalCard}>
           <h4>💳 Pagamento</h4>
           <p><strong>Método:</strong> {getPaymentMethodName(paymentMethod)}</p>
+          {servicosAdicionais.length > 0 && (
+            <p><strong>Serviços:</strong> {formatCurrency(subtotalServicos)}</p>
+          )}
+          <p><strong>Taxas ({taxaImposto * 100}%):</strong> {formatCurrency(taxas)}</p>
           <p><strong>Valor total:</strong> <span className={styles.totalValue}>{formatCurrency(total)}</span></p>
         </div>
       </div>

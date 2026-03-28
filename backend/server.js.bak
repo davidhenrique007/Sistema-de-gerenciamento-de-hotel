@@ -1,0 +1,222 @@
+﻿// =====================================================
+// HOTEL PARADISE - SERVIDOR PRINCIPAL (ATUALIZADO)
+// VersÃ£o: 1.2.0 - COM SEED AUTOMÃTICO E CONTROLE DE CONCORRÃŠNCIA
+// =====================================================
+
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const compression = require('compression');
+const morgan = require('morgan');
+const bcrypt = require('bcryptjs');
+require('dotenv').config();
+
+const db = require('./config/database');
+const routes = require('./routes');
+const { securityMiddleware } = require('./middlewares/security');
+const { models } = require('./models');
+
+// =====================================================
+// IMPORTAÃ‡ÃƒO DAS NOVAS ROTAS
+// =====================================================
+const reservaRoutes = require('./routes/reservaRoutes');
+const stripeRoutes = require('./routes/stripeRoutes');
+const pagamentoRoutes = require('./routes/pagamentoRoutes');  // <-- ADICIONADO
+const webhookRoutes = require('./routes/webhookRoutes');      // <-- ADICIONADO
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// =====================================================
+// SEED AUTOMÃTICO DE USUÃRIOS
+// =====================================================
+const seedUsers = async () => {
+  try {
+    console.log('ðŸŒ± Verificando usuÃ¡rios padrÃ£o...');
+    
+    const users = [
+      { 
+        name: 'Administrador', 
+        email: 'admin@hotelparadise.com', 
+        pass: 'admin123', 
+        role: 'admin' 
+      },
+      { 
+        name: 'Recepcionista', 
+        email: 'recepcao@hotelparadise.com', 
+        pass: 'receptionist123', 
+        role: 'receptionist' 
+      },
+      { 
+        name: 'Financeiro', 
+        email: 'financeiro@hotelparadise.com', 
+        pass: 'financeiro123', 
+        role: 'financial' 
+      }
+    ];
+    
+    for (const u of users) {
+      const exists = await models.users.findByEmail(u.email);
+      
+      if (!exists) {
+        console.log(`  ðŸ‘¤ Criando ${u.name}...`);
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(u.pass, salt);
+        
+        await models.users.create({ 
+          name: u.name, 
+          email: u.email, 
+          password_hash: hash, 
+          role: u.role, 
+          is_active: true 
+        });
+        
+        console.log(`  âœ… ${u.name} criado com sucesso!`);
+      } else {
+        console.log(`  âœ… ${u.name} jÃ¡ existe`);
+      }
+    }
+    
+    console.log('ðŸŒ± Seed de usuÃ¡rios concluÃ­do!\n');
+  } catch (error) {
+    console.error('âŒ Erro no seed de usuÃ¡rios:', error);
+  }
+};
+
+// =====================================================
+// MIDDLEWARES
+// =====================================================
+
+// SeguranÃ§a (Helmet + CORS)
+securityMiddleware(app);
+
+// CompressÃ£o
+app.use(compression());
+
+// Logging
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+} else {
+  app.use(morgan('combined'));
+}
+
+// Parsing
+app.use(express.json({ limit: '10mb' }));
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// =====================================================
+// ROTAS
+// =====================================================
+
+// Rotas da API existentes
+app.use('/api', routes);
+
+// Rotas de reserva com controle de concorrÃªncia
+app.use('/api', reservaRoutes);
+app.use('/api/stripe', stripeRoutes);
+// Endpoint de teste Stripe
+app.get('/api/test-stripe', (req, res) => {
+    res.json({ 
+        success: true, 
+        message: 'Stripe endpoint funcionando!',
+        stripeKey: process.env.STRIPE_SECRET_KEY ? 'Configurada' : 'Não configurada'
+    });
+});
+
+// Rotas de pagamento M-Pesa
+app.use('/api/pagamentos', pagamentoRoutes);  // <-- ADICIONADO
+app.use('/api/webhooks', webhookRoutes);      // <-- ADICIONADO
+
+// Rota raiz
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      name: 'Hotel Paradise API',
+      version: '1.2.0',
+      environment: process.env.NODE_ENV,
+      timestamp: new Date().toISOString(),
+      endpoints: {
+        auth: '/api/auth',
+        users: '/api/users',
+        rooms: '/api/rooms',
+        reservas: '/api/reservas',
+        quartos: '/api/quartos/disponiveis',
+        pagamentos: '/api/pagamentos/mpesa/iniciar',
+        webhook: '/api/webhooks/mpesa/confirmar',
+        health: '/api/health'
+      }
+    }
+  });
+});
+
+// =====================================================
+// TRATAMENTO DE ERROS
+// =====================================================
+
+// 404
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'Rota nÃ£o encontrada'
+  });
+});
+
+// Erro global
+app.use((err, req, res, next) => {
+  console.error('âŒ Erro:', err);
+  
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Erro interno do servidor';
+  
+  res.status(statusCode).json({
+    success: false,
+    message,
+    error: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// =====================================================
+// INICIALIZAÃ‡ÃƒO
+// =====================================================
+const server = app.listen(PORT, async () => {
+  console.log('\n=================================');
+  console.log('ðŸš€ HOTEL PARADISE - BACKEND');
+  console.log('=================================');
+  console.log(`ðŸ“¡ Servidor: http://localhost:${PORT}`);
+  console.log(`ðŸ”§ Ambiente: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`ðŸ“‹ DocumentaÃ§Ã£o: http://localhost:${PORT}/`);
+  console.log(`â¤ï¸ Health check: http://localhost:${PORT}/api/health`);
+  console.log(`ðŸ¨ Quartos disponÃ­veis: http://localhost:${PORT}/api/quartos/disponiveis`);
+  console.log(`ðŸ“ Reservas: http://localhost:${PORT}/api/reservas`);
+  console.log(`ðŸ’° Pagamento M-Pesa: http://localhost:${PORT}/api/pagamentos/mpesa/iniciar`);
+  console.log(`ðŸ”” Webhook M-Pesa: http://localhost:${PORT}/api/webhooks/mpesa/confirmar`);
+  console.log('=================================\n');
+
+  await seedUsers();
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+async function gracefulShutdown(signal) {
+  console.log(`\nðŸ›‘ Recebido ${signal}, fechando conexÃµes...`);
+  
+  server.close(() => {
+    console.log('âœ… Servidor HTTP encerrado');
+  });
+  
+  try {
+    await db.pool.end();
+    console.log('âœ… ConexÃµes com banco encerradas');
+    process.exit(0);
+  } catch (err) {
+    console.error('âŒ Erro ao encerrar:', err);
+    process.exit(1);
+  }
+}
+
+module.exports = app;
+

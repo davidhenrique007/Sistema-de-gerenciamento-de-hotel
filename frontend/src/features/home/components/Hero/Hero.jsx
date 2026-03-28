@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+﻿import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import Button from '../../../../shared/components/ui/Button';
 import HeroBackground from './HeroBackground';
@@ -11,11 +11,10 @@ const Hero = ({
   backgroundImage = '/assets/images/hero-bg.jpg',
   overlay = true,
   parallax = false,
-  size = 'large', // 'small', 'medium', 'large'
+  size = 'large',
   onCtaClick,
   className = '',
 }) => {
-  // Mapeamento de tamanhos
   const sizeClasses = {
     small: styles.heroSmall,
     medium: styles.heroMedium,
@@ -32,14 +31,17 @@ const Hero = ({
       
       <div className={styles.container}>
         <div className={styles.content}>
-          <h1 className={styles.title}>{title}</h1>
-          <p className={styles.subtitle}>{subtitle}</p>
+          <h1 className={styles.title}>
+            <span className={styles.gradientText}>{title}</span>
+          </h1>
+          <p className={`${styles.subtitle} ${styles.pulseText}`}>{subtitle}</p>
           
           <div className={styles.cta}>
             <Button
               variant="primary"
               size="lg"
               onClick={onCtaClick}
+              className={styles.ctaButton}
             >
               {ctaText}
             </Button>
@@ -69,7 +71,7 @@ Hero.defaultProps = {
   backgroundImage: '/assets/images/hero-bg.jpg',
   overlay: true,
   parallax: false,
-  size: 'medium', // Mudar para 'medium' por padrão
+  size: 'medium',
   onCtaClick: undefined,
   className: '',
 };
