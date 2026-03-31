@@ -6,7 +6,7 @@ const servicosDisponiveis = [
     id: 'cafe_manha',
     nome: 'Café da manhã',
     descricao: 'Café da manhã completo com opções regionais',
-    preco: 120,
+    preco: 300,
     tipo: 'por_noite',
     categoria: 'alimentacao',
     icone: '🍳'
@@ -15,7 +15,7 @@ const servicosDisponiveis = [
     id: 'spa',
     nome: 'Spa & Bem-estar',
     descricao: 'Sessão de massagem relaxante',
-    preco: 350,
+    preco: 2000,
     tipo: 'por_noite',
     categoria: 'bem_estar',
     icone: '💆'
@@ -24,7 +24,7 @@ const servicosDisponiveis = [
     id: 'piscina',
     nome: 'Piscina aquecida',
     descricao: 'Acesso à piscina aquecida',
-    preco: 200,
+    preco: 1000,
     tipo: 'por_noite',
     categoria: 'lazer',
     icone: '🏊'
@@ -33,7 +33,7 @@ const servicosDisponiveis = [
     id: 'academia',
     nome: 'Academia moderna',
     descricao: 'Equipamentos modernos e acompanhamento',
-    preco: 150,
+    preco: 1500,
     tipo: 'por_noite',
     categoria: 'bem_estar',
     icone: '💪'
@@ -42,7 +42,7 @@ const servicosDisponiveis = [
     id: 'translado',
     nome: 'Translado aeroporto',
     descricao: 'Ida e volta ao aeroporto',
-    preco: 500,
+    preco: 1000,
     tipo: 'unico',
     categoria: 'conveniencia',
     icone: '🚗'
@@ -51,7 +51,7 @@ const servicosDisponiveis = [
     id: 'wifi_premium',
     nome: 'Wi-Fi Premium',
     descricao: 'Internet de alta velocidade',
-    preco: 50,
+    preco: 500,
     tipo: 'por_noite',
     categoria: 'conveniencia',
     icone: '📶'

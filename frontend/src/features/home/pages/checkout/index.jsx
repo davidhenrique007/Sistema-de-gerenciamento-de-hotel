@@ -16,9 +16,9 @@ import StripeElements from './components/StripeElements';
 import { useValidacaoCheckout } from './hooks/useValidacaoCheckout';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import api from '@services/api';
 import styles from './styles/Checkout.module.css';
 
-// Carregar Stripe com a chave pública
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 const Checkout = () => {
@@ -46,9 +46,7 @@ const Checkout = () => {
   const { errors, isFormValid } = useValidacaoCheckout(guestData, paymentMethod, paymentDetails);
 
   useEffect(() => {
-    if (!reservation && !room) {
-      navigate('/');
-    }
+    if (!reservation && !room) navigate('/');
   }, [reservation, room, navigate]);
 
   useEffect(() => {
@@ -57,40 +55,17 @@ const Checkout = () => {
     }
   }, [servicosContexto]);
 
-
-  // Criar um ID de reserva temporário quando o checkout carregar
   useEffect(() => {
     if (!reservaId && reservation) {
       const tempId = `TEMP_${Date.now()}`;
       setReservaId(tempId);
-      console.log('📝 Reserva ID temporário criado:', tempId);
     }
   }, [reservation, reservaId]);
 
-  // Atualizar reservaId quando quartos são selecionados
   useEffect(() => {
     if (modalQuarto.quartosSelecionados.length > 0 && !reservaId) {
       const tempId = `TEMP_${Date.now()}_${modalQuarto.quartosSelecionados[0].numero}`;
       setReservaId(tempId);
-      console.log('📝 Reserva ID atualizado:', tempId);
-    }
-  }, [modalQuarto.quartosSelecionados]);
-
-  // Criar um ID de reserva temporário quando o checkout carregar
-  useEffect(() => {
-    if (!reservaId && reservation) {
-      const tempId = `TEMP_${Date.now()}`;
-      setReservaId(tempId);
-      console.log('📝 Reserva ID temporário criado:', tempId);
-    }
-  }, [reservation, reservaId]);
-
-  // Atualizar reservaId quando quartos são selecionados
-  useEffect(() => {
-    if (modalQuarto.quartosSelecionados.length > 0 && !reservaId) {
-      const tempId = `TEMP_${Date.now()}_${modalQuarto.quartosSelecionados[0].numero}`;
-      setReservaId(tempId);
-      console.log('📝 Reserva ID atualizado:', tempId);
     }
   }, [modalQuarto.quartosSelecionados]);
 
@@ -103,59 +78,63 @@ const Checkout = () => {
   const pricePerNight = reservation?.pricePerNight || room?.price_per_night || 0;
   const quantidadeQuartos = modalQuarto.quartosSelecionados.length || 1;
 
+  // Cálculo local apenas para mostrar no ecrã durante o checkout
+  // O valor REAL gravado no banco é calculado pelo backend automaticamente
   const subtotalQuartos = pricePerNight * nights * quantidadeQuartos;
-
   const subtotalServicos = servicosSelecionados.reduce((total, servico) => {
     const preco = servico.tipo === 'por_noite' ? servico.preco * nights : servico.preco;
     return total + preco;
   }, 0);
-
   const subtotal = subtotalQuartos + subtotalServicos;
   const taxas = subtotal * taxaImposto;
   const total = subtotal + taxas;
 
-  // Handler para quando o pagamento é confirmado
+  // ─── Dados comuns da reserva para enviar ao backend ──────────────────────
+  // Usa room_ids (array com TODOS os quartos) — o backend calcula tudo automaticamente
+  const dadosReservaParaBackend = {
+    room_ids: modalQuarto.quartosSelecionados.map((q) => q.id), // ✅ TODOS os quartos
+    check_in: checkIn,
+    check_out: checkOut,
+    adults_count: reservation?.guests?.adults || 1,
+    children_count: reservation?.guests?.children || 0,
+    guest_name: guestData.nome,
+    guest_phone: guestData.telefone,
+    guest_document: guestData.documento,
+    guest_email: guestData.email,
+    servicos: servicosSelecionados.map((s) => s.id),
+  };
+
+  // ─── Após pagamento confirmado: navegar com APENAS o código da reserva ───
+  // O recibo vai buscar todos os dados actualizados do banco usando este código
   const handlePagamentoConfirmado = (data) => {
     console.log('✅ Pagamento confirmado!', data);
     setPagamentoStatus('confirmed');
 
-    // Preparar dados da reserva para o recibo
-    const reservaData = {
-      codigo: `RES-${Date.now()}`,
-      quantidadeQuartos: modalQuarto.quartosSelecionados.length,
-      hospedes: guestData.nome,
-      checkIn: checkIn,
-      checkOut: checkOut,
-      noites: nights,
-      total: total,
-      email: guestData.email,
-      metodoPagamento: paymentMethod === 'cartao' ? 'Cartão de Crédito' : paymentMethod,
-    };
+    const codigoReal = data.reservation_code || data.codigo;
 
-    // Salvar no localStorage
-    localStorage.setItem('ultima_reserva', JSON.stringify(reservaData));
+    // Guardar só o código — o recibo busca os dados reais do banco
+    localStorage.setItem('ultima_reserva', JSON.stringify({
+      reservation_code: codigoReal
+    }));
 
-    alert('Pagamento confirmado! Sua reserva foi concluída com sucesso.');
-    // Redirecionar para página de confirmação após 2 segundos
-    setTimeout(() => {
-      navigate('/recibo', { state: { reserva: reservaData } });
-    }, 2000);
+    navigate('/recibo', {
+      state: {
+        reservation_code: codigoReal  // ✅ só o código — sem dados manuais
+      },
+    });
   };
 
-  // Handler para quando o pagamento falha
   const handlePagamentoFalhou = (error) => {
     console.error('❌ Pagamento falhou:', error);
     setPagamentoStatus('failed');
-    // Não fecha o modal, permite tentar novamente
   };
 
-  // Handler para quando o pagamento está pendente
   const handlePagamentoPendente = (data) => {
     console.log('⏳ Pagamento pendente:', data);
     setPagamentoStatus('pending');
   };
 
-  // Handler para o botão de confirmar pagamento (para métodos que não são M-Pesa e não são cartão)
+  // ─── Pagamento por dinheiro / outros métodos (não mpesa/cartao) ──────────
   const handleConfirmPayment = async () => {
     if (!isFormValid) return;
     if (modalQuarto.quartosSelecionados.length === 0) {
@@ -166,29 +145,31 @@ const Checkout = () => {
     setIsLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // 1. Criar reserva com TODOS os quartos — backend calcula preço automaticamente
+      const respostaReserva = await api.post('/reservas', {
+        ...dadosReservaParaBackend,
+        payment_method: paymentMethod,
+      });
 
-      // Preparar dados da reserva para o recibo
-      const reservaData = {
-        codigo: `RES-${Date.now()}`,
-        quantidadeQuartos: modalQuarto.quartosSelecionados.length,
-        hospedes: guestData.nome,
-        checkIn: checkIn,
-        checkOut: checkOut,
-        noites: nights,
-        total: total,
-        email: guestData.email,
-        metodoPagamento: paymentMethod,
-      };
+      if (!respostaReserva.data.success) {
+        throw new Error(respostaReserva.data.message || 'Erro ao criar reserva');
+      }
 
-      // Salvar no localStorage
-      localStorage.setItem('ultima_reserva', JSON.stringify(reservaData));
+      const { reservation_code } = respostaReserva.data.data;
+      console.log('✅ Reserva criada no banco:', reservation_code);
 
-      // Redirecionar para a página de recibo
-      navigate('/recibo', { state: { reserva: reservaData } });
+      // 2. Confirmar pagamento
+      await api.put(`/reservas/${reservation_code}/confirmar-pagamento`, {
+        payment_method: paymentMethod,
+      });
+
+      // 3. Navegar com só o código — recibo busca dados reais do banco
+      handlePagamentoConfirmado({ reservation_code });
+
     } catch (error) {
-      console.error('Erro no pagamento:', error);
-      alert('Erro ao processar pagamento. Tente novamente.');
+      console.error('❌ Erro:', error);
+      const mensagem = error.response?.data?.message || 'Erro ao processar. Tente novamente.';
+      alert(mensagem);
     } finally {
       setIsLoading(false);
     }
@@ -203,13 +184,10 @@ const Checkout = () => {
 
       <h1 className={styles.title}>Checkout</h1>
 
-      {/* LINHA 1: Quartos (ESQUERDA) + Dados do Hóspede (DIREITA) */}
       <div className={styles.twoColumns}>
-        {/* Coluna Esquerda - Seleção de Quartos */}
         <div className={styles.columnLeft}>
           <div className={styles.sectionCompact}>
             <h2 className={styles.sectionTitle}>1. Escolha seus quartos</h2>
-
             {modalQuarto.quartosSelecionados.length > 0 ? (
               <div className={styles.quartosSelecionados}>
                 <div className={styles.quartosList}>
@@ -240,7 +218,6 @@ const Checkout = () => {
           </div>
         </div>
 
-        {/* Coluna Direita - Dados do Hóspede */}
         <div className={styles.columnRight}>
           <div className={styles.sectionCompact}>
             <h2 className={styles.sectionTitle}>2. Dados do hóspede</h2>
@@ -254,7 +231,6 @@ const Checkout = () => {
         </div>
       </div>
 
-      {/* LINHA 2: Serviços Adicionais (Largura Total) */}
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>3. Serviços Adicionais</h2>
         <ServicosAdicionais
@@ -264,18 +240,18 @@ const Checkout = () => {
         />
       </div>
 
-      {/* LINHA 3: Pagamento (ESQUERDA) + Resumo da Reserva (DIREITA) */}
       <div className={styles.twoColumns}>
-        {/* Coluna Esquerda - Pagamento */}
         <div className={styles.columnLeft}>
           <div className={styles.sectionCompact}>
             <h2 className={styles.sectionTitle}>4. Pagamento</h2>
-
-            {/* Mostrar componente específico do M-Pesa quando selecionado */}
             {paymentMethod === 'mpesa' && reservaId ? (
               <PagamentoMpesa
                 reservaId={reservaId}
                 valor={total}
+                dadosReserva={{
+                  ...dadosReservaParaBackend,  // ✅ inclui room_ids com TODOS os quartos
+                  payment_method: 'mpesa',
+                }}
                 onSuccess={handlePagamentoConfirmado}
                 onError={handlePagamentoFalhou}
                 onPending={handlePagamentoPendente}
@@ -289,13 +265,15 @@ const Checkout = () => {
                 errors={errors}
               />
             )}
-
-            {/* Componente Stripe - mostra quando cartão é selecionado */}
             {paymentMethod === 'cartao' && (
               <Elements stripe={stripePromise}>
                 <StripeElements
                   reservaId={reservaId}
                   valor={total}
+                  dadosReserva={{
+                    ...dadosReservaParaBackend,
+                    payment_method: 'cartao',
+                  }}
                   onSuccess={handlePagamentoConfirmado}
                   onError={handlePagamentoFalhou}
                   onPending={handlePagamentoPendente}
@@ -305,7 +283,6 @@ const Checkout = () => {
           </div>
         </div>
 
-        {/* Coluna Direita - Resumo da Reserva */}
         <div className={styles.columnRight}>
           <ResumoReserva
             tipoQuarto={tipoQuarto}
@@ -320,7 +297,6 @@ const Checkout = () => {
         </div>
       </div>
 
-      {/* Resumo Final - para métodos que não são M-Pesa e não são cartão */}
       {isFormValid &&
         paymentMethod &&
         modalQuarto.quartosSelecionados.length > 0 &&
@@ -337,7 +313,6 @@ const Checkout = () => {
           />
         )}
 
-      {/* Botão Confirmar Pagamento - apenas para métodos que não são M-Pesa e não são cartão */}
       {paymentMethod !== 'mpesa' && paymentMethod !== 'cartao' && (
         <BotaoConfirmarPagamento
           isFormValid={isFormValid && modalQuarto.quartosSelecionados.length > 0}
@@ -359,6 +334,3 @@ const Checkout = () => {
 };
 
 export default Checkout;
-
-
-
