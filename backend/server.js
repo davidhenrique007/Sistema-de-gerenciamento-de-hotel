@@ -19,6 +19,7 @@ const pagamentoRoutes = require('./routes/pagamentoRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
 const stripeRoutes = require('./routes/stripeRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const reciboRoutes = require('./routes/reciboRoutes');
 const liberarQuartosJob = require('./services/jobs/liberarQuartosJob');
 
 const app = express();
@@ -94,6 +95,7 @@ app.use('/api', routes);
 app.use('/api', reservaRoutes);
 app.use('/api/pagamentos', pagamentoRoutes);
 app.use('/api/webhooks', webhookRoutes);
+app.use('/api/recibos', reciboRoutes);
 app.use('/api/stripe', stripeRoutes);
 app.use('/api/admin', adminRoutes);
 
@@ -189,4 +191,5 @@ async function gracefulShutdown(signal) {
 }
 
 module.exports = app;
+
 
