@@ -1,4 +1,4 @@
-import React, { memo, useRef } from 'react';
+﻿import React, { memo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import useServices from '../../hooks/useServices';
 import ServiceCard from './ServiceCard';
@@ -7,14 +7,13 @@ import Button from '../../../../shared/components/ui/Button';
 import styles from './ServicesSection.module.css';
 
 /**
- * ServicesSection Component - Seção de serviços com cards horizontais
+ * ServicesSection Component - Seção de serviços com cards horizontais (sem filtros)
  */
 const ServicesSection = ({ 
   title = 'Serviços Adicionais',
   subtitle = 'Personalize sua estadia com nossos serviços exclusivos',
   onServiceToggle,
   selectedServiceIds = [],
-  showFilters = true,
   className = '',
 }) => {
   // ==========================================================================
@@ -25,9 +24,6 @@ const ServicesSection = ({
 
   const {
     filteredServices,
-    categories,
-    selectedCategory,
-    handleCategoryChange,
     isLoading,
     error,
   } = useServices();
@@ -91,26 +87,7 @@ const ServicesSection = ({
           {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
         </div>
 
-        {/* Filtros por categoria */}
-        {showFilters && (
-          <div className={styles.filters}>
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                className={`
-                  ${styles.filterButton}
-                  ${selectedCategory === category.id ? styles.active : ''}
-                `}
-                onClick={() => handleCategoryChange(category.id)}
-                aria-pressed={selectedCategory === category.id}
-              >
-                {category.label}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* CARROSSEL HORIZONTAL - substitui o grid */}
+        {/* CARROSSEL HORIZONTAL - sem filtros de categoria */}
         {filteredServices.length > 0 ? (
           <div className={styles.carouselContainer} ref={carouselRef}>
             <div className={styles.carouselTrack}>
@@ -127,7 +104,7 @@ const ServicesSection = ({
         ) : (
           <div className={styles.emptyState}>
             <p className={styles.emptyStateText}>
-              Nenhum serviço encontrado nesta categoria.
+              Nenhum serviço disponível no momento.
             </p>
           </div>
         )}
@@ -141,7 +118,6 @@ ServicesSection.propTypes = {
   subtitle: PropTypes.string,
   onServiceToggle: PropTypes.func,
   selectedServiceIds: PropTypes.arrayOf(PropTypes.string),
-  showFilters: PropTypes.bool,
   className: PropTypes.string,
 };
 
@@ -150,7 +126,6 @@ ServicesSection.defaultProps = {
   subtitle: 'Personalize sua estadia com nossos serviços exclusivos',
   onServiceToggle: undefined,
   selectedServiceIds: [],
-  showFilters: true,
   className: '',
 };
 

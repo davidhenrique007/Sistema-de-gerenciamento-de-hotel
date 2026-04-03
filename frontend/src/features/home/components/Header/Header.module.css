@@ -1,10 +1,10 @@
-/* ============================================================================
-   HEADER PRINCIPAL - FUNDO ESCURO FIXO
+﻿/* ============================================================================
+   HEADER PRINCIPAL
    =========================================================================== */
 
 .header {
   width: 100%;
-  background-color: #0f172a;  /* Azul escuro/cinza escuro - SEMPRE VISÍVEL */
+  background-color: #0f172a;
   border-bottom: 1px solid #1e293b;
   transition: all 0.3s ease;
   z-index: 1000;
@@ -15,25 +15,13 @@
   top: 0;
 }
 
-/* Remove o fundo claro e mantém escuro mesmo no transparent */
-.header.transparent {
-  background-color: #0f172a;  /* Mesma cor, não transparente */
-  border-bottom-color: #1e293b;
-}
-
-.header.transparent.scrolled {
-  background-color: #0a0f1a;  /* Mais escuro ao rolar */
-  border-bottom-color: #2563eb;
-  backdrop-filter: blur(8px);
-}
-
 .header.scrolled {
-  background-color: #0a0f1a;  /* Mais escuro ao rolar */
+  background-color: #0a0f1a;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* ============================================================================
-   CONTAINER DO HEADER
+   CONTAINER
    =========================================================================== */
 
 .headerContainer {
@@ -60,13 +48,13 @@
 }
 
 /* ============================================================================
-   LOGO - TEXTO BRANCO SEMPRE
+   LOGO COM ANIMAÇÃO - IGUAL AO CHECKOUT
    =========================================================================== */
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   text-decoration: none;
   transition: opacity 0.2s ease;
 }
@@ -75,51 +63,84 @@
   opacity: 0.9;
 }
 
-.logoIcon {
-  width: 40px;
-  height: 40px;
+/* Container do logo com efeito de círculo pulsante */
+.logoImageContainer {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.logoPrimary {
-  fill: #3b82f6;  /* Azul vibrante */
+/* Círculo externo com animação de pulsação - IGUAL AO CHECKOUT */
+.logoImageContainer::before {
+  content: '';
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.2) 0%, rgba(251, 191, 36, 0.05) 70%);
+  border-radius: 50%;
+  border: 2px solid rgba(251, 191, 36, 0.4);
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+  animation: pulse 2s ease-in-out infinite;
 }
 
-.logoSecondary {
-  fill: white;
+/* Efeito de pulsação */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
 }
 
-/* Remove a classe light que mudava as cores */
-.logo.light .logoPrimary {
-  fill: #3b82f6;  /* Mantém azul */
+.logoImage {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  background: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  border: 2px solid rgba(251, 191, 36, 0.6);
 }
 
-.logo.light .logoSecondary {
-  fill: rgba(255, 255, 255, 0.2);
+.logoImage:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
+  border-color: rgba(251, 191, 36, 0.9);
+}
+
+.logoFallback {
+  font-size: 48px;
+  position: relative;
+  z-index: 2;
 }
 
 .logoText {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 400;
-  color: white !important;  /* Força branco */
+  color: white !important;
   white-space: nowrap;
 }
 
 .logoText strong {
   font-weight: 700;
-  color: #3b82f6 !important;  /* Azul sempre visível */
-}
-
-/* Remove a classe light que mudava o texto */
-.logo.light .logoText {
-  color: white !important;
-}
-
-.logo.light .logoText strong {
   color: #3b82f6 !important;
 }
 
 /* ============================================================================
-   NAVEGAÇÃO DESKTOP - LINKS BRANCOS SEMPRE
+   NAVEGAÇÃO
    =========================================================================== */
 
 .navMenu {
@@ -141,16 +162,12 @@
   padding: 0;
 }
 
-.navItem {
-  position: relative;
-}
-
 .navLink {
   display: inline-block;
   padding: 8px 12px;
   font-size: 16px;
   font-weight: 500;
-  color: white !important;  /* Força branco */
+  color: white !important;
   text-decoration: none;
   border-radius: 6px;
   transition: all 0.2s ease;
@@ -161,33 +178,8 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.navLink.active {
-  color: #3b82f6 !important;
-  font-weight: 600;
-}
-
-.navLink.active::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 12px;
-  right: 12px;
-  height: 2px;
-  background-color: #3b82f6;
-  border-radius: 2px;
-}
-
-/* Remove a classe transparent que mudava as cores */
-.transparent .navLink {
-  color: white !important;
-}
-
-.transparent .navLink:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
 /* ============================================================================
-   MENU TOGGLE (MOBILE) - BRANCO SEMPRE
+   MENU MOBILE
    =========================================================================== */
 
 .menuToggle {
@@ -196,48 +188,17 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  padding: 0;
   background: transparent;
   border: none;
-  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  color: white !important;  /* Ícone branco */
 }
-
-.menuToggle:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.menuToggle.open {
-  position: relative;
-  z-index: 1001;
-}
-
-.menuToggle.open:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-}
-
-/* Remove a classe transparent */
-.transparent .menuToggle {
-  color: white !important;
-}
-
-.transparent .menuToggle:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* ============================================================================
-   HAMBURGER ICON - BRANCO SEMPRE
-   =========================================================================== */
 
 .hamburgerIcon {
   position: relative;
   width: 24px;
   height: 2px;
-  background-color: white !important;
+  background-color: white;
   border-radius: 2px;
-  transition: all 0.2s ease;
 }
 
 .hamburgerIcon::before,
@@ -246,9 +207,8 @@
   position: absolute;
   width: 24px;
   height: 2px;
-  background-color: white !important;
+  background-color: white;
   border-radius: 2px;
-  transition: all 0.2s ease;
 }
 
 .hamburgerIcon::before {
@@ -263,20 +223,15 @@
   background-color: transparent;
 }
 
-/* ============================================================================
-   MENU MOBILE
-   =========================================================================== */
-
 .mobileMenu {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #0f172a;  /* Fundo escuro para mobile */
+  background-color: #0f172a;
   z-index: 1000;
   padding: 80px 16px 32px;
-  overflow-y: auto;
   transform: translateX(100%);
   transition: transform 0.3s ease-out;
 }
@@ -285,60 +240,37 @@
   transform: translateX(0);
 }
 
-.mobileMenu.closed {
-  transform: translateX(100%);
-}
-
-.mobileNav {
-  width: 100%;
-}
-
-.mobileNavList {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.mobileNavItem {
-  width: 100%;
-}
-
 .mobileNavLink {
   display: block;
   padding: 16px 20px;
   font-size: 20px;
   font-weight: 500;
-  color: white !important;
+  color: white;
   text-decoration: none;
   text-align: center;
-  border-radius: 12px;
-  transition: all 0.2s ease;
-}
-
-.mobileNavLink:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #3b82f6 !important;
-}
-
-.mobileNavLink.active {
-  color: #3b82f6 !important;
-  background-color: rgba(59, 130, 246, 0.2);
-  font-weight: 600;
 }
 
 /* ============================================================================
-   RESPONSIVIDADE
+   RESPONSIVO
    =========================================================================== */
 
 @media (max-width: 768px) {
-  .headerContainer {
-    height: 60px;
+  .logoImageContainer {
+    width: 55px;
+    height: 55px;
   }
-
-  .navMenu {
-    display: none;
+  
+  .logoImageContainer::before {
+    width: 55px;
+    height: 55px;
+  }
+  
+  .logoImage {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .logoText {
+    font-size: 18px;
   }
 }

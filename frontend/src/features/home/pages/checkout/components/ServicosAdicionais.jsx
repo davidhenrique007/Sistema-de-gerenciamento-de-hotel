@@ -8,7 +8,6 @@ const servicosDisponiveis = [
     descricao: 'Café da manhã completo com opções regionais',
     preco: 300,
     tipo: 'por_noite',
-    categoria: 'alimentacao',
     icone: '🍳'
   },
   {
@@ -17,7 +16,6 @@ const servicosDisponiveis = [
     descricao: 'Sessão de massagem relaxante',
     preco: 2000,
     tipo: 'por_noite',
-    categoria: 'bem_estar',
     icone: '💆'
   },
   {
@@ -26,7 +24,6 @@ const servicosDisponiveis = [
     descricao: 'Acesso à piscina aquecida',
     preco: 1000,
     tipo: 'por_noite',
-    categoria: 'lazer',
     icone: '🏊'
   },
   {
@@ -35,7 +32,6 @@ const servicosDisponiveis = [
     descricao: 'Equipamentos modernos e acompanhamento',
     preco: 1500,
     tipo: 'por_noite',
-    categoria: 'bem_estar',
     icone: '💪'
   },
   {
@@ -44,7 +40,6 @@ const servicosDisponiveis = [
     descricao: 'Ida e volta ao aeroporto',
     preco: 1000,
     tipo: 'unico',
-    categoria: 'conveniencia',
     icone: '🚗'
   },
   {
@@ -53,26 +48,16 @@ const servicosDisponiveis = [
     descricao: 'Internet de alta velocidade',
     preco: 500,
     tipo: 'por_noite',
-    categoria: 'conveniencia',
     icone: '📶'
   }
 ];
 
 const ServicosAdicionais = ({ nights, servicosSelecionados, onServicosChange }) => {
-  const [categoriaAtiva, setCategoriaAtiva] = useState('todos');
   const [servicosTemp, setServicosTemp] = useState([]);
 
   useEffect(() => {
     setServicosTemp(servicosSelecionados || []);
   }, [servicosSelecionados]);
-
-  const categorias = [
-    { id: 'todos', nome: 'Todos', icone: '✨' },
-    { id: 'alimentacao', nome: 'Alimentação', icone: '🍽️' },
-    { id: 'bem_estar', nome: 'Bem-estar', icone: '💆' },
-    { id: 'lazer', nome: 'Lazer', icone: '🎯' },
-    { id: 'conveniencia', nome: 'Conveniência', icone: '📱' }
-  ];
 
   const handleToggleServico = (servico) => {
     const novosServicos = servicosTemp.some(s => s.id === servico.id)
@@ -94,10 +79,6 @@ const ServicosAdicionais = ({ nights, servicosSelecionados, onServicosChange }) 
     }).format(value);
   };
 
-  const servicosFiltrados = categoriaAtiva === 'todos'
-    ? servicosDisponiveis
-    : servicosDisponiveis.filter(s => s.categoria === categoriaAtiva);
-
   const totalServicos = servicosTemp.reduce((total, servico) => {
     const preco = servico.tipo === 'por_noite' 
       ? servico.preco * nights 
@@ -107,6 +88,7 @@ const ServicosAdicionais = ({ nights, servicosSelecionados, onServicosChange }) 
 
   return (
     <div className={styles.servicosContainer}>
+      {/* Cabeçalho simplificado - apenas título e subtítulo */}
       <div className={styles.servicosHeader}>
         <h3 className={styles.servicosTitle}>
           ✨ Serviços Adicionais
@@ -116,24 +98,10 @@ const ServicosAdicionais = ({ nights, servicosSelecionados, onServicosChange }) 
         </p>
       </div>
 
-      {/* Categorias */}
-      <div className={styles.categoriasContainer}>
-        {categorias.map(cat => (
-          <button
-            key={cat.id}
-            className={`${styles.categoriaButton} ${categoriaAtiva === cat.id ? styles.categoriaAtiva : ''}`}
-            onClick={() => setCategoriaAtiva(cat.id)}
-          >
-            <span>{cat.icone}</span>
-            <span>{cat.nome}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Lista de Serviços */}
+      {/* Grid de Serviços - sem filtros de categoria */}
       <div className={styles.servicosGrid}>
-        {servicosFiltrados.map(servico => {
-          const precoPorNoite = servico.tipo === 'por_noite' 
+        {servicosDisponiveis.map(servico => {
+          const precoExibido = servico.tipo === 'por_noite' 
             ? `${formatCurrency(servico.preco)} / noite`
             : formatCurrency(servico.preco);
           
@@ -151,7 +119,7 @@ const ServicosAdicionais = ({ nights, servicosSelecionados, onServicosChange }) 
                 <h4 className={styles.servicoNome}>{servico.nome}</h4>
                 <p className={styles.servicoDescricao}>{servico.descricao}</p>
                 <div className={styles.servicoPreco}>
-                  <span className={styles.precoPorNoite}>{precoPorNoite}</span>
+                  <span className={styles.precoPorNoite}>{precoExibido}</span>
                   {isSelecionado(servico.id) && (
                     <span className={styles.precoTotal}>
                       Total: {formatCurrency(precoTotal)}
@@ -170,7 +138,7 @@ const ServicosAdicionais = ({ nights, servicosSelecionados, onServicosChange }) 
         })}
       </div>
 
-      {/* Resumo dos Serviços */}
+      {/* Resumo dos Serviços Selecionados */}
       {servicosTemp.length > 0 && (
         <div className={styles.servicosResumo}>
           <div className={styles.resumoHeader}>

@@ -1054,3 +1054,46 @@
     color: #6c757d;
     font-size: 0.85rem;
 }
+
+/* =====================================================
+   MINHAS RESERVAS - LINK NO CHECKOUT
+===================================================== */
+.checkoutHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.minhasReservasLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.minhasReservasLink:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+@media (max-width: 768px) {
+    .checkoutHeader {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .minhasReservasLink {
+        justify-content: center;
+    }
+}

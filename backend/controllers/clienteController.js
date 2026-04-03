@@ -3,13 +3,20 @@
 // Versão: 1.0.0
 // =====================================================
 
-const Cliente = require('../models/entities/Cliente');
+const { Pool } = require('pg');
+const pool = new Pool({
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT || 5432,
+  user: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || 'postgres',
+  database: process.env.DB_NAME || 'hotel_paradise'
+});
 
 // =====================================================
 // VALIDAÇÕES
 // =====================================================
 const validarTelefone = (telefone) => {
-  const numeros = telefone.replace(/\D/g, '');
+  const numeros = String(telefone).replace(/\D/g, '');
   if (numeros.length === 9 && numeros[0] === '8' && ['4', '5', '6', '7'].includes(numeros[1])) {
     return true;
   }
@@ -22,8 +29,21 @@ const validarTelefone = (telefone) => {
 
 const validarDocumento = (documento) => {
   if (!documento) return true;
-  const doc = documento.replace(/[\s-]/g, '');
+  const doc = String(documento).replace(/[\s-]/g, '');
   return doc.length >= 6 && doc.length <= 20 && /^[A-Z0-9]+$/i.test(doc);
+};
+
+// =====================================================
+// FUNÇÕES AUXILIARES
+// =====================================================
+const formatPhone = (phone) => {
+  if (!phone) return null;
+  return String(phone).replace(/\D/g, '');
+};
+
+const formatDocument = (doc) => {
+  if (!doc) return null;
+  return String(doc).replace(/[\s-]/g, '').toUpperCase();
 };
 
 // =====================================================
@@ -40,26 +60,46 @@ const buscarPorTelefone = async (req, res) => {
       });
     }
 
-    const telefoneFormatado = Cliente.formatPhone(telefone);
-    const cliente = await Cliente.query().findOne({ phone: telefoneFormatado });
+    // Limpar o telefone (remover caracteres especiais)
+    const telefoneLimpo = formatPhone(telefone);
+    
+    console.log(`🔍 Buscando cliente por telefone: ${telefoneLimpo}`);
 
-    if (!cliente) {
+    // Buscar diretamente no banco
+    const result = await pool.query(
+      'SELECT id, name, phone, email, document, created_at FROM guests WHERE phone = $1',
+      [telefoneLimpo]
+    );
+
+    if (result.rows.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Cliente não encontrado'
       });
     }
 
+    const cliente = result.rows[0];
+
+    console.log(`✅ Cliente encontrado: ${cliente.name} (${cliente.phone})`);
+
     res.json({
       success: true,
-      data: cliente.toJSON()
+      data: {
+        id: cliente.id,
+        name: cliente.name,
+        phone: cliente.phone,
+        email: cliente.email,
+        document: cliente.document,
+        createdAt: cliente.created_at
+      }
     });
 
   } catch (error) {
-    console.error('🔥 Erro ao buscar cliente:', error);
+    console.error('🔥 Erro ao buscar cliente por telefone:', error);
     res.status(500).json({
       success: false,
-      message: 'Erro interno no servidor'
+      message: 'Erro interno no servidor',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
@@ -78,18 +118,30 @@ const buscarPorId = async (req, res) => {
       });
     }
 
-    const cliente = await Cliente.query().findById(id);
+    const result = await pool.query(
+      'SELECT id, name, phone, email, document, created_at FROM guests WHERE id = $1::uuid',
+      [id]
+    );
 
-    if (!cliente) {
+    if (result.rows.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Cliente não encontrado'
       });
     }
 
+    const cliente = result.rows[0];
+
     res.json({
       success: true,
-      data: cliente.toJSON()
+      data: {
+        id: cliente.id,
+        name: cliente.name,
+        phone: cliente.phone,
+        email: cliente.email,
+        document: cliente.document,
+        createdAt: cliente.created_at
+      }
     });
 
   } catch (error) {
@@ -106,12 +158,14 @@ const buscarPorId = async (req, res) => {
 // =====================================================
 const listarClientes = async (req, res) => {
   try {
-    const clientes = await Cliente.query().orderBy('created_at', 'DESC').limit(100);
+    const result = await pool.query(
+      'SELECT id, name, phone, email, document, created_at FROM guests ORDER BY created_at DESC LIMIT 100'
+    );
 
     res.json({
       success: true,
-      data: clientes.map(c => c.toJSON()),
-      total: clientes.length
+      data: result.rows,
+      total: result.rows.length
     });
 
   } catch (error) {
@@ -128,7 +182,7 @@ const listarClientes = async (req, res) => {
 // =====================================================
 const criarCliente = async (req, res) => {
   try {
-    const { name, phone, document, email, birth_date, address } = req.body;
+    const { name, phone, document, email } = req.body;
 
     if (!name || !phone) {
       return res.status(400).json({
@@ -165,39 +219,37 @@ const criarCliente = async (req, res) => {
       });
     }
 
-    const telefoneFormatado = Cliente.formatPhone(phone);
-    const existente = await Cliente.query().findOne({ phone: telefoneFormatado });
+    const telefoneFormatado = formatPhone(phone);
+    
+    // Verificar se já existe
+    const existente = await pool.query(
+      'SELECT id FROM guests WHERE phone = $1',
+      [telefoneFormatado]
+    );
 
-    if (existente) {
+    if (existente.rows.length > 0) {
       return res.status(409).json({
         success: false,
         message: 'Telefone já cadastrado',
-        data: existente.toJSON()
+        data: existente.rows[0]
       });
     }
 
-    const clienteData = {
-      name,
-      phone: telefoneFormatado,
-      document: document ? Cliente.formatDocument(document) : null,
-      email: email || null,
-      birth_date: birth_date || null,
-      address_street: address?.street,
-      address_number: address?.number,
-      address_complement: address?.complement,
-      address_neighborhood: address?.neighborhood,
-      address_city: address?.city,
-      address_state: address?.state,
-      address_zipcode: address?.zipcode,
-      address_country: address?.country || 'Brasil'
-    };
+    const documentFormatado = document ? formatDocument(document) : null;
+    
+    const result = await pool.query(
+      `INSERT INTO guests (name, phone, email, document) 
+       VALUES ($1, $2, $3, $4) 
+       RETURNING id, name, phone, email, document, created_at`,
+      [name, telefoneFormatado, email || null, documentFormatado]
+    );
 
-    const novoCliente = await Cliente.query().insert(clienteData);
+    const novoCliente = result.rows[0];
 
     res.status(201).json({
       success: true,
       message: 'Cliente criado com sucesso',
-      data: novoCliente.toJSON()
+      data: novoCliente
     });
 
   } catch (error) {
@@ -215,79 +267,56 @@ const criarCliente = async (req, res) => {
 const atualizarCliente = async (req, res) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
+    const { name, phone, email, document } = req.body;
 
-    const cliente = await Cliente.query().findById(id);
-
-    if (!cliente) {
+    // Verificar se cliente existe
+    const existe = await pool.query('SELECT id FROM guests WHERE id = $1::uuid', [id]);
+    if (existe.rows.length === 0) {
       return res.status(404).json({
         success: false,
         message: 'Cliente não encontrado'
       });
     }
 
-    if (updates.name && updates.name.length < 3) {
+    const updates = [];
+    const values = [];
+    let idx = 1;
+
+    if (name) {
+      updates.push(`name = $${idx++}`);
+      values.push(name);
+    }
+    if (phone) {
+      const telefoneFormatado = formatPhone(phone);
+      updates.push(`phone = $${idx++}`);
+      values.push(telefoneFormatado);
+    }
+    if (email !== undefined) {
+      updates.push(`email = $${idx++}`);
+      values.push(email);
+    }
+    if (document !== undefined) {
+      const docFormatado = document ? formatDocument(document) : null;
+      updates.push(`document = $${idx++}`);
+      values.push(docFormatado);
+    }
+
+    if (updates.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'Nome deve ter pelo menos 3 caracteres'
+        message: 'Nenhum campo para atualizar'
       });
     }
 
-    if (updates.phone) {
-      if (!validarTelefone(updates.phone)) {
-        return res.status(400).json({
-          success: false,
-          message: 'Telefone inválido'
-        });
-      }
-      updates.phone = Cliente.formatPhone(updates.phone);
-    }
+    values.push(id);
+    const query = `UPDATE guests SET ${updates.join(', ')}, updated_at = NOW() WHERE id = $${idx}::uuid RETURNING id, name, phone, email, document, created_at`;
 
-    if (updates.document !== undefined) {
-      if (updates.document && !validarDocumento(updates.document)) {
-        return res.status(400).json({
-          success: false,
-          message: 'Documento inválido'
-        });
-      }
-      updates.document = updates.document ? Cliente.formatDocument(updates.document) : null;
-    }
-
-    if (updates.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(updates.email)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email inválido'
-      });
-    }
-
-    if (updates.phone && updates.phone !== cliente.phone) {
-      const existente = await Cliente.query().findOne({ phone: updates.phone });
-      if (existente) {
-        return res.status(409).json({
-          success: false,
-          message: 'Telefone já cadastrado para outro cliente'
-        });
-      }
-    }
-
-    if (updates.address) {
-      updates.address_street = updates.address.street;
-      updates.address_number = updates.address.number;
-      updates.address_complement = updates.address.complement;
-      updates.address_neighborhood = updates.address.neighborhood;
-      updates.address_city = updates.address.city;
-      updates.address_state = updates.address.state;
-      updates.address_zipcode = updates.address.zipcode;
-      updates.address_country = updates.address.country;
-      delete updates.address;
-    }
-
-    const clienteAtualizado = await Cliente.query().patchAndFetchById(id, updates);
+    const result = await pool.query(query, values);
 
     res.json({
       success: true,
       message: 'Cliente atualizado com sucesso',
-      data: clienteAtualizado.toJSON()
+      data: result.rows[0]
     });
 
   } catch (error) {
@@ -325,31 +354,67 @@ const identificarCliente = async (req, res) => {
     }
     console.log('✅ Telefone válido!');
 
-    const telefoneFormatado = phone.replace(/\D/g, '');
-    let cliente = await Cliente.query().findOne({ phone: telefoneFormatado });
+    const telefoneFormatado = formatPhone(phone);
+    
+    // Buscar cliente existente
+    let result = await pool.query(
+      'SELECT id, name, phone, email, document, created_at FROM guests WHERE phone = $1',
+      [telefoneFormatado]
+    );
 
-    if (cliente) {
-      const updates = {};
-      if (name !== cliente.name) updates.name = name;
-      if (document && document !== cliente.document) updates.document = document;
-      if (email && email !== cliente.email) updates.email = email;
-
-      if (Object.keys(updates).length > 0) {
-        cliente = await Cliente.query().patchAndFetchById(cliente.id, updates);
+    let cliente;
+    
+    if (result.rows.length > 0) {
+      cliente = result.rows[0];
+      
+      // Atualizar dados se necessário
+      const updates = [];
+      const values = [];
+      let idx = 1;
+      
+      if (name !== cliente.name) {
+        updates.push(`name = $${idx++}`);
+        values.push(name);
+      }
+      if (document && document !== cliente.document) {
+        updates.push(`document = $${idx++}`);
+        values.push(formatDocument(document));
+      }
+      if (email && email !== cliente.email) {
+        updates.push(`email = $${idx++}`);
+        values.push(email);
+      }
+      
+      if (updates.length > 0) {
+        values.push(cliente.id);
+        await pool.query(
+          `UPDATE guests SET ${updates.join(', ')}, updated_at = NOW() WHERE id = $${idx}::uuid`,
+          values
+        );
+        
+        // Buscar dados atualizados
+        result = await pool.query(
+          'SELECT id, name, phone, email, document, created_at FROM guests WHERE id = $1::uuid',
+          [cliente.id]
+        );
+        cliente = result.rows[0];
       }
     } else {
-      cliente = await Cliente.query().insert({
-        name,
-        phone: telefoneFormatado,
-        document: document || null,
-        email: email || null
-      });
+      // Criar novo cliente
+      const docFormatado = document ? formatDocument(document) : null;
+      result = await pool.query(
+        `INSERT INTO guests (name, phone, email, document) 
+         VALUES ($1, $2, $3, $4) 
+         RETURNING id, name, phone, email, document, created_at`,
+        [name, telefoneFormatado, email || null, docFormatado]
+      );
+      cliente = result.rows[0];
     }
 
     res.json({
       success: true,
       message: 'Cliente identificado com sucesso',
-      data: cliente.toJSON()
+      data: cliente
     });
 
   } catch (error) {

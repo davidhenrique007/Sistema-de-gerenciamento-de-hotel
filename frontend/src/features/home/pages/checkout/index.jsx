@@ -18,6 +18,7 @@ import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import api from '@services/api';
 import styles from './styles/Checkout.module.css';
+import CheckoutHeader from './components/CheckoutHeader/CheckoutHeader';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
@@ -78,8 +79,6 @@ const Checkout = () => {
   const pricePerNight = reservation?.pricePerNight || room?.price_per_night || 0;
   const quantidadeQuartos = modalQuarto.quartosSelecionados.length || 1;
 
-  // Cálculo local apenas para mostrar no ecrã durante o checkout
-  // O valor REAL gravado no banco é calculado pelo backend automaticamente
   const subtotalQuartos = pricePerNight * nights * quantidadeQuartos;
   const subtotalServicos = servicosSelecionados.reduce((total, servico) => {
     const preco = servico.tipo === 'por_noite' ? servico.preco * nights : servico.preco;
@@ -89,10 +88,8 @@ const Checkout = () => {
   const taxas = subtotal * taxaImposto;
   const total = subtotal + taxas;
 
-  // ─── Dados comuns da reserva para enviar ao backend ──────────────────────
-  // Usa room_ids (array com TODOS os quartos) — o backend calcula tudo automaticamente
   const dadosReservaParaBackend = {
-    room_ids: modalQuarto.quartosSelecionados.map((q) => q.id), // ✅ TODOS os quartos
+    room_ids: modalQuarto.quartosSelecionados.map((q) => q.id),
     check_in: checkIn,
     check_out: checkOut,
     adults_count: reservation?.guests?.adults || 1,
@@ -104,22 +101,19 @@ const Checkout = () => {
     servicos: servicosSelecionados.map((s) => s.id),
   };
 
-  // ─── Após pagamento confirmado: navegar com APENAS o código da reserva ───
-  // O recibo vai buscar todos os dados actualizados do banco usando este código
   const handlePagamentoConfirmado = (data) => {
     console.log('✅ Pagamento confirmado!', data);
     setPagamentoStatus('confirmed');
 
     const codigoReal = data.reservation_code || data.codigo;
 
-    // Guardar só o código — o recibo busca os dados reais do banco
     localStorage.setItem('ultima_reserva', JSON.stringify({
       reservation_code: codigoReal
     }));
 
     navigate('/recibo', {
       state: {
-        reservation_code: codigoReal  // ✅ só o código — sem dados manuais
+        reservation_code: codigoReal
       },
     });
   };
@@ -134,7 +128,6 @@ const Checkout = () => {
     setPagamentoStatus('pending');
   };
 
-  // ─── Pagamento por dinheiro / outros métodos (não mpesa/cartao) ──────────
   const handleConfirmPayment = async () => {
     if (!isFormValid) return;
     if (modalQuarto.quartosSelecionados.length === 0) {
@@ -145,7 +138,6 @@ const Checkout = () => {
     setIsLoading(true);
 
     try {
-      // 1. Criar reserva com TODOS os quartos — backend calcula preço automaticamente
       const respostaReserva = await api.post('/reservas', {
         ...dadosReservaParaBackend,
         payment_method: paymentMethod,
@@ -158,12 +150,10 @@ const Checkout = () => {
       const { reservation_code } = respostaReserva.data.data;
       console.log('✅ Reserva criada no banco:', reservation_code);
 
-      // 2. Confirmar pagamento
       await api.put(`/reservas/${reservation_code}/confirmar-pagamento`, {
         payment_method: paymentMethod,
       });
 
-      // 3. Navegar com só o código — recibo busca dados reais do banco
       handlePagamentoConfirmado({ reservation_code });
 
     } catch (error) {
@@ -177,12 +167,7 @@ const Checkout = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.breadcrumb}>
-        <span>Início</span> &gt; <span>Identificação</span> &gt;{' '}
-        <span className={styles.active}>Checkout</span>
-      </div>
-
-      <h1 className={styles.title}>Checkout</h1>
+      <CheckoutHeader isIdentificado={isIdentificado} />
 
       <div className={styles.twoColumns}>
         <div className={styles.columnLeft}>
@@ -249,7 +234,7 @@ const Checkout = () => {
                 reservaId={reservaId}
                 valor={total}
                 dadosReserva={{
-                  ...dadosReservaParaBackend,  // ✅ inclui room_ids com TODOS os quartos
+                  ...dadosReservaParaBackend,
                   payment_method: 'mpesa',
                 }}
                 onSuccess={handlePagamentoConfirmado}

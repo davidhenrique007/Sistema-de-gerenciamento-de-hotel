@@ -10,6 +10,7 @@ import LoginCliente from './features/home/pages/LoginCliente';
 import Checkout from './features/home/pages/Checkout';
 import ReciboPage from './features/home/pages/checkout/recibo/ReciboPage';
 import PagamentoFalha from './features/home/pages/PagamentoFalha';
+import MinhasReservas from './features/home/pages/cliente/MinhasReservas';
 
 const App = () => {
   return (
@@ -28,6 +29,11 @@ const App = () => {
                 } />
                 <Route path="/recibo" element={<ReciboPage />} />
                 <Route path="/pagamento-falha" element={<PagamentoFalha />} />
+                <Route path="/minhas-reservas" element={
+                  <ClienteRoute>
+                    <MinhasReservas />
+                  </ClienteRoute>
+                } />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </ServicesProvider>
