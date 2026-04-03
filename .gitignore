@@ -9,3 +9,30 @@ backend/package-lock.json
 *.bak
 *.bak.*
 *.bak[0-9]*
+# Backend temporários
+backend/analisar.js
+backend/corrigir_reservas.js
+backend/deletar_reservas_antigas.js
+backend/lib.js
+backend/liberar.js
+backend/liberar_quarto.js
+backend/liberar_quarto28.js
+backend/liberar_quarto_28.js
+backend/liberar_quartos.js
+backend/liberar_todos_quartos.js
+backend/limpar_reservas_antigas.js
+backend/reset_final.js
+backend/reset_total.js
+backend/temp_*.txt
+backend/testar_db.js
+backend/ver.js
+backend/verificar_limpeza.js
+backend/verificar_quartos.js
+
+# Backups
+*.backup
+*.backup*
+
+# Frontend temporários
+frontend/diagnostic.js
+frontend/MinhasReservas.module.css
