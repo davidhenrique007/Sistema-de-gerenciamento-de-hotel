@@ -1,5 +1,5 @@
-// =====================================================
-// HOOK - VALIDAÇÃO DO CHECKOUT
+﻿// =====================================================
+// HOOK - VALIDAÃ‡ÃƒO DO CHECKOUT
 // =====================================================
 
 import { useState, useEffect, useCallback } from 'react';
@@ -11,7 +11,7 @@ import {
   validarValidadeCartao,
   validarCvv,
   validarTelefonePagamento
-} from '../../../../shared/utils/validacaoPagamento';
+} from '../../../../../shared/utils/validacaoPagamento';
 
 export const useValidacaoCheckout = (guestData, paymentMethod, paymentDetails) => {
   const [errors, setErrors] = useState({
@@ -39,10 +39,10 @@ export const useValidacaoCheckout = (guestData, paymentMethod, paymentDetails) =
     return nomeValid.isValid && telefoneValid.isValid && documentoValid.isValid;
   }, [guestData.nome, guestData.telefone, guestData.documento]);
 
-  // Validar método de pagamento
+  // Validar mÃ©todo de pagamento
   const validarPagamento = useCallback(() => {
     if (!paymentMethod) {
-      setErrors(prev => ({ ...prev, payment: 'Selecione um método de pagamento' }));
+      setErrors(prev => ({ ...prev, payment: 'Selecione um mÃ©todo de pagamento' }));
       return false;
     }
     
@@ -84,7 +84,7 @@ export const useValidacaoCheckout = (guestData, paymentMethod, paymentDetails) =
   const validarTudo = useCallback(() => {
     const pessoaisOk = validarDadosPessoais();
     const pagamentoOk = validarPagamento();
-    const temQuarto = true; // quarto selecionado será verificado no checkout
+    const temQuarto = true; // quarto selecionado serÃ¡ verificado no checkout
     const isValid = pessoaisOk && pagamentoOk && temQuarto;
     
     setIsFormValid(isValid);

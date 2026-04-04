@@ -1,0 +1,102 @@
+﻿.container {
+    min-height: 100vh;
+    background: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.recibo {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.recibo h1 {
+    text-align: center;
+    margin: 0 0 8px 0;
+    color: #1a1a2e;
+}
+
+.recibo h2 {
+    text-align: center;
+    margin: 0 0 24px 0;
+    color: #666;
+    font-size: 18px;
+    font-weight: normal;
+}
+
+.section {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.section h3 {
+    margin: 0 0 12px 0;
+    color: #16213e;
+    font-size: 16px;
+}
+
+.section p {
+    margin: 6px 0;
+    color: #333;
+    font-size: 14px;
+}
+
+.buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.buttons button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    background: #e2e8f0;
+    color: #1e293b;
+    transition: all 0.2s;
+}
+
+.buttons button:hover {
+    background: #cbd5e1;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #e2e8f0;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.errorBox {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+}
+
+.errorBox button {
+    margin-top: 16px;
+    padding: 10px 24px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
