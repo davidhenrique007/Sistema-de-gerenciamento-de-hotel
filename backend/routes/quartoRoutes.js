@@ -1,5 +1,4 @@
-﻿// backend/routes/quartoRoutes.js
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const pool = require('../config/database');
 
@@ -8,19 +7,15 @@ router.get('/disponiveis', async (req, res) => {
     try {
         const { checkIn, checkOut, tipo } = req.query;
         
-        let query = `
-            SELECT * FROM rooms 
-            WHERE status = 'available'
-        `;
-        
-        const params = [];
+        let query = 'SELECT * FROM rooms WHERE status = $1';
+        const params = ['available'];
         
         if (tipo) {
-            query += ` AND type = $${params.length + 1}`;
+            query += ' AND type = $2';
             params.push(tipo);
         }
         
-        query += ` ORDER BY room_number`;
+        query += ' ORDER BY room_number';
         
         const result = await pool.query(query, params);
         

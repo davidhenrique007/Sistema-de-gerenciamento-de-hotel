@@ -10,12 +10,7 @@ import styles from './RoomsSection.module.css';
 /**
  * RoomsSection Component - Seção principal de quartos
  */
-const RoomsSection = ({ 
-  onSelectRoom, 
-  onDetailsRoom,
-  title, 
-  subtitle 
-}) => {
+const RoomsSection = ({ onSelectRoom, onDetailsRoom, title, subtitle }) => {
   const { rooms, isLoading, error, stats, getAvailableRooms } = useRooms();
   const { selectedRoomId, selectRoom } = useRoomSelection(rooms);
   const [filter, setFilter] = useState('all');
@@ -24,29 +19,33 @@ const RoomsSection = ({
     setFilter(newFilter);
   }, []);
 
-  const handleSelectRoom = useCallback((room) => {
-    console.log("?? handleSelectRoom FOI CHAMADO!", room);
-    console.log('?? Quarto selecionado no RoomsSection:', room);
-    selectRoom(room);
-    if (onSelectRoom) {
-      onSelectRoom(room);
-    }
-  }, [selectRoom, onSelectRoom]);
+  const handleSelectRoom = useCallback(
+    (room) => {
+      console.log('?? handleSelectRoom FOI CHAMADO!', room);
+      console.log('?? Quarto selecionado no RoomsSection:', room);
+      selectRoom(room);
+      if (onSelectRoom) {
+        onSelectRoom(room);
+      }
+    },
+    [selectRoom, onSelectRoom]
+  );
 
-  const handleDetailsRoom = useCallback((room) => {
-    console.log('?? Detalhes do quarto:', room);
-    if (onDetailsRoom) {
-      onDetailsRoom(room);
-    }
-  }, [onDetailsRoom]);
+  const handleDetailsRoom = useCallback(
+    (room) => {
+      console.log('?? Detalhes do quarto:', room);
+      if (onDetailsRoom) {
+        onDetailsRoom(room);
+      }
+    },
+    [onDetailsRoom]
+  );
 
   const handleRetry = useCallback(() => {
     window.location.reload();
   }, []);
 
-  const filteredRooms = filter === 'available'
-    ? getAvailableRooms()
-    : rooms;
+  const filteredRooms = filter === 'available' ? getAvailableRooms() : rooms;
 
   if (isLoading) {
     return (
@@ -87,12 +86,10 @@ const RoomsSection = ({
 
           <div className={styles.stats}>
             <span className={styles.statItem}>
-              <strong>{stats.total}</strong> total
+              <strong>{stats.total}</strong> Tipos de Quartos
             </span>
-            <span className={styles.statItem}>
-              <strong>{stats.available}</strong> disponíveis
-            </span>
-            
+            <span className={styles.statItem}>🏨 43 unidades prontas para reserva imediata</span>
+
             <div className={styles.filters}>
               <button
                 className={`${styles.filterButton} ${filter === 'all' ? styles.active : ''}`}
@@ -138,4 +135,3 @@ RoomsSection.defaultProps = {
 };
 
 export default React.memo(RoomsSection);
-

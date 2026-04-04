@@ -20,6 +20,7 @@ const webhookRoutes = require('./routes/webhookRoutes');
 const stripeRoutes = require('./routes/stripeRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const reciboRoutes = require('./routes/reciboRoutes');
+const adminDashboardRoutes = require('./routes/admin/dashboardRoutes');
 const liberarQuartosJob = require('./services/jobs/liberarQuartosJob');
 
 const app = express();
@@ -98,6 +99,7 @@ app.use('/api/webhooks', webhookRoutes);
 app.use('/api/recibos', reciboRoutes);
 app.use('/api/stripe', stripeRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin/dashboard', adminDashboardRoutes);
 
 app.get('/', (req, res) => {
   res.json({
@@ -191,5 +193,6 @@ async function gracefulShutdown(signal) {
 }
 
 module.exports = app;
+
 
 
