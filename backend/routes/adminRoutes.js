@@ -1,19 +1,22 @@
-// backend/routes/adminRoutes.js
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
-const adminController = require('../controllers/adminController');
-const authMiddleware = require('../middlewares/auth');
 
-// Todas as rotas admin requerem autenticação e role admin
-router.use(authMiddleware);
+// Rota simples para dashboard admin
+router.get('/dashboard', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Admin dashboard - API funcionando',
+    timestamp: new Date().toISOString()
+  });
+});
 
-// Confirmar pagamento em dinheiro
-router.post('/pagamento-dinheiro/confirmar', adminController.confirmarPagamentoDinheiro);
-
-// Executar job manualmente
-router.post('/jobs/liberar-quartos', adminController.executarJob);
-
-// Verificar status das reservas pendentes
-router.get('/reservas/pendentes', adminController.verificarStatusPendentes);
+// Rota de health check para admin
+router.get('/health', (req, res) => {
+  res.json({ 
+    success: true, 
+    status: 'OK',
+    timestamp: new Date().toISOString()
+  });
+});
 
 module.exports = router;
