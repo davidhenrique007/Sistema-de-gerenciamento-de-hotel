@@ -1,41 +1,60 @@
-﻿const { models } = require('../models');
+﻿const jwt = require('jsonwebtoken');
 
-const authMiddleware = async (req, res, next) => {
-    // Para desenvolvimento, vamos permitir acesso sem autenticação
-    if (process.env.NODE_ENV === 'development') {
-        req.user = {
-            id: '29ee2d94-1cbd-4d85-acb7-ad24819011f2',
-            email: 'admin@hotelparadise.com',
-            role: 'admin'
-        };
-        return next();
-    }
-    
-    // Validação real do token
-    const token = req.headers.authorization?.split(' ')[1];
-    
-    if (!token) {
-        return res.status(401).json({
-            error: true,
-            message: 'Token de autenticação não fornecido'
-        });
-    }
-    
-    try {
-        // Aqui você pode verificar o token JWT
-        // Por enquanto, apenas desenvolvimento
-        req.user = {
-            id: '29ee2d94-1cbd-4d85-acb7-ad24819011f2',
-            email: 'admin@hotelparadise.com',
-            role: 'admin'
-        };
-        next();
-    } catch (error) {
-        return res.status(401).json({
-            error: true,
-            message: 'Token inválido ou expirado'
-        });
-    }
+const verificarToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  
+  console.log('🔑 Verificando token...');
+  console.log('   Headers:', authHeader);
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('❌ Token não fornecido ou formato inválido');
+    return res.status(401).json({ 
+      success: false, 
+      message: 'Token não fornecido' 
+    });
+  }
+
+  const token = authHeader.split(' ')[1];
+  console.log('   Token recebido:', token.substring(0, 20) + '...');
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'hotel-paradise-secret');
+    console.log('✅ Token válido! Usuário:', decoded.email);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    console.error('❌ Token inválido:', error.message);
+    return res.status(401).json({ 
+      success: false, 
+      message: 'Token inválido ou expirado' 
+    });
+  }
 };
 
-module.exports = authMiddleware;
+const verificarRole = (rolesPermitidos) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Usuário não autenticado' 
+      });
+    }
+    
+    console.log('🔐 Verificando role...');
+    console.log('   Role do usuário:', req.user.role);
+    console.log('   Roles permitidas:', rolesPermitidos);
+    
+    if (!rolesPermitidos.includes(req.user.role)) {
+      console.log('❌ Acesso negado - role não permitida');
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Acesso negado. Permissão insuficiente.' 
+      });
+    }
+    
+    console.log('✅ Role autorizada');
+    next();
+  };
+};
+
+module.exports = { verificarToken, verificarRole };
