@@ -50,12 +50,12 @@
 
 .logoCircle {
     position: absolute;
-    width: 100px;
-    height: 100px;
+    width: 110px;
+    height: 110px;
     background: radial-gradient(circle, rgba(251, 191, 36, 0.2) 0%, rgba(251, 191, 36, 0.05) 70%);
     border-radius: 50%;
-    border: 2px solid rgba(251, 191, 36, 0.4);
-    box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+    border: 2px solid rgba(244, 181, 19, 0.842);
+    box-shadow: 0 0 30px rgba(236, 173, 16, 0.701);
     animation: pulse 2s ease-in-out infinite;
 }
 
@@ -66,8 +66,8 @@
 }
 
 .logo {
-    width: 90px;
-    height: 90px;
+    width: 100px;
+    height: 100px;
     object-fit: cover;
     border-radius: 50%;
     position: relative;
@@ -131,30 +131,30 @@
 }
 
 .backButton {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    background: rgb(255, 255, 255);
+    border: 1px solid rgba(9, 144, 255, 0.2);
+    color: rgb(1, 1, 1);
     padding: 8px 20px;
     border-radius: 30px;
     text-decoration: none;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 500;
     transition: all 0.3s ease;
 }
 
 .backButton:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(192, 187, 187, 0.2);
     transform: translateX(-4px);
 }
 
 .minhasReservasButton {
-    background: rgba(251, 191, 36, 0.15);
-    border: 1px solid rgba(251, 191, 36, 0.3);
-    color: #fbbf24;
+    background: rgb(255, 255, 255);
+    border: 1px solid rgb(12, 219, 255);
+    color: #000000;
     padding: 8px 20px;
-    border-radius: 30px;
+    border-radius: 50px;
     text-decoration: none;
-    font-size: 13px;
+    font-size: 20px;
     font-weight: 500;
     transition: all 0.3s ease;
 }

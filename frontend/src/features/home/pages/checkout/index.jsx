@@ -13,6 +13,7 @@ import ResumoFinal from './components/ResumoFinal';
 import ServicosAdicionais from './components/ServicosAdicionais';
 import PagamentoMpesa from './components/PagamentoMpesa';
 import StripeElements from './components/StripeElements';
+import { Link } from 'react-router-dom';
 import { useValidacaoCheckout } from './hooks/useValidacaoCheckout';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
@@ -56,19 +57,13 @@ const Checkout = () => {
     }
   }, [servicosContexto]);
 
+  // Gerar reservaId temporário
   useEffect(() => {
-    if (!reservaId && reservation) {
+    if (!reservaId) {
       const tempId = `TEMP_${Date.now()}`;
       setReservaId(tempId);
     }
-  }, [reservation, reservaId]);
-
-  useEffect(() => {
-    if (modalQuarto.quartosSelecionados.length > 0 && !reservaId) {
-      const tempId = `TEMP_${Date.now()}_${modalQuarto.quartosSelecionados[0].numero}`;
-      setReservaId(tempId);
-    }
-  }, [modalQuarto.quartosSelecionados]);
+  }, [reservaId]);
 
   if (!reservation && !room) return null;
 
@@ -88,7 +83,12 @@ const Checkout = () => {
   const taxas = subtotal * taxaImposto;
   const total = subtotal + taxas;
 
+  // IMPORTANTE: Pegar o ID do primeiro quarto selecionado
+  const primeiroQuarto = modalQuarto.quartosSelecionados[0];
+  const room_id = primeiroQuarto?.id || room?.id || reservation?.roomId;
+
   const dadosReservaParaBackend = {
+    room_id: room_id,
     room_ids: modalQuarto.quartosSelecionados.map((q) => q.id),
     check_in: checkIn,
     check_out: checkOut,
@@ -100,6 +100,10 @@ const Checkout = () => {
     guest_email: guestData.email,
     servicos: servicosSelecionados.map((s) => s.id),
   };
+
+  console.log('📦 Dados da reserva para backend:', dadosReservaParaBackend);
+  console.log('📦 reservaId:', reservaId);
+  console.log('📦 paymentMethod:', paymentMethod);
 
   const handlePagamentoConfirmado = (data) => {
     console.log('✅ Pagamento confirmado!', data);
@@ -130,7 +134,7 @@ const Checkout = () => {
 
   const handleConfirmPayment = async () => {
     if (!isFormValid) return;
-    if (modalQuarto.quartosSelecionados.length === 0) {
+    if (modalQuarto.quartosSelecionados.length === 0 && !room_id) {
       alert('Por favor, selecione pelo menos um quarto');
       return;
     }
@@ -229,14 +233,11 @@ const Checkout = () => {
         <div className={styles.columnLeft}>
           <div className={styles.sectionCompact}>
             <h2 className={styles.sectionTitle}>4. Pagamento</h2>
-            {paymentMethod === 'mpesa' && reservaId ? (
+            {paymentMethod === 'mpesa' ? (
               <PagamentoMpesa
                 reservaId={reservaId}
                 valor={total}
-                dadosReserva={{
-                  ...dadosReservaParaBackend,
-                  payment_method: 'mpesa',
-                }}
+                dadosReserva={dadosReservaParaBackend}
                 onSuccess={handlePagamentoConfirmado}
                 onError={handlePagamentoFalhou}
                 onPending={handlePagamentoPendente}
@@ -255,10 +256,7 @@ const Checkout = () => {
                 <StripeElements
                   reservaId={reservaId}
                   valor={total}
-                  dadosReserva={{
-                    ...dadosReservaParaBackend,
-                    payment_method: 'cartao',
-                  }}
+                  dadosReserva={dadosReservaParaBackend}
                   onSuccess={handlePagamentoConfirmado}
                   onError={handlePagamentoFalhou}
                   onPending={handlePagamentoPendente}

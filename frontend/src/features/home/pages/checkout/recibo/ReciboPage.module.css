@@ -1,253 +1,102 @@
 ﻿.container {
-    max-width: 800px;
-    margin: 50px auto;
-    padding: 40px;
-    background: white;
-    border-radius: 24px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-    text-align: center;
-}
-
-/* Cabeçalho com logo */
-.header {
+    min-height: 100vh;
+    background: #f0f2f5;
     display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 20px;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #e9ecef;
-    flex-wrap: wrap;
+    align-items: center;
+    padding: 20px;
 }
 
-.logo {
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
-}
-
-.headerText {
-    text-align: left;
-}
-
-.title {
-    font-size: 1.8rem;
-    color: #2c3e50;
-    margin: 0;
-}
-
-.subtitle {
-    font-size: 0.85rem;
-    color: #7f8c8d;
-    margin: 5px 0 0;
-}
-
-.successIcon {
-    font-size: 4rem;
-    margin-bottom: 20px;
-    animation: bounce 0.5s ease;
-}
-
-.confirmationTitle {
-    font-size: 1.8rem;
-    color: #28a745;
-    margin-bottom: 10px;
-}
-
-.confirmationText {
-    color: #6c757d;
-    margin-bottom: 20px;
-}
-
-/* Card de detalhes */
-.card {
-    background: #f8f9fa;
-    padding: 24px;
-    border-radius: 16px;
-    margin: 20px 0;
-    text-align: left;
-}
-
-.card h3 {
-    margin-bottom: 20px;
-    color: #28a745;
-    border-bottom: 1px solid #dee2e6;
-    padding-bottom: 10px;
-}
-
-.detailsGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 20px;
-}
-
-.card p {
-    margin: 10px 0;
-    color: #495057;
-}
-
-.paymentInfo {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid #dee2e6;
-}
-
-.totalValue {
-    color: #28a745;
-    font-size: 1.3rem;
-    font-weight: bold;
-}
-
-/* Info box */
-.infoBox {
-    background: #e8f4fd;
-    padding: 16px 20px;
+.recibo {
+    background: white;
     border-radius: 12px;
-    margin: 20px 0;
-    text-align: left;
-    font-size: 0.9rem;
+    padding: 32px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.infoBox p {
-    margin: 8px 0;
+.recibo h1 {
+    text-align: center;
+    margin: 0 0 8px 0;
+    color: #1a1a2e;
 }
 
-/* Botões */
+.recibo h2 {
+    text-align: center;
+    margin: 0 0 24px 0;
+    color: #666;
+    font-size: 18px;
+    font-weight: normal;
+}
+
+.section {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.section h3 {
+    margin: 0 0 12px 0;
+    color: #16213e;
+    font-size: 16px;
+}
+
+.section p {
+    margin: 6px 0;
+    color: #333;
+    font-size: 14px;
+}
+
 .buttons {
     display: flex;
-    gap: 16px;
-    justify-content: center;
+    gap: 12px;
     margin-top: 24px;
-    flex-wrap: wrap;
 }
 
-.button {
-    padding: 12px 28px;
-    background: #007bff;
-    color: white;
+.buttons button {
+    flex: 1;
+    padding: 12px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 1rem;
+    font-weight: 500;
+    background: #e2e8f0;
+    color: #1e293b;
     transition: all 0.2s;
 }
 
-.button:hover {
-    background: #0056b3;
-    transform: translateY(-1px);
-}
-
-.printButton {
-    padding: 12px 28px;
-    background: #6c757d;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.2s;
-}
-
-.printButton:hover {
-    background: #5a6268;
-    transform: translateY(-1px);
+.buttons button:hover {
+    background: #cbd5e1;
 }
 
 .spinner {
-    width: 50px;
-    height: 50px;
-    border: 3px solid #e9ecef;
-    border-top-color: #28a745;
+    width: 40px;
+    height: 40px;
+    border: 3px solid #e2e8f0;
+    border-top-color: #3b82f6;
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin: 20px auto;
+    margin: 0 auto 16px;
 }
 
-/* =====================================================
-   ESTILOS PARA IMPRESSÃO
-   ===================================================== */
-@media print {
-    .container {
-        margin: 0;
-        padding: 20px;
-        box-shadow: none;
-        max-width: 100%;
-    }
-    
-    .buttons {
-        display: none;
-    }
-    
-    .printButton {
-        display: none;
-    }
-    
-    .button {
-        display: none;
-    }
-    
-    .card {
-        break-inside: avoid;
-        page-break-inside: avoid;
-    }
-    
-    .qrContainer {
-        break-inside: avoid;
-        page-break-inside: avoid;
-    }
-    
-    .infoBox {
-        break-inside: avoid;
-        page-break-inside: avoid;
-    }
-    
-    .header {
-        margin-bottom: 20px;
-    }
-}
-
-/* Animations */
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
 
-@keyframes bounce {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+.errorBox {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
 }
 
-/* Responsividade */
-@media (max-width: 768px) {
-    .container {
-        margin: 20px;
-        padding: 24px;
-    }
-    
-    .detailsGrid {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
-    
-    .header {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .headerText {
-        text-align: center;
-    }
-    
-    .logo {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .title {
-        font-size: 1.4rem;
-    }
-    
-    .buttons {
-        flex-direction: column;
-    }
+.errorBox button {
+    margin-top: 16px;
+    padding: 10px 24px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
 }
