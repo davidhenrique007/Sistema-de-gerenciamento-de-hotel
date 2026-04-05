@@ -5,6 +5,7 @@ import styles from './Sidebar.module.css';
 const Sidebar = ({ isOpen, onToggle, onLogout, user }) => {
   const menuItems = [
     { path: '/admin/dashboard', label: 'Dashboard', icon: '📊', roles: ['admin', 'receptionist', 'financial'] },
+    { path: '/admin/analises', label: 'Análises', icon: '📊', roles: ['admin', 'receptionist', 'financial'] },
     { path: '/admin/reservas', label: 'Reservas', icon: '📅', roles: ['admin', 'receptionist'] },
     { path: '/admin/pagamentos', label: 'Pagamentos', icon: '💰', roles: ['admin', 'financial'] },
     { path: '/admin/quartos', label: 'Quartos', icon: '🏨', roles: ['admin'] },
