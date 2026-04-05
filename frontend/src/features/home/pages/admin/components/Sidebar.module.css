@@ -1,0 +1,199 @@
+﻿.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  background: #1e293b;
+  color: white;
+  transition: all 0.3s ease;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.sidebar.open {
+  width: 260px;
+}
+
+.sidebar.closed {
+  width: 70px;
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 16px;
+  border-bottom: 1px solid #334155;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+.logoIcon {
+  font-size: 28px;
+}
+
+.logoText {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.toggleBtn:hover {
+  background: #334155;
+  color: white;
+}
+
+.nav {
+  flex: 1;
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.navLink:hover {
+  background: #334155;
+  color: white;
+}
+
+.navLink.active {
+  background: #3b82f6;
+  color: white;
+}
+
+.navIcon {
+  font-size: 20px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.navLabel {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.sidebarFooter {
+  padding: 16px;
+  border-top: 1px solid #334155;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 8px;
+  border-radius: 12px;
+  background: #334155;
+}
+
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  background: #3b82f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.userDetails {
+  flex: 1;
+  overflow: hidden;
+}
+
+.userName {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userRole {
+  display: block;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.logoutBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #ef4444;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logoutBtn:hover {
+  background: #dc2626;
+}
+
+/* Sidebar mini - quando fechada */
+.sidebar.closed .navLink {
+  justify-content: center;
+  padding: 12px;
+}
+
+.sidebar.closed .userInfo {
+  justify-content: center;
+  padding: 8px;
+}
+
+.sidebar.closed .userAvatar {
+  margin: 0;
+}
+
+.sidebar.closed .logoutBtn {
+  justify-content: center;
+  padding: 10px;
+}
+
+@media (max-width: 768px) {
+  .sidebar.open {
+    width: 100%;
+    z-index: 200;
+  }
+}

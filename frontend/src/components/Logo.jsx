@@ -46,3 +46,4 @@ Logo.defaultProps = {
 };
 
 export default memo(Logo);
+

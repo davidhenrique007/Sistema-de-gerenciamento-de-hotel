@@ -1,11 +1,20 @@
-﻿const express = require('express');
+// backend/routes/pagamentoRoutes.js
+const express = require('express');
 const router = express.Router();
 const pagamentoController = require('../controllers/pagamentoController');
+const authMiddleware = require('../middlewares/auth');
 
-// Rotas de pagamento
-router.post('/mpesa/iniciar', pagamentoController.iniciarPagamentoMpesa);
-router.post('/mpesa/confirmar', pagamentoController.confirmarPagamentoMpesa);
-router.post('/cartao/criar-intent', pagamentoController.criarIntentCartao);
-router.post('/cartao/confirmar', pagamentoController.confirmarPagamentoCartao);
+// Rotas protegidas
+router.post(
+    '/mpesa/iniciar',
+    authMiddleware,
+    pagamentoController.iniciarPagamentoMpesa
+);
+
+router.get(
+    '/:reservaId/status',
+    authMiddleware,
+    pagamentoController.consultarPagamento
+);
 
 module.exports = router;

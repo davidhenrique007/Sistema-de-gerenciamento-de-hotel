@@ -1,0 +1,74 @@
+﻿.layout {
+  min-height: 100vh;
+  background: #f1f5f9;
+}
+
+.mainContent {
+  margin-left: 260px;
+  transition: margin-left 0.3s ease;
+  min-height: 100vh;
+}
+
+.mainContent.expanded {
+  margin-left: 70px;
+}
+
+.header {
+  background: white;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.headerTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.headerDate {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.content {
+  padding: 24px;
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    margin-left: 70px;
+  }
+  
+  .headerTitle {
+    font-size: 16px;
+  }
+  
+  .content {
+    padding: 16px;
+  }
+}
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #f1f5f9;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

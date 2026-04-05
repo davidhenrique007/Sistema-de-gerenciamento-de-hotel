@@ -2,7 +2,7 @@
 const router = express.Router();
 const pool = require('../config/database');
 
-// Buscar reserva por ID ou código
+// Rota para buscar reserva por ID ou código
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -51,6 +51,15 @@ router.get('/:id', async (req, res) => {
             message: 'Erro ao carregar recibo' 
         });
     }
+});
+
+// Rotas existentes
+router.get('/:id/pdf', async (req, res) => {
+    res.json({ success: false, message: 'Funcionalidade em desenvolvimento' });
+});
+
+router.post('/:id/enviar-email', async (req, res) => {
+    res.json({ success: false, message: 'Funcionalidade em desenvolvimento' });
 });
 
 module.exports = router;

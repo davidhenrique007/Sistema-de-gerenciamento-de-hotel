@@ -52,3 +52,4 @@ const CheckoutHeader = ({ isIdentificado = false }) => {
 };
 
 export default CheckoutHeader;
+

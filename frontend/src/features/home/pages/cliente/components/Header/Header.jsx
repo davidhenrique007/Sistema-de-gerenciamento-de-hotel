@@ -53,3 +53,4 @@ const Header = ({ nomeCliente, totalReservas, totalGasto }) => {
 };
 
 export default Header;
+

@@ -1,15 +1,44 @@
 ﻿const express = require('express');
 const router = express.Router();
-const clienteController = require('../controllers/clienteController');
-const { verificarToken } = require('../middlewares/auth');
+const pool = require('../config/database');
 
-// Rotas públicas
-router.post('/identificar', clienteController.identificarCliente);
-router.get('/buscar/:telefone', clienteController.buscarPorTelefone);
+// Rota simples para identificar cliente
+router.post('/identificar', async (req, res) => {
+  try {
+    const { name, phone, email, document } = req.body;
+    
+    let cliente = await pool.query('SELECT * FROM guests WHERE phone = $1', [phone]);
+    
+    if (cliente.rows.length === 0) {
+      const result = await pool.query(
+        'INSERT INTO guests (name, phone, email, document) VALUES ($1, $2, $3, $4) RETURNING *',
+        [name, phone, email, document]
+      );
+      cliente = result.rows[0];
+    } else {
+      cliente = cliente.rows[0];
+    }
+    
+    res.json({ success: true, data: cliente });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
-// Rotas protegidas (opcional)
-router.get('/:id', verificarToken, clienteController.buscarPorId);
-router.put('/:id', verificarToken, clienteController.atualizarCliente);
-router.get('/', verificarToken, clienteController.listarClientes);
+// Rota para buscar por telefone
+router.get('/buscar/:telefone', async (req, res) => {
+  try {
+    const { telefone } = req.params;
+    const result = await pool.query('SELECT * FROM guests WHERE phone = $1', [telefone]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Cliente não encontrado' });
+    }
+    
+    res.json({ success: true, data: result.rows[0] });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 module.exports = router;
