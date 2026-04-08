@@ -10,7 +10,6 @@ const LayoutAdmin = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Verificar token e usuário apenas uma vez no carregamento
     const token = localStorage.getItem('admin_token');
     const adminUserStr = localStorage.getItem('admin_user');
     
@@ -33,6 +32,20 @@ const LayoutAdmin = ({ children }) => {
       setLoading(false);
     }
   }, [navigate]);
+
+  // Adicionar/remover classe no body quando sidebar abre/fecha no mobile
+  useEffect(() => {
+    if (window.innerWidth <= 768) {
+      if (sidebarOpen) {
+        document.body.classList.add('sidebar-open');
+      } else {
+        document.body.classList.remove('sidebar-open');
+      }
+    }
+    return () => {
+      document.body.classList.remove('sidebar-open');
+    };
+  }, [sidebarOpen]);
 
   const handleLogout = () => {
     localStorage.removeItem('admin_token');

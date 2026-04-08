@@ -15,12 +15,20 @@ import PagamentoFalha from './features/home/pages/PagamentoFalha';
 import MinhasReservas from './features/home/pages/cliente/MinhasReservas';
 import Dashboard from './features/home/pages/admin/Dashboard';
 import DashboardAnalises from './features/home/pages/admin/DashboardAnalises';
+import Quartos from './features/home/pages/admin/Quartos';
+import LixeiraQuartos from './features/home/pages/admin/LixeiraQuartos';
 
 // Placeholders para outras páginas admin
-const ReservasAdmin = () => <div style={{ padding: 40 }}>Página de Reservas - Em desenvolvimento</div>;
-const PagamentosAdmin = () => <div style={{ padding: 40 }}>Página de Pagamentos - Em desenvolvimento</div>;
-const QuartosAdmin = () => <div style={{ padding: 40 }}>Página de Quartos - Em desenvolvimento</div>;
-const ConfiguracoesAdmin = () => <div style={{ padding: 40 }}>Página de Configurações - Em desenvolvimento</div>;
+const ReservasAdmin = () => (
+  <div style={{ padding: 40 }}>Página de Reservas - Em desenvolvimento</div>
+);
+const PagamentosAdmin = () => (
+  <div style={{ padding: 40 }}>Página de Pagamentos - Em desenvolvimento</div>
+);
+
+const ConfiguracoesAdmin = () => (
+  <div style={{ padding: 40 }}>Página de Configurações - Em desenvolvimento</div>
+);
 
 const App = () => {
   return (
@@ -35,52 +43,84 @@ const App = () => {
                 <Route path="/login-cliente" element={<LoginCliente />} />
                 <Route path="/login-admin" element={<LoginAdmin />} />
                 <Route path="/pagamento-falha" element={<PagamentoFalha />} />
-                
+
                 {/* Rotas de cliente */}
-                <Route path="/checkout" element={
-                  <ClienteRoute>
-                    <Checkout />
-                  </ClienteRoute>
-                } />
+                <Route
+                  path="/checkout"
+                  element={
+                    <ClienteRoute>
+                      <Checkout />
+                    </ClienteRoute>
+                  }
+                />
                 <Route path="/recibo" element={<ReciboPage />} />
-                <Route path="/minhas-reservas" element={
-                  <ClienteRoute>
-                    <MinhasReservas />
-                  </ClienteRoute>
-                } />
-                
+                <Route
+                  path="/minhas-reservas"
+                  element={
+                    <ClienteRoute>
+                      <MinhasReservas />
+                    </ClienteRoute>
+                  }
+                />
+
                 {/* Rotas administrativas */}
-                <Route path="/admin/dashboard" element={
-                  <AdminRoute>
-                    <Dashboard />
-                  </AdminRoute>
-                } />
-                <Route path="/admin/analises" element={
-                  <AdminRoute>
-                    <DashboardAnalises />
-                  </AdminRoute>
-                } />
-                <Route path="/admin/reservas" element={
-                  <AdminRoute>
-                    <ReservasAdmin />
-                  </AdminRoute>
-                } />
-                <Route path="/admin/pagamentos" element={
-                  <AdminRoute>
-                    <PagamentosAdmin />
-                  </AdminRoute>
-                } />
-                <Route path="/admin/quartos" element={
-                  <AdminRoute>
-                    <QuartosAdmin />
-                  </AdminRoute>
-                } />
-                <Route path="/admin/configuracoes" element={
-                  <AdminRoute>
-                    <ConfiguracoesAdmin />
-                  </AdminRoute>
-                } />
-                
+                <Route
+                  path="/admin/dashboard"
+                  element={
+                    <AdminRoute>
+                      <Dashboard />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/analises"
+                  element={
+                    <AdminRoute>
+                      <DashboardAnalises />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/reservas"
+                  element={
+                    <AdminRoute>
+                      <ReservasAdmin />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/pagamentos"
+                  element={
+                    <AdminRoute>
+                      <PagamentosAdmin />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/quartos"
+                  element={
+                    <AdminRoute>
+                      <Quartos />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/configuracoes"
+                  element={
+                    <AdminRoute>
+                      <ConfiguracoesAdmin />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/lixeira"
+                  element={
+                    <AdminRoute>
+                      <LixeiraQuartos />
+                    </AdminRoute>
+                  }
+                />
+
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </ServicesProvider>

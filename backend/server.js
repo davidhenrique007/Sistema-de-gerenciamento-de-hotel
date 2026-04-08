@@ -15,12 +15,14 @@ const clienteRoutes = require('./routes/clienteRoutes');
 const quartoRoutes = require('./routes/quartoRoutes');
 const reciboRoutes = require('./routes/reciboRoutes');
 const adminDashboardRoutes = require('./routes/admin/dashboardRoutes');
+const quartoAdminRoutes = require('./routes/admin/quartoRoutes');
 
 app.use('/api/reservas', reservaRoutes);
 app.use('/api/clientes', clienteRoutes);
 app.use('/api/quartos', quartoRoutes);
 app.use('/api/recibos', reciboRoutes);
 app.use('/api/admin/dashboard', adminDashboardRoutes);
+app.use('/api/admin/quartos', quartoAdminRoutes);
 
 // Rota de login simples
 app.post('/api/auth/login', async (req, res) => {
@@ -37,7 +39,7 @@ app.post('/api/auth/login', async (req, res) => {
     const isValid = await bcrypt.compare(password, user.password_hash);
     if (!isValid) return res.status(401).json({ success: false, message: 'Email ou senha inválidos' });
     
-    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, 'hotel-paradise-secret', { expiresIn: '7d' });
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET || 'hotel-paradise-secret', { expiresIn: '7d' });
     
     res.json({ success: true, token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
   } catch (error) {
@@ -49,5 +51,6 @@ app.post('/api/auth/login', async (req, res) => {
 app.get('/api/health', (req, res) => { res.json({ status: 'ok' }); });
 
 app.listen(PORT, () => { console.log(`🚀 Servidor rodando em http://localhost:${PORT}`); });
+
 
 

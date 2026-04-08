@@ -21,10 +21,60 @@
   margin-bottom: 32px;
 }
 
-.icon {
+/* Container da logo com círculo externo */
+.logoContainer {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Círculo externo decorativo */
+.logoCircle {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  background: radial-gradient(circle, rgba(246, 200, 15, 0.931) 0%, rgba(59, 130, 246, 0.05) 70%);
+  border-radius: 50%;
+  border: 3px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 30px rgba(239, 154, 6, 0.853);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 0.5; }
+}
+
+.logoImage {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  background: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  border: 2px solid rgba(59, 130, 246, 0.5);
+}
+
+.logoImage:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.8);
+}
+
+.logoFallback {
   font-size: 48px;
   display: block;
   margin-bottom: 12px;
+  position: relative;
+  z-index: 2;
 }
 
 .title {
