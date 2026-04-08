@@ -1,3 +1,4 @@
+﻿
 /**
  * Dados mockados dos quartos - VERSÃO COM 6 QUARTOS
  * 
@@ -59,7 +60,7 @@ export const roomsData = [
   },
   {
     id: 'room-003',
-    number: ' 25',
+    number: '25',
     type: 'deluxe',
     typeLabel: 'Deluxe',
     capacity: 3,

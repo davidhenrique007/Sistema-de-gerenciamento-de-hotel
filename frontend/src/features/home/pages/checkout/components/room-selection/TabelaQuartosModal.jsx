@@ -1,14 +1,22 @@
-﻿import React from 'react';
+﻿// =====================================================
+// COMPONENTE - TABELA DE QUARTOS (COM MÚLTIPLA SELEÇÃO)
+// =====================================================
+
+import React from 'react';
 import StatusBadge from './StatusBadge';
 
-const TabelaQuartosModal = ({ quartos, quartoTemp, onSelect }) => {
+const TabelaQuartosModal = ({ quartos, quartosTemp, onToggle }) => {
   const isQuartoDisponivel = (status) => {
-    return status === 'disponível' || status === 'available';
+    return status === 'available' || status === 'disponível';
+  };
+
+  const isQuartoSelecionado = (quartoId) => {
+    return quartosTemp.some(q => q.id === quartoId);
   };
 
   const handleRowClick = (quarto) => {
     if (isQuartoDisponivel(quarto.status)) {
-      onSelect(quarto);
+      onToggle(quarto);
     }
   };
 
@@ -59,20 +67,18 @@ const TabelaQuartosModal = ({ quartos, quartoTemp, onSelect }) => {
         <tbody>
           {quartos.map((quarto) => {
             const disponivel = isQuartoDisponivel(quarto.status);
-            const selecionado = quartoTemp?.id === quarto.id;
-
-            const rowStyle = {
-              ...styles.td,
-              ...(!disponivel ? styles.trDisabled : styles.trAvailable),
-              ...(selecionado ? styles.trSelected : {}),
-              ...(selecionado ? { borderLeft: '3px solid #28a745' } : {})
-            };
+            const selecionado = isQuartoSelecionado(quarto.id);
 
             return (
               <tr
                 key={quarto.id}
                 onClick={() => handleRowClick(quarto)}
-                style={rowStyle}
+                style={{
+                  ...styles.td,
+                  ...(!disponivel ? styles.trDisabled : styles.trAvailable),
+                  ...(selecionado ? styles.trSelected : {}),
+                  cursor: disponivel ? 'pointer' : 'not-allowed'
+                }}
                 onMouseEnter={(e) => {
                   if (disponivel && !selecionado) {
                     e.currentTarget.style.backgroundColor = '#f8f9fa';
@@ -84,22 +90,26 @@ const TabelaQuartosModal = ({ quartos, quartoTemp, onSelect }) => {
                   }
                 }}
               >
-                <td style={styles.td}>
+                <td style={{ ...styles.td, textAlign: 'center', width: '50px' }}>
                   {disponivel ? (
                     selecionado ? (
                       <span style={{ color: '#28a745', fontSize: '1.2rem' }}>✅</span>
                     ) : (
-                      <span style={{ color: '#6c757d' }}>○</span>
+                      <span style={{ color: '#6c757d', fontSize: '1rem' }}>○</span>
                     )
                   ) : (
-                    <span style={{ color: '#dc3545' }}>❌</span>
+                    <span style={{ color: '#dc3545', fontSize: '1rem' }}>❌</span>
                   )}
                 </td>
                 <td style={styles.td}>
-                  <strong>{quarto.numero}</strong>
+                  <strong>{quarto.numero || '-'}</strong>
                 </td>
-                <td style={styles.td}>{quarto.tipo}</td>
-                <td style={styles.td}>{quarto.andar || '-'}</td>
+                <td style={styles.td}>
+                  {quarto.tipo || 'standard'}
+                </td>
+                <td style={styles.td}>
+                  {quarto.andar || '-'}
+                </td>
                 <td style={styles.td}>
                   <StatusBadge status={quarto.status} />
                 </td>

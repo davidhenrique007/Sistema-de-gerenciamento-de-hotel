@@ -21,9 +21,9 @@ const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
   // ==========================================================================
 
   const handleSelect = () => {
-    console.log("🟢🟢🟢 handleSelect CLICADO no RoomCard!", room.number);
-    console.log("?? Botão SELECIONAR clicado no RoomCard!");
-    console.log("?? Botão SELECIONAR clicado no RoomCard!");
+    console.log('🟢🟢🟢 handleSelect CLICADO no RoomCard!', room.number);
+    console.log('?? Botão SELECIONAR clicado no RoomCard!');
+    console.log('?? Botão SELECIONAR clicado no RoomCard!');
     if (room.status === ROOM_STATUS.AVAILABLE && onSelect) {
       onSelect(room);
     }
@@ -62,7 +62,7 @@ const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
   // ==========================================================================
 
   return (
-    <article 
+    <article
       className={`${styles.card} ${isSelected ? styles.selected : ''}`}
       aria-labelledby={`room-title-${room.id}`}
       onMouseEnter={() => setShowGallery(true)}
@@ -121,19 +121,19 @@ const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
 
         <p className={styles.description}>{room.description}</p>
 
-        <div className={styles.details}>
-          <div className={styles.detailItem}>
-            <span className={styles.detailIcon}>ðŸ‘¥</span>
-            <span>{room.capacity} {room.capacity === 1 ? 'hÃ³spede' : 'hÃ³spedes'}</span>
-          </div>
-          <div className={styles.detailItem}>
-            <span className={styles.detailIcon}>ðŸ“</span>
-            <span>{room.size}mÂ²</span>
-          </div>
-          <div className={styles.detailItem}>
-            <span className={styles.detailIcon}>ðŸ›ï¸</span>
-            <span>{room.bedType}</span>
-          </div>
+        <div className={styles.detailItem}>
+          <span className={styles.detailIcon}>👥</span>
+          <span>
+            {room.capacity} {room.capacity === 1 ? 'hóspede' : 'hóspedes'}
+          </span>
+        </div>
+        <div className={styles.detailItem}>
+          <span className={styles.detailIcon}>📏</span>
+          <span>{room.size} m²</span>
+        </div>
+        <div className={styles.detailItem}>
+          <span className={styles.detailIcon}>🛏️</span>
+          <span>{room.bedType}</span>
         </div>
 
         <div className={styles.amenities}>
@@ -143,9 +143,7 @@ const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
             </span>
           ))}
           {room.amenities.length > 4 && (
-            <span className={styles.amenityMore}>
-              +{room.amenities.length - 4}
-            </span>
+            <span className={styles.amenityMore}>+{room.amenities.length - 4}</span>
           )}
         </div>
 
@@ -207,5 +205,3 @@ RoomCard.defaultProps = {
 };
 
 export default memo(RoomCard);
-
-
