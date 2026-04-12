@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import styles from './Sidebar.module.css';
+import logoImage from '../../../../../assets/images/Login/logo.png';
 
 const Sidebar = ({ isOpen, onToggle, onLogout, user }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -29,7 +30,6 @@ const Sidebar = ({ isOpen, onToggle, onLogout, user }) => {
     if (onToggle) onToggle();
   };
 
-  // Verificar tamanho da tela ao redimensionar
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 768 && mobileOpen) {
@@ -44,7 +44,6 @@ const Sidebar = ({ isOpen, onToggle, onLogout, user }) => {
 
   return (
     <>
-      {/* Botão de menu hambúrguer para mobile */}
       <button 
         className={styles.menuButton}
         onClick={handleMenuToggle}
@@ -53,15 +52,21 @@ const Sidebar = ({ isOpen, onToggle, onLogout, user }) => {
         <span className={styles.menuIcon}>☰</span>
       </button>
 
-      {/* Overlay para mobile quando sidebar está aberta */}
       {mobileOpen && window.innerWidth <= 768 && (
         <div className={styles.overlay} onClick={handleMenuToggle} />
       )}
       
       <div className={`${styles.sidebar} ${isSidebarOpen ? styles.open : styles.closed}`}>
         <div className={styles.sidebarHeader}>
-          <div className={styles.logo}>
-            <span className={styles.logoIcon}>🏨</span>
+          <div className={styles.logoArea}>
+            <div className={styles.logoWrapper}>
+              <div className={styles.logoCircle}></div>
+              <img 
+                src={logoImage} 
+                alt="Hotel Paradise" 
+                className={styles.logoImage}
+              />
+            </div>
             {isSidebarOpen && <span className={styles.logoText}>Hotel Paradise</span>}
           </div>
           {window.innerWidth > 768 && (
@@ -93,11 +98,11 @@ const Sidebar = ({ isOpen, onToggle, onLogout, user }) => {
         <div className={styles.sidebarFooter}>
           <div className={styles.userInfo}>
             <div className={styles.userAvatar}>
-              {user?.name?.charAt(0) || 'U'}
+              {user?.name?.charAt(0) || 'A'}
             </div>
             {isSidebarOpen && (
               <div className={styles.userDetails}>
-                <span className={styles.userName}>{user?.name || 'Usuário'}</span>
+                <span className={styles.userName}>{user?.name || 'Administrador'}</span>
                 <span className={styles.userRole}>
                   {userRole === 'admin' ? 'Administrador' : 
                    userRole === 'receptionist' ? 'Recepcionista' : 'Financeiro'}

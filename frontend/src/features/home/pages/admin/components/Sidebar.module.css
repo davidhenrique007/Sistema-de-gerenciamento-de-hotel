@@ -1,5 +1,4 @@
-﻿/* Sidebar.module.css - VERSÃO CORRIGIDA */
-.sidebar {
+﻿.sidebar {
   position: fixed;
   left: 0;
   top: 0;
@@ -21,7 +20,6 @@
   width: 70px;
 }
 
-/* Botão de menu hambúrguer para mobile */
 .menuButton {
   position: fixed;
   top: 16px;
@@ -36,13 +34,10 @@
   justify-content: center;
   cursor: pointer;
   z-index: 1001;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s;
 }
 
 .menuButton:hover {
   background: #2563eb;
-  transform: scale(1.02);
 }
 
 .menuIcon {
@@ -50,7 +45,6 @@
   color: white;
 }
 
-/* Overlay para mobile */
 .overlay {
   position: fixed;
   top: 0;
@@ -59,12 +53,6 @@
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 999;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 .sidebarHeader {
@@ -75,32 +63,69 @@
   border-bottom: 1px solid #334155;
 }
 
-.logo {
+.logoArea {
   display: flex;
   align-items: center;
   gap: 12px;
-  white-space: nowrap;
+  flex: 1;
 }
 
-.logoIcon {
-  font-size: 28px;
+.logoWrapper {
+  position: relative;
+  width: 55px;
+  height: 55px;
+  flex-shrink: 0;
+}
+
+.logoCircle {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(255, 255, 255, 0.05) 70%);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 215, 0, 0.5);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  animation: pulse 2s ease-in-out infinite;
+  top: 0;
+  left: 0;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.6; }
+}
+
+.logoImage {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  top: 5px;
+  left: 5px;
+  z-index: 2;
 }
 
 .logoText {
   font-size: 18px;
   font-weight: 600;
-  color: white;
+  background: linear-gradient(135deg, #ffffff 0%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  white-space: nowrap;
 }
 
 .toggleBtn {
   background: none;
   border: none;
   color: #94a3b8;
-  font-size: 14px;
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 6px;
-  transition: all 0.2s;
 }
 
 .toggleBtn:hover {
@@ -125,7 +150,6 @@
   color: #cbd5e1;
   text-decoration: none;
   transition: all 0.2s;
-  white-space: nowrap;
 }
 
 .navLink:hover {
@@ -173,7 +197,7 @@
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 18px;
   flex-shrink: 0;
 }
 
@@ -187,9 +211,6 @@
   font-size: 14px;
   font-weight: 500;
   color: white;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .userRole {
@@ -211,26 +232,27 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
 }
 
 .logoutBtn:hover {
   background: #dc2626;
 }
 
-/* Sidebar mini - quando fechada */
+.sidebar.closed .logoText {
+  display: none;
+}
+
+.sidebar.closed .toggleBtn {
+  display: none;
+}
+
 .sidebar.closed .navLink {
   justify-content: center;
   padding: 12px;
 }
 
-.sidebar.closed .userInfo {
-  justify-content: center;
-  padding: 8px;
-}
-
-.sidebar.closed .userAvatar {
-  margin: 0;
+.sidebar.closed .userDetails {
+  display: none;
 }
 
 .sidebar.closed .logoutBtn {
@@ -238,39 +260,6 @@
   padding: 10px;
 }
 
-/* ============================================
-   RESPONSIVO - TABLET
-   ============================================ */
-@media (max-width: 1024px) {
-  .sidebar.open {
-    width: 240px;
-  }
-  
-  .sidebar.closed {
-    width: 65px;
-  }
-  
-  .logoIcon {
-    font-size: 24px;
-  }
-  
-  .logoText {
-    font-size: 16px;
-  }
-  
-  .navIcon {
-    font-size: 18px;
-    min-width: 20px;
-  }
-  
-  .navLabel {
-    font-size: 13px;
-  }
-}
-
-/* ============================================
-   RESPONSIVO - MOBILE
-   ============================================ */
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
@@ -281,158 +270,127 @@
   
   .sidebar.open {
     transform: translateX(0);
-    width: 80%;
-    max-width: 280px;
   }
   
   .sidebar.closed {
     transform: translateX(-100%);
-    width: 80%;
-    max-width: 280px;
-  }
-  
-  .toggleBtn {
-    display: none;
   }
   
   .menuButton {
     display: flex;
   }
   
-  .sidebarHeader {
-    padding: 16px;
-  }
-  
-  .logoIcon {
-    font-size: 24px;
-  }
-  
-  .logoText {
-    font-size: 16px;
-  }
-  
-  .nav {
-    padding: 16px 12px;
-  }
-  
-  .navLink {
-    padding: 10px 12px;
-  }
-  
-  .navIcon {
-    font-size: 18px;
-    min-width: 22px;
-  }
-  
-  .navLabel {
-    font-size: 13px;
-  }
-  
-  .sidebarFooter {
-    padding: 12px;
-  }
-  
-  .userInfo {
-    padding: 6px;
-  }
-  
-  .userAvatar {
-    width: 36px;
-    height: 36px;
-    font-size: 14px;
-  }
-  
-  .userName {
-    font-size: 13px;
-  }
-  
-  .userRole {
-    font-size: 10px;
-  }
-  
-  .logoutBtn {
-    padding: 8px 10px;
-    font-size: 13px;
+  .toggleBtn {
+    display: none;
   }
 }
 
-/* Desktop - esconde botão de menu */
 @media (min-width: 769px) {
   .menuButton {
     display: none;
   }
 }
 
-/* ============================================
-   MOBILE PEQUENO
-   ============================================ */
-@media (max-width: 480px) {
-  .sidebar.open {
-    width: 85%;
-    max-width: 260px;
-  }
-  
-  .sidebarHeader {
-    padding: 14px;
-  }
-  
-  .logoIcon {
-    font-size: 22px;
-  }
-  
-  .logoText {
-    font-size: 15px;
-  }
-  
-  .nav {
-    padding: 12px 10px;
-    gap: 6px;
-  }
-  
-  .navLink {
-    padding: 8px 10px;
-  }
-  
-  .navIcon {
-    font-size: 16px;
-    min-width: 20px;
-  }
-  
-  .navLabel {
-    font-size: 12px;
-  }
-  
-  .sidebarFooter {
-    padding: 10px;
-  }
-  
-  .userAvatar {
-    width: 32px;
-    height: 32px;
-    font-size: 12px;
-  }
-  
-  .userName {
-    font-size: 12px;
-  }
-  
-  .userRole {
-    font-size: 9px;
-  }
-  
-  .logoutBtn {
-    padding: 6px 8px;
-    font-size: 12px;
-  }
-  
-  .menuButton {
-    top: 12px;
-    left: 12px;
-    width: 40px;
-    height: 40px;
-  }
-  
-  .menuIcon {
-    font-size: 20px;
-  }
+/* Botão de toggle (◀/▶) - aparece ao passar o mouse */
+.toggleBtn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.sidebar:hover .toggleBtn {
+  opacity: 1;
+  visibility: visible;
+}
+
+.toggleBtn:hover {
+  background: #334155;
+  color: white;
+}
+
+/* Sidebar fechada - ajustar posição do botão toggle */
+.sidebar.closed .sidebarHeader {
+  justify-content: center;
+  padding: 20px 8px;
+}
+
+.sidebar.closed .logoArea {
+  justify-content: center;
+}
+
+.sidebar.closed .logoWrapper {
+  margin: 0 auto;
+}
+
+.sidebar.closed .toggleBtn {
+  position: absolute;
+  right: -10px;
+  top: 20px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  opacity: 1;
+  visibility: visible;
+}
+
+.sidebar.closed:hover .toggleBtn {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+/* Ajuste do header para posicionamento relativo */
+.sidebarHeader {
+  position: relative;
+}
+
+
+/* Aumento adicional para melhor visibilidade */
+.logoWrapper {
+  width: 55px !important;
+  height: 55px !important;
+}
+
+.logoCircle {
+  width: 55px !important;
+  height: 55px !important;
+  border-width: 2px !important;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4) !important;
+}
+
+.logoImage {
+  width: 45px !important;
+  height: 45px !important;
+  top: 5px !important;
+  left: 5px !important;
+  border-width: 2px !important;
+}
+
+.logoText {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+}
+
+/* Ajuste do espaçamento do header */
+.sidebarHeader {
+  padding: 20px 16px !important;
+  gap: 12px !important;
+}
+
+.logoArea {
+  gap: 14px !important;
 }

@@ -1,8 +1,10 @@
-// backend/routes/adminRoutes.js
+﻿// backend/routes/adminRoutes.js
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
 const authMiddleware = require('../middlewares/auth');
+import reservaAdminRoutes from './admin/reservaAdminRoutes.js';
+
 
 // Todas as rotas admin requerem autenticação e role admin
 router.use(authMiddleware);
