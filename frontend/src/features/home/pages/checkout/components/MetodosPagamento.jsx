@@ -1,141 +1,17 @@
 ﻿import React, { useState } from 'react';
 import styles from '../styles/Checkout.module.css';
 
-// Componentes de cada método de pagamento
-const FormaPagamentoMPesa = ({ paymentDetails, setPaymentDetails, errors }) => {
-  const [operadora, setOperadora] = useState('mpesa');
-
-  const operadoras = [
-    { id: 'mpesa', label: 'M-Pesa', prefixos: ['84', '85'] },
-    { id: 'emola', label: 'E-mola', prefixos: ['86', '87'] },
-    { id: 'mkesh', label: 'mKesh', prefixos: ['82', '83'] }
-  ];
-
-  const handlePhoneChange = (e) => {
-    const valor = e.target.value;
-    // Aplica máscara de telefone
-    const numeros = valor.replace(/\D/g, '');
-    let mascara = numeros;
-    
-    if (numeros.length > 2) {
-      mascara = `${numeros.substring(0, 2)} ${numeros.substring(2, 5)} ${numeros.substring(5, 9)}`;
-    }
-    
-    setPaymentDetails({ phone: mascara.trim() });
-    
-    // Detectar operadora
-    if (numeros.length >= 2) {
-      const prefixo = numeros.substring(0, 2);
-      const op = operadoras.find(o => o.prefixos.includes(prefixo));
-      if (op) setOperadora(op.id);
-    }
-  };
-
+// Componente de pagamento M-Pesa - AGORA VAZIO (só a aba, sem formulário)
+const FormaPagamentoMPesa = ({ paymentDetails, setPaymentDetails, errors, setPaymentMethod }) => {
+  // Componente vazio - apenas para manter a aba visível
   return (
-    <div>
-      <div className={styles.operadoraInfo}>
-        <span className={styles.operadoraBadge}>
-          {operadora === 'mpesa' && '📱 M-Pesa'}
-          {operadora === 'emola' && '📱 E-mola'}
-          {operadora === 'mkesh' && '📱 mKesh'}
-        </span>
-      </div>
-      
-      <div className={styles.formGroup}>
-        <label>Número de telefone</label>
-        <input
-          type="tel"
-          value={paymentDetails?.phone || ''}
-          onChange={handlePhoneChange}
-          placeholder="84 123 4567"
-          className={errors?.payment ? styles.inputError : styles.input}
-        />
-        {errors?.payment && <span className={styles.errorMessage}>{errors.payment}</span>}
-        <small>Você receberá uma notificação para confirmar o pagamento</small>
-      </div>
+    <div className={styles.mpesaEmptyMessage}>
+      <p>Selecione Cartão de Crédito ou Dinheiro para continuar</p>
     </div>
   );
 };
 
-const FormaPagamentoCartao = ({ paymentDetails, setPaymentDetails, errors }) => {
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    let formatted = value;
-    
-    if (name === 'cardNumber') {
-      formatted = value.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ').slice(0, 19);
-    }
-    if (name === 'expiry') {
-      formatted = value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/').slice(0, 5);
-    }
-    if (name === 'cvv') {
-      formatted = value.replace(/\D/g, '').slice(0, 4);
-    }
-    
-    setPaymentDetails(prev => ({ ...prev, [name]: formatted }));
-  };
-
-  return (
-    <div>
-      <div className={styles.formGroup}>
-        <label>Número do cartão</label>
-        <input
-          type="text"
-          name="cardNumber"
-          value={paymentDetails?.cardNumber || ''}
-          onChange={handleChange}
-          placeholder="0000 0000 0000 0000"
-          className={errors?.payment ? styles.inputError : styles.input}
-        />
-      </div>
-      
-      <div className={styles.formGroup}>
-        <label>Nome no cartão</label>
-        <input
-          type="text"
-          name="cardHolder"
-          value={paymentDetails?.cardHolder || ''}
-          onChange={handleChange}
-          placeholder="Como aparece no cartão"
-          className={styles.input}
-        />
-      </div>
-      
-      <div className={styles.rowFields}>
-        <div className={styles.formGroup}>
-          <label>Validade</label>
-          <input
-            type="text"
-            name="expiry"
-            value={paymentDetails?.expiry || ''}
-            onChange={handleChange}
-            placeholder="MM/AA"
-            className={errors?.payment ? styles.inputError : styles.input}
-          />
-        </div>
-        
-        <div className={styles.formGroup}>
-          <label>CVV</label>
-          <input
-            type="text"
-            name="cvv"
-            value={paymentDetails?.cvv || ''}
-            onChange={handleChange}
-            placeholder="123"
-            className={errors?.payment ? styles.inputError : styles.input}
-          />
-        </div>
-      </div>
-      
-      {errors?.payment && <span className={styles.errorMessage}>{errors.payment}</span>}
-      
-      <div className={styles.mockHint}>
-        <small>Teste: 4242 4242 4242 4242 | CVV: 123</small>
-      </div>
-    </div>
-  );
-};
-
+// Componente de pagamento em Dinheiro
 const FormaPagamentoDinheiro = () => {
   return (
     <div className={styles.cashInfo}>
@@ -185,22 +61,22 @@ const MetodosPagamento = ({ paymentMethod, setPaymentMethod, paymentDetails, set
         ))}
       </div>
 
-      {/* Conteúdo */}
+      {/* Conteúdo - M-Pesa agora está vazio */}
       <div className={styles.tabContent}>
         {activeTab === 'mpesa' && (
           <FormaPagamentoMPesa
             paymentDetails={paymentDetails}
             setPaymentDetails={setPaymentDetails}
             errors={errors}
+            setPaymentMethod={setPaymentMethod}
           />
         )}
         
         {activeTab === 'cartao' && (
-          <FormaPagamentoCartao
-            paymentDetails={paymentDetails}
-            setPaymentDetails={setPaymentDetails}
-            errors={errors}
-          />
+          <div className={styles.stripePlaceholder}>
+            <p>🔒 Pagamento seguro com Stripe</p>
+            <p className={styles.hint}>O formulário de cartão aparecerá abaixo</p>
+          </div>
         )}
         
         {activeTab === 'dinheiro' && (

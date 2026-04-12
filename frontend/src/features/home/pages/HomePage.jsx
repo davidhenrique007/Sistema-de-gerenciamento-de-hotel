@@ -104,7 +104,7 @@ const HomePage = () => {
           size="small"
           parallax={true}
           title="Hotel Paradise"
-          subtitle="O paraíso perfeito para suas férias dos sonhos"
+          subtitle="Descubra o espaço perfeito para relaxar e criar memórias inesquecíveis"
           ctaText="Reservar Agora"
         />
 
@@ -112,7 +112,7 @@ const HomePage = () => {
           onSelectRoom={handleRoomSelect}
           onDetailsRoom={handleDetailsRoom}
           title="Nossos Quartos"
-          subtitle="Escolha o quarto perfeito para sua estadia"
+          subtitle="Explore nossos quartos e serviços exclusivos, projetados para oferecer conforto, serenidade e bem-estar durante toda a sua estadia."
         />
 
         <section
