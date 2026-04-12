@@ -1,4 +1,5 @@
-﻿import React from 'react';
+﻿// App.jsx (arquivo principal de rotas)
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ClienteProvider } from './contexts/ClienteContext';
 import { CartProvider } from './contexts/CartContext';
@@ -17,11 +18,9 @@ import Dashboard from './features/home/pages/admin/Dashboard';
 import DashboardAnalises from './features/home/pages/admin/DashboardAnalises';
 import Quartos from './features/home/pages/admin/Quartos';
 import LixeiraQuartos from './features/home/pages/admin/LixeiraQuartos';
+import Reservas from './features/home/pages/admin/Reservas';
 
 // Placeholders para outras páginas admin
-const ReservasAdmin = () => (
-  <div style={{ padding: 40 }}>Página de Reservas - Em desenvolvimento</div>
-);
 const PagamentosAdmin = () => (
   <div style={{ padding: 40 }}>Página de Pagamentos - Em desenvolvimento</div>
 );
@@ -80,11 +79,12 @@ const App = () => {
                     </AdminRoute>
                   }
                 />
+                {/* ✅ Substituir o placeholder pelo componente real */}
                 <Route
                   path="/admin/reservas"
                   element={
                     <AdminRoute>
-                      <ReservasAdmin />
+                      <Reservas />
                     </AdminRoute>
                   }
                 />

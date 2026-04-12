@@ -65,7 +65,6 @@ const FormularioIdentificacao = ({ onSubmit, isLoading }) => {
 
     setFormData((prev) => ({ ...prev, [name]: novoValor }));
 
-    // Validação em tempo real
     const error = validarCampo(name, name === 'telefone' ? removerMascara(value) : value);
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
@@ -78,7 +77,6 @@ const FormularioIdentificacao = ({ onSubmit, isLoading }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validar todos os campos
     const newErrors = {};
     Object.keys(formData).forEach((key) => {
       const value = key === 'telefone' ? removerMascara(formData[key]) : formData[key];
@@ -99,22 +97,33 @@ const FormularioIdentificacao = ({ onSubmit, isLoading }) => {
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
-      <h2>Identificação</h2>
+      {/* Título melhorado */}
+      <div className={styles.headerSection}>
+        <h2 className={styles.title}>Dados do Hóspede</h2>
+        <p className={styles.subtitle}>
+          Preencha as informações para continuar com o checkout
+        </p>
+        <div className={styles.securityBadge}>
+          <span className={styles.lockIcon}>🔒</span>
+          <span className={styles.securityText}>Seus dados são protegidos</span>
+        </div>
+      </div>
 
       <div className={styles.field}>
-        <label>Nome Completo *</label>
+        <label>Nome Completo <span className={styles.required}>*</span></label>
         <input
           name="nome"
           value={formData.nome}
           onChange={handleChange}
           onBlur={handleBlur}
+          placeholder="Digite seu nome completo"
           disabled={isLoading}
         />
         {touched.nome && errors.nome && <span className={styles.error}>{errors.nome}</span>}
       </div>
 
       <div className={styles.field}>
-        <label>Telefone *</label>
+        <label>Telefone <span className={styles.required}>*</span></label>
         <input
           name="telefone"
           value={formData.telefone}
@@ -123,13 +132,6 @@ const FormularioIdentificacao = ({ onSubmit, isLoading }) => {
           placeholder="84 123 4567"
           disabled={isLoading}
         />
-
-        {/* LOG PARA DEBUG */}
-        {console.log('📊 Estado do telefone:', {
-          touched: touched.telefone,
-          error: errors.telefone,
-        })}
-
         {touched.telefone && errors.telefone && (
           <span className={styles.error}>{errors.telefone}</span>
         )}
@@ -142,7 +144,7 @@ const FormularioIdentificacao = ({ onSubmit, isLoading }) => {
           value={formData.documento}
           onChange={handleChange}
           onBlur={handleBlur}
-          placeholder="AB123456C"
+          placeholder="BI ou Passaporte"
           disabled={isLoading}
         />
         {touched.documento && errors.documento && (
@@ -162,10 +164,14 @@ const FormularioIdentificacao = ({ onSubmit, isLoading }) => {
           disabled={isLoading}
         />
         {touched.email && errors.email && <span className={styles.error}>{errors.email}</span>}
+        <p className={styles.fieldHint}>
+          ✉️ Enviaremos sua confirmação de reserva por e-mail
+        </p>
       </div>
 
-      <button type="submit" disabled={isLoading}>
-        {isLoading ? 'Processando...' : 'Continuar'}
+      {/* Botão com texto mais claro */}
+      <button type="submit" disabled={isLoading} className={styles.submitButton}>
+        {isLoading ? 'Processando...' : 'Continuar para Pagamento →'}
       </button>
     </form>
   );

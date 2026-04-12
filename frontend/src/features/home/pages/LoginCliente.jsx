@@ -2,6 +2,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCliente } from "../../../contexts/ClienteContext";
 import FormularioIdentificacao from "../components/FormularioIdentificacao";
+import logoImage from "../../../assets/images/login/logo.png"; // Mesmo caminho do LoginAdmin
 import styles from "./LoginCliente.module.css";
 
 const LoginCliente = () => {
@@ -16,7 +17,6 @@ const LoginCliente = () => {
       const resultado = await identificarCliente(dados);
       
       if (resultado.success) {
-        // ✅ Volta para onde o cliente estava antes do login
         const destino = location.state?.from || '/';
         navigate(destino, { replace: true });
       } else {
@@ -31,26 +31,43 @@ const LoginCliente = () => {
     <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.illustration}>
+          {/* Logo com imagem real - mesmo padrão do LoginAdmin */}
+          <div className={styles.logoContainer}>
+            <div className={styles.logoCircle}></div>
+            <img 
+              src={logoImage} 
+              alt="Hotel Paradise" 
+              className={styles.logoImage}
+              onError={(e) => {
+                e.target.style.display = 'none';
+                if (e.target.nextSibling) {
+                  e.target.nextSibling.style.display = 'inline-block';
+                }
+              }}
+            />
+            <span className={styles.logoFallback} style={{ display: 'none' }}>🏨</span>
+          </div>
+
           <img 
             src="/assets/images/login-illustration.svg" 
             alt="Faça sua reserva" 
             className={styles.illustrationImage}
           />
-          <h1>Bem-vindo ao Hotel Paradise</h1>
-          <p>Identifique-se para continuar com sua reserva</p>
+          <h1>Finalize sua reserva em poucos passos</h1>
+          <p>Preencha seus dados e confirme sua estadia</p>
           
           <div className={styles.benefits}>
             <div className={styles.benefit}>
               <span className={styles.benefitIcon}>✓</span>
-              <span>Reservas mais rápidas</span>
+              <span>Processo rápido e seguro</span>
             </div>
             <div className={styles.benefit}>
               <span className={styles.benefitIcon}>✓</span>
-              <span>Ofertas exclusivas</span>
+              <span>Dados protegidos com criptografia</span>
             </div>
             <div className={styles.benefit}>
               <span className={styles.benefitIcon}>✓</span>
-              <span>Histórico de estadias</span>
+              <span>Confirmação imediata por e-mail</span>
             </div>
           </div>
         </div>

@@ -1,64 +1,12 @@
 ﻿import React, { useState } from 'react';
 import styles from '../styles/Checkout.module.css';
 
-// Componente de pagamento M-Pesa
+// Componente de pagamento M-Pesa - AGORA VAZIO (só a aba, sem formulário)
 const FormaPagamentoMPesa = ({ paymentDetails, setPaymentDetails, errors, setPaymentMethod }) => {
-  const [operadora, setOperadora] = useState('mpesa');
-
-  const operadoras = [
-    { id: 'mpesa', label: 'M-Pesa', prefixos: ['84', '85'] },
-    { id: 'emola', label: 'E-mola', prefixos: ['86', '87'] },
-    { id: 'mkesh', label: 'mKesh', prefixos: ['82', '83'] }
-  ];
-
-  const handlePhoneChange = (e) => {
-    const valor = e.target.value;
-    const numeros = valor.replace(/\D/g, '');
-    let mascara = numeros;
-    
-    if (numeros.length > 2) {
-      mascara = `${numeros.substring(0, 2)} ${numeros.substring(2, 5)} ${numeros.substring(5, 9)}`;
-    }
-    
-    setPaymentDetails({ phone: mascara.trim() });
-    
-    if (numeros.length >= 2) {
-      const prefixo = numeros.substring(0, 2);
-      const op = operadoras.find(o => o.prefixos.includes(prefixo));
-      if (op) {
-        setOperadora(op.id);
-        setPaymentMethod(op.id);
-      }
-    }
-  };
-
-  const getOperadoraNome = () => {
-    if (operadora === 'mpesa') return 'M-Pesa';
-    if (operadora === 'emola') return 'E-mola';
-    if (operadora === 'mkesh') return 'mKesh';
-    return 'Pagamento Móvel';
-  };
-
+  // Componente vazio - apenas para manter a aba visível
   return (
-    <div>
-      <div className={styles.operadoraInfo}>
-        <span className={styles.operadoraBadge}>
-          📱 {getOperadoraNome()}
-        </span>
-      </div>
-      
-      <div className={styles.formGroup}>
-        <label>Número de telefone</label>
-        <input
-          type="tel"
-          value={paymentDetails?.phone || ''}
-          onChange={handlePhoneChange}
-          placeholder="84 123 4567"
-          className={errors?.payment ? styles.inputError : styles.input}
-        />
-        {errors?.payment && <span className={styles.errorMessage}>{errors.payment}</span>}
-        <small>Você receberá uma notificação para confirmar o pagamento</small>
-      </div>
+    <div className={styles.mpesaEmptyMessage}>
+      <p>Selecione Cartão de Crédito ou Dinheiro para continuar</p>
     </div>
   );
 };
@@ -113,7 +61,7 @@ const MetodosPagamento = ({ paymentMethod, setPaymentMethod, paymentDetails, set
         ))}
       </div>
 
-      {/* Conteúdo - NOTA: O componente de cartão é renderizado pelo pai (Checkout) */}
+      {/* Conteúdo - M-Pesa agora está vazio */}
       <div className={styles.tabContent}>
         {activeTab === 'mpesa' && (
           <FormaPagamentoMPesa
@@ -125,8 +73,6 @@ const MetodosPagamento = ({ paymentMethod, setPaymentMethod, paymentDetails, set
         )}
         
         {activeTab === 'cartao' && (
-          // O Stripe Elements será renderizado pelo Checkout
-          // Esta div é um placeholder
           <div className={styles.stripePlaceholder}>
             <p>🔒 Pagamento seguro com Stripe</p>
             <p className={styles.hint}>O formulário de cartão aparecerá abaixo</p>

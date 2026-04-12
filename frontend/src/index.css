@@ -1,51 +1,35 @@
-/* ============================================================================
-   HOTEL PARADISE - ESTILOS GLOBAIS
-   =========================================================================== */
-
-/* Design System - Variáveis */
-@import './styles/variables.css';
-
-/* Estilos Base - Reset e Tipografia */
-@import './styles/global.css';
-
-/* Estilos Responsivos - Breakpoints */
-@import './styles/responsive.css';
-
-/* ============================================================================
-   ANIMAÇÕES GLOBAIS
-   =========================================================================== */
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+﻿
+/* Garantir que dropdowns apareçam por cima de tudo */
+.dropdown-container {
+  position: relative;
+  z-index: 100;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+.dropdown-menu {
+  position: absolute;
+  z-index: 1000;
 }
 
-/* ============================================================================
-   UTILITÁRIOS GLOBAIS
-   =========================================================================== */
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--color-neutral-200);
-  border-top-color: var(--color-primary-600);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+/* Garantir que a tabela não corte elementos */
+.table-wrapper {
+  overflow: visible !important;
 }
 
-.spinner-sm {
-  width: 24px;
-  height: 24px;
-  border-width: 2px;
+.data-table {
+  overflow: visible !important;
 }
 
-.spinner-lg {
-  width: 56px;
-  height: 56px;
-  border-width: 4px;
+.data-table tbody tr {
+  position: relative;
+}
+
+/* Ajuste para a coluna de ações */
+.actions-cell {
+  position: relative;
+  overflow: visible !important;
+}
+
+/* Garantir que modais fiquem acima */
+.modal-overlay {
+  z-index: 9999 !important;
 }

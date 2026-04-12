@@ -9,7 +9,13 @@ const api = axios.create({
 
 // Interceptor para adicionar token de autenticação
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('@HotelParadise:token');
+  // ✅ TENTAR AMBAS AS CHAVES (admin e cliente)
+  let token = localStorage.getItem('admin_token');
+  
+  if (!token) {
+    token = localStorage.getItem('@HotelParadise:token');
+  }
+  
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -23,9 +29,18 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      // ✅ Limpar ambas as chaves
+      localStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_user');
       localStorage.removeItem('@HotelParadise:token');
       localStorage.removeItem('@HotelParadise:user');
-      window.location.href = '/login-cliente';
+      
+      // ✅ Redirecionar para login admin se estiver em rota admin
+      if (window.location.pathname.startsWith('/admin')) {
+        window.location.href = '/login-admin';
+      } else {
+        window.location.href = '/login-cliente';
+      }
     }
     return Promise.reject(error);
   }
