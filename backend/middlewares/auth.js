@@ -1,4 +1,5 @@
 ﻿const jwt = require('jsonwebtoken');
+<<<<<<< HEAD
 const db = require('../config/database');
 
 const registrarLogin = async (userId, ip, userAgent) => {
@@ -62,6 +63,10 @@ const registrarLogout = async (userId, ip) => {
 };
 
 const verificarToken = async (req, res, next) => {
+=======
+
+const verificarToken = (req, res, next) => {
+>>>>>>> origin/main
   const authHeader = req.headers.authorization;
   const jwtSecret = process.env.JWT_SECRET || 'hotel-paradise-super-secret-key';
 
@@ -76,6 +81,7 @@ const verificarToken = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, jwtSecret);
+<<<<<<< HEAD
     
     const userResult = await db.query(
       'SELECT id, name, email, role, is_active FROM users WHERE id = $1',
@@ -106,6 +112,9 @@ const verificarToken = async (req, res, next) => {
       is_active: user.is_active
     };
     
+=======
+    req.user = decoded;
+>>>>>>> origin/main
     next();
   } catch (error) {
     console.error('Erro ao verificar token:', error.message);
@@ -117,7 +126,11 @@ const verificarToken = async (req, res, next) => {
 };
 
 const verificarRole = (rolesPermitidos) => {
+<<<<<<< HEAD
   return async (req, res, next) => {
+=======
+  return (req, res, next) => {
+>>>>>>> origin/main
     if (!req.user) {
       return res.status(401).json({
         success: false,
@@ -136,9 +149,13 @@ const verificarRole = (rolesPermitidos) => {
   };
 };
 
+<<<<<<< HEAD
 module.exports = {
   verificarToken,
   verificarRole,
   registrarLogin,
   registrarLogout
 };
+=======
+module.exports = { verificarToken, verificarRole };
+>>>>>>> origin/main

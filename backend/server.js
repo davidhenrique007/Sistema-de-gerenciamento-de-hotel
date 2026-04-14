@@ -5,10 +5,17 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+<<<<<<< HEAD
 // Configuração CORS
 app.use(cors({
   origin: 'http://localhost:3000',
   credentials: true,
+=======
+// ✅ Configuração CORS correta
+app.use(cors({
+  origin: 'http://localhost:3000',  // Frontend URL
+  credentials: true,                 // Permitir cookies/credenciais
+>>>>>>> origin/main
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
@@ -24,9 +31,13 @@ const quartoRoutes = require('./routes/quartoRoutes');
 const reciboRoutes = require('./routes/reciboRoutes');
 const adminDashboardRoutes = require('./routes/admin/dashboardRoutes');
 const quartoAdminRoutes = require('./routes/admin/quartoRoutes');
+<<<<<<< HEAD
 const reservaAdminRoutes = require('./routes/admin/reservaAdminRoutes');
 const utilizadorRoutes = require('./routes/admin/utilizadorRoutes');
 const logRoutes = require('./routes/admin/logRoutes');
+=======
+const reservaAdminRoutes = require('./routes/admin/reservaAdminRoutes'); // ✅ NOVA LINHA
+>>>>>>> origin/main
 
 app.use('/api/reservas', reservaRoutes);
 app.use('/api/clientes', clienteRoutes);
@@ -34,11 +45,17 @@ app.use('/api/quartos', quartoRoutes);
 app.use('/api/recibos', reciboRoutes);
 app.use('/api/admin/dashboard', adminDashboardRoutes);
 app.use('/api/admin/quartos', quartoAdminRoutes);
+<<<<<<< HEAD
 app.use('/api/admin', reservaAdminRoutes);
 app.use('/api/admin', utilizadorRoutes);
 app.use('/api/admin', logRoutes);
 
 // ==================== ROTA DE LOGIN ====================
+=======
+app.use('/api/admin', reservaAdminRoutes); // ✅ NOVA LINHA
+
+// ✅ Rota de login
+>>>>>>> origin/main
 app.post('/api/auth/login', async (req, res) => {
   console.log('📝 Recebendo login request:', req.body);
   
@@ -46,11 +63,18 @@ app.post('/api/auth/login', async (req, res) => {
   const bcrypt = require('bcryptjs');
   const jwt = require('jsonwebtoken');
   const pool = require('./config/database');
+<<<<<<< HEAD
   const { registrarLogin } = require('./middlewares/auth');
   
   try {
     console.log('🔍 Buscando usuário:', email);
     const result = await pool.query('SELECT id, name, email, password_hash, role, is_active FROM users WHERE email = $1', [email]);
+=======
+  
+  try {
+    console.log('🔍 Buscando usuário:', email);
+    const result = await pool.query('SELECT id, name, email, password_hash, role FROM users WHERE email = $1', [email]);
+>>>>>>> origin/main
     
     if (result.rows.length === 0) {
       console.log('❌ Usuário não encontrado');
@@ -58,12 +82,15 @@ app.post('/api/auth/login', async (req, res) => {
     }
     
     const user = result.rows[0];
+<<<<<<< HEAD
     
     if (!user.is_active) {
       console.log('❌ Usuário inativo:', user.email);
       return res.status(401).json({ success: false, message: 'Conta desativada. Contacte o administrador.' });
     }
     
+=======
+>>>>>>> origin/main
     console.log('✅ Usuário encontrado:', user.email);
     
     const isValid = await bcrypt.compare(password, user.password_hash);
@@ -78,9 +105,12 @@ app.post('/api/auth/login', async (req, res) => {
       { expiresIn: '7d' }
     );
     
+<<<<<<< HEAD
     // Registrar login
     await registrarLogin(user.id, req.ip, req.get('user-agent'));
     
+=======
+>>>>>>> origin/main
     console.log('✅ Login bem sucedido, token gerado');
     res.json({ 
       success: true, 
@@ -94,6 +124,7 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 // ==================== ROTA DE LOGOUT ====================
 app.post('/api/auth/logout', async (req, res) => {
   const { registrarLogout } = require('./middlewares/auth');
@@ -138,18 +169,32 @@ app.post('/api/auth/heartbeat', async (req, res) => {
 });
 
 // ==================== HEALTH CHECK ====================
+=======
+// Health check
+>>>>>>> origin/main
 app.get('/api/health', (req, res) => { 
   res.json({ status: 'ok', timestamp: new Date().toISOString() }); 
 });
 
+<<<<<<< HEAD
 // ==================== TRATAMENTO DE ERROS GLOBAL ====================
+=======
+// ✅ Tratamento de erros global
+>>>>>>> origin/main
 app.use((err, req, res, next) => {
   console.error('❌ Erro global:', err);
   res.status(500).json({ success: false, message: 'Erro interno do servidor' });
 });
 
+<<<<<<< HEAD
 // ==================== INICIAR SERVIDOR ====================
 app.listen(PORT, () => { 
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
   console.log(`📍 CORS permitindo: http://localhost:3000`);
 });
+=======
+app.listen(PORT, () => { 
+  console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+  console.log(`📍 CORS permitindo: http://localhost:3000`);
+});
+>>>>>>> origin/main

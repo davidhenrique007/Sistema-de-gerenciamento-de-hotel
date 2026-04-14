@@ -9,6 +9,7 @@ const LayoutAdmin = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+<<<<<<< HEAD
   // Função para registrar logout manual
   const registrarLogout = async () => {
     const token = localStorage.getItem('admin_token');
@@ -30,11 +31,21 @@ const LayoutAdmin = ({ children }) => {
     const token = localStorage.getItem('admin_token');
     const adminUserStr = localStorage.getItem('admin_user');
 
+=======
+  useEffect(() => {
+    const token = localStorage.getItem('admin_token');
+    const adminUserStr = localStorage.getItem('admin_user');
+    
+>>>>>>> origin/main
     if (!token || !adminUserStr) {
       navigate('/login-admin');
       return;
     }
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> origin/main
     try {
       const userData = JSON.parse(adminUserStr);
       if (userData && userData.name) {
@@ -50,8 +61,26 @@ const LayoutAdmin = ({ children }) => {
     }
   }, [navigate]);
 
+<<<<<<< HEAD
   const handleLogout = async () => {
     await registrarLogout();
+=======
+  // Adicionar/remover classe no body quando sidebar abre/fecha no mobile
+  useEffect(() => {
+    if (window.innerWidth <= 768) {
+      if (sidebarOpen) {
+        document.body.classList.add('sidebar-open');
+      } else {
+        document.body.classList.remove('sidebar-open');
+      }
+    }
+    return () => {
+      document.body.classList.remove('sidebar-open');
+    };
+  }, [sidebarOpen]);
+
+  const handleLogout = () => {
+>>>>>>> origin/main
     localStorage.removeItem('admin_token');
     localStorage.removeItem('admin_user');
     navigate('/login-admin');
@@ -75,8 +104,13 @@ const LayoutAdmin = ({ children }) => {
 
   return (
     <div className={styles.layout}>
+<<<<<<< HEAD
       <Sidebar
         isOpen={sidebarOpen}
+=======
+      <Sidebar 
+        isOpen={sidebarOpen} 
+>>>>>>> origin/main
         onToggle={toggleSidebar}
         onLogout={handleLogout}
         user={user}
@@ -88,11 +122,19 @@ const LayoutAdmin = ({ children }) => {
           </div>
           <div className={styles.headerRight}>
             <span className={styles.headerDate}>
+<<<<<<< HEAD
               {new Date().toLocaleDateString('pt-BR', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
+=======
+              {new Date().toLocaleDateString('pt-BR', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+>>>>>>> origin/main
               })}
             </span>
           </div>
