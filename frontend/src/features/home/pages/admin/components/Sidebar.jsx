@@ -12,6 +12,8 @@ const Sidebar = ({ isOpen, onToggle, onLogout, user }) => {
     { path: '/admin/reservas', label: 'Reservas', icon: '📅', roles: ['admin', 'receptionist'] },
     { path: '/admin/pagamentos', label: 'Pagamentos', icon: '💰', roles: ['admin', 'financial'] },
     { path: '/admin/quartos', label: 'Quartos', icon: '🏨', roles: ['admin'] },
+    { path: '/admin/utilizadores', label: 'Utilizadores', icon: '👥', roles: ['admin'] },
+    { path: '/admin/auditoria', label: 'Auditoria', icon: '📋', roles: ['admin'] },
     { path: '/admin/lixeira', label: 'Lixeira', icon: '🗑️', roles: ['admin'] },
     { path: '/admin/configuracoes', label: 'Configurações', icon: '⚙️', roles: ['admin'] }
   ];
@@ -105,7 +107,7 @@ const Sidebar = ({ isOpen, onToggle, onLogout, user }) => {
                 <span className={styles.userName}>{user?.name || 'Administrador'}</span>
                 <span className={styles.userRole}>
                   {userRole === 'admin' ? 'Administrador' : 
-                   userRole === 'receptionist' ? 'Recepcionista' : 'Financeiro'}
+                   userRole === 'receptionist' ? 'Rececionista' : 'Financeiro'}
                 </span>
               </div>
             )}
