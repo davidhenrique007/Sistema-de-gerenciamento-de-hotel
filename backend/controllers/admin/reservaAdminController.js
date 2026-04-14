@@ -1,18 +1,5 @@
-﻿const { Pool } = require('pg');
-require('dotenv').config();
-
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-});
-
-const db = {
-  query: (text, params) => pool.query(text, params),
-  pool: pool
-};
+﻿const db = require('../../config/database');
+const Log = require('../../models/Log');
 
 class ReservaAdminController {
   async listarReservas(req, res) {
@@ -231,31 +218,20 @@ class ReservaAdminController {
     }
   }
 
+  // ==================== LOGS DE RESERVAS ====================
+
   async editarReserva(req, res) {
     const client = await db.pool.connect();
     
     try {
       const { id } = req.params;
-      const {
-        quarto_id,
-        data_checkin,
-        data_checkout,
-        metodo_pagamento,
-        observacoes
-      } = req.body;
+      const { quarto_id, data_checkin, data_checkout, metodo_pagamento, observacoes } = req.body;
+      const usuario = req.user;
       const TAXA_IMPOSTO = 0.05;
-
-      console.log('📝 Editando reserva ID:', id);
-      console.log('📦 Dados recebidos:', req.body);
 
       await client.query('BEGIN');
 
-      // Buscar reserva atual - usando CAST para UUID
-      const reservaAtual = await client.query(
-        'SELECT * FROM reservations WHERE id::text = $1 FOR UPDATE',
-        [String(id)]
-      );
-
+      const reservaAtual = await client.query('SELECT * FROM reservations WHERE id::text = $1 FOR UPDATE', [String(id)]);
       if (reservaAtual.rows.length === 0) {
         await client.query('ROLLBACK');
         return res.status(404).json({ success: false, message: 'Reserva não encontrada' });
@@ -264,101 +240,66 @@ class ReservaAdminController {
       const reserva = reservaAtual.rows[0];
       const quartoIdFinal = quarto_id || reserva.room_id;
 
-      // Buscar preço do quarto
-      const quartoInfo = await client.query(
-        'SELECT price_per_night, room_number, type FROM rooms WHERE id::text = $1',
-        [String(quartoIdFinal)]
-      );
-      
+      const quartoInfo = await client.query('SELECT price_per_night, room_number, type FROM rooms WHERE id::text = $1', [String(quartoIdFinal)]);
       if (quartoInfo.rows.length === 0) {
         await client.query('ROLLBACK');
         return res.status(400).json({ success: false, message: 'Quarto não encontrado' });
       }
-      
+
       const precoPorNoite = parseFloat(quartoInfo.rows[0].price_per_night);
-      
-      // Calcular número de noites
       const checkinDate = new Date(data_checkin || reserva.check_in);
       const checkoutDate = new Date(data_checkout || reserva.check_out);
       const diffTime = Math.abs(checkoutDate - checkinDate);
       const noites = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
-      
-      // Calcular valores com taxa
+
       const valorBase = precoPorNoite * noites;
       const valorTaxa = valorBase * TAXA_IMPOSTO;
       const novoValorTotal = valorBase + valorTaxa;
 
-      console.log(`📊 Quarto: ${quartoInfo.rows[0].room_number} - ${quartoInfo.rows[0].type}`);
-      console.log(`📊 Preço/noite: ${precoPorNoite} MTn`);
-      console.log(`📊 Noites: ${noites}`);
-      console.log(`📊 Base: ${valorBase} MTn`);
-      console.log(`📊 Taxa (5%): ${valorTaxa} MTn`);
-      console.log(`📊 Total: ${novoValorTotal} MTn`);
-
-      // Atualizar campos
       const updates = [];
       const params = [];
       let paramIndex = 1;
 
-      if (quarto_id) {
-        updates.push(`room_id = $${paramIndex++}::uuid`);
-        params.push(quarto_id);
-      }
-      if (data_checkin) {
-        updates.push(`check_in = $${paramIndex++}`);
-        params.push(data_checkin);
-      }
-      if (data_checkout) {
-        updates.push(`check_out = $${paramIndex++}`);
-        params.push(data_checkout);
-      }
-      if (metodo_pagamento) {
-        updates.push(`payment_method = $${paramIndex++}`);
-        params.push(metodo_pagamento);
-      }
-      if (observacoes !== undefined) {
-        updates.push(`special_requests = $${paramIndex++}`);
-        params.push(observacoes);
-      }
-      
+      if (quarto_id) { updates.push(`room_id = $${paramIndex++}::uuid`); params.push(quarto_id); }
+      if (data_checkin) { updates.push(`check_in = $${paramIndex++}`); params.push(data_checkin); }
+      if (data_checkout) { updates.push(`check_out = $${paramIndex++}`); params.push(data_checkout); }
+      if (metodo_pagamento) { updates.push(`payment_method = $${paramIndex++}`); params.push(metodo_pagamento); }
+      if (observacoes !== undefined) { updates.push(`special_requests = $${paramIndex++}`); params.push(observacoes); }
+
       updates.push(`total_price = $${paramIndex++}`);
       params.push(novoValorTotal);
       updates.push(`updated_at = NOW()`);
       params.push(id);
 
-      const updateQuery = `UPDATE reservations SET ${updates.join(', ')} WHERE id::text = $${paramIndex}`;
-      console.log('📝 Executando update:', updateQuery);
-      
-      await client.query(updateQuery, params);
-      
-      await client.query('COMMIT');
+      await client.query(`UPDATE reservations SET ${updates.join(', ')} WHERE id::text = $${paramIndex}`, params);
 
-      return res.status(200).json({
-        success: true,
-        message: 'Reserva atualizada com sucesso',
-        data: {
-          valor_base: valorBase,
-          valor_taxa: valorTaxa,
-          novo_valor: novoValorTotal,
-          noites: noites,
-          preco_por_noite: precoPorNoite,
-          taxa_percentual: 5
-        }
+      // Registrar log EDIT_RESERVATION
+      await Log.registrar({
+        usuarioId: usuario.id,
+        usuarioNome: usuario.name || usuario.email,
+        usuarioRole: usuario.role,
+        acao: 'EDIT_RESERVATION',
+        recurso: 'reservation',
+        recursoId: id,
+        dadosAntigos: { room_id: reserva.room_id, check_in: reserva.check_in, check_out: reserva.check_out, total_price: reserva.total_price },
+        dadosNovos: { room_id: quartoIdFinal, check_in: data_checkin || reserva.check_in, check_out: data_checkout || reserva.check_out, total_price: novoValorTotal },
+        ip: req.ip,
+        userAgent: req.get('user-agent')
       });
+
+      await client.query('COMMIT');
+      console.log(`✅ Log EDIT_RESERVATION registrado para reserva ${id}`);
+
+      return res.status(200).json({ success: true, message: 'Reserva atualizada com sucesso' });
 
     } catch (error) {
       await client.query('ROLLBACK');
       console.error('Erro ao editar reserva:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Erro interno ao editar reserva: ' + error.message
-      });
-    } finally {
-      client.release();
-    }
+      return res.status(500).json({ success: false, message: 'Erro interno ao editar reserva' });
+    } finally { client.release(); }
   }
 
-    async cancelarReserva(req, res) {
+  async cancelarReserva(req, res) {
     const client = await db.pool.connect();
     
     try {
@@ -366,24 +307,13 @@ class ReservaAdminController {
       const { motivo } = req.body;
       const usuario = req.user;
 
-      console.log('📝 Cancelando reserva ID:', id);
-      console.log('📦 Motivo:', motivo);
-
       if (!motivo || motivo.length < 10) {
-        return res.status(400).json({
-          success: false,
-          message: 'Motivo do cancelamento é obrigatório (mínimo 10 caracteres)'
-        });
+        return res.status(400).json({ success: false, message: 'Motivo do cancelamento é obrigatório (mínimo 10 caracteres)' });
       }
 
       await client.query('BEGIN');
 
-      // Buscar reserva atual
-      const reservaAtual = await client.query(
-        'SELECT * FROM reservations WHERE id::text = $1 FOR UPDATE',
-        [String(id)]
-      );
-
+      const reservaAtual = await client.query('SELECT * FROM reservations WHERE id::text = $1 FOR UPDATE', [String(id)]);
       if (reservaAtual.rows.length === 0) {
         await client.query('ROLLBACK');
         return res.status(404).json({ success: false, message: 'Reserva não encontrada' });
@@ -394,53 +324,43 @@ class ReservaAdminController {
       
       if (!statusPermitidos.includes(reserva.status)) {
         await client.query('ROLLBACK');
-        return res.status(400).json({
-          success: false,
-          message: `Não é possível cancelar reserva com status ${reserva.status}`
-        });
+        return res.status(400).json({ success: false, message: `Não é possível cancelar reserva com status ${reserva.status}` });
       }
 
-      // Atualizar status da reserva para cancelled
-      await client.query(
-        `UPDATE reservations 
-         SET status = 'cancelled',
-             cancellation_reason = $1,
-             updated_at = NOW()
-         WHERE id::text = $2`,
-        [motivo, String(id)]
-      );
+      await client.query(`UPDATE reservations SET status = 'cancelled', cancellation_reason = $1, updated_at = NOW() WHERE id::text = $2`, [motivo, String(id)]);
 
-      // Liberar o quarto se estava ocupado/reservado
       if (reserva.room_id) {
-        await client.query(
-          'UPDATE rooms SET status = $1 WHERE id::text = $2',
-          ['available', String(reserva.room_id)]
-        );
-        console.log(`✅ Quarto ${reserva.room_id} liberado`);
+        await client.query('UPDATE rooms SET status = $1 WHERE id::text = $2', ['available', String(reserva.room_id)]);
       }
+
+      // Registrar log CANCEL_RESERVATION
+      await Log.registrar({
+        usuarioId: usuario.id,
+        usuarioNome: usuario.name || usuario.email,
+        usuarioRole: usuario.role,
+        acao: 'CANCEL_RESERVATION',
+        recurso: 'reservation',
+        recursoId: id,
+        dadosAntigos: { status: reserva.status },
+        dadosNovos: { status: 'cancelled', motivo: motivo },
+        motivo: motivo,
+        ip: req.ip,
+        userAgent: req.get('user-agent')
+      });
 
       await client.query('COMMIT');
+      console.log(`✅ Log CANCEL_RESERVATION registrado para reserva ${id}`);
 
-      console.log(`✅ Reserva ${id} cancelada com sucesso`);
-
-      return res.status(200).json({
-        success: true,
-        message: 'Reserva cancelada com sucesso'
-      });
+      return res.status(200).json({ success: true, message: 'Reserva cancelada com sucesso' });
 
     } catch (error) {
       await client.query('ROLLBACK');
       console.error('Erro ao cancelar reserva:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Erro interno ao cancelar reserva: ' + error.message
-      });
-    } finally {
-      client.release();
-    }
+      return res.status(500).json({ success: false, message: 'Erro interno ao cancelar reserva' });
+    } finally { client.release(); }
   }
 
-    async confirmarPagamento(req, res) {
+  async confirmarPagamento(req, res) {
     const client = await db.pool.connect();
     
     try {
@@ -448,15 +368,9 @@ class ReservaAdminController {
       const { valor_pago } = req.body;
       const usuario = req.user;
 
-      console.log('📝 Confirmando pagamento reserva ID:', id);
-
       await client.query('BEGIN');
 
-      const reservaAtual = await client.query(
-        'SELECT * FROM reservations WHERE id::text = $1 FOR UPDATE',
-        [String(id)]
-      );
-
+      const reservaAtual = await client.query('SELECT * FROM reservations WHERE id::text = $1 FOR UPDATE', [String(id)]);
       if (reservaAtual.rows.length === 0) {
         await client.query('ROLLBACK');
         return res.status(404).json({ success: false, message: 'Reserva não encontrada' });
@@ -466,65 +380,49 @@ class ReservaAdminController {
 
       if (reserva.payment_status === 'paid') {
         await client.query('ROLLBACK');
-        return res.status(400).json({
-          success: false,
-          message: 'Pagamento já foi confirmado anteriormente'
-        });
+        return res.status(400).json({ success: false, message: 'Pagamento já foi confirmado anteriormente' });
       }
 
-      if (reserva.status !== 'confirmed') {
-        await client.query('ROLLBACK');
-        return res.status(400).json({
-          success: false,
-          message: 'Reserva precisa estar confirmada para registrar pagamento'
-        });
-      }
+      await client.query(`UPDATE reservations SET payment_status = 'paid', updated_at = NOW() WHERE id::text = $1`, [String(id)]);
 
-      await client.query(
-        `UPDATE reservations 
-         SET payment_status = 'paid',
-             updated_at = NOW()
-         WHERE id::text = $2`,
-        [String(id)]
-      );
+      // Registrar log CONFIRM_PAYMENT
+      await Log.registrar({
+        usuarioId: usuario.id,
+        usuarioNome: usuario.name || usuario.email,
+        usuarioRole: usuario.role,
+        acao: 'CONFIRM_PAYMENT',
+        recurso: 'reservation',
+        recursoId: id,
+        dadosAntigos: { payment_status: reserva.payment_status },
+        dadosNovos: { payment_status: 'paid', valor_pago: valor_pago || reserva.total_price },
+        ip: req.ip,
+        userAgent: req.get('user-agent')
+      });
 
       await client.query('COMMIT');
+      console.log(`✅ Log CONFIRM_PAYMENT registrado para reserva ${id}`);
 
-      console.log(`✅ Pagamento da reserva ${id} confirmado`);
-
-      return res.status(200).json({
-        success: true,
-        message: 'Pagamento confirmado com sucesso'
-      });
+      return res.status(200).json({ success: true, message: 'Pagamento confirmado com sucesso' });
 
     } catch (error) {
       await client.query('ROLLBACK');
       console.error('Erro ao confirmar pagamento:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Erro interno ao confirmar pagamento'
-      });
-    } finally {
-      client.release();
-    }
+      return res.status(500).json({ success: false, message: 'Erro interno ao confirmar pagamento' });
+    } finally { client.release(); }
   }
 
-    async realizarCheckin(req, res) {
+      async realizarCheckin(req, res) {
     const client = await db.pool.connect();
     
     try {
       const { id } = req.params;
       const usuario = req.user;
 
-      console.log('📝 Realizando check-in reserva ID:', id);
+      console.log('📝 Realizando check-in da reserva:', id);
 
       await client.query('BEGIN');
 
-      const reservaAtual = await client.query(
-        'SELECT * FROM reservations WHERE id::text = $1 FOR UPDATE',
-        [String(id)]
-      );
-
+      const reservaAtual = await client.query('SELECT * FROM reservations WHERE id::text = $1 FOR UPDATE', [String(id)]);
       if (reservaAtual.rows.length === 0) {
         await client.query('ROLLBACK');
         return res.status(404).json({ success: false, message: 'Reserva não encontrada' });
@@ -532,39 +430,33 @@ class ReservaAdminController {
 
       const reserva = reservaAtual.rows[0];
 
-      if (reserva.status === 'occupied') {
+      // Verificar se já está finalizado
+      if (reserva.status === 'finished') {
         await client.query('ROLLBACK');
-        return res.status(400).json({ success: false, message: 'Check-in já foi realizado' });
+        return res.status(400).json({ success: false, message: 'Reserva já finalizada' });
       }
 
+      // Verificar se pode fazer check-in (apenas confirmed)
       if (reserva.status !== 'confirmed') {
         await client.query('ROLLBACK');
         return res.status(400).json({
           success: false,
-          message: `Não é possível fazer check-in de reserva com status ${reserva.status}`
+          message: `Não é possível fazer check-in de reserva com status ${reserva.status}. Status deve ser 'confirmed'.`
         });
       }
 
-      const hoje = new Date().toISOString().split('T')[0];
-      const dataCheckin = new Date(reserva.check_in).toISOString().split('T')[0];
+      // Usar status 'occupied' (se existir) ou manter como 'confirmed' mas marcar check_in_real
+      // Como 'occupied' pode não existir, vamos apenas marcar a data de check-in real
+      await client.query(`
+        UPDATE reservations 
+        SET check_in_real = NOW(),
+            updated_at = NOW()
+        WHERE id::text = $1
+      `, [String(id)]);
 
-      if (dataCheckin > hoje) {
-        await client.query('ROLLBACK');
-        return res.status(400).json({
-          success: false,
-          message: 'Check-in só pode ser realizado a partir da data de entrada'
-        });
-      }
+      console.log(`✅ Check-in da reserva ${id} registrado (data: ${new Date().toISOString()})`);
 
-      await client.query(
-        `UPDATE reservations 
-         SET status = 'occupied',
-             check_in_real = NOW(),
-             updated_at = NOW()
-         WHERE id::text = $1`,
-        [String(id)]
-      );
-
+      // Atualizar status do quarto para 'occupied'
       if (reserva.room_id) {
         await client.query(
           'UPDATE rooms SET status = $1 WHERE id::text = $2',
@@ -573,43 +465,52 @@ class ReservaAdminController {
         console.log(`✅ Quarto ${reserva.room_id} marcado como OCUPADO`);
       }
 
-      await client.query('COMMIT');
+      // Registrar log de auditoria
+      await Log.registrar({
+        usuarioId: usuario.id,
+        usuarioNome: usuario.name || usuario.email,
+        usuarioRole: usuario.role,
+        acao: 'CHECKIN',
+        recurso: 'reservation',
+        recursoId: id,
+        dadosAntigos: { status: reserva.status, check_in_real: reserva.check_in_real },
+        dadosNovos: { check_in_real: new Date().toISOString() },
+        ip: req.ip,
+        userAgent: req.get('user-agent')
+      });
 
-      console.log(`✅ Check-in da reserva ${id} realizado com sucesso`);
+      await client.query('COMMIT');
 
       return res.status(200).json({
         success: true,
-        message: 'Check-in realizado com sucesso'
+        message: 'Check-in realizado com sucesso! Data de entrada registrada.'
       });
 
     } catch (error) {
       await client.query('ROLLBACK');
-      console.error('Erro ao realizar check-in:', error);
+      console.error('❌ Erro ao realizar check-in:', error);
       return res.status(500).json({
         success: false,
-        message: 'Erro interno ao realizar check-in'
+        message: 'Erro interno ao realizar check-in: ' + error.message
       });
     } finally {
       client.release();
     }
   }
 
-    async realizarCheckout(req, res) {
+
+      async realizarCheckout(req, res) {
     const client = await db.pool.connect();
     
     try {
       const { id } = req.params;
       const usuario = req.user;
 
-      console.log('📝 Realizando check-out reserva ID:', id);
+      console.log('📝 Realizando check-out da reserva:', id);
 
       await client.query('BEGIN');
 
-      const reservaAtual = await client.query(
-        'SELECT * FROM reservations WHERE id::text = $1 FOR UPDATE',
-        [String(id)]
-      );
-
+      const reservaAtual = await client.query('SELECT * FROM reservations WHERE id::text = $1 FOR UPDATE', [String(id)]);
       if (reservaAtual.rows.length === 0) {
         await client.query('ROLLBACK');
         return res.status(404).json({ success: false, message: 'Reserva não encontrada' });
@@ -617,28 +518,33 @@ class ReservaAdminController {
 
       const reserva = reservaAtual.rows[0];
 
-      if (reserva.status === 'finished') {
+      // Verificar se já tem check-out
+      if (reserva.check_out_real) {
         await client.query('ROLLBACK');
         return res.status(400).json({ success: false, message: 'Check-out já foi realizado' });
       }
 
-      if (reserva.status !== 'occupied') {
+      // Verificar se tem check-in
+      if (!reserva.check_in_real) {
         await client.query('ROLLBACK');
         return res.status(400).json({
           success: false,
-          message: 'Reserva precisa estar com status HOSPEDADO para fazer check-out'
+          message: 'Check-in ainda não foi realizado. Faça check-in primeiro.'
         });
       }
 
-      await client.query(
-        `UPDATE reservations 
-         SET status = 'finished',
-             check_out_real = NOW(),
-             updated_at = NOW()
-         WHERE id::text = $1`,
-        [String(id)]
-      );
+      // Registrar check-out
+      await client.query(`
+        UPDATE reservations 
+        SET check_out_real = NOW(),
+            status = 'finished',
+            updated_at = NOW()
+        WHERE id::text = $1
+      `, [String(id)]);
 
+      console.log(`✅ Check-out da reserva ${id} registrado (data: ${new Date().toISOString()})`);
+
+      // Liberar o quarto (voltar para disponível)
       if (reserva.room_id) {
         await client.query(
           'UPDATE rooms SET status = $1 WHERE id::text = $2',
@@ -647,26 +553,46 @@ class ReservaAdminController {
         console.log(`✅ Quarto ${reserva.room_id} liberado para DISPONIVEL`);
       }
 
-      await client.query('COMMIT');
+      // Calcular duração da estadia
+      const checkinTime = new Date(reserva.check_in_real);
+      const checkoutTime = new Date();
+      const diffMs = checkoutTime - checkinTime;
+      const diffHoras = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffMinutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
 
-      console.log(`✅ Check-out da reserva ${id} realizado com sucesso`);
+      // Registrar log de auditoria
+      await Log.registrar({
+        usuarioId: usuario.id,
+        usuarioNome: usuario.name || usuario.email,
+        usuarioRole: usuario.role,
+        acao: 'CHECKOUT',
+        recurso: 'reservation',
+        recursoId: id,
+        dadosAntigos: { status: reserva.status, check_out_real: reserva.check_out_real },
+        dadosNovos: { status: 'finished', check_out_real: new Date().toISOString(), duracao: `${diffHoras}h ${diffMinutos}m` },
+        ip: req.ip,
+        userAgent: req.get('user-agent')
+      });
+
+      await client.query('COMMIT');
 
       return res.status(200).json({
         success: true,
-        message: 'Check-out realizado com sucesso'
+        message: `Check-out realizado com sucesso! Duração da estadia: ${diffHoras}h ${diffMinutos}m`
       });
 
     } catch (error) {
       await client.query('ROLLBACK');
-      console.error('Erro ao realizar check-out:', error);
+      console.error('❌ Erro ao realizar check-out:', error);
       return res.status(500).json({
         success: false,
-        message: 'Erro interno ao realizar check-out'
+        message: 'Erro interno ao realizar check-out: ' + error.message
       });
     } finally {
       client.release();
     }
   }
+
 
   async reenviarRecibo(req, res) {
     return res.status(501).json({ success: false, message: 'Funcionalidade em desenvolvimento' });
@@ -674,7 +600,5 @@ class ReservaAdminController {
 }
 
 module.exports = new ReservaAdminController();
-
-
 
 
