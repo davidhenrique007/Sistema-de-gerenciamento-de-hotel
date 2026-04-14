@@ -12,6 +12,11 @@ const Sidebar = ({ isOpen, onToggle, onLogout, user }) => {
     { path: '/admin/reservas', label: 'Reservas', icon: '📅', roles: ['admin', 'receptionist'] },
     { path: '/admin/pagamentos', label: 'Pagamentos', icon: '💰', roles: ['admin', 'financial'] },
     { path: '/admin/quartos', label: 'Quartos', icon: '🏨', roles: ['admin'] },
+<<<<<<< HEAD
+    { path: '/admin/utilizadores', label: 'Utilizadores', icon: '👥', roles: ['admin'] },
+    { path: '/admin/auditoria', label: 'Auditoria', icon: '📋', roles: ['admin'] },
+=======
+>>>>>>> origin/main
     { path: '/admin/lixeira', label: 'Lixeira', icon: '🗑️', roles: ['admin'] },
     { path: '/admin/configuracoes', label: 'Configurações', icon: '⚙️', roles: ['admin'] }
   ];
@@ -105,7 +110,11 @@ const Sidebar = ({ isOpen, onToggle, onLogout, user }) => {
                 <span className={styles.userName}>{user?.name || 'Administrador'}</span>
                 <span className={styles.userRole}>
                   {userRole === 'admin' ? 'Administrador' : 
+<<<<<<< HEAD
+                   userRole === 'receptionist' ? 'Rececionista' : 'Financeiro'}
+=======
                    userRole === 'receptionist' ? 'Recepcionista' : 'Financeiro'}
+>>>>>>> origin/main
                 </span>
               </div>
             )}
@@ -120,4 +129,8 @@ const Sidebar = ({ isOpen, onToggle, onLogout, user }) => {
   );
 };
 
+<<<<<<< HEAD
 export default Sidebar;
+=======
+export default Sidebar;
+>>>>>>> origin/main

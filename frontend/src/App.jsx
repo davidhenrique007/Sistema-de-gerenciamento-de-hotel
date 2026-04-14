@@ -19,6 +19,11 @@ import DashboardAnalises from './features/home/pages/admin/DashboardAnalises';
 import Quartos from './features/home/pages/admin/Quartos';
 import LixeiraQuartos from './features/home/pages/admin/LixeiraQuartos';
 import Reservas from './features/home/pages/admin/Reservas';
+<<<<<<< HEAD
+import Utilizadores from './features/home/pages/admin/Utilizadores';
+import Auditoria from './features/home/pages/admin/Auditoria';
+=======
+>>>>>>> origin/main
 
 // Placeholders para outras páginas admin
 const PagamentosAdmin = () => (
@@ -79,7 +84,10 @@ const App = () => {
                     </AdminRoute>
                   }
                 />
+<<<<<<< HEAD
+=======
                 {/* ✅ Substituir o placeholder pelo componente real */}
+>>>>>>> origin/main
                 <Route
                   path="/admin/reservas"
                   element={
@@ -105,6 +113,25 @@ const App = () => {
                   }
                 />
                 <Route
+<<<<<<< HEAD
+                  path="/admin/utilizadores"
+                  element={
+                    <AdminRoute>
+                      <Utilizadores />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/auditoria"
+                  element={
+                    <AdminRoute>
+                      <Auditoria />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+=======
+>>>>>>> origin/main
                   path="/admin/configuracoes"
                   element={
                     <AdminRoute>
