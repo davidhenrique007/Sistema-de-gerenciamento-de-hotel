@@ -11,17 +11,42 @@ const permissoes = {
     'quartos': ['listar', 'visualizar', 'editar'],
     'hospedes': ['listar', 'visualizar', 'criar'],
     'relatorios': ['visualizar'],
-    '*': [] // Negar tudo que não for explicitamente permitido
+    'dashboard': ['visualizar'],
+    'auditoria': [],
+    'pagamentos': [],
+    'utilizadores': [],
+    '*': []
   },
   financial: {
     'pagamentos': ['listar', 'visualizar', 'confirmar'],
     'recibos': ['listar', 'visualizar', 'gerar'],
     'relatorios': ['listar', 'visualizar', 'exportar'],
     'auditoria': ['listar', 'visualizar'],
+    'dashboard': ['visualizar'],
+    'reservas': [],
+    'quartos': [],
+    'utilizadores': [],
     '*': []
   }
 };
 
+// Função para registrar acesso negado
+const registrarAcessoNegado = async (usuario, recurso, acao, req) => {
+  await Log.registrar({
+    usuarioId: usuario.id,
+    usuarioNome: usuario.name,
+    usuarioRole: usuario.role,
+    acao: 'ACL_DENIED',
+    recurso: recurso,
+    recursoId: req.params.id,
+    ip: req.ip,
+    userAgent: req.get('user-agent'),
+    sucesso: false,
+    mensagemErro: `Tentativa de acesso negado: ${acao} em ${recurso}`
+  });
+};
+
+// Middleware principal para verificar permissões
 const verificarPermissao = (recurso, acao) => {
   return async (req, res, next) => {
     try {
@@ -38,19 +63,7 @@ const verificarPermissao = (recurso, acao) => {
       const perfilPermissoes = permissoes[role];
 
       if (!perfilPermissoes) {
-        await Log.registrar({
-          usuarioId: usuario.id,
-          usuarioNome: usuario.name,
-          usuarioRole: role,
-          acao: 'ACL_DENIED',
-          recurso,
-          recursoId: req.params.id,
-          ip: req.ip,
-          userAgent: req.get('user-agent'),
-          sucesso: false,
-          mensagemErro: `Perfil ${role} não encontrado`
-        });
-
+        await registrarAcessoNegado(usuario, recurso, acao, req);
         return res.status(403).json({
           success: false,
           message: 'Acesso negado. Perfil não reconhecido.'
@@ -64,19 +77,7 @@ const verificarPermissao = (recurso, acao) => {
         perfilPermissoes[recurso]?.includes('*');
 
       if (!temPermissao) {
-        await Log.registrar({
-          usuarioId: usuario.id,
-          usuarioNome: usuario.name,
-          usuarioRole: role,
-          acao: 'ACL_DENIED',
-          recurso,
-          recursoId: req.params.id,
-          ip: req.ip,
-          userAgent: req.get('user-agent'),
-          sucesso: false,
-          mensagemErro: `Acesso negado: ${role} não tem permissão para ${acao} em ${recurso}`
-        });
-
+        await registrarAcessoNegado(usuario, recurso, acao, req);
         return res.status(403).json({
           success: false,
           message: `Acesso negado. Você não tem permissão para ${acao} em ${recurso}.`
@@ -94,8 +95,37 @@ const verificarPermissao = (recurso, acao) => {
   };
 };
 
+// Middleware específico para acesso a pagamentos
+const verificarAcessoPagamentos = (req, res, next) => {
+  const usuario = req.user;
+  
+  if (!usuario) {
+    return res.status(401).json({
+      success: false,
+      message: 'Usuário não autenticado'
+    });
+  }
+  
+  if (usuario.role !== 'admin' && usuario.role !== 'financial') {
+    return res.status(403).json({
+      success: false,
+      message: 'Acesso negado. Apenas administradores e financeiro podem acessar pagamentos.'
+    });
+  }
+  
+  next();
+};
+
+// Middleware específico para acesso a utilizadores
 const verificarAcessoUtilizadores = (req, res, next) => {
   const usuario = req.user;
+  
+  if (!usuario) {
+    return res.status(401).json({
+      success: false,
+      message: 'Usuário não autenticado'
+    });
+  }
   
   // Apenas admin pode gerenciar utilizadores
   if (usuario.role !== 'admin') {
@@ -108,9 +138,17 @@ const verificarAcessoUtilizadores = (req, res, next) => {
   next();
 };
 
+// Middleware para impedir auto-desativação
 const verificarNaoAutoDesativacao = async (req, res, next) => {
   const { id } = req.params;
   const usuarioLogado = req.user;
+  
+  if (!usuarioLogado) {
+    return res.status(401).json({
+      success: false,
+      message: 'Usuário não autenticado'
+    });
+  }
   
   // Impedir que o admin desative a si mesmo
   if (id === usuarioLogado.id && req.body.is_active === false) {
@@ -123,9 +161,49 @@ const verificarNaoAutoDesativacao = async (req, res, next) => {
   next();
 };
 
+// Middleware para verificar se é admin
+const verificarAdmin = (req, res, next) => {
+  const usuario = req.user;
+  
+  if (!usuario) {
+    return res.status(401).json({
+      success: false,
+      message: 'Usuário não autenticado'
+    });
+  }
+  
+  if (usuario.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      message: 'Acesso negado. Apenas administradores podem acessar este recurso.'
+    });
+  }
+  
+  next();
+};
+
+// Middleware para verificar permissão de dashboard (apenas visualização)
+const verificarAcessoDashboard = (req, res, next) => {
+  const usuario = req.user;
+  
+  if (!usuario) {
+    return res.status(401).json({
+      success: false,
+      message: 'Usuário não autenticado'
+    });
+  }
+  
+  // Todos os perfis autenticados podem ver o dashboard
+  // (mas com dados diferentes conforme o perfil)
+  next();
+};
+
 module.exports = {
   verificarPermissao,
+  verificarAcessoPagamentos,
   verificarAcessoUtilizadores,
   verificarNaoAutoDesativacao,
+  verificarAdmin,
+  verificarAcessoDashboard,
   permissoes
 };
