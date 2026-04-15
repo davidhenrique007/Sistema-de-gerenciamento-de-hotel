@@ -1,70 +1,82 @@
-// backend/controllers/admin/dashboardAnalisesController.js
-const pool = require('../../config/database');
+// backend/controllers/admin/dashboardController.js (atualizado com cache)
+const db = require('../../config/database');
+const cache = require('../../config/cache');
+const Log = require('../../models/Log');
 
-const dashboardAnalisesController = {
-  async getOcupacaoDiaria(req, res) {
+class DashboardController {
+  async getMetrics(req, res) {
+    const hotelId = req.user?.hotelId || 'default';
+    const cacheKey = `dashboard:metrics:${hotelId}`;
+    
     try {
-      const { inicio, fim } = req.query;
+      const metrics = await cache.getOrSet(cacheKey, async () => {
+        console.log('📊 Fetching fresh dashboard metrics from DB...');
+        
+        const hoje = new Date().toISOString().split('T')[0];
+        
+        const [reservasHoje, checkinsPendentes, pagamentosAtrasados, ocupacao, receitaMes] = await Promise.all([
+          db.query(`
+            SELECT COUNT(*) as total FROM reservations 
+            WHERE check_in::date = $1 AND status = 'confirmed'
+          `, [hoje]),
+          db.query(`
+            SELECT COUNT(*) as total FROM reservations 
+            WHERE check_in::date = $1 AND status = 'confirmed' AND check_in_real IS NULL
+          `, [hoje]),
+          db.query(`
+            SELECT COUNT(*) as total FROM reservations 
+            WHERE payment_status = 'pending' AND check_in::date < $1 AND status = 'confirmed'
+          `, [hoje]),
+          db.query(`
+            SELECT COUNT(*) as ocupados, (SELECT COUNT(*) FROM rooms) as total 
+            FROM rooms WHERE status = 'occupied'
+          `),
+          db.query(`
+            SELECT COALESCE(SUM(total_price), 0) as total FROM reservations 
+            WHERE EXTRACT(MONTH FROM check_in) = EXTRACT(MONTH FROM NOW())
+            AND EXTRACT(YEAR FROM check_in) = EXTRACT(YEAR FROM NOW())
+            AND status = 'confirmed'
+          `)
+        ]);
+        
+        const ocupacaoPercentual = ocupacao.rows[0]?.total > 0 
+          ? Math.round((ocupacao.rows[0].ocupados / ocupacao.rows[0].total) * 100)
+          : 0;
+        
+        return {
+          reservasHoje: parseInt(reservasHoje.rows[0]?.total || 0),
+          checkinsPendentes: parseInt(checkinsPendentes.rows[0]?.total || 0),
+          pagamentosAtrasados: parseInt(pagamentosAtrasados.rows[0]?.total || 0),
+          taxaOcupacao: ocupacaoPercentual,
+          receitaMes: parseFloat(receitaMes.rows[0]?.total || 0),
+          ultimaAtualizacao: new Date().toISOString()
+        };
+      });
       
-      const result = await pool.query(`
-        SELECT 
-          DATE(created_at) as data,
-          COUNT(CASE WHEN status = 'confirmed' THEN 1 END) as ocupados,
-          ROUND(COUNT(CASE WHEN status = 'confirmed' THEN 1 END)::numeric / 43 * 100, 2) as ocupacao
-        FROM reservations
-        WHERE DATE(created_at) BETWEEN $1 AND $2
-        GROUP BY DATE(created_at)
-        ORDER BY data
-      `, [inicio, fim]);
+      res.json({ success: true, data: metrics });
       
-      res.json({ success: true, data: result.rows });
     } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
-    }
-  },
-  
-  async getReceitaComparativa(req, res) {
-    try {
-      const { inicio, fim } = req.query;
-      
-      const result = await pool.query(`
-        SELECT 
-          DATE_TRUNC('month', payment_confirmed_at) as mes,
-          COALESCE(SUM(total_price), 0) as receita
-        FROM reservations
-        WHERE payment_status = 'paid'
-          AND payment_confirmed_at BETWEEN $1 AND $2
-        GROUP BY DATE_TRUNC('month', payment_confirmed_at)
-        ORDER BY mes
-      `, [inicio, fim]);
-      
-      res.json({ success: true, data: result.rows });
-    } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
-    }
-  },
-  
-  async getDistribuicaoQuartos(req, res) {
-    try {
-      const { inicio, fim } = req.query;
-      
-      const result = await pool.query(`
-        SELECT 
-          rm.type as tipo,
-          COUNT(*) as total,
-          ROUND(COUNT(*)::numeric / (SELECT COUNT(*) FROM reservations WHERE DATE(created_at) BETWEEN $1 AND $2) * 100, 2) as percentual
-        FROM reservations r
-        JOIN rooms rm ON r.room_id = rm.id
-        WHERE DATE(r.created_at) BETWEEN $1 AND $2
-        GROUP BY rm.type
-        ORDER BY total DESC
-      `, [inicio, fim]);
-      
-      res.json({ success: true, data: result.rows });
-    } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
+      console.error('Dashboard metrics error:', error);
+      res.status(500).json({ success: false, message: 'Erro ao carregar métricas' });
     }
   }
-};
+  
+  async invalidateCache(req, res) {
+    const hotelId = req.user?.hotelId || 'default';
+    await cache.invalidateDashboard(hotelId);
+    
+    await Log.registrar({
+      usuarioId: req.user.id,
+      usuarioNome: req.user.name,
+      usuarioRole: req.user.role,
+      acao: 'INVALIDATE_CACHE',
+      recurso: 'dashboard',
+      ip: req.ip,
+      userAgent: req.get('user-agent')
+    });
+    
+    res.json({ success: true, message: 'Cache invalidado com sucesso' });
+  }
+}
 
-module.exports = dashboardAnalisesController;
+module.exports = new DashboardController();
