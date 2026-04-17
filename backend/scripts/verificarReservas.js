@@ -1,22 +1,37 @@
-﻿const db = require('./config/database');
+﻿const db = require('../config/database');
 
 async function verificarReservas() {
   try {
-    const reservas = await db.query('SELECT * FROM reservas ORDER BY id DESC LIMIT 10');
-    
-    console.log('📋 Últimas reservas no banco:');
-    if (reservas.rows.length === 0) {
-      console.log('   Nenhuma reserva encontrada!');
-    } else {
-      reservas.rows.forEach(r => {
-        console.log(`   ID: ${r.id} | Código: ${r.codigo_reserva} | Status: ${r.status_reserva}`);
-      });
-      console.log(`\n📊 Total de reservas: ${reservas.rows.length}`);
-    }
-  } catch(e) { 
-    console.error('❌ Erro:', e.message); 
+    console.log('📋 VERIFICANDO RESERVAS NO BANCO:\n');
+
+    const result = await db.query(`
+      SELECT
+        reservation_code,
+        check_in,
+        check_in::date as data_sem_hora,
+        status
+      FROM reservations
+      ORDER BY check_in DESC
+    `);
+
+    result.rows.forEach(r => {
+      console.log(`   ${r.reservation_code}`);
+      console.log(`      Check-in (original): ${r.check_in}`);
+      console.log(`      Data (sem hora): ${r.data_sem_hora}`);
+      console.log(`      Status: ${r.status}`);
+      console.log('');
+    });
+
+    // Data de hoje no servidor
+    const hoje = await db.query(`SELECT NOW() as agora, NOW()::date as hoje`);
+    console.log(`📅 Data/Hora do servidor: ${hoje.rows[0].agora}`);
+    console.log(`📅 Data (sem hora): ${hoje.rows[0].hoje}`);
+
+    process.exit();
+  } catch(e) {
+    console.error('Erro:', e.message);
+    process.exit();
   }
-  process.exit();
 }
 
 verificarReservas();
