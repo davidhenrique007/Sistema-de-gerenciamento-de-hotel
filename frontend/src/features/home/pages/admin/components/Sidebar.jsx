@@ -12,6 +12,7 @@ const Sidebar = ({ isOpen, onToggle, onLogout, user }) => {
     { path: '/admin/reservas', label: 'Reservas', icon: '📅', roles: ['admin', 'receptionist'] },
     { path: '/admin/pagamentos', label: 'Pagamentos', icon: '💰', roles: ['admin', 'financial'] },
     { path: '/admin/quartos', label: 'Quartos', icon: '🏨', roles: ['admin'] },
+    { path: '/admin/relatorios', label: 'Relatórios', icon: '📊', roles: ['admin', 'financial'] },
     { path: '/admin/utilizadores', label: 'Utilizadores', icon: '👥', roles: ['admin'] },
     { path: '/admin/auditoria', label: 'Auditoria', icon: '📋', roles: ['admin'] },
     { path: '/admin/lixeira', label: 'Lixeira', icon: '🗑️', roles: ['admin'] },

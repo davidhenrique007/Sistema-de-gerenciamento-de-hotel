@@ -1,4 +1,5 @@
-﻿import React from 'react';
+﻿// frontend/src/App.jsx
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ClienteProvider } from './contexts/ClienteContext';
 import { CartProvider } from './contexts/CartContext';
@@ -20,6 +21,7 @@ import LixeiraQuartos from './features/home/pages/admin/LixeiraQuartos';
 import Reservas from './features/home/pages/admin/Reservas';
 import Utilizadores from './features/home/pages/admin/Utilizadores';
 import Auditoria from './features/home/pages/admin/Auditoria';
+import Relatorios from './features/home/pages/admin/Relatorios'; // ✅ NOVO IMPORT
 
 // Placeholders para outras páginas admin
 const PagamentosAdmin = () => (
@@ -117,6 +119,14 @@ const App = () => {
                   element={
                     <AdminRoute>
                       <Auditoria />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/relatorios"  // ✅ NOVA ROTA
+                  element={
+                    <AdminRoute>
+                      <Relatorios />
                     </AdminRoute>
                   }
                 />
