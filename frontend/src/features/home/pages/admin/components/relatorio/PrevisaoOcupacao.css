@@ -1,0 +1,199 @@
+/* PrevisaoOcupacao.css */
+.previsaoOcupacao {
+  width: 100%;
+}
+
+.previsaoHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.previsaoHeader h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.tendenciaBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.tendenciaBadge.crescimento {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.tendenciaBadge.queda {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.tendenciaBadge.estavel {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.alertasContainer {
+  margin-bottom: 1.5rem;
+}
+
+.alertaCard {
+  background: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.alertaCard svg {
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.alertaContent strong {
+  display: block;
+  font-size: 0.875rem;
+  color: #92400e;
+  margin-bottom: 0.25rem;
+}
+
+.alertaContent p {
+  font-size: 0.75rem;
+  color: #92400e;
+  margin: 0 0 0.5rem 0;
+}
+
+.alertasLista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.alertaDia {
+  background: #fde68a;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.7rem;
+  color: #78350f;
+}
+
+.alertaMais {
+  font-size: 0.7rem;
+  color: #92400e;
+  padding: 0.25rem 0.5rem;
+}
+
+.chartCard {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.previsaoStats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.statCard {
+  background: white;
+  border-radius: 1rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid #e2e8f0;
+}
+
+.statIcon {
+  font-size: 1.5rem;
+}
+
+.statInfo {
+  flex: 1;
+}
+
+.statValue {
+  display: block;
+  font-size: 0.7rem;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.statNumber {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.recomendacaoCard {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-radius: 1rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.recomendacaoIcon {
+  font-size: 2rem;
+}
+
+.recomendacaoContent strong {
+  display: block;
+  font-size: 0.875rem;
+  color: #1e40af;
+  margin-bottom: 0.25rem;
+}
+
+.recomendacaoContent p {
+  font-size: 0.75rem;
+  color: #1e3a8a;
+  margin: 0;
+}
+
+.skeletonPrevisao {
+  background: #f8fafc;
+  border-radius: 1rem;
+  padding: 1rem;
+  height: 500px;
+}
+
+.skeletonLine {
+  height: 100%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 0.5rem;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (max-width: 1024px) {
+  .previsaoStats { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .previsaoStats { grid-template-columns: 1fr; }
+  .previsaoHeader { flex-direction: column; align-items: flex-start; }
+}
