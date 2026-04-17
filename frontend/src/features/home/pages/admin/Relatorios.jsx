@@ -1,9 +1,11 @@
-// frontend/src/features/home/pages/admin/Relatorios.jsx
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import LayoutAdmin from './components/LayoutAdmin';
 import RelatorioReceita from './components/relatorio/RelatorioReceita';
 import ComparativoPeriodo from './components/relatorio/ComparativoPeriodo';
-import { Calendar, DollarSign, TrendingUp, BarChart3, Download, RefreshCw } from 'lucide-react';
+import RelatorioOcupacao from './components/relatorio/RelatorioOcupacao';
+import RankingQuartos from './components/relatorio/RankingQuartos';
+import PrevisaoOcupacao from './components/relatorio/PrevisaoOcupacao';
+import { Calendar, DollarSign, TrendingUp, BarChart3, Download, RefreshCw, Activity, Award } from 'lucide-react';
 import './Relatorios.css';
 
 const Relatorios = () => {
@@ -16,13 +18,16 @@ const Relatorios = () => {
     previousEndDate: new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString().split('T')[0],
     roomType: 'todos',
     paymentMethod: 'todos',
-    groupBy: 'month'
+    groupBy: 'month',
+    periodo: 'mes'
   });
 
   const tabs = [
     { id: 'receita', label: '💰 Receita', icon: DollarSign },
     { id: 'comparativo', label: '📊 Comparativo', icon: TrendingUp },
-    { id: 'tendencia', label: '📈 Tendência', icon: BarChart3 }
+    { id: 'ocupacao', label: '📈 Ocupação', icon: Activity },
+    { id: 'ranking', label: '🏆 Ranking', icon: Award },
+    { id: 'previsao', label: '🔮 Previsão', icon: BarChart3 }
   ];
 
   const handleFiltroChange = (key, value) => {
@@ -38,8 +43,8 @@ const Relatorios = () => {
     <LayoutAdmin>
       <div className="relatoriosContainer">
         <div className="header">
-          <h1 className="title">Relatórios Financeiros</h1>
-          <p className="subtitle">Análise completa de receita, tendências e projeções financeiras</p>
+          <h1 className="title">Relatórios e Métricas</h1>
+          <p className="subtitle">Análise completa de receita, ocupação e projeções financeiras</p>
         </div>
 
         {/* Filtros */}
@@ -102,17 +107,9 @@ const Relatorios = () => {
         {/* Conteúdo */}
         {activeTab === 'receita' && <RelatorioReceita filtros={filtros} />}
         {activeTab === 'comparativo' && <ComparativoPeriodo filtros={filtros} />}
-        {activeTab === 'tendencia' && (
-          <div className="chartCard">
-            <div className="chartHeader">
-              <h3>📈 Tendência e Projeção</h3>
-              <p>Previsão para os próximos períodos baseada em tendência histórica</p>
-            </div>
-            <div className="emptyState">
-              <p>Funcionalidade em desenvolvimento - Próxima atualização</p>
-            </div>
-          </div>
-        )}
+        {activeTab === 'ocupacao' && <RelatorioOcupacao filtros={filtros} />}
+        {activeTab === 'ranking' && <RankingQuartos filtros={filtros} />}
+        {activeTab === 'previsao' && <PrevisaoOcupacao filtros={filtros} />}
       </div>
     </LayoutAdmin>
   );
