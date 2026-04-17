@@ -1,4 +1,5 @@
-﻿const express = require('express');
+﻿process.env.TZ = "Africa/Maputo";
+const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
@@ -27,6 +28,7 @@ const quartoAdminRoutes = require('./routes/admin/quartoRoutes');
 const reservaAdminRoutes = require('./routes/admin/reservaAdminRoutes');
 const utilizadorRoutes = require('./routes/admin/utilizadorRoutes');
 const logRoutes = require('./routes/admin/logRoutes');
+const relatorioRoutes = require('./routes/admin/relatorioRoutes');
 
 app.use('/api/reservas', reservaRoutes);
 app.use('/api/clientes', clienteRoutes);
@@ -37,6 +39,7 @@ app.use('/api/admin/quartos', quartoAdminRoutes);
 app.use('/api/admin', reservaAdminRoutes);
 app.use('/api/admin', utilizadorRoutes);
 app.use('/api/admin', logRoutes);
+app.use('/api/admin', relatorioRoutes);
 
 // ==================== ROTA DE LOGIN ====================
 app.post('/api/auth/login', async (req, res) => {
@@ -153,3 +156,4 @@ app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
   console.log(`📍 CORS permitindo: http://localhost:3000`);
 });
+
