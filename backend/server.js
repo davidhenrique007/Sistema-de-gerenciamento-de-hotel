@@ -149,6 +149,25 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() }); 
 });
 
+// ==================== SCHEDULER PARA MATERIALIZED VIEWS ====================
+const cron = require('node-cron');
+const { exec } = require('child_process');
+
+// Agendar refresh das views a cada hora (minuto 0)
+cron.schedule('0 * * * *', () => {
+    console.log('🔄 Executando refresh agendado das Materialized Views...');
+    exec('node scripts/refreshViews.js', { cwd: __dirname }, (error, stdout, stderr) => {
+        if (error) {
+            console.error('❌ Erro no refresh agendado:', error);
+        } else {
+            console.log('✅ Refresh agendado concluído');
+            if (stdout) console.log(stdout);
+        }
+    });
+});
+
+console.log('⏰ Scheduler de Materialized Views ativado (refresh a cada hora)');
+
 // ==================== TRATAMENTO DE ERROS GLOBAL ====================
 app.use((err, req, res, next) => {
   console.error('❌ Erro global:', err);
@@ -160,4 +179,3 @@ app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
   console.log(`📍 CORS permitindo: http://localhost:3000`);
 });
-
