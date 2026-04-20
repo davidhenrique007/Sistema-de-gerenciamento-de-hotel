@@ -1,0 +1,25 @@
+﻿{
+  "environments": {
+    "local": {
+      "baseUrl": "http://localhost:5000",
+      "vus": 50,
+      "duration": "2m"
+    },
+    "staging": {
+      "baseUrl": "http://staging.hotelparadise.com",
+      "vus": 100,
+      "duration": "5m"
+    }
+  },
+  "thresholds": {
+    "http_req_duration": ["p(95)<500", "p(99)<1000", "avg<300"],
+    "http_req_failed": ["rate<0.01"],
+    "checks": ["rate>0.95"]
+  },
+  "stages": [
+    { "duration": "30s", "target": 20 },
+    { "duration": "1m", "target": 50 },
+    { "duration": "1m", "target": 100 },
+    { "duration": "30s", "target": 0 }
+  ]
+}
