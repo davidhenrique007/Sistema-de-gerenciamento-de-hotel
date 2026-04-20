@@ -4,12 +4,6 @@ backend/node_modules/
 frontend/node_modules/
 **/node_modules/
 
-# Arquivos de lock (opcional)
-package-lock.json
-backend/package-lock.json
-frontend/package-lock.json
-yarn.lock
-
 # Arquivos de ambiente
 .env
 .env.local
