@@ -14,38 +14,42 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
+// ==================== SEGURANÇA ====================
+const helmet = require('helmet');
+const { globalLimiter, authLimiter, reservaLimiter, checkBlockedIP } = require('./middlewares/rateLimit');
+const { sanitizeInput, validateDataTypes, securityHeaders } = require('./middlewares/sanitize');
+const { verificarToken, verificarRole } = require('./middlewares/auth');
+
+// Aplicar headers de segurança
+app.use(helmet());
+app.use(securityHeaders);
+
+// Verificar IP bloqueado
+app.use(checkBlockedIP);
+
+// Rate limiting global
+app.use(globalLimiter);
+
+// Sanitização de inputs (ANTES de qualquer rota)
+app.use(sanitizeInput);
+app.use(validateDataTypes);
+
+// Rate limiting específico para auth
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+
+// Rate limiting para reservas
+app.use('/api/reservas', reservaLimiter);
+
 // Middlewares básicos
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rotas
-const reservaRoutes = require('./routes/reservaRoutes');
-const clienteRoutes = require('./routes/clienteRoutes');
-const quartoRoutes = require('./routes/quartoRoutes');
-const reciboRoutes = require('./routes/reciboRoutes');
-const adminDashboardRoutes = require('./routes/admin/dashboardRoutes');
-const quartoAdminRoutes = require('./routes/admin/quartoRoutes');
-const reservaAdminRoutes = require('./routes/admin/reservaAdminRoutes');
-const utilizadorRoutes = require('./routes/admin/utilizadorRoutes');
-const logRoutes = require('./routes/admin/logRoutes');
-const relatorioRoutes = require('./routes/admin/relatorioRoutes');
-const financeiroRoutes = require('./routes/admin/financeiroRoutes');
-const reconciliacaoRoutes = require('./routes/admin/reconciliacaoRoutes');
+// Rotas públicas (não requerem autenticação)
+app.get('/api/health', (req, res) => { 
+  res.json({ status: 'ok', timestamp: new Date().toISOString() }); 
+});
 
-app.use('/api/reservas', reservaRoutes);
-app.use('/api/clientes', clienteRoutes);
-app.use('/api/quartos', quartoRoutes);
-app.use('/api/recibos', reciboRoutes);
-app.use('/api/admin/dashboard', adminDashboardRoutes);
-app.use('/api/admin/quartos', quartoAdminRoutes);
-app.use('/api/admin', reservaAdminRoutes);
-app.use('/api/admin', utilizadorRoutes);
-app.use('/api/admin', logRoutes);
-app.use('/api/admin', relatorioRoutes);
-app.use('/api/admin', financeiroRoutes);
-app.use('/api/admin', reconciliacaoRoutes);
-
-// ==================== ROTA DE LOGIN ====================
 app.post('/api/auth/login', async (req, res) => {
   console.log('📝 Recebendo login request:', req.body);
   
@@ -85,7 +89,6 @@ app.post('/api/auth/login', async (req, res) => {
       { expiresIn: '7d' }
     );
     
-    // Registrar login
     await registrarLogin(user.id, req.ip, req.get('user-agent'));
     
     console.log('✅ Login bem sucedido, token gerado');
@@ -101,7 +104,6 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// ==================== ROTA DE LOGOUT ====================
 app.post('/api/auth/logout', async (req, res) => {
   const { registrarLogout } = require('./middlewares/auth');
   const token = req.headers.authorization?.split(' ')[1];
@@ -120,7 +122,6 @@ app.post('/api/auth/logout', async (req, res) => {
   res.json({ success: true, message: 'Logout realizado com sucesso' });
 });
 
-// ==================== ROTA DE HEARTBEAT ====================
 app.post('/api/auth/heartbeat', async (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (token) {
@@ -144,29 +145,56 @@ app.post('/api/auth/heartbeat', async (req, res) => {
   }
 });
 
-// ==================== HEALTH CHECK ====================
-app.get('/api/health', (req, res) => { 
-  res.json({ status: 'ok', timestamp: new Date().toISOString() }); 
-});
+// ==================== ROTAS PROTEGIDAS (REQUEREM AUTENTICAÇÃO) ====================
 
-// ==================== SCHEDULER PARA MATERIALIZED VIEWS ====================
-const cron = require('node-cron');
-const { exec } = require('child_process');
+// Importar rotas
+const reservaRoutes = require('./routes/reservaRoutes');
+const clienteRoutes = require('./routes/clienteRoutes');
+const quartoRoutes = require('./routes/quartoRoutes');
+const reciboRoutes = require('./routes/reciboRoutes');
+const adminDashboardRoutes = require('./routes/admin/dashboardRoutes');
+const quartoAdminRoutes = require('./routes/admin/quartoRoutes');
+const reservaAdminRoutes = require('./routes/admin/reservaAdminRoutes');
+const utilizadorRoutes = require('./routes/admin/utilizadorRoutes');
+const logRoutes = require('./routes/admin/logRoutes');
+const relatorioRoutes = require('./routes/admin/relatorioRoutes');
+const financeiroRoutes = require('./routes/admin/financeiroRoutes');
+const reconciliacaoRoutes = require('./routes/admin/reconciliacaoRoutes');
+const performanceRoutes = require('./routes/admin/performanceRoutes');
 
-// Agendar refresh das views a cada hora (minuto 0)
-cron.schedule('0 * * * *', () => {
+// Aplicar middleware de autenticação em TODAS as rotas protegidas
+app.use('/api/reservas', verificarToken, reservaRoutes);
+app.use('/api/clientes', verificarToken, clienteRoutes);
+app.use('/api/quartos', verificarToken, quartoRoutes);
+app.use('/api/recibos', verificarToken, reciboRoutes);
+app.use('/api/admin/dashboard', verificarToken, verificarRole(['admin', 'financial']), adminDashboardRoutes);
+app.use('/api/admin/quartos', verificarToken, verificarRole(['admin']), quartoAdminRoutes);
+app.use('/api/admin', verificarToken, reservaAdminRoutes);
+app.use('/api/admin', verificarToken, utilizadorRoutes);
+app.use('/api/admin', verificarToken, logRoutes);
+app.use('/api/admin', verificarToken, relatorioRoutes);
+app.use('/api/admin', verificarToken, financeiroRoutes);
+app.use('/api/admin', verificarToken, reconciliacaoRoutes);
+app.use('/api/admin', verificarToken, performanceRoutes);
+
+// ==================== SCHEDULER ====================
+if (process.env.NODE_ENV !== 'test') {
+  const cron = require('node-cron');
+  const { exec } = require('child_process');
+  
+  cron.schedule('0 * * * *', () => {
     console.log('🔄 Executando refresh agendado das Materialized Views...');
     exec('node scripts/refreshViews.js', { cwd: __dirname }, (error, stdout, stderr) => {
-        if (error) {
-            console.error('❌ Erro no refresh agendado:', error);
-        } else {
-            console.log('✅ Refresh agendado concluído');
-            if (stdout) console.log(stdout);
-        }
+      if (error) {
+        console.error('❌ Erro no refresh agendado:', error);
+      } else {
+        console.log('✅ Refresh agendado concluído');
+      }
     });
-});
-
-console.log('⏰ Scheduler de Materialized Views ativado (refresh a cada hora)');
+  });
+  
+  console.log('⏰ Scheduler de Materialized Views ativado (refresh a cada hora)');
+}
 
 // ==================== TRATAMENTO DE ERROS GLOBAL ====================
 app.use((err, req, res, next) => {
