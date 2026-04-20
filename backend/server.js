@@ -175,7 +175,11 @@ app.use((err, req, res, next) => {
 });
 
 // ==================== INICIAR SERVIDOR ====================
-app.listen(PORT, () => { 
-  console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
-  console.log(`📍 CORS permitindo: http://localhost:3000`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => { 
+    console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+    console.log(`📍 CORS permitindo: http://localhost:3000`);
+  });
+}
+
+module.exports = app;
