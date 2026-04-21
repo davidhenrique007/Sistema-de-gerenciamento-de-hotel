@@ -1,0 +1,194 @@
+/* FiltrosQuarto.module.css */
+.filtrosContainer {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.searchBox {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #94a3b8;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 12px 12px 42px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filtrosRow {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.filterGroup {
+  flex: 1;
+  min-width: 150px;
+}
+
+.filterLabel {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filterSelect {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.clearButton {
+  padding: 10px 24px;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: 42px;
+}
+
+.clearButton:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+/* ============================================
+   RESPONSIVO - TABLET
+   ============================================ */
+@media (max-width: 1024px) {
+  .filtrosContainer {
+    padding: 16px;
+  }
+  
+  .filterGroup {
+    min-width: 130px;
+  }
+  
+  .filterSelect {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  
+  .clearButton {
+    padding: 8px 20px;
+    height: 38px;
+    font-size: 12px;
+  }
+}
+
+/* ============================================
+   RESPONSIVO - MOBILE
+   ============================================ */
+@media (max-width: 768px) {
+  .filtrosContainer {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .searchBox {
+    margin-bottom: 16px;
+  }
+  
+  .searchInput {
+    padding: 10px 10px 10px 36px;
+    font-size: 13px;
+  }
+  
+  .searchIcon {
+    left: 12px;
+    font-size: 14px;
+  }
+  
+  .filtrosRow {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .filterGroup {
+    width: 100%;
+  }
+  
+  .filterLabel {
+    font-size: 11px;
+  }
+  
+  .filterSelect {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  
+  .clearButton {
+    width: 100%;
+    padding: 10px 16px;
+    height: auto;
+    font-size: 12px;
+  }
+}
+
+/* ============================================
+   MOBILE PEQUENO
+   ============================================ */
+@media (max-width: 480px) {
+  .filtrosContainer {
+    padding: 10px;
+  }
+  
+  .searchInput {
+    padding: 8px 8px 8px 34px;
+    font-size: 12px;
+  }
+  
+  .searchIcon {
+    font-size: 12px;
+    left: 10px;
+  }
+  
+  .filterSelect {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+  
+  .clearButton {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+}

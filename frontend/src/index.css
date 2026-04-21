@@ -1,0 +1,35 @@
+﻿
+/* Garantir que dropdowns apareçam por cima de tudo */
+.dropdown-container {
+  position: relative;
+  z-index: 100;
+}
+
+.dropdown-menu {
+  position: absolute;
+  z-index: 1000;
+}
+
+/* Garantir que a tabela não corte elementos */
+.table-wrapper {
+  overflow: visible !important;
+}
+
+.data-table {
+  overflow: visible !important;
+}
+
+.data-table tbody tr {
+  position: relative;
+}
+
+/* Ajuste para a coluna de ações */
+.actions-cell {
+  position: relative;
+  overflow: visible !important;
+}
+
+/* Garantir que modais fiquem acima */
+.modal-overlay {
+  z-index: 9999 !important;
+}

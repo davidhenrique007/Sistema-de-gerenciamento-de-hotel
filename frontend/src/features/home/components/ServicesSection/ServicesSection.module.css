@@ -1,0 +1,196 @@
+﻿/* ============================================================================
+   SEÃ‡ÃƒO DE SERVIÃ‡OS - LAYOUT HORIZONTAL
+   =========================================================================== */
+
+.section {
+  padding: 60px 0;
+  background-color: #f9fafb;
+  width: 100%;
+  overflow: hidden;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ============================================================================
+   HEADER
+   =========================================================================== */
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.title {
+  margin: 0 0 12px;
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+  position: relative;
+  display: inline-block;
+}
+
+.title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  border-radius: 2px;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 16px;
+  color: #6b7280;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ============================================================================
+   FILTROS
+   =========================================================================== */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+
+.filterButton {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterButton:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.filterButton.active {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+/* ============================================================================
+   CARROSSEL HORIZONTAL - SUBSTITUI O GRID
+   =========================================================================== */
+
+.carouselContainer {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 8px 0 24px;
+  scrollbar-width: thin;
+  scrollbar-color: #2563eb #e5e7eb;
+  -webkit-overflow-scrolling: touch;
+}
+
+.carouselContainer::-webkit-scrollbar {
+  height: 8px;
+}
+
+.carouselContainer::-webkit-scrollbar-track {
+  background: #e5e7eb;
+  border-radius: 10px;
+}
+
+.carouselContainer::-webkit-scrollbar-thumb {
+  background: #2563eb;
+  border-radius: 10px;
+}
+
+.carouselContainer::-webkit-scrollbar-thumb:hover {
+  background: #1d4ed8;
+}
+
+.carouselTrack {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+  padding: 4px 4px 8px;
+}
+
+/* ============================================================================
+   LOAD MORE - REMOVIDO (NÃƒO USA MAIS)
+   =========================================================================== */
+
+.loadMore {
+  display: none;
+}
+
+/* ============================================================================
+   ESTADOS - MANTIDOS
+   =========================================================================== */
+
+.loadingState,
+.errorState,
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  text-align: center;
+}
+
+.loadingText,
+.errorText,
+.emptyStateText {
+  margin: 16px 0 0;
+  font-size: 16px;
+  color: #6b7280;
+}
+
+.errorState {
+  background-color: #fef2f2;
+  border-radius: 12px;
+  padding: 40px;
+}
+
+.errorText {
+  color: #dc2626;
+  margin-bottom: 16px;
+}
+
+.emptyState {
+  background-color: #f9fafb;
+  border-radius: 12px;
+  border: 2px dashed #e5e7eb;
+  padding: 60px;
+}
+
+.emptyStateText {
+  color: #9ca3af;
+}
+
+/* ============================================================================
+   RESPONSIVIDADE
+   =========================================================================== */
+
+@media (max-width: 768px) {
+  .section {
+    padding: 40px 0;
+  }
+  
+  .title {
+    font-size: 28px;
+  }
+}

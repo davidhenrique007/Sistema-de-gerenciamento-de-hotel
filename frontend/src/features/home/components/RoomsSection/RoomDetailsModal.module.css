@@ -1,0 +1,236 @@
+.container {
+  padding: 20px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 85vh; /* Altura máxima de 85% da tela */
+  overflow-y: auto; /* Scroll interno quando conteúdo for grande */
+  position: relative;
+}
+
+/* ============================================================================
+   HEADER COM BOTÃO FECHAR - FIXO NO TOPO
+   =========================================================================== */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  position: sticky;
+  top: 0;
+  background: white;
+  padding: 10px 0;
+  z-index: 10;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.header h2 {
+  font-size: 22px; /* Reduzido de 28px */
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.closeButton {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: #475569;
+  flex-shrink: 0;
+}
+
+.closeButton:hover {
+  background: #2563eb;
+  color: white;
+}
+
+/* ============================================================================
+   GALERIA DE IMAGENS - TAMANHOS REDUZIDOS
+   =========================================================================== */
+
+.gallery {
+  margin-bottom: 20px;
+}
+
+.mainImage {
+  width: 100%;
+  height: 280px; /* Reduzido de 350px */
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.thumbnails {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.thumbnail {
+  width: 100%;
+  height: 60px; /* Reduzido de 80px */
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  opacity: 0.8;
+}
+
+.thumbnail:hover {
+  transform: scale(1.03);
+  opacity: 1;
+}
+
+.activeThumbnail {
+  border-color: #2563eb;
+  opacity: 1;
+  box-shadow: 0 0 0 2px #2563eb;
+}
+
+/* ============================================================================
+   INFORMAÇÕES DO QUARTO - COMPACTAS
+   =========================================================================== */
+
+.info {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.description {
+  font-size: 14px; /* Reduzido de 16px */
+  color: #334155;
+  line-height: 1.5;
+  margin: 0 0 12px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.details p {
+  margin: 0;
+  font-size: 13px; /* Reduzido de 15px */
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ============================================================================
+   AMENITIES - GRID MENOR
+   =========================================================================== */
+
+.amenities {
+  margin: 16px 0;
+}
+
+.amenities h4 {
+  font-size: 15px; /* Reduzido de 16px */
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+}
+
+.amenitiesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.amenity {
+  background: white;
+  padding: 6px 10px; /* Reduzido */
+  border-radius: 20px;
+  font-size: 12px; /* Reduzido de 14px */
+  color: #2563eb;
+  border: 1px solid #2563eb20;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ============================================================================
+   PREÇO - COMPACTO
+   =========================================================================== */
+
+.price {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0 0;
+  border-top: 2px solid #e2e8f0;
+  margin-top: 16px;
+  font-size: 16px; /* Reduzido de 18px */
+}
+
+.price strong {
+  color: #2563eb;
+  font-size: 22px; /* Reduzido de 28px */
+}
+
+/* ============================================================================
+   RESPONSIVIDADE - MOBILE
+   =========================================================================== */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+
+  .header h2 {
+    font-size: 18px;
+  }
+
+  .closeButton {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  .mainImage {
+    height: 200px;
+  }
+
+  .thumbnails {
+    gap: 6px;
+  }
+
+  .thumbnail {
+    height: 50px;
+  }
+
+  .details {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .amenitiesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .price {
+    flex-direction: column;
+    text-align: center;
+    gap: 6px;
+  }
+
+  .price strong {
+    font-size: 20px;
+  }
+}

@@ -1,0 +1,136 @@
+/* ============================================================================
+   GRID PRINCIPAL
+   =========================================================================== */
+
+.grid {
+  display: grid;
+  gap: var(--spacing-6);
+  width: 100%;
+}
+
+/* ============================================================================
+   VARIAÇÕES DE COLUNAS
+   =========================================================================== */
+
+.columns-1 {
+  grid-template-columns: 1fr;
+}
+
+.columns-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.columns-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.columns-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* ============================================================================
+   RESPONSIVIDADE - CORRIGIDA
+   =========================================================================== */
+
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
+  .columns-3,
+  .columns-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile (481px - 767px) - 2 COLUNAS */
+@media (max-width: 767px) and (min-width: 481px) {
+  .columns-2,
+  .columns-3,
+  .columns-4 {
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas no mobile */
+  }
+  
+  .grid {
+    gap: 12px; /* Gap menor para mobile */
+  }
+}
+
+/* Mobile pequeno (até 480px) - 1 COLUNA */
+@media (max-width: 480px) {
+  .columns-2,
+  .columns-3,
+  .columns-4 {
+    grid-template-columns: 1fr; /* 1 coluna apenas em telas muito pequenas */
+  }
+  
+  .grid {
+    gap: var(--spacing-4);
+  }
+}
+
+/* ============================================================================
+   GRID ITEM
+   =========================================================================== */
+
+.gridItem {
+  width: 100%;
+  height: 100%;
+  transition: all var(--transition-base) var(--transition-ease);
+  cursor: pointer;
+  outline: none;
+}
+
+.gridItem:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 4px;
+  border-radius: var(--radius-lg);
+}
+
+.gridItem.selected {
+  transform: scale(1.02);
+}
+
+/* ============================================================================
+   EMPTY STATE
+   =========================================================================== */
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  background-color: var(--color-neutral-50);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--color-border-medium);
+}
+
+.emptyStateText {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-tertiary);
+  text-align: center;
+}
+
+/* ============================================================================
+   ANIMAÇÕES
+   =========================================================================== */
+
+.gridItem {
+  animation: fadeIn 0.5s var(--transition-ease-out);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Delay para cada item */
+.gridItem:nth-child(1) { animation-delay: 0.1s; }
+.gridItem:nth-child(2) { animation-delay: 0.2s; }
+.gridItem:nth-child(3) { animation-delay: 0.3s; }
+.gridItem:nth-child(4) { animation-delay: 0.4s; }
+.gridItem:nth-child(5) { animation-delay: 0.5s; }
+.gridItem:nth-child(6) { animation-delay: 0.6s; }

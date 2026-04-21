@@ -1,0 +1,38 @@
+/* StatusBadge.module.css */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.icon {
+  font-size: 10px;
+}
+
+.label {
+  line-height: 1;
+}
+
+.available {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.occupied {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.maintenance {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.inactive {
+  background: #f1f5f9;
+  color: #475569;
+}

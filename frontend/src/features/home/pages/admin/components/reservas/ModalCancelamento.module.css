@@ -1,0 +1,185 @@
+﻿.cancelModalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 1rem;
+}
+
+.cancelModalContainer {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 28rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.cancelModalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #fecaca;
+  background: linear-gradient(135deg, #c1bfbf 0%, #b91c1c 100%);
+}
+
+.cancelModalTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cancelModalClose {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.cancelModalClose:hover {
+  background-color: #ef4444;
+}
+
+.cancelModalBody {
+  padding: 1.25rem;
+}
+
+.warningBox {
+  background-color: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.warningText {
+  font-size: 0.875rem;
+  color: #92400e;
+}
+
+.warningText strong {
+  font-weight: 600;
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.formLabel {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.requiredStar {
+  color: #ef4444;
+}
+
+.textarea {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.75rem;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  resize: vertical;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.charCounter {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.charCountWarning {
+  color: #ef4444;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.btnBack {
+  padding: 0.5rem 1rem;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  color: #374151;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.btnBack:hover {
+  background-color: #f9fafb;
+}
+
+.btnConfirm {
+  padding: 0.5rem 1.25rem;
+  background-color: #dc2626;
+  border: none;
+  border-radius: 0.5rem;
+  color: white;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.btnConfirm:hover {
+  background-color: #b91c1c;
+}
+
+.btnConfirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .cancelModalContainer {
+    max-width: 90%;
+  }
+  
+  .cancelModalBody {
+    padding: 1rem;
+  }
+  
+  .modalFooter {
+    padding: 0.875rem 1rem;
+  }
+}

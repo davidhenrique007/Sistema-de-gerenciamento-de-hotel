@@ -1,0 +1,377 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 16px;
+}
+
+.content {
+  display: flex;
+  max-width: 1100px;
+  width: 100%;
+  background: white;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* ========== LADO ESQUERDO (ILUSTRAÇÃO) ========== */
+.illustration {
+  flex: 1;
+  background: linear-gradient(135deg, #0a193d 0%, #2c7ad2 100%);
+  color: white;
+  padding: 40px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* ========== LOGO - VERSÃO PROFISSIONAL ========== */
+.logoContainer {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoCircle {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  background: radial-gradient(circle, rgba(255, 179, 0, 0.537) 0%, rgba(255, 255, 255, 0.1) 70%);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 170, 0, 0.723);
+  box-shadow: 0 0 60px rgba(255, 162, 0, 0.993);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.6; }
+}
+
+.logoImage {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  background: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border: 3px solid rgba(255, 179, 0, 0.8);
+}
+
+.logoImage:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+  border-color: rgb(214, 131, 6);
+}
+
+.logoFallback {
+  font-size: 50px;
+  display: block;
+  position: relative;
+  z-index: 2;
+}
+
+/* Texto "Faça sua reserva" acima da imagem */
+.reservaTag {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 15px;
+  display: inline-block;
+}
+
+.illustrationImage {
+  width: 140px;
+  height: auto;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.illustration h1 {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.illustration p {
+  opacity: 0.9;
+  margin-bottom: 20px;
+  font-size: 0.85rem;
+}
+
+/* ========== BENEFÍCIOS ========== */
+.benefits {
+  width: 100%;
+  max-width: 300px;
+  margin-top: 10px;
+}
+
+.benefit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.benefitIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+/* ========== LADO DIREITO (FORMULÁRIO) ========== */
+.formWrapper {
+  flex: 1;
+  padding: 40px 45px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ========== ALERTA DE ERRO ========== */
+.alertError {
+  background: #fef2f2;
+  color: #dc2626;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #fecaca;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alertError::before {
+  content: "⚠️";
+}
+
+/* ========== BEM-VINDO DE VOLTA ========== */
+.welcomeBack {
+  margin-top: 20px;
+  padding: 15px 20px;
+  background: #e8f4fd;
+  border-radius: 12px;
+  text-align: center;
+  border: 1px solid #bae6fd;
+}
+
+.welcomeBack p {
+  margin-bottom: 12px;
+  color: #1a2a4f;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.continueButton {
+  padding: 8px 20px;
+  background: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.continueButton:hover {
+  background: #357abd;
+  transform: translateY(-1px);
+}
+
+/* ========== RESPONSIVIDADE - TABLET ========== */
+@media (max-width: 900px) {
+  .illustration {
+    padding: 30px 20px;
+  }
+
+  .logoContainer {
+    width: 90px;
+    height: 90px;
+  }
+
+  .logoCircle {
+    width: 90px;
+    height: 90px;
+  }
+
+  .logoImage {
+    width: 65px;
+    height: 65px;
+  }
+
+  .illustration h1 {
+    font-size: 1.2rem;
+  }
+
+  .formWrapper {
+    padding: 30px 30px;
+  }
+}
+
+/* ========== RESPONSIVIDADE - MOBILE ========== */
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+  }
+
+  .content {
+    flex-direction: column;
+    border-radius: 20px;
+  }
+
+  /* Lado esquerdo no mobile */
+  .illustration {
+    padding: 25px 20px;
+  }
+
+  .logoContainer {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 15px;
+  }
+
+  .logoCircle {
+    width: 100px;
+    height: 100px;
+  }
+
+  .logoImage {
+    width: 75px;
+    height: 75px;
+  }
+
+  .reservaTag {
+    font-size: 0.7rem;
+    margin-bottom: 10px;
+  }
+
+  .illustrationImage {
+    width: 100px;
+    margin-bottom: 15px;
+  }
+
+  .illustration h1 {
+    font-size: 1.2rem;
+  }
+
+  .illustration p {
+    font-size: 0.75rem;
+    margin-bottom: 15px;
+  }
+
+  .benefits {
+    max-width: 100%;
+  }
+
+  .benefit {
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+  }
+
+  .benefitIcon {
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+  }
+
+  /* Lado direito no mobile */
+  .formWrapper {
+    padding: 25px 20px;
+  }
+}
+
+/* ========== RESPONSIVIDADE - MOBILE PEQUENO ========== */
+@media (max-width: 480px) {
+  .container {
+    padding: 8px;
+  }
+
+  .content {
+    border-radius: 16px;
+  }
+
+  .illustration {
+    padding: 20px 15px;
+  }
+
+  .logoContainer {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+  }
+
+  .logoCircle {
+    width: 90px;
+    height: 90px;
+  }
+
+  .logoImage {
+    width: 80px;
+    height: 80px;
+  }
+
+  .illustrationImage {
+    width: 80px;
+    margin-bottom: 10px;
+  }
+
+  .illustration h1 {
+    font-size: 1rem;
+  }
+
+  .illustration p {
+    font-size: 0.7rem;
+  }
+
+  .benefit {
+    font-size: 0.7rem;
+    gap: 6px;
+  }
+
+  .formWrapper {
+    padding: 20px 15px;
+  }
+}
+
+/* ========== ANIMAÇÕES ========== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.formWrapper > * {
+  animation: fadeIn 0.3s ease-out;
+}

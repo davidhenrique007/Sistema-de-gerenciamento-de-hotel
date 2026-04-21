@@ -1,0 +1,345 @@
+/* ============================================================================
+   ROOM CARD - DESIGN COMPACTO E PROFISSIONAL
+   =========================================================================== */
+
+.card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #edf2f7;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 30px rgba(37, 99, 235, 0.1);
+  border-color: #2563eb20;
+}
+
+.card.selected {
+  border: 2px solid #2563eb;
+  box-shadow: 0 15px 30px rgba(37, 99, 235, 0.15);
+}
+
+/* ============================================================================
+   IMAGEM - MANTIDA NO MESMO TAMANHO
+   =========================================================================== */
+
+.imageContainer {
+  position: relative;
+  width: 100%;
+  height: 200px; /* Tamanho fixo - NÃO ALTERAR */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  overflow: hidden;
+}
+
+.mainImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.card:hover .mainImage {
+  transform: scale(1.05);
+}
+
+/* Status Badge - Mais compacto */
+.statusContainer {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 40px;
+  font-size: 11px;
+  font-weight: 600;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* ============================================================================
+   CONTEÚDO - ESPAÇAMENTOS REDUZIDOS
+   =========================================================================== */
+
+.content {
+  padding: 16px; /* Reduzido de 24px */
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Reduzido */
+  flex: 1;
+}
+
+/* Header - Mais compacto */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.roomInfo {
+  flex: 1;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px; /* Reduzido */
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.roomType {
+  margin: 2px 0 0;
+  font-size: 12px; /* Reduzido */
+  color: #2563eb;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: #eef2ff;
+  display: inline-block;
+  padding: 2px 8px; /* Reduzido */
+  border-radius: 30px;
+}
+
+.price {
+  text-align: right;
+  background: #f8fafc;
+  padding: 4px 10px; /* Reduzido */
+  border-radius: 30px;
+  border: 1px solid #e2e8f0;
+}
+
+.priceAmount {
+  font-size: 18px; /* Reduzido */
+  font-weight: 700;
+  color: #2563eb;
+  line-height: 1;
+}
+
+.pricePeriod {
+  font-size: 10px; /* Reduzido */
+  color: #64748b;
+  display: block;
+}
+
+/* Descrição - Mais curta */
+.description {
+  margin: 0;
+  font-size: 13px; /* Reduzido */
+  line-height: 1.4; /* Reduzido */
+  color: #475569;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Detalhes - Mais compactos */
+.details {
+  display: flex;
+  gap: 8px; /* Reduzido */
+  flex-wrap: wrap;
+  background: #f8fafc;
+  padding: 8px; /* Reduzido */
+  border-radius: 12px;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px; /* Reduzido */
+  color: #334155;
+  background: white;
+  padding: 4px 8px; /* Reduzido */
+  border-radius: 30px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.detailIcon {
+  font-size: 12px;
+}
+
+/* Amenities - Mais compactas */
+.amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px; /* Reduzido */
+  margin: 2px 0;
+}
+
+.amenity {
+  font-size: 10px; /* Reduzido */
+  color: #2563eb;
+  background: #eef2ff;
+  padding: 4px 8px; /* Reduzido */
+  border-radius: 30px;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.amenity:hover {
+  background: #2563eb;
+  color: white;
+}
+
+.amenityMore {
+  font-size: 10px;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 30px;
+}
+
+/* Grupo de botões - Mais compacto */
+.buttonGroup {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px; /* Reduzido */
+  margin-top: 4px; /* Reduzido */
+}
+
+.detailsButton {
+  background: white;
+  border: 1px solid #2563eb;
+  color: #2563eb;
+  padding: 8px; /* Reduzido */
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 12px; /* Reduzido */
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.detailsButton:hover {
+  background: #2563eb;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37,99,235,0.2);
+}
+
+.selectButton {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  border: none;
+  color: white;
+  padding: 8px; /* Reduzido */
+  border-radius: 40px;
+  font-weight: 600;
+  font-size: 12px; /* Reduzido */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.2);
+}
+
+.selectButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37,99,235,0.3);
+}
+
+.selectButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ============================================================================
+   GALERIA DE IMAGENS (HOVER)
+   =========================================================================== */
+
+.thumbnailStrip {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(4px);
+  border-radius: 30px;
+  z-index: 5;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.card:hover .thumbnailStrip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.thumbnail {
+  width: 35px; /* Reduzido */
+  height: 35px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.thumbnail:hover {
+  transform: scale(1.05);
+  border-color: white;
+}
+
+.activeThumbnail {
+  border-color: #2563eb;
+}
+
+/* ============================================================================
+   RESPONSIVIDADE
+   =========================================================================== */
+
+@media (max-width: 768px) {
+  .imageContainer {
+    height: 180px;
+  }
+  
+  .content {
+    padding: 12px;
+  }
+  
+  .title {
+    font-size: 16px;
+  }
+  
+  .priceAmount {
+    font-size: 16px;
+  }
+  
+  .buttonGroup {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .imageContainer {
+    height: 160px;
+  }
+  
+  .thumbnail {
+    width: 30px;
+    height: 30px;
+  }
+}

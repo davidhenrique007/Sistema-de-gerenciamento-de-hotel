@@ -1,0 +1,1099 @@
+/* =====================================================
+   ESTILOS DO CHECKOUT
+===================================================== */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.breadcrumb {
+  margin-bottom: 30px;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.breadcrumb .active {
+  color: #007bff;
+  font-weight: 600;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.section {
+  margin-bottom: 40px;
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.sectionTitle {
+  font-size: 1.3rem;
+  color: #495057;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+/* Botões de seleção de quarto */
+.escolherButton {
+  padding: 12px 24px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.escolherButton:hover {
+  background: #0056b3;
+}
+
+/* Múltiplos quartos */
+.quartosSelecionados {
+  padding: 16px;
+  background: #e8f5e9;
+  border-radius: 12px;
+  border: 1px solid #c8e6c9;
+}
+
+.quartosList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.quartoSelecionadoItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: white;
+  border-radius: 20px;
+  border: 1px solid #4caf50;
+  font-size: 0.9rem;
+}
+
+.removerQuartoButton {
+  background: none;
+  border: none;
+  color: #f44336;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0 4px;
+}
+
+.removerQuartoButton:hover {
+  color: #d32f2f;
+}
+
+.adicionarQuartoButton {
+  padding: 8px 16px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-right: 12px;
+}
+
+.adicionarQuartoButton:hover {
+  background: #388e3c;
+}
+
+.totalQuartosHint {
+  display: inline-block;
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+/* Formulário */
+.formContainer {
+  width: 100%;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formGroup label {
+  font-weight: 500;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.required {
+  color: #dc3545;
+}
+
+.input {
+  padding: 12px 16px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.inputError {
+  border-color: #dc3545;
+}
+
+.inputError:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.1);
+}
+
+.errorMessage {
+  color: #dc3545;
+  font-size: 0.8rem;
+}
+
+.hint {
+  color: #6c757d;
+  font-size: 0.75rem;
+}
+
+.loginInfo {
+  margin-top: 16px;
+  padding: 12px;
+  background: #e8f4fd;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.loginInfo a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* =====================================================
+   MÉTODOS DE PAGAMENTO - TABS
+===================================================== */
+.paymentContainer {
+  width: 100%;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 8px;
+}
+
+.tabButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6c757d;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tabButton:hover {
+  background: #f8f9fa;
+  color: #495057;
+}
+
+.tabActive {
+  color: #007bff;
+  background: #e7f1ff;
+}
+
+.tabIcon {
+  font-size: 1.2rem;
+}
+
+.tabContent {
+  padding: 20px 0;
+}
+
+/* Pagamento Móvel e Cartão */
+.paymentMethodContent {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.operadoraInfo {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.operadoraBadge {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #e9ecef;
+  border-radius: 20px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.operadoraHint {
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+.rowFields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Cartão */
+.cardType {
+  text-align: right;
+  margin-bottom: 8px;
+}
+
+.cardTypeBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #e9ecef;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Dinheiro */
+.cashInfo {
+  text-align: center;
+  padding: 20px;
+}
+
+.cashIcon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.cashTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #28a745;
+}
+
+.cashDescription {
+  color: #6c757d;
+  margin-bottom: 24px;
+}
+
+.cashWarning {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: left;
+  display: flex;
+  gap: 12px;
+}
+
+.warningIcon {
+  font-size: 1.5rem;
+}
+
+.cashWarning ul {
+  margin: 8px 0 0 20px;
+  padding: 0;
+}
+
+.cashWarning li {
+  margin: 4px 0;
+  color: #856404;
+}
+
+/* Botão Simular */
+.simulateButton {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.mockButton {
+  padding: 10px 20px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  color: #495057;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.mockButton:hover {
+  background: #e9ecef;
+}
+
+.mockHint {
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin-top: 8px;
+}
+
+/* Botão Confirmar */
+.confirmButtonContainer {
+  margin-top: 32px;
+  text-align: center;
+}
+
+.confirmButton {
+  padding: 14px 32px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.confirmActive {
+  background: #28a745;
+  color: white;
+}
+
+.confirmActive:hover {
+  background: #218838;
+  transform: translateY(-2px);
+}
+
+.confirmDisabled {
+  background: #6c757d;
+  color: white;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.confirmHint {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid white;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* =====================================================
+   RESUMO DA RESERVA (MÚLTIPLOS QUARTOS)
+===================================================== */
+.resumoCard {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  border: 1px solid #e9ecef;
+}
+
+.resumoTitulo {
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+  color: #495057;
+}
+
+.resumoLinha {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed #dee2e6;
+}
+
+.resumoValor {
+  font-weight: 500;
+  color: #212529;
+}
+
+.totalLinha {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  margin-top: 8px;
+  border-top: 2px solid #dee2e6;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.totalValor {
+  color: #28a745;
+  font-size: 1.2rem;
+}
+
+/* =====================================================
+   RESUMO FINAL (MÚLTIPLOS QUARTOS)
+===================================================== */
+.resumoFinal {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  border: 1px solid #e9ecef;
+}
+
+.resumoFinalTitle {
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+  color: #28a745;
+}
+
+.resumoFinalGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.resumoFinalCard {
+  background: white;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.resumoFinalCard h4 {
+  margin: 0 0 12px 0;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.resumoFinalCard p {
+  margin: 6px 0;
+  font-size: 0.85rem;
+}
+
+.totalQuartosResumo {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e9ecef;
+  color: #28a745;
+}
+
+.totalValue {
+  color: #28a745;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+  
+  .title {
+    font-size: 1.8rem;
+  }
+  
+  .section {
+    padding: 20px;
+  }
+  
+  .paymentMethods {
+    flex-wrap: wrap;
+  }
+  
+  .tabs {
+    flex-wrap: wrap;
+  }
+  
+  .tabButton {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+}
+/* =====================================================
+   SERVI�OS ADICIONAIS
+===================================================== */
+.servicosSection {
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid #e9ecef;
+}
+
+.servicosTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 12px;
+}
+
+.servicosList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.servicoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.servicoInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.servicoNome {
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.servicoDescricao {
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
+.servicoPreco {
+  font-weight: 600;
+  color: #28a745;
+  font-size: 0.85rem;
+}
+
+.servicoCheckbox {
+  margin-left: 12px;
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+/* =====================================================
+   SERVI�OS ADICIONAIS
+===================================================== */
+.servicosSection {
+  margin-top: 20px;
+  padding-top: 12px;
+}
+
+.servicosTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.servicosList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.servicoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.servicoItem:hover {
+  border-color: #28a745;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.1);
+}
+
+.servicoInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.servicoNome {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #212529;
+}
+
+.servicoDescricao {
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
+.servicoPreco {
+  font-weight: 500;
+  color: #28a745;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.servicoTotal {
+  font-size: 0.75rem;
+  color: #007bff;
+  margin-top: 2px;
+}
+
+.servicoCheckbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #28a745;
+}
+
+/* =====================================================
+   SERVI�OS ADICIONAIS
+===================================================== */
+.servicosContainer {
+  width: 100%;
+}
+
+.servicosHeader {
+  margin-bottom: 24px;
+}
+
+.servicosTitle {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.servicosSubtitle {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.categoriasContainer {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.categoriaButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.categoriaButton:hover {
+  background: #e9ecef;
+}
+
+.categoriaAtiva {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.servicosGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.servicoCard {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+.servicoCard:hover {
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.servicoSelecionado {
+  border-color: #28a745;
+  background: #f0f9f0;
+}
+
+.servicoIcon {
+  font-size: 2rem;
+}
+
+.servicoInfo {
+  flex: 1;
+}
+
+.servicoNome {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.servicoDescricao {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.servicoPreco {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.precoPorNoite {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #28a745;
+}
+
+.precoTotal {
+  font-size: 0.7rem;
+  color: #007bff;
+}
+
+.servicoButton {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  height: fit-content;
+}
+
+.buttonAdicionar {
+  background: #007bff;
+  color: white;
+  border: none;
+}
+
+.buttonAdicionar:hover {
+  background: #0056b3;
+}
+
+.buttonRemover {
+  background: #dc3545;
+  color: white;
+  border: none;
+}
+
+.buttonRemover:hover {
+  background: #c82333;
+}
+
+.servicosResumo {
+  margin-top: 24px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+}
+
+.resumoHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #dee2e6;
+  font-weight: 600;
+}
+
+.resumoTotal {
+  color: #28a745;
+  font-size: 1.1rem;
+}
+
+.resumoLista {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.resumoItem {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  padding: 4px 0;
+}
+
+/* =====================================================
+   LAYOUT DE DUAS COLUNAS
+===================================================== */
+.twoColumns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.columnLeft,
+.columnRight {
+  min-width: 0;
+}
+
+.sectionCompact {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  height: 100%;
+  border: 1px solid #e9ecef;
+  transition: box-shadow 0.2s;
+}
+
+.sectionCompact:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsividade para mobile */
+@media (max-width: 768px) {
+  .twoColumns {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .sectionCompact {
+    padding: 20px;
+  }
+}
+
+/* =====================================================
+   PAGAMENTO M-PESA
+===================================================== */
+.mpesaPaymentContainer {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+}
+
+.paymentHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.paymentIcon {
+    font-size: 2rem;
+}
+
+.paymentHeader h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #495057;
+}
+
+.paymentForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.paymentInfo {
+    background: #e8f4fd;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.paymentInfo p {
+    margin: 4px 0;
+}
+
+.paymentInfo strong {
+    color: #28a745;
+    font-size: 1.1rem;
+}
+
+.pagarButton {
+    padding: 14px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pagarButton:hover:not(:disabled) {
+    background: #218838;
+    transform: translateY(-1px);
+}
+
+.pagarButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.paymentWaiting {
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #e9ecef;
+    border-top-color: #28a745;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+.waitingMessage {
+    font-size: 1rem;
+    color: #495057;
+    white-space: pre-line;
+    margin-bottom: 12px;
+}
+
+.waitingHint {
+    display: block;
+    color: #6c757d;
+    font-size: 0.8rem;
+    margin-top: 8px;
+}
+
+.cancelButton {
+    margin-top: 20px;
+    padding: 8px 20px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.tentarNovamenteButton {
+    margin-top: 20px;
+    padding: 8px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Stripe Placeholder */
+.stripePlaceholder {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.stripePlaceholder p {
+    margin: 8px 0;
+}
+
+.stripePlaceholder .hint {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+/* =====================================================
+   MINHAS RESERVAS - LINK NO CHECKOUT
+===================================================== */
+.checkoutHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.minhasReservasLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.minhasReservasLink:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+@media (max-width: 768px) {
+    .checkoutHeader {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .minhasReservasLink {
+        justify-content: center;
+    }
+}
