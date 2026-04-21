@@ -1,0 +1,52 @@
+﻿{
+  "version": "1.0.0",
+  "rules": {
+    "sql_injection": {
+      "enabled": true,
+      "severity": "high",
+      "patterns": [
+        "(\\'|\\\")(\\s*)(or|and)(\\s*)([0-9]+)(\\s*)(=)(\\s*)([0-9]+)",
+        "(\\'|\\\")(\\s*)(or|and)(\\s*)([0-9]+)(\\s*)(=)(\\s*)(\\'|\\\")",
+        "(\\'|\\\")(\\s+)(or|and)(\\s+)([0-9]+)(\\s*)(=)(\\s*)([0-9]+)",
+        "\\bselect\\b.*\\bfrom\\b",
+        "\\bunion\\b.*\\bselect\\b",
+        "\\binsert\\b.*\\binto\\b",
+        "\\bdelete\\b.*\\bfrom\\b",
+        "\\bdrop\\b.*\\btable\\b",
+        "\\bupdate\\b.*\\bset\\b",
+        "(\\bexec\\b.*\\bsp_\\w+)",
+        "(\\bxp_\\w+\\b)"
+      ]
+    },
+    "xss": {
+      "enabled": true,
+      "severity": "high",
+      "patterns": [
+        "<script\\b[^>]*>",
+        "javascript\\s*:",
+        "vbscript\\s*:",
+        "onload\\s*=",
+        "onerror\\s*=",
+        "onclick\\s*=",
+        "eval\\s*\\(",
+        "expression\\s*\\(",
+        "<iframe\\b[^>]*>"
+      ]
+    },
+    "path_traversal": {
+      "enabled": true,
+      "severity": "medium",
+      "patterns": [
+        "\\.\\.[/\\\\]",
+        "\\.\\.[\\\\/]",
+        "\\/etc\\/passwd",
+        "\\/etc\\/shadow",
+        "\\/var\\/log\\/",
+        "\\/proc\\/self\\/environ"
+      ]
+    }
+  },
+  "blocked_ips": [],
+  "whitelist_ips": ["127.0.0.1", "::1"],
+  "whitelist_paths": ["/api/health", "/favicon.ico"]
+}
