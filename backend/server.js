@@ -1,12 +1,16 @@
-﻿process.env.TZ = "Africa/Maputo";
+process.env.TZ = "Africa/Maputo";
 const express = require('express');
+const wafMiddleware = require('./middlewares/waf');
+
 const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Configuração CORS
+// Configura��o CORS
+app.use(wafMiddleware);
+
 app.use(cors({
   origin: 'http://localhost:3000',
   credentials: true,
@@ -14,13 +18,17 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
-// ==================== SEGURANÇA ====================
+// ==================== IMPORTS DOS MIDDLEWARES ====================
 const helmet = require('helmet');
 const { globalLimiter, authLimiter, reservaLimiter, checkBlockedIP } = require('./middlewares/rateLimit');
 const { sanitizeInput, validateDataTypes, securityHeaders } = require('./middlewares/sanitize');
 const { verificarToken, verificarRole } = require('./middlewares/auth');
+const { performanceLogger } = require('./middlewares/performanceLogger');
+const auditLogger = require('./middlewares/auditLogger');
 
-// Aplicar headers de segurança
+// ==================== APLICAR MIDDLEWARES ====================
+
+// Headers de seguran�a
 app.use(helmet());
 app.use(securityHeaders);
 
@@ -30,57 +38,81 @@ app.use(checkBlockedIP);
 // Rate limiting global
 app.use(globalLimiter);
 
-// Sanitização de inputs (ANTES de qualquer rota)
+// Sanitiza��o de inputs (ANTES de qualquer rota)
 app.use(sanitizeInput);
 app.use(validateDataTypes);
 
-// Rate limiting específico para auth
+// Performance logger
+app.use(performanceLogger);
+
+// Middleware de auditoria
+app.use(auditLogger);
+
+// Rate limiting espec�fico para auth
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
 
 // Rate limiting para reservas
 app.use('/api/reservas', reservaLimiter);
 
-// Middlewares básicos
+// Middlewares b�sicos
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rotas públicas (não requerem autenticação)
+// ==================== ROTAS P�BLICAS ====================
+
 app.get('/api/health', (req, res) => { 
   res.json({ status: 'ok', timestamp: new Date().toISOString() }); 
 });
 
 app.post('/api/auth/login', async (req, res) => {
-  console.log('📝 Recebendo login request:', req.body);
+  console.log('?? Recebendo login request:', req.body);
   
   const { email, password } = req.body;
   const bcrypt = require('bcryptjs');
   const jwt = require('jsonwebtoken');
   const pool = require('./config/database');
   const { registrarLogin } = require('./middlewares/auth');
+  const auditService = require('./services/auditService');
   
   try {
-    console.log('🔍 Buscando usuário:', email);
+    console.log('?? Buscando usu�rio:', email);
     const result = await pool.query('SELECT id, name, email, password_hash, role, is_active FROM users WHERE email = $1', [email]);
     
     if (result.rows.length === 0) {
-      console.log('❌ Usuário não encontrado');
-      return res.status(401).json({ success: false, message: 'Email ou senha inválidos' });
+      console.log('? Usu�rio n�o encontrado');
+      await auditService.log({
+        acao: 'LOGIN_FAILURE',
+        entidade: 'Autenticacao',
+        ip: req.ip,
+        userAgent: req.get('user-agent'),
+        status: 'ERROR',
+        detalhes: { email, motivo: 'Email n�o encontrado' }
+      });
+      return res.status(401).json({ success: false, message: 'Email ou senha inv�lidos' });
     }
     
     const user = result.rows[0];
     
     if (!user.is_active) {
-      console.log('❌ Usuário inativo:', user.email);
+      console.log('? Usu�rio inativo:', user.email);
       return res.status(401).json({ success: false, message: 'Conta desativada. Contacte o administrador.' });
     }
     
-    console.log('✅ Usuário encontrado:', user.email);
+    console.log('? Usu�rio encontrado:', user.email);
     
     const isValid = await bcrypt.compare(password, user.password_hash);
     if (!isValid) {
-      console.log('❌ Senha inválida');
-      return res.status(401).json({ success: false, message: 'Email ou senha inválidos' });
+      console.log('? Senha inv�lida');
+      await auditService.log({
+        acao: 'LOGIN_FAILURE',
+        entidade: 'Autenticacao',
+        ip: req.ip,
+        userAgent: req.get('user-agent'),
+        status: 'ERROR',
+        detalhes: { email, motivo: 'Senha incorreta' }
+      });
+      return res.status(401).json({ success: false, message: 'Email ou senha inv�lidos' });
     }
     
     const token = jwt.sign(
@@ -91,7 +123,19 @@ app.post('/api/auth/login', async (req, res) => {
     
     await registrarLogin(user.id, req.ip, req.get('user-agent'));
     
-    console.log('✅ Login bem sucedido, token gerado');
+    // Log de auditoria - login bem-sucedido
+    await auditService.log({
+      userId: user.id,
+      userName: user.name,
+      userRole: user.role,
+      acao: 'LOGIN_SUCCESS',
+      entidade: 'Autenticacao',
+      ip: req.ip,
+      userAgent: req.get('user-agent'),
+      detalhes: { email: user.email }
+    });
+    
+    console.log('? Login bem sucedido, token gerado');
     res.json({ 
       success: true, 
       token, 
@@ -99,7 +143,7 @@ app.post('/api/auth/login', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('❌ Erro no login:', error);
+    console.error('? Erro no login:', error);
     res.status(500).json({ success: false, message: 'Erro interno do servidor' });
   }
 });
@@ -113,7 +157,7 @@ app.post('/api/auth/logout', async (req, res) => {
       const jwt = require('jsonwebtoken');
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'hotel-paradise-secret');
       const duracao = await registrarLogout(decoded.id, req.ip);
-      console.log(`✅ Logout: usuário ${decoded.id} ficou online por ${duracao} segundos`);
+      console.log(`? Logout: usu�rio ${decoded.id} ficou online por ${duracao} segundos`);
     } catch(e) {
       console.error('Erro no logout:', e.message);
     }
@@ -145,7 +189,7 @@ app.post('/api/auth/heartbeat', async (req, res) => {
   }
 });
 
-// ==================== ROTAS PROTEGIDAS (REQUEREM AUTENTICAÇÃO) ====================
+// ==================== ROTAS PROTEGIDAS ====================
 
 // Importar rotas
 const reservaRoutes = require('./routes/reservaRoutes');
@@ -161,8 +205,13 @@ const relatorioRoutes = require('./routes/admin/relatorioRoutes');
 const financeiroRoutes = require('./routes/admin/financeiroRoutes');
 const reconciliacaoRoutes = require('./routes/admin/reconciliacaoRoutes');
 const performanceRoutes = require('./routes/admin/performanceRoutes');
+const auditRoutes = require('./routes/admin/auditRoutes');
+const twoFactorRoutes = require('./routes/auth/2faRoutes');
 
-// Aplicar middleware de autenticação em TODAS as rotas protegidas
+// Rotas 2FA
+app.use('/api/auth', twoFactorRoutes);
+
+// Aplicar middleware de autentica��o em TODAS as rotas protegidas
 app.use('/api/reservas', verificarToken, reservaRoutes);
 app.use('/api/clientes', verificarToken, clienteRoutes);
 app.use('/api/quartos', verificarToken, quartoRoutes);
@@ -176,6 +225,7 @@ app.use('/api/admin', verificarToken, relatorioRoutes);
 app.use('/api/admin', verificarToken, financeiroRoutes);
 app.use('/api/admin', verificarToken, reconciliacaoRoutes);
 app.use('/api/admin', verificarToken, performanceRoutes);
+app.use('/api/admin', verificarToken, auditRoutes);
 
 // ==================== SCHEDULER ====================
 if (process.env.NODE_ENV !== 'test') {
@@ -183,30 +233,30 @@ if (process.env.NODE_ENV !== 'test') {
   const { exec } = require('child_process');
   
   cron.schedule('0 * * * *', () => {
-    console.log('🔄 Executando refresh agendado das Materialized Views...');
+    console.log('?? Executando refresh agendado das Materialized Views...');
     exec('node scripts/refreshViews.js', { cwd: __dirname }, (error, stdout, stderr) => {
       if (error) {
-        console.error('❌ Erro no refresh agendado:', error);
+        console.error('? Erro no refresh agendado:', error);
       } else {
-        console.log('✅ Refresh agendado concluído');
+        console.log('? Refresh agendado conclu�do');
       }
     });
   });
   
-  console.log('⏰ Scheduler de Materialized Views ativado (refresh a cada hora)');
+  console.log('? Scheduler de Materialized Views ativado (refresh a cada hora)');
 }
 
 // ==================== TRATAMENTO DE ERROS GLOBAL ====================
 app.use((err, req, res, next) => {
-  console.error('❌ Erro global:', err);
+  console.error('? Erro global:', err);
   res.status(500).json({ success: false, message: 'Erro interno do servidor' });
 });
 
 // ==================== INICIAR SERVIDOR ====================
 if (require.main === module) {
   app.listen(PORT, () => { 
-    console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
-    console.log(`📍 CORS permitindo: http://localhost:3000`);
+    console.log(`?? Servidor rodando em http://localhost:${PORT}`);
+    console.log(`?? CORS permitindo: http://localhost:3000`);
   });
 }
 

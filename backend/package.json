@@ -19,7 +19,12 @@
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
     "perf:local": "cd tests/performance && k6 run scenarios.js",
-    "perf:stress": "cd tests/performance && k6 run --vus 200 --duration 3m scenarios.js"
+    "perf:stress": "cd tests/performance && k6 run --vus 200 --duration 3m scenarios.js",
+    "ssl:generate": "chmod +x backend/scripts/generate-cert.sh && ./backend/scripts/generate-cert.sh",
+    "ssl:renew": "chmod +x backend/scripts/renew-cert.sh && ./backend/scripts/renew-cert.sh",
+    "prod": "NODE_ENV=production node server.js",
+    "docker:prod": "docker-compose -f docker-compose.prod.yml up -d",
+    "docker:prod:down": "docker-compose -f docker-compose.prod.yml down"
   },
   "keywords": [
     "hotel",
@@ -56,6 +61,7 @@
     "pdfkit": "^0.18.0",
     "pg": "^8.20.0",
     "qrcode": "^1.5.4",
+    "speakeasy": "^2.0.0",
     "stripe": "^21.0.1",
     "uuid": "^9.0.1",
     "xss-clean": "^0.1.4"
