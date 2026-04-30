@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "home": "Home",
+    "rooms": "Rooms",
+    "reservations": "Bookings",
+    "dashboard": "Dashboard",
+    "admin": "Administration",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "logout": "Logout"
+  },
+  "hero": {
+    "title": "Welcome to Hotel Paradise",
+    "subtitle": "Your perfect stay starts here",
+    "cta": "Book Now",
+    "featured_rooms": "Featured Rooms",
+    "rooms_subtitle": "Explore our exclusive rooms and services, designed to offer comfort, serenity and well-being throughout your stay",
+    "special_offers": "Special Offers"
+  },
+  "reservation": {
+    "title": "Make your Reservation",
+    "checkin": "Check-in",
+    "checkout": "Check-out",
+    "guests": "Guests",
+    "adults": "Adults",
+    "children": "Children",
+    "search": "Check Availability"
+  },
+  "services": {
+    "title": "Additional Services",
+    "subtitle": "Customize your stay"
+  },
+  "footer": {
+    "about": "About Us",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "rights": "All rights reserved"
+  },
+  "errors": {
+    "required": "Required field",
+    "invalid_email": "Invalid email",
+    "invalid_phone": "Invalid phone number",
+    "password_mismatch": "Passwords do not match",
+    "login_failed": "Invalid email or password",
+    "server_error": "Internal server error",
+    "network_error": "Connection error"
+  }
+}

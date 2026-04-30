@@ -1,0 +1,121 @@
+﻿{
+    "nav":  {
+                "home":  "Home",
+                "rooms":  "Rooms",
+                "reservations":  "Bookings",
+                "dashboard":  "Dashboard",
+                "admin":  "Administration",
+                "profile":  "Profile",
+                "logout":  "Logout",
+                "main_navigation":  "Main navigation"
+            },
+    "common":  {
+                   "save":  "Save",
+                   "cancel":  "Cancel",
+                   "confirm":  "Confirm",
+                   "loading":  "Loading...",
+                   "error":  "Error",
+                   "success":  "Success",
+                   "back":  "Back",
+                   "next":  "Next",
+                   "submit":  "Submit",
+                   "search":  "Search",
+                   "filter":  "Filter",
+                   "clear":  "Clear",
+                   "logout":  "Logout",
+                   "open_menu":  "Open menu",
+                   "close_menu":  "Close menu",
+                   "retry":  "Try again"
+               },
+    "hero":  {
+                 "title":  "Welcome to Hotel Paradise",
+                 "subtitle":  "Your perfect stay starts here",
+                 "cta":  "Book Now",
+                 "featured_rooms":  "Featured Rooms",
+                 "rooms_subtitle":  "Explore our exclusive rooms and services",
+                 "special_offers":  "Special Offers"
+             },
+    "rooms":  {
+                  "title":  "Our Rooms",
+                  "subtitle":  "Explore our exclusive rooms and services",
+                  "room":  "Room",
+                  "room_types":  "room types",
+                  "available_units":  "units available",
+                  "per_night":  "/night",
+                  "details":  "View Details",
+                  "select":  "Select",
+                  "unavailable":  "Unavailable",
+                  "all":  "All",
+                  "available":  "Available",
+                  "guests":  "guests",
+                  "standard_bed":  "Queen bed",
+                  "main":  "Main",
+                  "photo":  "Photo",
+                  "types":  {
+                                "standard":  "Standard",
+                                "deluxe":  "Deluxe",
+                                "suite":  "Suite",
+                                "executive":  "Executive",
+                                "family":  "Family",
+                                "presidential":  "Presidential"
+                            },
+                  "descriptions":  {
+                                       "cozy_garden":  "Cozy room with garden view, ideal for couples.",
+                                       "spacious_balcony":  "Spacious room with private balcony and premium amenities.",
+                                       "deluxe_panoramic":  "Deluxe room with panoramic view and luxury finishes.",
+                                       "executive":  "Executive room with work area and VIP amenities.",
+                                       "family":  "Family room with space for everyone, perfect for family vacations.",
+                                       "presidential":  "The presidential suite offers maximum luxury and comfort."
+                                   },
+                  "beds":  {
+                               "queen":  "Queen bed",
+                               "mixed":  "2 single beds + 1 double bed",
+                               "three_single":  "3 single beds",
+                               "two_queen":  "2 queen beds",
+                               "family":  "2 queen beds + 1 single bed",
+                               "presidential":  "2 king beds + living room"
+                           },
+                  "amenities":  {
+                                    "wifi":  "Wi-Fi",
+                                    "tv":  "TV",
+                                    "ac":  "Air conditioning",
+                                    "minibar":  "Minibar",
+                                    "safe":  "Safe",
+                                    "balcony":  "Balcony",
+                                    "desk":  "Desk",
+                                    "sea_view":  "Sea view",
+                                    "bathtub":  "Bathtub",
+                                    "jacuzzi":  "Jacuzzi",
+                                    "living_room":  "Living room"
+                                },
+                  "status":  {
+                                 "available":  "Available",
+                                 "occupied":  "Occupied",
+                                 "maintenance":  "Maintenance"
+                             }
+              },
+    "footer":  {
+                   "about":  "About Us",
+                   "careers":  "Careers",
+                   "blog":  "Blog",
+                   "press":  "Press",
+                   "help":  "Help Center",
+                   "faq":  "FAQ",
+                   "terms":  "Terms of Use",
+                   "privacy":  "Privacy",
+                   "rights":  "All rights reserved",
+                   "description":  "The perfect paradise for your dream vacation, with comfort, luxury and personalized service in an exclusive beachfront environment.",
+                   "company":  "Company",
+                   "support":  "Support",
+                   "contact":  "Contact"
+               },
+    "errors":  {
+                   "required":  "Required field",
+                   "invalid_email":  "Invalid email",
+                   "invalid_phone":  "Invalid phone number",
+                   "password_mismatch":  "Passwords do not match",
+                   "login_failed":  "Invalid email or password",
+                   "server_error":  "Internal server error",
+                   "network_error":  "Connection error"
+               }
+}

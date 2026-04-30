@@ -1,0 +1,121 @@
+﻿{
+    "nav":  {
+                "home":  "Início",
+                "rooms":  "Quartos",
+                "reservations":  "Reservas",
+                "dashboard":  "Painel",
+                "admin":  "Administração",
+                "profile":  "Perfil",
+                "logout":  "Sair",
+                "main_navigation":  "Navegação principal"
+            },
+    "common":  {
+                   "save":  "Salvar",
+                   "cancel":  "Cancelar",
+                   "confirm":  "Confirmar",
+                   "loading":  "Carregando...",
+                   "error":  "Erro",
+                   "success":  "Sucesso",
+                   "back":  "Voltar",
+                   "next":  "Próximo",
+                   "submit":  "Enviar",
+                   "search":  "Buscar",
+                   "filter":  "Filtrar",
+                   "clear":  "Limpar",
+                   "logout":  "Sair",
+                   "open_menu":  "Abrir menu",
+                   "close_menu":  "Fechar menu",
+                   "retry":  "Tentar novamente"
+               },
+    "hero":  {
+                 "title":  "Bem-vindo ao Hotel Paradise",
+                 "subtitle":  "Sua estadia perfeita começa aqui",
+                 "cta":  "Reserve Agora",
+                 "featured_rooms":  "Quartos em Destaque",
+                 "rooms_subtitle":  "Explore nossos quartos e serviços exclusivos",
+                 "special_offers":  "Ofertas Especiais"
+             },
+    "rooms":  {
+                  "title":  "Nossos Quartos",
+                  "subtitle":  "Explore nossos quartos e serviços exclusivos",
+                  "room":  "Quarto",
+                  "room_types":  "tipos de quartos",
+                  "available_units":  "unidades disponíveis",
+                  "per_night":  "/noite",
+                  "details":  "Ver Detalhes",
+                  "select":  "Selecionar",
+                  "unavailable":  "Indisponível",
+                  "all":  "Todos",
+                  "available":  "Disponíveis",
+                  "guests":  "hóspedes",
+                  "standard_bed":  "Cama de casal",
+                  "main":  "Principal",
+                  "photo":  "Foto",
+                  "types":  {
+                                "standard":  "Standard",
+                                "deluxe":  "Deluxe",
+                                "suite":  "Suíte",
+                                "executive":  "Executivo",
+                                "family":  "Família",
+                                "presidential":  "Presidencial"
+                            },
+                  "descriptions":  {
+                                       "cozy_garden":  "Quarto aconchegante com vista para o jardim, ideal para casais.",
+                                       "spacious_balcony":  "Quarto espaçoso com varanda privativa e amenities premium.",
+                                       "deluxe_panoramic":  "Quarto deluxe com vista panorâmica e acabamentos de luxo.",
+                                       "executive":  "Quarto executivo com área de trabalho e amenities VIP.",
+                                       "family":  "Quarto familiar com espaço para todos, perfeito para férias em família.",
+                                       "presidential":  "A suíte presidencial oferece o máximo em luxo e conforto."
+                                   },
+                  "beds":  {
+                               "queen":  "Cama de casal queen",
+                               "mixed":  "2 camas de solteiro + 1 cama de casal",
+                               "three_single":  "3 camas de solteiro",
+                               "two_queen":  "2 camas de casal",
+                               "family":  "2 camas de casal + 1 cama de solteiro",
+                               "presidential":  "2 camas de casal king + sala de estar"
+                           },
+                  "amenities":  {
+                                    "wifi":  "Wi-Fi",
+                                    "tv":  "TV",
+                                    "ac":  "Ar condicionado",
+                                    "minibar":  "Frigobar",
+                                    "safe":  "Cofre",
+                                    "balcony":  "Varanda",
+                                    "desk":  "Mesa de trabalho",
+                                    "sea_view":  "Vista para o mar",
+                                    "bathtub":  "Banheira",
+                                    "jacuzzi":  "Jacuzzi",
+                                    "living_room":  "Sala de estar"
+                                },
+                  "status":  {
+                                 "available":  "Disponível",
+                                 "occupied":  "Ocupado",
+                                 "maintenance":  "Manutenção"
+                             }
+              },
+    "footer":  {
+                   "about":  "Sobre nós",
+                   "careers":  "Carreiras",
+                   "blog":  "Blog",
+                   "press":  "Imprensa",
+                   "help":  "Central de ajuda",
+                   "faq":  "FAQ",
+                   "terms":  "Termos de uso",
+                   "privacy":  "Privacidade",
+                   "rights":  "Todos os direitos reservados",
+                   "description":  "O paraíso perfeito para suas férias dos sonhos, com conforto, luxo e atendimento personalizado em um ambiente exclusivo à beira-mar.",
+                   "company":  "Empresa",
+                   "support":  "Suporte",
+                   "contact":  "Contato"
+               },
+    "errors":  {
+                   "required":  "Campo obrigatório",
+                   "invalid_email":  "Email inválido",
+                   "invalid_phone":  "Telefone inválido",
+                   "password_mismatch":  "Senhas não coincidem",
+                   "login_failed":  "Email ou senha inválidos",
+                   "server_error":  "Erro interno do servidor",
+                   "network_error":  "Erro de conexão"
+               }
+}

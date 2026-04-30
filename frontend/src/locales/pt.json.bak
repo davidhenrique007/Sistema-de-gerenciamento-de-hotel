@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "home": "Início",
+    "rooms": "Quartos",
+    "reservations": "Reservas",
+    "dashboard": "Painel",
+    "admin": "Administração",
+    "profile": "Perfil",
+    "logout": "Sair"
+  },
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "back": "Voltar",
+    "next": "Próximo",
+    "submit": "Enviar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "clear": "Limpar",
+    "logout": "Sair"
+  },
+  "hero": {
+    "title": "Bem-vindo ao Hotel Paradise",
+    "subtitle": "Sua estadia perfeita começa aqui",
+    "cta": "Reserve Agora",
+    "featured_rooms": "Quartos em Destaque",
+    "rooms_subtitle": "Explore nossos quartos e serviços exclusivos, projetados para oferecer conforto, serenidade e bem-estar durante toda a sua estadia",
+    "special_offers": "Ofertas Especiais"
+  },
+  "reservation": {
+    "title": "Faça sua Reserva",
+    "checkin": "Check-in",
+    "checkout": "Check-out",
+    "guests": "Hóspedes",
+    "adults": "Adultos",
+    "children": "Crianças",
+    "search": "Buscar Disponibilidade"
+  },
+  "services": {
+    "title": "Serviços Adicionais",
+    "subtitle": "Personalize sua estadia"
+  },
+  "footer": {
+    "about": "Sobre Nós",
+    "contact": "Contato",
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Uso",
+    "rights": "Todos os direitos reservados"
+  },
+  "errors": {
+    "required": "Campo obrigatório",
+    "invalid_email": "Email inválido",
+    "invalid_phone": "Telefone inválido",
+    "password_mismatch": "Senhas não coincidem",
+    "login_failed": "Email ou senha inválidos",
+    "server_error": "Erro interno do servidor",
+    "network_error": "Erro de conexão"
+  }
+}
