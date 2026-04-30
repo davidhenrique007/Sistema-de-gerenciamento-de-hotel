@@ -1,5 +1,7 @@
-﻿import React, { useCallback, useEffect, useState } from 'react';
+﻿// frontend/src/features/home/pages/HomePage.jsx
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useI18n } from '../../../contexts/I18nContext'; // ✅ ADICIONADO
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import RoomsSection from '../components/RoomsSection/RoomsSection';
@@ -16,10 +18,9 @@ import { useCart } from '../../../contexts/CartContext';
 import './home.css';
 
 const HomePage = () => {
+  const { t } = useI18n(); // ✅ HOOK DE TRADUÇÃO
   const navigate = useNavigate();
   const cart = useCart();
-  console.log("🔥🔥🔥 useCart retornou:", cart);
-  console.log("🔥🔥🔥 selectRoom existe?", !!cart.selectRoom);
   const { selectRoom } = cart;
   const { notifySuccess, notifyError } = useNotification();
   const { formRef, scrollToForm, scrollToFormWithDelay } = useScrollToForm({
@@ -47,8 +48,6 @@ const HomePage = () => {
   }, [rooms, selectedRoom]);
 
   const handleRoomSelect = useCallback((room) => {
-    console.log("🔥🔥🔥 handleRoomSelect CHAMADO com quarto:", room);
-    console.log('🛒 Quarto selecionado:', room?.number);
     if (room) {
       selectLocalRoom(room);
       scrollToFormWithDelay(300);
@@ -56,14 +55,12 @@ const HomePage = () => {
   }, [selectLocalRoom, scrollToFormWithDelay]);
 
   const handleDetailsRoom = useCallback((room) => {
-    console.log('🔍 Ver detalhes do quarto:', room?.number);
     setSelectedRoomForDetails(room);
     setIsModalOpen(true);
   }, []);
 
   const handleReservationSubmit = useCallback(async (reservationData) => {
     try {
-      // Salvar no CartContext
       selectRoom(
         {
           id: reservationData.roomId,
@@ -77,18 +74,17 @@ const HomePage = () => {
       );
 
       await new Promise(resolve => setTimeout(resolve, 800));
-      notifySuccess('Reserva processada com sucesso!');
+      notifySuccess(t('common.success')); // ✅ TRADUZIDO
 
       if (clearSelectedServices) clearSelectedServices();
 
-      // Navegar para checkout (sem state)
       navigate('/checkout');
 
     } catch (error) {
       console.error('❌ Erro:', error);
-      notifyError('Erro ao processar reserva.');
+      notifyError(t('errors.server_error')); // ✅ TRADUZIDO
     }
-  }, [selectRoom, navigate, notifySuccess, notifyError, clearSelectedServices]);
+  }, [selectRoom, navigate, notifySuccess, notifyError, clearSelectedServices, t]);
 
   const handleServiceToggle = useCallback((serviceId) => {
     if (toggleService) toggleService(serviceId);
@@ -103,16 +99,16 @@ const HomePage = () => {
           onCtaClick={scrollToForm}
           size="small"
           parallax={true}
-          title="Hotel Paradise"
-          subtitle="Descubra o espaço perfeito para relaxar e criar memórias inesquecíveis"
-          ctaText="Reservar Agora"
+          title={t('hero.title')} // ✅ TRADUZIDO
+          subtitle={t('hero.subtitle')} // ✅ TRADUZIDO
+          ctaText={t('hero.cta')} // ✅ TRADUZIDO
         />
 
         <RoomsSection
           onSelectRoom={handleRoomSelect}
           onDetailsRoom={handleDetailsRoom}
-          title="Nossos Quartos"
-          subtitle="Explore nossos quartos e serviços exclusivos, projetados para oferecer conforto, serenidade e bem-estar durante toda a sua estadia."
+          title={t('hero.featured_rooms')} // ✅ TRADUZIDO
+          subtitle={t('hero.rooms_subtitle') || "Explore nossos quartos e serviços exclusivos"}
         />
 
         <section
@@ -121,7 +117,7 @@ const HomePage = () => {
           ref={formRef}
         >
           <div className="container">
-            <h2 className="section-title">Faça sua Reserva</h2>
+            <h2 className="section-title">{t('reservation.title') || "Faça sua Reserva"}</h2>
 
             <div className="reservation-layout">
               <div className="reservation-form-wrapper">
@@ -138,8 +134,8 @@ const HomePage = () => {
         <ServicesSection
           onServiceToggle={handleServiceToggle}
           selectedServiceIds={selectedServices || []}
-          title="Serviços Adicionais"
-          subtitle="Personalize sua estadia"
+          title={t('services.title') || "Serviços Adicionais"}
+          subtitle={t('services.subtitle') || "Personalize sua estadia"}
         />
       </main>
 
@@ -158,5 +154,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
-
