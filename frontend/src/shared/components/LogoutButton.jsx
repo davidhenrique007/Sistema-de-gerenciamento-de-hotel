@@ -1,38 +1,29 @@
-// =====================================================
-// HOTEL PARADISE - BOTÃO DE LOGOUT
-// Versão: 1.0.0
-// =====================================================
-
-import React from 'react';
+﻿import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCliente } from '../hooks/useCliente';
-import styles from './LogoutButton.module.css';
+import { useAuth } from '../../contexts/AuthContext';
+import { useI18n } from '../../contexts/I18nContext';
+import Button from './ui/Button/Button';
 
-const LogoutButton = ({ variant = 'default', showConfirmation = true }) => {
+const LogoutButton = ({ variant = 'outline', size = 'md', className = '' }) => {
+  const { logout } = useAuth();
+  const { t } = useI18n();
   const navigate = useNavigate();
-  const { logoutCliente, nomeAbreviado } = useCliente();
 
-  const handleLogout = () => {
-    if (showConfirmation) {
-      const confirmar = window.confirm('Tem certeza que deseja sair?');
-      if (!confirmar) return;
-    }
-    
-    logoutCliente();
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 
   return (
-    <button 
+    <Button
+      variant={variant}
+      size={size}
       onClick={handleLogout}
-      className={`${styles.logoutButton} ${styles[variant]}`}
-      title="Sair da conta"
+      className={className}
+      translateKey="common.logout"
     >
-      <span className={styles.icon}>🚪</span>
-      {variant !== 'icon' && (
-        <span>Sair {nomeAbreviado ? `(${nomeAbreviado})` : ''}</span>
-      )}
-    </button>
+      {t('common.logout')}
+    </Button>
   );
 };
 

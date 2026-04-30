@@ -1,23 +1,11 @@
-// frontend/src/features/home/components/Header/NavMenu.jsx
-import React, { memo } from 'react';
+﻿import React, { memo } from 'react';
 import { NavLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { useI18n } from '../../../../contexts/I18nContext'; // ✅ ADICIONADO
+import { useI18n } from '../../../../contexts/I18nContext';
 import styles from './Header.module.css';
 
-/**
- * NavMenu Component - Menu de navegação para desktop
- * 
- * @component
- * @example
- * <NavMenu onLinkClick={handleLinkClick} />
- */
 const NavMenu = ({ onLinkClick, className = '' }) => {
-  const { t } = useI18n(); // ✅ ADICIONADO
-
-  // ==========================================================================
-  // NAVEGAÇÃO COM TRADUÇÃO
-  // ==========================================================================
+  const { t } = useI18n();
 
   const navigationLinks = [
     { id: 1, path: '/', labelKey: 'nav.home', exact: true },
@@ -25,35 +13,22 @@ const NavMenu = ({ onLinkClick, className = '' }) => {
     { id: 3, path: '/reservations', labelKey: 'nav.reservations', exact: false },
   ];
 
-  // ==========================================================================
-  // HANDLERS
-  // ==========================================================================
-
   const handleClick = () => {
-    if (onLinkClick) {
-      onLinkClick();
-    }
+    if (onLinkClick) onLinkClick();
   };
 
-  // ==========================================================================
-  // RENDER
-  // ==========================================================================
-
   return (
-    <nav className={`${styles.navMenu} ${className}`} aria-label={t('nav.main_navigation') || "Navegação principal"}>
+    <nav className={`${styles.navMenu} ${className}`} aria-label={t('nav.main_navigation')}>
       <ul className={styles.navList}>
         {navigationLinks.map((link) => (
           <li key={link.id} className={styles.navItem}>
             <NavLink
               to={link.path}
-              className={({ isActive }) => 
-                `${styles.navLink} ${isActive ? styles.active : ''}`
-              }
+              className={({ isActive }) => `${styles.navLink} ${isActive ? styles.active : ''}`}
               onClick={handleClick}
               end={link.exact}
-              aria-current={({ isActive }) => isActive ? 'page' : undefined}
             >
-              {t(link.labelKey)} {/* ✅ TRADUZIDO */}
+              {t(link.labelKey)}
             </NavLink>
           </li>
         ))}
@@ -63,9 +38,7 @@ const NavMenu = ({ onLinkClick, className = '' }) => {
 };
 
 NavMenu.propTypes = {
-  /** Função chamada ao clicar em um link */
   onLinkClick: PropTypes.func,
-  /** Classes CSS adicionais */
   className: PropTypes.string,
 };
 

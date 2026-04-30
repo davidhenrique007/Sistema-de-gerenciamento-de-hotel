@@ -3,7 +3,8 @@
 // Versão: 1.1.0
 // =====================================================
 
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React
+import { useI18n } from './I18nContext';, { createContext, useState, useContext, useEffect } from 'react';
 import { authService } from '../services/api';
 
 const AuthContext = createContext({});
