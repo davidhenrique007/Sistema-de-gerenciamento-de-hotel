@@ -1,55 +1,70 @@
 /**
- * Constantes de navegação centralizadas
+ * Constantes de navegação centralizadas COM SUPORTE A i18n
  * 
  * Esta estrutura permite:
  * - Escalabilidade (adicionar novos links facilmente)
  * - Manutenção centralizada
  * - Reutilização em múltiplos componentes
  * - Separação de concerns
+ * - Internacionalização
  */
 
+// Chaves de tradução para os labels
+export const navigationKeys = {
+  home: 'nav.home',
+  rooms: 'nav.rooms',
+  services: 'nav.services',
+  contact: 'nav.contact',
+  reservations: 'nav.reservations',
+  dashboard: 'nav.dashboard',
+  admin: 'nav.admin',
+  profile: 'nav.profile',
+  logout: 'nav.logout'
+};
+
+// Estrutura base da navegação (sem labels hardcoded)
 export const navigationLinks = [
   {
     id: 'home',
-    label: 'Início',
+    labelKey: navigationKeys.home,
     path: '/',
     exact: true,
   },
   {
     id: 'rooms',
-    label: 'Quartos',
+    labelKey: navigationKeys.rooms,
     anchor: '#rooms',
     path: '/#rooms',
     exact: false,
   },
   {
     id: 'services',
-    label: 'Serviços',
+    labelKey: navigationKeys.services,
     anchor: '#services',
     path: '/#services',
     exact: false,
   },
   {
-    id: 'contact',
-    label: 'Contato',
-    anchor: '#contact',
-    path: '/#contact',
+    id: 'reservations',
+    labelKey: navigationKeys.reservations,
+    path: '/reservations',
     exact: false,
   },
 ];
 
+// Links do footer com chaves de tradução
 export const footerLinks = {
   company: [
-    { label: 'Sobre nós', path: '/about' },
-    { label: 'Carreiras', path: '/careers' },
-    { label: 'Blog', path: '/blog' },
-    { label: 'Imprensa', path: '/press' },
+    { labelKey: 'footer.about', path: '/about' },
+    { labelKey: 'footer.careers', path: '/careers' },
+    { labelKey: 'footer.blog', path: '/blog' },
+    { labelKey: 'footer.press', path: '/press' },
   ],
   support: [
-    { label: 'Central de ajuda', path: '/help' },
-    { label: 'FAQ', path: '/faq' },
-    { label: 'Termos de uso', path: '/terms' },
-    { label: 'Privacidade', path: '/privacy' },
+    { labelKey: 'footer.help', path: '/help' },
+    { labelKey: 'footer.faq', path: '/faq' },
+    { labelKey: 'footer.terms', path: '/terms' },
+    { labelKey: 'footer.privacy', path: '/privacy' },
   ],
   contact: [
     { label: '(11) 99999-9999', path: 'tel:+5511999999999', external: true },
