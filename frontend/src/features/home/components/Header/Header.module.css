@@ -274,3 +274,30 @@
     font-size: 18px;
   }
 }
+
+/* Language Selector Styles - Adicionado automaticamente */
+.languageSelector {
+  margin-left: auto;
+  margin-right: 1rem;
+}
+
+.mobileControls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mobileLanguageSelector {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .headerContainer {
+    padding: 0.75rem 1rem;
+  }
+  
+  .mobileControls {
+    margin-left: auto;
+  }
+}

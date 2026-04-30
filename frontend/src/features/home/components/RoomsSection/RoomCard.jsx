@@ -1,29 +1,86 @@
 ﻿import React, { useState, memo } from 'react';
 import PropTypes from 'prop-types';
+import { useI18n } from '../../../../contexts/I18nContext';
 import Button from '../../../../shared/components/ui/Button';
 import RoomStatusBadge from './RoomStatusBadge';
 import { ROOM_STATUS } from '../../constants/room.types';
 import styles from './RoomCard.module.css';
 
-/**
- * RoomCard Component - Card de exibiÃ§Ã£o de quarto com dois botÃµes
- */
+// Dicionário direto de traduções (fallback caso o useRooms não traduza)
+const DIRECT_TRANSLATIONS = {
+  description: {
+    'rooms.descriptions.cozy_garden': { pt: 'Quarto aconchegante com vista para o jardim, ideal para casais.', en: 'Cozy room with garden view, ideal for couples.' },
+    'rooms.descriptions.spacious_balcony': { pt: 'Quarto espaçoso com varanda privativa e amenities premium.', en: 'Spacious room with private balcony and premium amenities.' },
+    'rooms.descriptions.deluxe_panoramic': { pt: 'Quarto deluxe com vista panorâmica e acabamentos de luxo.', en: 'Deluxe room with panoramic view and luxury finishes.' }
+  },
+  bedType: {
+    'rooms.beds.queen': { pt: 'Cama de casal queen', en: 'Queen bed' },
+    'rooms.beds.mixed': { pt: '2 camas de solteiro + 1 cama de casal', en: '2 single beds + 1 double bed' },
+    'rooms.beds.three_single': { pt: '3 camas de solteiro', en: '3 single beds' }
+  },
+  typeLabel: {
+    'rooms.types.standard': { pt: 'Standard', en: 'Standard' },
+    'rooms.types.deluxe': { pt: 'Deluxe', en: 'Deluxe' }
+  }
+};
+
 const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
-  // ==========================================================================
-  // STATES
-  // ==========================================================================
-  const [currentImage, setCurrentImage] = useState(room.images.main);
+  const { t, language } = useI18n();
+
+  const [currentImage, setCurrentImage] = useState(room.images?.main || room.images?.[0]);
   const [imageError, setImageError] = useState(false);
   const [showGallery, setShowGallery] = useState(false);
+
+  // ==========================================================================
+  // FUNÇÃO DE TRADUÇÃO FORÇADA
+  // ==========================================================================
+  
+  const translateText = (text) => {
+    if (!text) return '';
+    
+    // Se o texto já é uma chave (começa com 'rooms.')
+    if (typeof text === 'string' && text.startsWith('rooms.')) {
+      // Tentar usar o sistema i18n primeiro
+      const translated = t(text);
+      // Se o sistema i18n retornou a mesma chave (não encontrou), usar dicionário direto
+      if (translated === text) {
+        const category = text.split('.')[1]; // 'descriptions', 'beds', 'types'
+        const key = text;
+        if (DIRECT_TRANSLATIONS[category] && DIRECT_TRANSLATIONS[category][key]) {
+          return DIRECT_TRANSLATIONS[category][key][language] || text;
+        }
+      }
+      return translated;
+    }
+    
+    // Se o texto parece ser uma chave mas não tem 'rooms.' prefixo
+    if (typeof text === 'string' && text.includes('.')) {
+      const translated = t(text);
+      if (translated !== text) return translated;
+    }
+    
+    return text;
+  };
+
+  // Traduzir os campos do quarto
+  const translatedDescription = translateText(room.description || room.descriptionKey);
+  const translatedBedType = translateText(room.bedType || room.bedTypeKey);
+  const translatedTypeLabel = translateText(room.typeLabel || room.typeLabelKey);
+
+  // Traduzir amenities
+  const translatedAmenities = (room.amenities || room.amenitiesKeys || []).map(amenity => {
+    if (typeof amenity === 'string' && amenity.startsWith('rooms.')) {
+      const translated = t(amenity);
+      return translated !== amenity ? translated : amenity.replace('rooms.amenities.', '').replace('_', ' ');
+    }
+    return amenity;
+  });
 
   // ==========================================================================
   // HANDLERS
   // ==========================================================================
 
   const handleSelect = () => {
-    console.log('🟢🟢🟢 handleSelect CLICADO no RoomCard!', room.number);
-    console.log('?? Botão SELECIONAR clicado no RoomCard!');
-    console.log('?? Botão SELECIONAR clicado no RoomCard!');
     if (room.status === ROOM_STATUS.AVAILABLE && onSelect) {
       onSelect(room);
     }
@@ -48,14 +105,17 @@ const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
   // FORMATADORES
   // ==========================================================================
 
-  const formattedPrice = new Intl.NumberFormat('pt-BR', {
+  const formattedPrice = new Intl.NumberFormat(language === 'pt' ? 'pt-BR' : 'en-US', {
     style: 'currency',
-    currency: room.price.currency,
+    currency: room.price?.currency || 'MZN',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(room.price.amount);
+  }).format(room.price?.amount || room.price_per_night || 0);
 
   const isAvailable = room.status === ROOM_STATUS.AVAILABLE;
+
+  const galleryImages = room.images?.gallery || room.images?.slice(1) || [];
+  const mainImage = room.images?.main || room.images?.[0];
 
   // ==========================================================================
   // RENDER
@@ -64,34 +124,31 @@ const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
   return (
     <article
       className={`${styles.card} ${isSelected ? styles.selected : ''}`}
-      aria-labelledby={`room-title-${room.id}`}
       onMouseEnter={() => setShowGallery(true)}
       onMouseLeave={() => setShowGallery(false)}
     >
       <div className={styles.imageContainer}>
-        {/* Imagem Principal */}
         <img
           src={imageError ? '/assets/images/default-room.jpg' : currentImage}
           onError={handleImageError}
-          alt={`Quarto ${room.number}`}
+          alt={`${t('rooms.room')} ${room.number || room.room_number}`}
           className={styles.mainImage}
           loading="lazy"
         />
 
-        {/* Miniaturas da Galeria */}
         {showGallery && (
           <div className={styles.thumbnailStrip}>
             <img
-              src={room.images.main}
-              alt="Principal"
-              className={`${styles.thumbnail} ${currentImage === room.images.main ? styles.activeThumbnail : ''}`}
-              onClick={() => handleImageClick(room.images.main)}
+              src={mainImage}
+              alt={t('rooms.main')}
+              className={`${styles.thumbnail} ${currentImage === mainImage ? styles.activeThumbnail : ''}`}
+              onClick={() => handleImageClick(mainImage)}
             />
-            {room.images.gallery.map((img, index) => (
+            {galleryImages.map((img, index) => (
               <img
                 key={index}
                 src={img}
-                alt={`Foto ${index + 1}`}
+                alt={`${t('rooms.photo')} ${index + 1}`}
                 className={`${styles.thumbnail} ${currentImage === img ? styles.activeThumbnail : ''}`}
                 onClick={() => handleImageClick(img)}
               />
@@ -99,7 +156,6 @@ const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
           </div>
         )}
 
-        {/* Status Badge */}
         <div className={styles.statusContainer}>
           <RoomStatusBadge status={room.status} size="sm" />
         </div>
@@ -108,56 +164,47 @@ const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
       <div className={styles.content}>
         <div className={styles.header}>
           <div className={styles.roomInfo}>
-            <h3 id={`room-title-${room.id}`} className={styles.title}>
-              Quarto {room.number}
+            <h3 className={styles.title}>
+              {t('rooms.room')} {room.number || room.room_number}
             </h3>
-            <p className={styles.roomType}>{room.typeLabel}</p>
+            <p className={styles.roomType}>{translatedTypeLabel}</p>
           </div>
           <div className={styles.price}>
             <span className={styles.priceAmount}>{formattedPrice}</span>
-            <span className={styles.pricePeriod}>/noite</span>
+            <span className={styles.pricePeriod}>{t('rooms.per_night')}</span>
           </div>
         </div>
 
-        <p className={styles.description}>{room.description}</p>
+        <p className={styles.description}>{translatedDescription}</p>
 
         <div className={styles.detailItem}>
           <span className={styles.detailIcon}>👥</span>
-          <span>
-            {room.capacity} {room.capacity === 1 ? 'hóspede' : 'hóspedes'}
-          </span>
+          <span>{room.capacity || 2} {t('rooms.guests')}</span>
         </div>
         <div className={styles.detailItem}>
           <span className={styles.detailIcon}>📏</span>
-          <span>{room.size} m²</span>
+          <span>{room.size || 25} m²</span>
         </div>
         <div className={styles.detailItem}>
           <span className={styles.detailIcon}>🛏️</span>
-          <span>{room.bedType}</span>
+          <span>{translatedBedType}</span>
         </div>
 
         <div className={styles.amenities}>
-          {room.amenities.slice(0, 4).map((amenity, index) => (
+          {translatedAmenities.slice(0, 4).map((amenity, index) => (
             <span key={index} className={styles.amenity}>
               {amenity}
             </span>
           ))}
-          {room.amenities.length > 4 && (
-            <span className={styles.amenityMore}>+{room.amenities.length - 4}</span>
+          {translatedAmenities.length > 4 && (
+            <span className={styles.amenityMore}>+{translatedAmenities.length - 4}</span>
           )}
         </div>
 
-        {/* DOIS BOTÃ•ES: DETALHES E SELECIONAR */}
         <div className={styles.buttonGroup}>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleDetails}
-            className={styles.detailsButton}
-          >
-            Ver Detalhes
+          <Button variant="outline" size="sm" onClick={handleDetails} className={styles.detailsButton}>
+            {t('rooms.details')}
           </Button>
-
           <Button
             variant={isAvailable ? 'primary' : 'secondary'}
             size="sm"
@@ -165,7 +212,7 @@ const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
             disabled={!isAvailable}
             className={styles.selectButton}
           >
-            {isAvailable ? 'Selecionar' : 'IndisponÃ­vel'}
+            {isAvailable ? t('rooms.select') : t('rooms.unavailable')}
           </Button>
         </div>
       </div>
@@ -174,25 +221,7 @@ const RoomCard = ({ room, onSelect, onDetails, isSelected = false }) => {
 };
 
 RoomCard.propTypes = {
-  room: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    number: PropTypes.string.isRequired,
-    typeLabel: PropTypes.string.isRequired,
-    capacity: PropTypes.number.isRequired,
-    price: PropTypes.shape({
-      amount: PropTypes.number.isRequired,
-      currency: PropTypes.string.isRequired,
-    }).isRequired,
-    status: PropTypes.oneOf(['available', 'occupied', 'maintenance']).isRequired,
-    amenities: PropTypes.arrayOf(PropTypes.string).isRequired,
-    images: PropTypes.shape({
-      main: PropTypes.string.isRequired,
-      gallery: PropTypes.arrayOf(PropTypes.string).isRequired,
-    }).isRequired,
-    description: PropTypes.string.isRequired,
-    bedType: PropTypes.string.isRequired,
-    size: PropTypes.number.isRequired,
-  }).isRequired,
+  room: PropTypes.object.isRequired,
   onSelect: PropTypes.func,
   onDetails: PropTypes.func,
   isSelected: PropTypes.bool,

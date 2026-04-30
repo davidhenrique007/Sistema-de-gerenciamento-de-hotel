@@ -1,5 +1,6 @@
 ﻿import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useI18n } from '../../../../contexts/I18nContext'; // ✅ ADICIONADO
 import useRooms from '../../hooks/useRooms';
 import useRoomSelection from '../../hooks/useRoomSelection';
 import RoomGrid from './RoomGrid';
@@ -10,10 +11,15 @@ import styles from './RoomsSection.module.css';
 /**
  * RoomsSection Component - Seção principal de quartos
  */
-const RoomsSection = ({ onSelectRoom, onDetailsRoom, title, subtitle }) => {
+const RoomsSection = ({ onSelectRoom, onDetailsRoom, title: propTitle, subtitle: propSubtitle }) => {
+  const { t } = useI18n(); // ✅ ADICIONADO
   const { rooms, isLoading, error, stats, getAvailableRooms } = useRooms();
   const { selectedRoomId, selectRoom } = useRoomSelection(rooms);
   const [filter, setFilter] = useState('all');
+
+  // Usar props ou traduções
+  const title = propTitle || t('rooms.title');
+  const subtitle = propSubtitle || t('rooms.subtitle');
 
   const handleFilterChange = useCallback((newFilter) => {
     setFilter(newFilter);
@@ -21,8 +27,6 @@ const RoomsSection = ({ onSelectRoom, onDetailsRoom, title, subtitle }) => {
 
   const handleSelectRoom = useCallback(
     (room) => {
-      console.log('?? handleSelectRoom FOI CHAMADO!', room);
-      console.log('?? Quarto selecionado no RoomsSection:', room);
       selectRoom(room);
       if (onSelectRoom) {
         onSelectRoom(room);
@@ -33,7 +37,6 @@ const RoomsSection = ({ onSelectRoom, onDetailsRoom, title, subtitle }) => {
 
   const handleDetailsRoom = useCallback(
     (room) => {
-      console.log('?? Detalhes do quarto:', room);
       if (onDetailsRoom) {
         onDetailsRoom(room);
       }
@@ -53,7 +56,7 @@ const RoomsSection = ({ onSelectRoom, onDetailsRoom, title, subtitle }) => {
         <div className={styles.container}>
           <div className={styles.loadingState}>
             <Spinner size="lg" />
-            <p className={styles.loadingText}>Carregando quartos...</p>
+            <p className={styles.loadingText}>{t('common.loading')}</p>
           </div>
         </div>
       </section>
@@ -67,7 +70,7 @@ const RoomsSection = ({ onSelectRoom, onDetailsRoom, title, subtitle }) => {
           <div className={styles.errorState}>
             <p className={styles.errorText}>{error}</p>
             <Button variant="primary" onClick={handleRetry}>
-              Tentar novamente
+              {t('common.retry')}
             </Button>
           </div>
         </div>
@@ -86,28 +89,29 @@ const RoomsSection = ({ onSelectRoom, onDetailsRoom, title, subtitle }) => {
 
           <div className={styles.stats}>
             <span className={styles.statItem}>
-              <strong>{stats.total}</strong> Tipos de Quartos
+              <strong>{stats.total || rooms?.length || 0}</strong> {t('rooms.room_types')}
             </span>
-            <span className={styles.statItem}>🏨 43 unidades prontas para reserva imediata</span>
+            <span className={styles.statItem}>
+              🏨 {stats.available || rooms?.filter(r => r.status === 'available').length || 0} {t('rooms.available_units')}
+            </span>
 
             <div className={styles.filters}>
               <button
                 className={`${styles.filterButton} ${filter === 'all' ? styles.active : ''}`}
                 onClick={() => handleFilterChange('all')}
               >
-                Todos
+                {t('rooms.all')}
               </button>
               <button
                 className={`${styles.filterButton} ${filter === 'available' ? styles.active : ''}`}
                 onClick={() => handleFilterChange('available')}
               >
-                Disponíveis
+                {t('rooms.available')}
               </button>
             </div>
           </div>
         </div>
 
-        {/* ? CORRIGIDO: APENAS UMA VEZ onSelect e onDetails */}
         <RoomGrid
           rooms={filteredRooms}
           selectedRoomId={selectedRoomId}
@@ -130,8 +134,6 @@ RoomsSection.propTypes = {
 RoomsSection.defaultProps = {
   onSelectRoom: undefined,
   onDetailsRoom: undefined,
-  title: 'Nossos Quartos',
-  subtitle: 'Escolha o quarto perfeito para sua estadia',
 };
 
 export default React.memo(RoomsSection);

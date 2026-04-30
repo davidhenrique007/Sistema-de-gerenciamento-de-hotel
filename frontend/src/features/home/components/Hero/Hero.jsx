@@ -1,13 +1,15 @@
-﻿import React, { memo } from 'react';
+﻿// frontend/src/features/home/components/Hero/Hero.jsx
+import React, { memo } from 'react';
 import PropTypes from 'prop-types';
+import { useI18n } from '../../../../contexts/I18nContext';
 import Button from '../../../../shared/components/ui/Button';
 import HeroBackground from './HeroBackground';
 import styles from './Hero.module.css';
 
 const Hero = ({
-  title = 'Hotel Paradise',
-  subtitle = 'O paraíso perfeito para suas férias dos sonhos',
-  ctaText = 'Reservar Agora',
+  title: propTitle,
+  subtitle: propSubtitle,
+  ctaText: propCtaText,
   backgroundImage = '/assets/images/hero-bg.jpg',
   overlay = true,
   parallax = false,
@@ -15,6 +17,13 @@ const Hero = ({
   onCtaClick,
   className = '',
 }) => {
+  const { t } = useI18n();
+  
+  // Usar prop se fornecida, senão usar tradução
+  const title = propTitle || t('hero.title');
+  const subtitle = propSubtitle || t('hero.subtitle');
+  const ctaText = propCtaText || t('hero.cta');
+  
   const sizeClasses = {
     small: styles.heroSmall,
     medium: styles.heroMedium,
@@ -65,12 +74,6 @@ Hero.propTypes = {
 };
 
 Hero.defaultProps = {
-  title: 'Hotel Paradise',
-  subtitle: 'O paraíso perfeito para suas férias dos sonhos',
-  ctaText: 'Reservar Agora',
-  backgroundImage: '/assets/images/hero-bg.jpg',
-  overlay: true,
-  parallax: false,
   size: 'medium',
   onCtaClick: undefined,
   className: '',

@@ -1,7 +1,8 @@
+// frontend/src/features/home/components/Header/NavMenu.jsx
 import React, { memo } from 'react';
 import { NavLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import navigationLinks from '../../constants/navigation';
+import { useI18n } from '../../../../contexts/I18nContext'; // ✅ ADICIONADO
 import styles from './Header.module.css';
 
 /**
@@ -12,6 +13,18 @@ import styles from './Header.module.css';
  * <NavMenu onLinkClick={handleLinkClick} />
  */
 const NavMenu = ({ onLinkClick, className = '' }) => {
+  const { t } = useI18n(); // ✅ ADICIONADO
+
+  // ==========================================================================
+  // NAVEGAÇÃO COM TRADUÇÃO
+  // ==========================================================================
+
+  const navigationLinks = [
+    { id: 1, path: '/', labelKey: 'nav.home', exact: true },
+    { id: 2, path: '/rooms', labelKey: 'nav.rooms', exact: false },
+    { id: 3, path: '/reservations', labelKey: 'nav.reservations', exact: false },
+  ];
+
   // ==========================================================================
   // HANDLERS
   // ==========================================================================
@@ -27,7 +40,7 @@ const NavMenu = ({ onLinkClick, className = '' }) => {
   // ==========================================================================
 
   return (
-    <nav className={`${styles.navMenu} ${className}`} aria-label="Navegação principal">
+    <nav className={`${styles.navMenu} ${className}`} aria-label={t('nav.main_navigation') || "Navegação principal"}>
       <ul className={styles.navList}>
         {navigationLinks.map((link) => (
           <li key={link.id} className={styles.navItem}>
@@ -40,7 +53,7 @@ const NavMenu = ({ onLinkClick, className = '' }) => {
               end={link.exact}
               aria-current={({ isActive }) => isActive ? 'page' : undefined}
             >
-              {link.label}
+              {t(link.labelKey)} {/* ✅ TRADUZIDO */}
             </NavLink>
           </li>
         ))}

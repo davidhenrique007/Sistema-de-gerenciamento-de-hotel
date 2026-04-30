@@ -1,8 +1,11 @@
+// frontend/src/features/home/components/Header/Header.jsx
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useI18n } from '../../../../contexts/I18nContext'; // ✅ ADICIONADO
 import Logo from './Logo';
 import NavMenu from './NavMenu';
 import MobileMenu from './MobileMenu';
+import LanguageSelector from '../../../../shared/components/LanguageSelector'; // ✅ ADICIONADO
 import styles from './Header.module.css';
 
 /**
@@ -24,6 +27,7 @@ const Header = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { language, t } = useI18n(); // ✅ ADICIONADO
 
   // ==========================================================================
   // DETECTAR SCROLL
@@ -96,18 +100,30 @@ const Header = ({
         {/* Desktop Navigation */}
         {!isMobile && <NavMenu onLinkClick={handleLinkClick} />}
 
+        {/* Desktop Language Selector */}
+        {!isMobile && (
+          <div className={styles.languageSelector}>
+            <LanguageSelector />
+          </div>
+        )}
+
         {/* Mobile Controls */}
         {isMobile && (
           <>
-            <button
-              className={`${styles.menuToggle} ${isMobileMenuOpen ? styles.open : ''}`}
-              onClick={handleMobileMenuToggle}
-              aria-label={isMobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
-              aria-expanded={isMobileMenuOpen}
-              type="button"
-            >
-              <span className={styles.hamburgerIcon} />
-            </button>
+            <div className={styles.mobileControls}>
+              <div className={styles.mobileLanguageSelector}>
+                <LanguageSelector />
+              </div>
+              <button
+                className={`${styles.menuToggle} ${isMobileMenuOpen ? styles.open : ''}`}
+                onClick={handleMobileMenuToggle}
+                aria-label={isMobileMenuOpen ? t('common.close_menu') || 'Fechar menu' : t('common.open_menu') || 'Abrir menu'}
+                aria-expanded={isMobileMenuOpen}
+                type="button"
+              >
+                <span className={styles.hamburgerIcon} />
+              </button>
+            </div>
 
             <MobileMenu
               isOpen={isMobileMenuOpen}

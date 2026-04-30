@@ -1,6 +1,7 @@
-import React, { memo } from 'react';
+﻿import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { useI18n } from '../../../../contexts/I18nContext';
 import styles from './Footer.module.css';
 
 /**
@@ -11,6 +12,8 @@ const Footer = ({
   year = new Date().getFullYear(),
   className = '',
 }) => {
+  const { t } = useI18n();
+
   return (
     <footer className={`${styles.footer} ${className}`}>
       <div className={styles.container}>
@@ -22,8 +25,7 @@ const Footer = ({
           <div className={styles.column}>
             <h3 className={styles.columnTitle}>{companyName}</h3>
             <p className={styles.aboutText}>
-              O paraíso perfeito para suas férias dos sonhos, com conforto, 
-              luxo e atendimento personalizado em um ambiente exclusivo à beira-mar.
+              {t('footer.description')}
             </p>
             <div className={styles.socialLinks}>
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className={styles.socialLink} aria-label="Instagram">
@@ -43,29 +45,29 @@ const Footer = ({
 
           {/* Coluna 2: Links da empresa */}
           <div className={styles.column}>
-            <h4 className={styles.columnTitle}>Empresa</h4>
+            <h4 className={styles.columnTitle}>{t('footer.company')}</h4>
             <ul className={styles.linkList}>
-              <li><Link to="/about" className={styles.link}>Sobre nós</Link></li>
-              <li><Link to="/careers" className={styles.link}>Carreiras</Link></li>
-              <li><Link to="/blog" className={styles.link}>Blog</Link></li>
-              <li><Link to="/press" className={styles.link}>Imprensa</Link></li>
+              <li><Link to="/about" className={styles.link}>{t('footer.about')}</Link></li>
+              <li><Link to="/careers" className={styles.link}>{t('footer.careers')}</Link></li>
+              <li><Link to="/blog" className={styles.link}>{t('footer.blog')}</Link></li>
+              <li><Link to="/press" className={styles.link}>{t('footer.press')}</Link></li>
             </ul>
           </div>
 
           {/* Coluna 3: Suporte */}
           <div className={styles.column}>
-            <h4 className={styles.columnTitle}>Suporte</h4>
+            <h4 className={styles.columnTitle}>{t('footer.support')}</h4>
             <ul className={styles.linkList}>
-              <li><Link to="/help" className={styles.link}>Central de ajuda</Link></li>
-              <li><Link to="/faq" className={styles.link}>FAQ</Link></li>
-              <li><Link to="/terms" className={styles.link}>Termos de uso</Link></li>
-              <li><Link to="/privacy" className={styles.link}>Privacidade</Link></li>
+              <li><Link to="/help" className={styles.link}>{t('footer.help')}</Link></li>
+              <li><Link to="/faq" className={styles.link}>{t('footer.faq')}</Link></li>
+              <li><Link to="/terms" className={styles.link}>{t('footer.terms')}</Link></li>
+              <li><Link to="/privacy" className={styles.link}>{t('footer.privacy')}</Link></li>
             </ul>
           </div>
 
           {/* Coluna 4: Contato */}
           <div className={styles.column}>
-            <h4 className={styles.columnTitle}>Contato</h4>
+            <h4 className={styles.columnTitle}>{t('footer.contact')}</h4>
             <ul className={styles.contactList}>
               <li className={styles.contactItem}>
                 <span className={styles.contactIcon}>📞</span>
@@ -88,12 +90,12 @@ const Footer = ({
         {/* Linha de copyright */}
         <div className={styles.copyrightRow}>
           <p className={styles.copyright}>
-            &copy; {year} {companyName}. Todos os direitos reservados.
+            &copy; {year} {companyName}. {t('footer.rights')}
           </p>
           <div className={styles.legalLinks}>
-            <Link to="/privacy" className={styles.legalLink}>Política de Privacidade</Link>
+            <Link to="/privacy" className={styles.legalLink}>{t('footer.privacy')}</Link>
             <span className={styles.separator}>/</span>
-            <Link to="/terms" className={styles.legalLink}>Termos de Uso</Link>
+            <Link to="/terms" className={styles.legalLink}>{t('footer.terms')}</Link>
           </div>
         </div>
 
