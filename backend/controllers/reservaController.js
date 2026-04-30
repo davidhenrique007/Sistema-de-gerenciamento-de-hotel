@@ -1,9 +1,9 @@
-Ôªø// backend/controllers/reservaController.js
+// backend/controllers/reservaController.js
 const pool = require('../config/database');
 
-// Cat√°logo de servi√ßos ‚Äî fonte √∫nica de verdade (igual ao frontend ServicosAdicionais.jsx)
+// Cat·logo de serviÁos ó fonte ˙nica de verdade (igual ao frontend ServicosAdicionais.jsx)
 const SERVICOS_CATALOGO = {
-  cafe_manha: { nome: 'Caf√© da manh√£', preco: 300, tipo: 'por_noite' },
+  cafe_manha: { nome: 'CafÈ da manh„', preco: 300, tipo: 'por_noite' },
   spa: { nome: 'Spa & Bem-estar', preco: 2000, tipo: 'por_noite' },
   piscina: { nome: 'Piscina aquecida', preco: 1000, tipo: 'por_noite' },
   academia: { nome: 'Academia moderna', preco: 1500, tipo: 'por_noite' },
@@ -11,7 +11,7 @@ const SERVICOS_CATALOGO = {
   wifi_premium: { nome: 'Wi-Fi Premium', preco: 500, tipo: 'por_noite' },
 };
 
-// Fun√ß√£o auxiliar para formatar moeda (uso interno) - DEFINIDA ANTES DE SER USADA
+// FunÁ„o auxiliar para formatar moeda (uso interno) - DEFINIDA ANTES DE SER USADA
 function formatarMoeda(valor) {
   return new Intl.NumberFormat('pt-MZ', {
     style: 'currency',
@@ -24,7 +24,7 @@ function formatarMoeda(valor) {
 class ReservaController {
 
   // =====================================================
-  // CRIAR RESERVA (com m√∫ltiplos quartos e servi√ßos)
+  // CRIAR RESERVA (com m˙ltiplos quartos e serviÁos)
   // =====================================================
   async criarReserva(req, res) {
     const {
@@ -46,13 +46,13 @@ class ReservaController {
     const dataCheckIn = check_in || checkIn;
     const dataCheckOut = check_out || checkOut;
 
-    console.log('üìù Criando reserva:', { roomIds, dataCheckIn, dataCheckOut, guest_name, payment_method });
-    console.log('üõéÔ∏è  Servi√ßos:', servicos);
+    console.log('?? Criando reserva:', { roomIds, dataCheckIn, dataCheckOut, guest_name, payment_method });
+    console.log('???  ServiÁos:', servicos);
 
     if (roomIds.length === 0 || !dataCheckIn || !dataCheckOut) {
       return res.status(400).json({
         error: true,
-        message: 'Campos obrigat√≥rios: room_id (ou room_ids), check_in, check_out'
+        message: 'Campos obrigatÛrios: room_id (ou room_ids), check_in, check_out'
       });
     }
 
@@ -69,7 +69,7 @@ class ReservaController {
 
       if (quartosResult.rows.length !== roomIds.length) {
         await client.query('ROLLBACK');
-        return res.status(404).json({ error: true, message: 'Um ou mais quartos n√£o encontrados' });
+        return res.status(404).json({ error: true, message: 'Um ou mais quartos n„o encontrados' });
       }
 
       const quartoOcupado = quartosResult.rows.find(q => q.status !== 'available');
@@ -77,7 +77,7 @@ class ReservaController {
         await client.query('ROLLBACK');
         return res.status(409).json({
           error: true,
-          message: `Quarto ${quartoOcupado.room_number} j√° est√° ocupado. Selecione outro.`
+          message: `Quarto ${quartoOcupado.room_number} j· est· ocupado. Selecione outro.`
         });
       }
 
@@ -134,7 +134,7 @@ class ReservaController {
       const taxAmount = parseFloat((basePrice * 0.05).toFixed(2));
       const totalPrice = parseFloat((basePrice + taxAmount).toFixed(2));
 
-      console.log(`üí∞ Quartos: ${totalQuartos} | Servi√ßos: ${totalServicos} | Base: ${basePrice} | Taxa: ${taxAmount} | TOTAL: ${totalPrice}`);
+      console.log(`?? Quartos: ${totalQuartos} | ServiÁos: ${totalServicos} | Base: ${basePrice} | Taxa: ${taxAmount} | TOTAL: ${totalPrice}`);
 
       const novaReserva = await client.query(`
         INSERT INTO reservations (
@@ -178,7 +178,7 @@ class ReservaController {
 
       await client.query('COMMIT');
 
-      console.log(`‚úÖ ${reserva.reservation_code} | ${roomIds.length} quarto(s) | ${servicosParaGuardar.length} servi√ßo(s) | ${totalPrice} MTn`);
+      console.log(`? ${reserva.reservation_code} | ${roomIds.length} quarto(s) | ${servicosParaGuardar.length} serviÁo(s) | ${totalPrice} MTn`);
 
       return res.status(201).json({
         success: true,
@@ -198,7 +198,7 @@ class ReservaController {
 
     } catch (error) {
       await client.query('ROLLBACK');
-      console.error('‚ùå Erro ao criar reserva:', error.message);
+      console.error('? Erro ao criar reserva:', error.message);
       return res.status(500).json({
         error: true,
         message: 'Erro interno ao processar reserva',
@@ -210,7 +210,7 @@ class ReservaController {
   }
 
   // =====================================================
-  // BUSCAR RESERVA POR ID OU C√ìDIGO
+  // BUSCAR RESERVA POR ID OU C”DIGO
   // =====================================================
   async buscarReserva(req, res) {
     try {
@@ -226,7 +226,7 @@ class ReservaController {
       `, [id]);
 
       if (result.rows.length === 0) {
-        return res.status(404).json({ error: true, message: 'Reserva n√£o encontrada' });
+        return res.status(404).json({ error: true, message: 'Reserva n„o encontrada' });
       }
 
       const reserva = result.rows[0];
@@ -254,7 +254,7 @@ class ReservaController {
     try {
       const { clienteId } = req.params;
 
-      console.log(`üîç Buscando reservas para o cliente: ${clienteId}`);
+      console.log(`?? Buscando reservas para o cliente: ${clienteId}`);
 
       const reservas = await pool.query(`
         SELECT 
@@ -281,7 +281,7 @@ class ReservaController {
         ORDER BY r.created_at DESC
       `, [clienteId]);
 
-      console.log(`‚úÖ Encontradas ${reservas.rows.length} reservas para o cliente`);
+      console.log(`? Encontradas ${reservas.rows.length} reservas para o cliente`);
 
       for (let reserva of reservas.rows) {
         const servicos = await pool.query(`
@@ -299,7 +299,7 @@ class ReservaController {
         total: reservas.rows.length
       });
     } catch (error) {
-      console.error('‚ùå Erro ao listar reservas do cliente:', error);
+      console.error('? Erro ao listar reservas do cliente:', error);
       res.status(500).json({
         error: true,
         message: 'Erro ao listar reservas',
@@ -318,14 +318,14 @@ class ReservaController {
     try {
       console.log(`Cancelando reserva: ${id}`);
 
-      // Buscar a reserva pelo c√≥digo ou ID
+      // Buscar a reserva pelo cÛdigo ou ID
       const reserva = await pool.query(
         "SELECT * FROM reservations WHERE reservation_code = $1 OR id::text = $1",
         [id]
       );
 
       if (reserva.rows.length === 0) {
-        return res.status(404).json({ success: false, message: 'Reserva n√£o encontrada' });
+        return res.status(404).json({ success: false, message: 'Reserva n„o encontrada' });
       }
 
       const reservaData = reserva.rows[0];
@@ -342,7 +342,7 @@ class ReservaController {
         [reservaData.room_id]
       );
 
-      console.log(`‚úÖ Reserva ${reservaData.reservation_code} cancelada`);
+      console.log(`? Reserva ${reservaData.reservation_code} cancelada`);
 
       res.json({
         success: true,
@@ -357,14 +357,14 @@ class ReservaController {
   }
 
   // =====================================================
-  // ALTERAR RESERVA - VERS√ÉO DEFINITIVA COM CAST CORRETO
+  // ALTERAR RESERVA - VERS√O DEFINITIVA COM CAST CORRETO
   // =====================================================
   async alterarReserva(req, res) {
     const { id } = req.params;
     const { room_id, total_price, check_in, check_out } = req.body;
 
     try {
-      console.log('üìù Alterando reserva:', { id, room_id, total_price, check_in, check_out });
+      console.log('?? Alterando reserva:', { id, room_id, total_price, check_in, check_out });
 
       // 1. Buscar a reserva atual - usando id::text para evitar erro de tipo
       const reservaQuery = await pool.query(
@@ -378,7 +378,7 @@ class ReservaController {
       if (reservaQuery.rows.length === 0) {
         return res.status(404).json({
           success: false,
-          message: 'Reserva n√£o encontrada'
+          message: 'Reserva n„o encontrada'
         });
       }
 
@@ -386,9 +386,9 @@ class ReservaController {
 
       // 2. Se for troca de quarto
       if (room_id && room_id !== reserva.room_id) {
-        console.log(`üîÑ Trocando quarto: ${reserva.room_id} ‚Üí ${room_id}`);
+        console.log(`?? Trocando quarto: ${reserva.room_id} ? ${room_id}`);
 
-        // 2.1 Verificar se o novo quarto existe e est√° dispon√≠vel - usando id::text
+        // 2.1 Verificar se o novo quarto existe e est· disponÌvel - usando id::text
         const novoQuartoQuery = await pool.query(
           `SELECT id, room_number, type, price_per_night, status 
            FROM rooms 
@@ -399,7 +399,7 @@ class ReservaController {
         if (novoQuartoQuery.rows.length === 0) {
           return res.status(404).json({
             success: false,
-            message: 'Quarto n√£o encontrado'
+            message: 'Quarto n„o encontrado'
           });
         }
 
@@ -408,7 +408,7 @@ class ReservaController {
         if (novoQuarto.status !== 'available') {
           return res.status(409).json({
             success: false,
-            message: `Quarto ${novoQuarto.room_number} n√£o est√° dispon√≠vel no momento`
+            message: `Quarto ${novoQuarto.room_number} n„o est· disponÌvel no momento`
           });
         }
 
@@ -417,7 +417,7 @@ class ReservaController {
         const novoValorBase = parseFloat(novoQuarto.price_per_night) * noites * reserva.rooms_count;
         const novoValorTotal = (novoValorBase * 1.05).toFixed(2);
 
-        // 2.3 Iniciar transa√ß√£o
+        // 2.3 Iniciar transaÁ„o
         await pool.query('BEGIN');
 
         // 2.4 Liberar o quarto antigo
@@ -450,8 +450,8 @@ class ReservaController {
 
         await pool.query('COMMIT');
 
-        console.log(`‚úÖ Quarto alterado: ${reserva.room_number} ‚Üí ${novoQuarto.room_number}`);
-        console.log(`üí∞ Valor antigo: ${reserva.total_price} ‚Üí Novo: ${valorFinal}`);
+        console.log(`? Quarto alterado: ${reserva.room_number} ? ${novoQuarto.room_number}`);
+        console.log(`?? Valor antigo: ${reserva.total_price} ? Novo: ${valorFinal}`);
 
         return res.json({
           success: true,
@@ -465,9 +465,9 @@ class ReservaController {
         });
       }
 
-      // 3. Se for altera√ß√£o de datas
+      // 3. Se for alteraÁ„o de datas
       if (check_in && check_out) {
-        console.log(`üìÖ Alterando datas: ${reserva.check_in} ‚Üí ${check_in} at√© ${check_out}`);
+        console.log(`?? Alterando datas: ${reserva.check_in} ? ${check_in} atÈ ${check_out}`);
 
         // 3.1 Verificar disponibilidade
         const conflitoQuery = await pool.query(
@@ -484,7 +484,7 @@ class ReservaController {
         if (conflitoQuery.rows.length > 0) {
           return res.status(409).json({
             success: false,
-            message: 'Quarto n√£o dispon√≠vel para as novas datas'
+            message: 'Quarto n„o disponÌvel para as novas datas'
           });
         }
 
@@ -507,8 +507,8 @@ class ReservaController {
           [check_in, check_out, novoTotal, reserva.id]
         );
 
-        console.log(`‚úÖ Datas alteradas: ${noitesAtuais} noites ‚Üí ${noitesNovas} noites`);
-        console.log(`üí∞ Novo valor: ${novoTotal}`);
+        console.log(`? Datas alteradas: ${noitesAtuais} noites ? ${noitesNovas} noites`);
+        console.log(`?? Novo valor: ${novoTotal}`);
 
         return res.json({
           success: true,
@@ -524,15 +524,15 @@ class ReservaController {
 
       return res.status(400).json({
         success: false,
-        message: 'Nenhuma altera√ß√£o solicitada'
+        message: 'Nenhuma alteraÁ„o solicitada'
       });
 
     } catch (error) {
       await pool.query('ROLLBACK').catch(() => { });
-      console.error('‚ùå Erro ao alterar reserva:', error);
+      console.error('? Erro ao alterar reserva:', error);
       return res.status(500).json({
         success: false,
-        message: 'Erro interno ao processar altera√ß√£o',
+        message: 'Erro interno ao processar alteraÁ„o',
         error: error.message
       });
     }
@@ -545,7 +545,7 @@ class ReservaController {
     const { id } = req.params;
 
     try {
-      console.log(`üîç Buscando reserva para reenviar recibo: ${id}`);
+      console.log(`?? Buscando reserva para reenviar recibo: ${id}`);
 
       const reserva = await pool.query(`
         SELECT r.*, 
@@ -562,7 +562,7 @@ class ReservaController {
       `, [id]);
 
       if (reserva.rows.length === 0) {
-        return res.status(404).json({ success: false, message: 'Reserva n√£o encontrada' });
+        return res.status(404).json({ success: false, message: 'Reserva n„o encontrada' });
       }
 
       const reservaData = reserva.rows[0];
@@ -575,7 +575,7 @@ class ReservaController {
 
       reservaData.servicos = servicos.rows;
 
-      console.log(`‚úÖ Recibo preparado para ${reservaData.reservation_code}`);
+      console.log(`? Recibo preparado para ${reservaData.reservation_code}`);
 
       res.json({
         success: true,
@@ -584,13 +584,13 @@ class ReservaController {
       });
 
     } catch (error) {
-      console.error('‚ùå Erro ao reenviar recibo:', error);
+      console.error('? Erro ao reenviar recibo:', error);
       res.status(500).json({ success: false, message: 'Erro ao reenviar recibo' });
     }
   }
 
   // =====================================================
-  // BUSCAR QUARTOS DISPON√çVEIS
+  // BUSCAR QUARTOS DISPONÕVEIS
   // =====================================================
   async buscarQuartosDisponiveis(req, res) {
     try {
@@ -603,7 +603,7 @@ class ReservaController {
       res.json({ success: true, data: result.rows, total: result.rows.length });
     } catch (error) {
       console.error('Erro ao buscar quartos:', error);
-      res.status(500).json({ error: true, message: 'Erro ao buscar quartos dispon√≠veis' });
+      res.status(500).json({ error: true, message: 'Erro ao buscar quartos disponÌveis' });
     }
   }
 
@@ -623,7 +623,7 @@ class ReservaController {
       `, [id, payment_method || 'mpesa']);
 
       if (result.rows.length === 0) {
-        return res.status(404).json({ error: true, message: 'Reserva n√£o encontrada' });
+        return res.status(404).json({ error: true, message: 'Reserva n„o encontrada' });
       }
 
       return res.json({ success: true, message: 'Pagamento confirmado', data: result.rows[0] });

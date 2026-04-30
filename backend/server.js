@@ -24,7 +24,7 @@ const { globalLimiter, authLimiter, reservaLimiter, checkBlockedIP } = require('
 const { sanitizeInput, validateDataTypes, securityHeaders } = require('./middlewares/sanitize');
 const { verificarToken, verificarRole } = require('./middlewares/auth');
 const { performanceLogger } = require('./middlewares/performanceLogger');
-const auditLogger = require('./middlewares/auditLogger');
+// const auditLogger = require('./middlewares/auditLogger'); // Desativado
 
 // ==================== APLICAR MIDDLEWARES ====================
 
@@ -46,7 +46,7 @@ app.use(validateDataTypes);
 app.use(performanceLogger);
 
 // Middleware de auditoria
-app.use(auditLogger);
+// // app.use(auditLogger); // Desativado // Desativado temporariamente
 
 // Rate limiting específico para auth
 app.use('/api/auth/login', authLimiter);
