@@ -12,13 +12,13 @@
 }
 
 .modal {
-    background: white;
+    background: rgb(255, 255, 255);
     border-radius: 20px;
     width: 90%;
     max-width: 500px;
     max-height: 90vh;
     overflow: auto;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 40px 70px rgba(24, 41, 73, 0.981);
 }
 
 .modalHeader {
@@ -26,14 +26,14 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px 24px;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid #143f69;
 }
 
 .modalHeader h2 {
     margin: 0;
     font-size: 20px;
     font-weight: 600;
-    color: #2c3e50;
+    color: #502c2c;
 }
 
 .closeButton {
@@ -118,7 +118,7 @@
     justify-content: flex-end;
     gap: 12px;
     padding: 16px 24px;
-    border-top: 1px solid #e9ecef;
+    border-top: 1px solid #e9280b;
 }
 
 .cancelButton {
