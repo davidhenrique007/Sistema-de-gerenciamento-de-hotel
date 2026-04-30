@@ -1,120 +1,56 @@
-import React, { forwardRef, memo } from 'react';
+﻿import React, { memo } from 'react';
 import PropTypes from 'prop-types';
+import { useI18n } from '../../../../contexts/I18nContext';
 import styles from './Button.module.css';
 
-/**
- * Button Component - Base do Design System Corporativo
- * 
- * @component
- * @example
- * <Button variant="primary" size="lg" onClick={handleClick}>
- *   Reservar Agora
- * </Button>
- */
-const Button = forwardRef(({
-  children,
-  variant = 'primary',
-  size = 'md',
-  type = 'button',
+const Button = ({ 
+  children, 
+  translateKey,
+  variant = 'primary', 
+  size = 'md', 
+  onClick, 
   disabled = false,
-  onClick,
-  fullWidth = false,
-  loading = false,
+  type = 'button',
   className = '',
-  ariaLabel,
-  ...props
-}, ref) => {
-  // ==========================================================================
-  // CLASSES CONDICIONAIS
-  // ==========================================================================
+  ...props 
+}) => {
+  const { t } = useI18n();
   
-  const buttonClasses = [
-    styles.button,
-    styles[variant],
-    styles[size],
-    fullWidth && styles.fullWidth,
-    loading && styles.loading,
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  // ==========================================================================
-  // HANDLERS
-  // ==========================================================================
-
-  const handleClick = (event) => {
-    if (disabled || loading) {
-      event.preventDefault();
-      return;
-    }
-    onClick?.(event);
-  };
-
-  // ==========================================================================
-  // RENDER
-  // ==========================================================================
-
+  const text = translateKey ? t(translateKey) : children;
+  
   return (
     <button
-      ref={ref}
       type={type}
-      className={buttonClasses}
-      onClick={handleClick}
-      disabled={disabled || loading}
-      aria-disabled={disabled || loading}
-      aria-busy={loading}
-      aria-label={ariaLabel}
+      className={`${styles.button} ${styles[variant]} ${styles[size]} ${className}`}
+      onClick={onClick}
+      disabled={disabled}
       {...props}
     >
-      {loading ? (
-        <span className={styles.loadingContent}>
-          <span className={styles.spinner} aria-hidden="true" />
-          <span>{children}</span>
-        </span>
-      ) : (
-        children
-      )}
+      {text}
     </button>
   );
-});
-
-Button.displayName = 'Button';
+};
 
 Button.propTypes = {
-  /** Conteúdo do botão */
-  children: PropTypes.node.isRequired,
-  /** Variante visual */
-  variant: PropTypes.oneOf(['primary', 'secondary', 'outline']),
-  /** Tamanho do botão */
+  children: PropTypes.node,
+  translateKey: PropTypes.string,
+  variant: PropTypes.oneOf(['primary', 'secondary', 'outline', 'danger', 'success']),
   size: PropTypes.oneOf(['sm', 'md', 'lg']),
-  /** Tipo HTML do botão */
-  type: PropTypes.oneOf(['button', 'submit', 'reset']),
-  /** Estado desabilitado */
-  disabled: PropTypes.bool,
-  /** Função de clique */
   onClick: PropTypes.func,
-  /** Ocupa 100% da largura do container */
-  fullWidth: PropTypes.bool,
-  /** Estado de carregamento */
-  loading: PropTypes.bool,
-  /** Classes CSS adicionais */
+  disabled: PropTypes.bool,
+  type: PropTypes.oneOf(['button', 'submit', 'reset']),
   className: PropTypes.string,
-  /** Label acessível (quando sem texto visível) */
-  ariaLabel: PropTypes.string,
 };
 
 Button.defaultProps = {
+  children: null,
+  translateKey: undefined,
   variant: 'primary',
   size: 'md',
-  type: 'button',
-  disabled: false,
-  fullWidth: false,
-  loading: false,
-  className: '',
-  ariaLabel: undefined,
   onClick: undefined,
+  disabled: false,
+  type: 'button',
+  className: '',
 };
 
-// Memo para evitar re-renderizações desnecessárias
 export default memo(Button);

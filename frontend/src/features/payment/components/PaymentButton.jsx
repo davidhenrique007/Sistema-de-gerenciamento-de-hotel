@@ -5,7 +5,8 @@
 // Arquitetura: Componente puramente presentacional, sem lógica de negócio
 // ============================================
 
-import React, { memo } from 'react';
+import React
+import { useI18n } from '../../../contexts/I18nContext';, { memo } from 'react';
 import styles from './PaymentButton.module.css';
 
 // ============================================
