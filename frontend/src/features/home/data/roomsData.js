@@ -1,10 +1,7 @@
-﻿
-/**
- * Dados mockados dos quartos - VERSÃO COM 6 QUARTOS
+﻿/**
+ * Dados mockados dos quartos - VERSÃO COM SUPORTE A i18n
  * 
- * Distribuição:
- * - 2 quartos Deluxe
- * - 4 quartos de outros tipos (Standard, Executivo, Família, Presidencial)
+ * As descrições agora usam KEYS de tradução em vez de texto fixo
  */
 
 export const roomsData = [
@@ -12,14 +9,14 @@ export const roomsData = [
     id: 'room-001',
     number: '01',
     type: 'standard',
-    typeLabel: 'Standard',
+    typeLabelKey: 'rooms.types.standard',
     capacity: 2,
     price: {
       amount: 3000,
       currency: 'MZN',
     },
     status: 'available',
-    amenities: ['Wi-Fi', 'TV', 'Ar condicionado', 'Frigobar'],
+    amenitiesKeys: ['rooms.amenities.wifi', 'rooms.amenities.tv', 'rooms.amenities.ac', 'rooms.amenities.minibar'],
     images: {
       main: '/assets/images/rooms/standard/main.jpg',
       gallery: [
@@ -28,8 +25,8 @@ export const roomsData = [
         '/assets/images/rooms/standard/3.jpg',
       ]
     },
-    description: 'Quarto aconchegante com vista para o jardim, ideal para casais.',
-    bedType: 'Cama de casal queen',
+    descriptionKey: 'rooms.descriptions.cozy_garden',
+    bedTypeKey: 'rooms.beds.queen',
     size: 25,
     floor: 1,
   },
@@ -37,14 +34,14 @@ export const roomsData = [
     id: 'room-002',
     number: '15',
     type: 'deluxe',
-    typeLabel: 'Deluxe',
+    typeLabelKey: 'rooms.types.deluxe',
     capacity: 3,
     price: {
       amount: 4000,
       currency: 'MZN',
     },
     status: 'available',
-    amenities: ['Wi-Fi', 'TV', 'Ar condicionado', 'Frigobar', 'Cofre', 'Varanda'],
+    amenitiesKeys: ['rooms.amenities.wifi', 'rooms.amenities.tv', 'rooms.amenities.ac', 'rooms.amenities.minibar', 'rooms.amenities.safe', 'rooms.amenities.balcony'],
     images: {
       main: '/assets/images/rooms/deluxe/main.jpg',
       gallery: [
@@ -53,8 +50,8 @@ export const roomsData = [
         '/assets/images/rooms/deluxe/3.jpg',
       ]
     },
-    description: 'Quarto espaçoso com varanda privativa e amenities premium.',
-    bedType: '2 camas de solteiro + 1 cama de casal',
+    descriptionKey: 'rooms.descriptions.spacious_balcony',
+    bedTypeKey: 'rooms.beds.mixed',
     size: 35,
     floor: 2,
   },
@@ -62,14 +59,14 @@ export const roomsData = [
     id: 'room-003',
     number: '25',
     type: 'deluxe',
-    typeLabel: 'Deluxe',
+    typeLabelKey: 'rooms.types.deluxe',
     capacity: 3,
     price: {
       amount: 4000,
       currency: 'MZN',
     },
     status: 'available',
-    amenities: ['Wi-Fi', 'TV', 'Ar condicionado', 'Frigobar', 'Cofre', 'Varanda'],
+    amenitiesKeys: ['rooms.amenities.wifi', 'rooms.amenities.tv', 'rooms.amenities.ac', 'rooms.amenities.minibar', 'rooms.amenities.safe', 'rooms.amenities.balcony'],
     images: {
       main: '/assets/images/rooms/deluxe/main.jpg',
       gallery: [
@@ -78,8 +75,8 @@ export const roomsData = [
         '/assets/images/rooms/deluxe/3.jpg',
       ]
     },
-    description: 'Quarto deluxe com vista panorâmica e acabamentos de luxo.',
-    bedType: '3 camas de solteiro',
+    descriptionKey: 'rooms.descriptions.deluxe_panoramic',
+    bedTypeKey: 'rooms.beds.three_single',
     size: 35,
     floor: 2,
   },
@@ -87,14 +84,14 @@ export const roomsData = [
     id: 'room-004',
     number: '35',
     type: 'executive',
-    typeLabel: 'Executivo',
+    typeLabelKey: 'rooms.types.executive',
     capacity: 4,
     price: {
       amount: 5000,
       currency: 'MZN',
     },
     status: 'available',
-    amenities: ['Wi-Fi', 'TV', 'Ar condicionado', 'Frigobar', 'Cofre', 'Varanda', 'Mesa de trabalho'],
+    amenitiesKeys: ['rooms.amenities.wifi', 'rooms.amenities.tv', 'rooms.amenities.ac', 'rooms.amenities.minibar', 'rooms.amenities.safe', 'rooms.amenities.balcony', 'rooms.amenities.desk'],
     images: {
       main: '/assets/images/rooms/executive/main.jpg',
       gallery: [
@@ -103,8 +100,8 @@ export const roomsData = [
         '/assets/images/rooms/executive/3.jpg',
       ]
     },
-    description: 'Quarto executivo com área de trabalho e amenities VIP.',
-    bedType: '2 camas de casal',
+    descriptionKey: 'rooms.descriptions.executive',
+    bedTypeKey: 'rooms.beds.two_queen',
     size: 45,
     floor: 3,
   },
@@ -112,14 +109,14 @@ export const roomsData = [
     id: 'room-005',
     number: '40',
     type: 'family',
-    typeLabel: 'Família',
+    typeLabelKey: 'rooms.types.family',
     capacity: 5,
     price: {
       amount: 7000,
       currency: 'MZN',
     },
     status: 'available',
-    amenities: ['Wi-Fi', 'TV', 'Ar condicionado', 'Frigobar', 'Cofre', 'Varanda', 'Vista mar', 'Banheira'],
+    amenitiesKeys: ['rooms.amenities.wifi', 'rooms.amenities.tv', 'rooms.amenities.ac', 'rooms.amenities.minibar', 'rooms.amenities.safe', 'rooms.amenities.balcony', 'rooms.amenities.sea_view', 'rooms.amenities.bathtub'],
     images: {
       main: '/assets/images/rooms/family/main.jpg',
       gallery: [
@@ -128,8 +125,8 @@ export const roomsData = [
         '/assets/images/rooms/family/3.jpg',
       ]
     },
-    description: 'Quarto familiar com espaço para todos, perfeito para férias em família.',
-    bedType: '2 camas de casal + 1 cama de solteiro',
+    descriptionKey: 'rooms.descriptions.family',
+    bedTypeKey: 'rooms.beds.family',
     size: 60,
     floor: 4,
   },
@@ -137,14 +134,14 @@ export const roomsData = [
     id: 'room-006',
     number: '43',
     type: 'presidential',
-    typeLabel: 'Presidencial',
+    typeLabelKey: 'rooms.types.presidential',
     capacity: 6,
     price: {
       amount: 12000,
       currency: 'MZN',
     },
     status: 'available',
-    amenities: ['Wi-Fi', 'TV', 'Ar condicionado', 'Frigobar', 'Cofre', 'Varanda', 'Vista mar', 'Jacuzzi', 'Sala de estar'],
+    amenitiesKeys: ['rooms.amenities.wifi', 'rooms.amenities.tv', 'rooms.amenities.ac', 'rooms.amenities.minibar', 'rooms.amenities.safe', 'rooms.amenities.balcony', 'rooms.amenities.sea_view', 'rooms.amenities.jacuzzi', 'rooms.amenities.living_room'],
     images: {
       main: '/assets/images/rooms/presidential/main.jpg',
       gallery: [
@@ -153,8 +150,8 @@ export const roomsData = [
         '/assets/images/rooms/presidential/3.jpg',
       ]
     },
-    description: 'A suíte presidencial oferece o máximo em luxo e conforto.',
-    bedType: '2 camas de casal king + sala de estar',
+    descriptionKey: 'rooms.descriptions.presidential',
+    bedTypeKey: 'rooms.beds.presidential',
     size: 100,
     floor: 5,
   },

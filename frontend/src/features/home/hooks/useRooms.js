@@ -1,21 +1,41 @@
 ﻿import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useI18n } from '../../../contexts/I18nContext';
 import { roomsData } from '../data/roomsData';
 import { ROOM_STATUS } from '../constants/room.types';
 
 const useRooms = () => {
+  const { t } = useI18n();
   const [rooms, setRooms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Função para traduzir um quarto
+  const translateRoom = useCallback((room) => {
+    return {
+      ...room,
+      typeLabel: t(room.typeLabelKey),
+      description: t(room.descriptionKey),
+      bedType: t(room.bedTypeKey),
+      amenities: room.amenitiesKeys ? room.amenitiesKeys.map(key => t(key)) : room.amenities,
+    };
+  }, [t]);
+
+  // Função para traduzir todos os quartos
+  const translateRooms = useCallback((roomsList) => {
+    return roomsList.map(room => translateRoom(room));
+  }, [translateRoom]);
 
   useEffect(() => {
     const fetchRooms = async () => {
       try {
         setIsLoading(true);
         await new Promise(resolve => setTimeout(resolve, 800));
-        setRooms(roomsData);
+        // Traduzir os quartos ao carregar
+        const translatedRooms = translateRooms(roomsData);
+        setRooms(translatedRooms);
         setError(null);
       } catch (err) {
-        setError('Erro ao carregar quartos. Tente novamente.');
+        setError(t('errors.server_error'));
         console.error('[useRooms] Error fetching rooms:', err);
       } finally {
         setIsLoading(false);
@@ -23,15 +43,24 @@ const useRooms = () => {
     };
 
     fetchRooms();
-  }, []);
+  }, [translateRooms, t]);
+
+  // Re-traduzir quando o idioma mudar
+  useEffect(() => {
+    if (rooms.length > 0) {
+      const updatedRooms = translateRooms(roomsData);
+      setRooms(updatedRooms);
+    }
+  }, [t, translateRooms]);
 
   const getAvailableRooms = useCallback(() => {
     return rooms.filter(room => room.status === ROOM_STATUS.AVAILABLE);
   }, [rooms]);
 
   const getRoomById = useCallback((id) => {
-    return rooms.find(room => room.id === id);
-  }, [rooms]);
+    const room = roomsData.find(room => room.id === id);
+    return room ? translateRoom(room) : undefined;
+  }, [translateRoom]);
 
   const getRoomsByType = useCallback((type) => {
     return rooms.filter(room => room.type === type);
