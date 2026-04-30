@@ -116,6 +116,17 @@
                    "password_mismatch":  "Senhas não coincidem",
                    "login_failed":  "Email ou senha inválidos",
                    "server_error":  "Erro interno do servidor",
-                   "network_error":  "Erro de conexão"
-               }
+                   "network_error":  "Erro de conexão",
+                   "invalid_date_range":  "Data de saída deve ser após data de entrada",
+                   "min_length":  "Deve ter pelo menos {min} caracteres",
+                   "max_length":  "Deve ter no máximo {max} caracteres",
+                   "invalid_number":  "Valor inválido",
+                   "number_range":  "Deve estar entre {min} e {max}"
+               },
+    "admin":  {
+
+              },
+    "payment":  {
+
+                }
 }

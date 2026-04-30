@@ -116,6 +116,17 @@
                    "password_mismatch":  "Passwords do not match",
                    "login_failed":  "Invalid email or password",
                    "server_error":  "Internal server error",
-                   "network_error":  "Connection error"
-               }
+                   "network_error":  "Connection error",
+                   "invalid_date_range":  "Check-out date must be after check-in date",
+                   "min_length":  "Must be at least {min} characters",
+                   "max_length":  "Must be at most {max} characters",
+                   "invalid_number":  "Invalid value",
+                   "number_range":  "Must be between {min} and {max}"
+               },
+    "admin":  {
+
+              },
+    "payment":  {
+
+                }
 }
