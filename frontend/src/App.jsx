@@ -1,6 +1,7 @@
 ﻿// frontend/src/App.jsx
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { I18nProvider } from './contexts/I18nContext'; // ✅ ADICIONADO
 import { ClienteProvider } from './contexts/ClienteContext';
 import { CartProvider } from './contexts/CartContext';
 import { ServicesProvider } from './contexts/ServicesContext';
@@ -21,10 +22,9 @@ import LixeiraQuartos from './features/home/pages/admin/LixeiraQuartos';
 import Reservas from './features/home/pages/admin/Reservas';
 import Utilizadores from './features/home/pages/admin/Utilizadores';
 import Auditoria from './features/home/pages/admin/Auditoria';
-import Relatorios from './features/home/pages/admin/Relatorios'; // ✅ NOVO IMPORT
+import Relatorios from './features/home/pages/admin/Relatorios';
 import Financeiro from './features/home/pages/admin/Financeiro';
 
-// Placeholders para outras páginas admin
 const PagamentosAdmin = () => (
   <div style={{ padding: 40 }}>Página de Pagamentos - Em desenvolvimento</div>
 );
@@ -35,137 +35,137 @@ const ConfiguracoesAdmin = () => (
 
 const App = () => {
   return (
-    <ToastProvider>
-      <BrowserRouter>
-        <ClienteProvider>
-          <CartProvider>
-            <ServicesProvider>
-              <Routes>
-                {/* Rotas públicas */}
-                <Route path="/" element={<HomePage />} />
-                <Route path="/login-cliente" element={<LoginCliente />} />
-                <Route path="/login-admin" element={<LoginAdmin />} />
-                <Route path="/pagamento-falha" element={<PagamentoFalha />} />
+    <I18nProvider> {/* ✅ ENVOLVENDO TODA APLICAÇÃO */}
+      <ToastProvider>
+        <BrowserRouter>
+          <ClienteProvider>
+            <CartProvider>
+              <ServicesProvider>
+                <Routes>
+                  {/* Rotas públicas */}
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/login-cliente" element={<LoginCliente />} />
+                  <Route path="/login-admin" element={<LoginAdmin />} />
+                  <Route path="/pagamento-falha" element={<PagamentoFalha />} />
 
-                {/* Rotas de cliente */}
-                <Route
-                  path="/checkout"
-                  element={
-                    <ClienteRoute>
-                      <Checkout />
-                    </ClienteRoute>
-                  }
-                />
-                <Route path="/recibo" element={<ReciboPage />} />
-                <Route
-                  path="/minhas-reservas"
-                  element={
-                    <ClienteRoute>
-                      <MinhasReservas />
-                    </ClienteRoute>
-                  }
-                />
+                  {/* Rotas de cliente */}
+                  <Route
+                    path="/checkout"
+                    element={
+                      <ClienteRoute>
+                        <Checkout />
+                      </ClienteRoute>
+                    }
+                  />
+                  <Route path="/recibo" element={<ReciboPage />} />
+                  <Route
+                    path="/minhas-reservas"
+                    element={
+                      <ClienteRoute>
+                        <MinhasReservas />
+                      </ClienteRoute>
+                    }
+                  />
 
-                {/* Rotas administrativas */}
-                <Route
-                  path="/admin/dashboard"
-                  element={
-                    <AdminRoute>
-                      <Dashboard />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="/admin/analises"
-                  element={
-                    <AdminRoute>
-                      <DashboardAnalises />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="/admin/reservas"
-                  element={
-                    <AdminRoute>
-                      <Reservas />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="/admin/pagamentos"
-                  element={
-                    <AdminRoute>
-                      <PagamentosAdmin />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="/admin/financeiro"
-                  element={
-                    <AdminRoute>
-                      <Financeiro />
-                    </AdminRoute>
-                  }
-                />
+                  {/* Rotas administrativas */}
+                  <Route
+                    path="/admin/dashboard"
+                    element={
+                      <AdminRoute>
+                        <Dashboard />
+                      </AdminRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/analises"
+                    element={
+                      <AdminRoute>
+                        <DashboardAnalises />
+                      </AdminRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/reservas"
+                    element={
+                      <AdminRoute>
+                        <Reservas />
+                      </AdminRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/pagamentos"
+                    element={
+                      <AdminRoute>
+                        <PagamentosAdmin />
+                      </AdminRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/financeiro"
+                    element={
+                      <AdminRoute>
+                        <Financeiro />
+                      </AdminRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/quartos"
+                    element={
+                      <AdminRoute>
+                        <Quartos />
+                      </AdminRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/utilizadores"
+                    element={
+                      <AdminRoute>
+                        <Utilizadores />
+                      </AdminRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/auditoria"
+                    element={
+                      <AdminRoute>
+                        <Auditoria />
+                      </AdminRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/relatorios"
+                    element={
+                      <AdminRoute>
+                        <Relatorios />
+                      </AdminRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/configuracoes"
+                    element={
+                      <AdminRoute>
+                        <ConfiguracoesAdmin />
+                      </AdminRoute>
+                    }
+                  />
+                  <Route
+                    path="/admin/lixeira"
+                    element={
+                      <AdminRoute>
+                        <LixeiraQuartos />
+                      </AdminRoute>
+                    }
+                  />
 
-                <Route
-                  path="/admin/quartos"
-                  element={
-                    <AdminRoute>
-                      <Quartos />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="/admin/utilizadores"
-                  element={
-                    <AdminRoute>
-                      <Utilizadores />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="/admin/auditoria"
-                  element={
-                    <AdminRoute>
-                      <Auditoria />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="/admin/relatorios" // ✅ NOVA ROTA
-                  element={
-                    <AdminRoute>
-                      <Relatorios />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="/admin/configuracoes"
-                  element={
-                    <AdminRoute>
-                      <ConfiguracoesAdmin />
-                    </AdminRoute>
-                  }
-                />
-                <Route
-                  path="/admin/lixeira"
-                  element={
-                    <AdminRoute>
-                      <LixeiraQuartos />
-                    </AdminRoute>
-                  }
-                />
-
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </ServicesProvider>
-          </CartProvider>
-        </ClienteProvider>
-      </BrowserRouter>
-    </ToastProvider>
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </ServicesProvider>
+            </CartProvider>
+          </ClienteProvider>
+        </BrowserRouter>
+      </ToastProvider>
+    </I18nProvider>
   );
 };
 
 export default App;
-
