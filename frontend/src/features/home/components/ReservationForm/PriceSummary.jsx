@@ -1,128 +1,66 @@
-import React, { memo } from 'react';
+﻿import React, { memo } from 'react';
+import { useI18n } from '../../../../contexts/I18nContext';
+import { differenceInDays } from 'date-fns';
 import PropTypes from 'prop-types';
 import styles from './PriceSummary.module.css';
 
-/**
- * PriceSummary Component - Resumo de preços da reserva
- * 
- * @component
- * @example
- * <PriceSummary
- *   breakdown={priceBreakdown}
- *   isLoading={false}
- * />
- */
-const PriceSummary = ({ breakdown = {}, isLoading = false, className = '' }) => {
-  // ==========================================================================
-  // RENDER: LOADING
-  // ==========================================================================
-
-  if (isLoading) {
-    return (
-      <div className={`${styles.container} ${className}`}>
-        <div className={styles.loading}>
-          <div className={styles.loadingSpinner} />
-          <span>Calculando preços...</span>
+const PriceSummary = memo(({ checkIn, checkOut, room, services = [] }) => {
+  const { t } = useI18n();
+  
+  const nights = differenceInDays(new Date(checkOut), new Date(checkIn));
+  const roomPrice = room?.price?.amount || 0;
+  const roomTotal = roomPrice * nights;
+  const servicesTotal = services.reduce((sum, s) => sum + (s.price || 0), 0);
+  const total = roomTotal + servicesTotal;
+  
+  return (
+    <div className={styles.summary}>
+      <h4 className={styles.title}>{t('checkout.reservation_summary')}</h4>
+      
+      <div className={styles.dates}>
+        <div className={styles.dateItem}>
+          <span>{t('reservation.checkin')}:</span>
+          <strong>{new Date(checkIn).toLocaleDateString()}</strong>
+        </div>
+        <div className={styles.dateItem}>
+          <span>{t('reservation.checkout')}:</span>
+          <strong>{new Date(checkOut).toLocaleDateString()}</strong>
         </div>
       </div>
-    );
-  }
-
-  // ==========================================================================
-  // RENDER: EMPTY
-  // ==========================================================================
-
-  if (!breakdown.total || breakdown.total.total === 0) {
-    return (
-      <div className={`${styles.container} ${className}`}>
-        <p className={styles.emptyMessage}>
-          Selecione as datas para ver o preço
-        </p>
+      
+      <div className={styles.nights}>
+        {nights} {nights === 1 ? t('reservation.night') : t('reservation.nights')}
       </div>
-    );
-  }
-
-  // ==========================================================================
-  // RENDER: SUMMARY
-  // ==========================================================================
-
-  return (
-    <div className={`${styles.container} ${className}`}>
-      <h3 className={styles.title}>Resumo da Reserva</h3>
-
-      {/* Breakdown dos itens */}
-      <div className={styles.breakdown}>
-        {breakdown.breakdown?.map((item) => (
-          <div key={item.id} className={styles.breakdownItem}>
-            <div className={styles.itemInfo}>
-              <span className={styles.itemLabel}>{item.label}</span>
-              {item.details && (
-                <span className={styles.itemDetails}>{item.details}</span>
-              )}
-            </div>
-            <span className={styles.itemAmount}>{item.formatted}</span>
+      
+      <div className={styles.prices}>
+        <div className={styles.priceRow}>
+          <span>{room?.typeLabel || room?.type} ({nights} {t('reservation.nights')})</span>
+          <span>{roomTotal.toLocaleString()} MZN</span>
+        </div>
+        
+        {services.map(service => (
+          <div key={service.id} className={styles.priceRow}>
+            <span>{service.name}</span>
+            <span>{service.price.toLocaleString()} MZN</span>
           </div>
         ))}
-      </div>
-
-      {/* Subtotal */}
-      <div className={styles.subtotal}>
-        <span className={styles.subtotalLabel}>Subtotal</span>
-        <span className={styles.subtotalAmount}>
-          {breakdown.total?.formatted}
-        </span>
-      </div>
-
-      {/* Taxas detalhadas (opcional) */}
-      {breakdown.taxes?.breakdown && breakdown.taxes.breakdown.length > 0 && (
-        <div className={styles.taxes}>
-          <h4 className={styles.taxesTitle}>Taxas inclusas</h4>
-          {breakdown.taxes.breakdown.map((tax, index) => (
-            <div key={index} className={styles.taxItem}>
-              <span className={styles.taxLabel}>{tax.name}</span>
-              <span className={styles.taxAmount}>{tax.formatted}</span>
-            </div>
-          ))}
+        
+        <div className={styles.totalRow}>
+          <strong>{t('common.total')}</strong>
+          <strong>{total.toLocaleString()} MZN</strong>
         </div>
-      )}
-
-      {/* Total final */}
-      <div className={styles.total}>
-        <span className={styles.totalLabel}>Total a pagar</span>
-        <span className={styles.totalAmount}>
-          {breakdown.total?.formatted}
-        </span>
       </div>
-
-      {/* Nota sobre taxas */}
-      <p className={styles.note}>
-        * Taxas e impostos inclusos no valor final
-      </p>
     </div>
   );
-};
+});
+
+PriceSummary.displayName = 'PriceSummary';
 
 PriceSummary.propTypes = {
-  /** Dados do breakdown de preços */
-  breakdown: PropTypes.shape({
-    roomPrice: PropTypes.object,
-    servicesPrice: PropTypes.object,
-    taxes: PropTypes.object,
-    total: PropTypes.shape({
-      formatted: PropTypes.string,
-    }),
-    breakdown: PropTypes.array,
-  }),
-  /** Estado de carregamento */
-  isLoading: PropTypes.bool,
-  /** Classes CSS adicionais */
-  className: PropTypes.string,
+  checkIn: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string]).isRequired,
+  checkOut: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string]).isRequired,
+  room: PropTypes.object,
+  services: PropTypes.array
 };
 
-PriceSummary.defaultProps = {
-  breakdown: {},
-  isLoading: false,
-  className: '',
-};
-
-export default memo(PriceSummary);
+export default PriceSummary;

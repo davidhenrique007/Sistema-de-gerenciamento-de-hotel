@@ -1,228 +1,82 @@
-/* ============================================================================
-   CONTAINER PRINCIPAL
-   =========================================================================== */
+﻿/* PriceSummary.module.css - Design Compacto */
 
-.container {
-  background-color: var(--color-bg-primary);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-5);
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--color-border-light);
-  width: 100%;
+.summary {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+  text-align: center;
+  border: 1px solid #eef2f6;
 }
-
-/* ============================================================================
-   TÍTULO
-   =========================================================================== */
 
 .title {
-  margin: 0 0 var(--spacing-4);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  border-bottom: 1px solid var(--color-border-light);
-  padding-bottom: var(--spacing-3);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e9ecef;
 }
 
-/* ============================================================================
-   BREAKDOWN
-   =========================================================================== */
-
-.breakdown {
-  margin-bottom: var(--spacing-4);
-}
-
-.breakdownItem {
+.dates {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: var(--spacing-2) 0;
-  border-bottom: 1px dashed var(--color-border-light);
-}
-
-.breakdownItem:last-child {
-  border-bottom: none;
-}
-
-.itemInfo {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-1);
-}
-
-.itemLabel {
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-}
-
-.itemDetails {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
-}
-
-.itemAmount {
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-  white-space: nowrap;
-}
-
-/* ============================================================================
-   SUBTOTAL
-   =========================================================================== */
-
-.subtotal {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-3) 0;
-  border-top: 2px solid var(--color-border-medium);
-  margin-top: var(--spacing-2);
-}
-
-.subtotalLabel {
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-}
-
-.subtotalAmount {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-}
-
-/* ============================================================================
-   TAXAS
-   =========================================================================== */
-
-.taxes {
-  margin: var(--spacing-4) 0;
-  padding: var(--spacing-3);
-  background-color: var(--color-neutral-50);
-  border-radius: var(--radius-md);
-}
-
-.taxesTitle {
-  margin: 0 0 var(--spacing-2);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-}
-
-.taxItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-1) 0;
-  font-size: var(--font-size-sm);
-}
-
-.taxLabel {
-  color: var(--color-text-tertiary);
-}
-
-.taxAmount {
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-medium);
-}
-
-/* ============================================================================
-   TOTAL
-   =========================================================================== */
-
-.total {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-4) 0 var(--spacing-2);
-  border-top: 2px solid var(--color-primary-600);
-  margin-top: var(--spacing-2);
-}
-
-.totalLabel {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-}
-
-.totalAmount {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary-600);
-}
-
-/* ============================================================================
-   NOTA
-   =========================================================================== */
-
-.note {
-  margin: var(--spacing-2) 0 0;
-  font-size: var(--font-size-xs);
-  color: var(--color-text-tertiary);
-  font-style: italic;
-  text-align: right;
-}
-
-/* ============================================================================
-   ESTADOS
-   =========================================================================== */
-
-.emptyMessage {
-  text-align: center;
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-md);
-  padding: var(--spacing-4);
-  margin: 0;
-}
-
-.loading {
-  display: flex;
-  align-items: center;
   justify-content: center;
-  gap: var(--spacing-3);
-  padding: var(--spacing-6);
-  color: var(--color-text-secondary);
+  gap: 1.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
 }
 
-.loadingSpinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--color-neutral-200);
-  border-top-color: var(--color-primary-600);
-  border-radius: var(--radius-full);
-  animation: spin 1s linear infinite;
+.dateItem {
+  display: flex;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: #6c757d;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.dateItem strong {
+  color: #1a1a1a;
+  font-weight: 500;
 }
 
-/* ============================================================================
-   RESPONSIVIDADE
-   =========================================================================== */
+.nights {
+  text-align: center;
+  font-size: 0.7rem;
+  color: #c8a86b;
+  font-weight: 500;
+  margin: 0.5rem 0;
+  background: rgba(200, 168, 107, 0.1);
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 20px;
+}
 
-@media (max-width: var(--breakpoint-sm)) {
-  .container {
-    padding: var(--spacing-4);
-  }
+.prices {
+  margin-top: 0.75rem;
+  text-align: left;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}
 
-  .title {
-    font-size: var(--font-size-md);
-  }
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+  font-size: 0.75rem;
+  color: #495057;
+}
 
-  .totalLabel {
-    font-size: var(--font-size-md);
-  }
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0 0;
+  margin-top: 0.375rem;
+  border-top: 1px solid #e9ecef;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
 
-  .totalAmount {
-    font-size: var(--font-size-lg);
-  }
-
-  .itemLabel,
-  .itemAmount {
-    font-size: var(--font-size-sm);
-  }
+.totalRow strong:last-child {
+  color: #c8a86b;
 }
