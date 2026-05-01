@@ -25,7 +25,8 @@
                    "logout":  "Sair",
                    "open_menu":  "Abrir menu",
                    "close_menu":  "Fechar menu",
-                   "retry":  "Tentar novamente"
+                   "retry":  "Tentar novamente",
+                   "total":  "Total"
                },
     "hero":  {
                  "title":  "Bem-vindo ao Hotel Paradise",
@@ -35,6 +36,42 @@
                  "rooms_subtitle":  "Explore nossos quartos e serviços exclusivos",
                  "special_offers":  "Ofertas Especiais"
              },
+    "reservation": {
+    "room": "Quarto",
+    "room_price": "Preço do quarto",
+                        "title":  "Faça sua Reserva",
+                        "checkin":  "Check-in",
+                        "checkout":  "Check-out",
+                        "guests":  "Hóspedes",
+                        "search":  "Ver Disponibilidade",
+                        "adults":  "Adultos",
+                        "children":  "Crianças",
+                        "checkin_placeholder":  "Selecione a data de entrada",
+                        "checkout_placeholder":  "Selecione a data de saída",
+                        "select_date":  "Selecionar data",
+                        "night":  "noite",
+                        "nights":  "noites"
+                    },
+    "checkout": {
+    "no_room_selected": "Nenhum quarto selecionado","empty_cart": "Seu carrinho está vazio",
+                     "title":  "Finalizar Reserva",
+                     "personal_data":  "Dados Pessoais",
+                     "reservation_summary":  "Resumo da Reserva",
+                     "payment":  "Pagamento"
+                 },
+    "form":  {
+                 "full_name":  "Nome completo",
+                 "email":  "Email",
+                 "phone":  "Telefone",
+                 "id_number":  "Nº de Identificação",
+                 "full_name_placeholder":  "Digite seu nome completo",
+                 "email_placeholder":  "Digite seu email",
+                 "phone_placeholder":  "Digite seu telefone",
+                 "id_number_placeholder":  "Digite seu número de identificação"
+             },
+    "services":  {
+                     "title":  "Serviços Adicionais"
+                 },
     "rooms":  {
                   "title":  "Nossos Quartos",
                   "subtitle":  "Explore nossos quartos e serviços exclusivos",
@@ -94,6 +131,16 @@
                                  "maintenance":  "Manutenção"
                              }
               },
+    "admin":  {
+                  "rooms":  "Quartos",
+                  "users":  "Utilizadores",
+                  "audit":  "Auditoria",
+                  "reports":  "Relatórios",
+                  "financial":  "Financeiro"
+              },
+    "payment":  {
+                    "button":  "Pagar"
+                },
     "footer":  {
                    "about":  "Sobre nós",
                    "careers":  "Carreiras",
@@ -103,11 +150,7 @@
                    "faq":  "FAQ",
                    "terms":  "Termos de uso",
                    "privacy":  "Privacidade",
-                   "rights":  "Todos os direitos reservados",
-                   "description":  "O paraíso perfeito para suas férias dos sonhos, com conforto, luxo e atendimento personalizado em um ambiente exclusivo à beira-mar.",
-                   "company":  "Empresa",
-                   "support":  "Suporte",
-                   "contact":  "Contato"
+                   "rights":  "Todos os direitos reservados"
                },
     "errors":  {
                    "required":  "Campo obrigatório",
@@ -117,16 +160,17 @@
                    "login_failed":  "Email ou senha inválidos",
                    "server_error":  "Erro interno do servidor",
                    "network_error":  "Erro de conexão",
-                   "invalid_date_range":  "Data de saída deve ser após data de entrada",
                    "min_length":  "Deve ter pelo menos {min} caracteres",
                    "max_length":  "Deve ter no máximo {max} caracteres",
                    "invalid_number":  "Valor inválido",
-                   "number_range":  "Deve estar entre {min} e {max}"
-               },
-    "admin":  {
-
-              },
-    "payment":  {
-
-                }
+                   "number_range":  "Deve estar entre {min} e {max}",
+                   "checkin_past":  "Data de check-in não pode ser no passado",
+                   "checkout_before_checkin":  "Data de saída deve ser após a data de entrada",
+                   "generic":  "Erro inesperado",
+                   "required_field":  "Campo obrigatório",
+                   "room_unavailable":  "Quarto indisponível para as datas selecionadas",
+                   "invalid_date_range":  "Data de saída deve ser após data de entrada"
+               }
 }
+
+

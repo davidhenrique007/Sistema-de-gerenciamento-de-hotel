@@ -25,7 +25,8 @@
                    "logout":  "Logout",
                    "open_menu":  "Open menu",
                    "close_menu":  "Close menu",
-                   "retry":  "Try again"
+                   "retry":  "Try again",
+                   "total":  "Total"
                },
     "hero":  {
                  "title":  "Welcome to Hotel Paradise",
@@ -35,6 +36,42 @@
                  "rooms_subtitle":  "Explore our exclusive rooms and services",
                  "special_offers":  "Special Offers"
              },
+    "reservation": {
+    "room": "Room",
+    "room_price": "Room price",
+                        "title":  "Make a Reservation",
+                        "checkin":  "Check-in",
+                        "checkout":  "Check-out",
+                        "guests":  "Guests",
+                        "search":  "Check Availability",
+                        "adults":  "Adults",
+                        "children":  "Children",
+                        "checkin_placeholder":  "Select check-in date",
+                        "checkout_placeholder":  "Select check-out date",
+                        "select_date":  "Select date",
+                        "night":  "night",
+                        "nights":  "nights"
+                    },
+    "checkout": {
+    "no_room_selected": "No room selected","empty_cart": "Your cart is empty",
+                     "title":  "Checkout",
+                     "personal_data":  "Personal Data",
+                     "reservation_summary":  "Reservation Summary",
+                     "payment":  "Payment"
+                 },
+    "form":  {
+                 "full_name":  "Full name",
+                 "email":  "Email",
+                 "phone":  "Phone",
+                 "id_number":  "ID Number",
+                 "full_name_placeholder":  "Enter your full name",
+                 "email_placeholder":  "Enter your email",
+                 "phone_placeholder":  "Enter your phone number",
+                 "id_number_placeholder":  "Enter your ID number"
+             },
+    "services":  {
+                     "title":  "Additional Services"
+                 },
     "rooms":  {
                   "title":  "Our Rooms",
                   "subtitle":  "Explore our exclusive rooms and services",
@@ -94,6 +131,16 @@
                                  "maintenance":  "Maintenance"
                              }
               },
+    "admin":  {
+                  "rooms":  "Rooms",
+                  "users":  "Users",
+                  "audit":  "Audit",
+                  "reports":  "Reports",
+                  "financial":  "Financial"
+              },
+    "payment":  {
+                    "button":  "Pay"
+                },
     "footer":  {
                    "about":  "About Us",
                    "careers":  "Careers",
@@ -103,11 +150,7 @@
                    "faq":  "FAQ",
                    "terms":  "Terms of Use",
                    "privacy":  "Privacy",
-                   "rights":  "All rights reserved",
-                   "description":  "The perfect paradise for your dream vacation, with comfort, luxury and personalized service in an exclusive beachfront environment.",
-                   "company":  "Company",
-                   "support":  "Support",
-                   "contact":  "Contact"
+                   "rights":  "All rights reserved"
                },
     "errors":  {
                    "required":  "Required field",
@@ -117,16 +160,17 @@
                    "login_failed":  "Invalid email or password",
                    "server_error":  "Internal server error",
                    "network_error":  "Connection error",
-                   "invalid_date_range":  "Check-out date must be after check-in date",
                    "min_length":  "Must be at least {min} characters",
                    "max_length":  "Must be at most {max} characters",
                    "invalid_number":  "Invalid value",
-                   "number_range":  "Must be between {min} and {max}"
-               },
-    "admin":  {
-
-              },
-    "payment":  {
-
-                }
+                   "number_range":  "Must be between {min} and {max}",
+                   "checkin_past":  "Check-in date cannot be in the past",
+                   "checkout_before_checkin":  "Check-out date must be after check-in",
+                   "generic":  "Unexpected error",
+                   "required_field":  "Required field",
+                   "room_unavailable":  "Room unavailable for selected dates",
+                   "invalid_date_range":  "Check-out date must be after check-in date"
+               }
 }
+
+

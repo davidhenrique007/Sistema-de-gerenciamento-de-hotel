@@ -1,136 +1,80 @@
-// =====================================================
-// HOTEL PARADISE - AUTH CONTEXT (ATUALIZADO)
-// Versão: 1.1.0
-// =====================================================
-
-import React
-import { useI18n } from './I18nContext';, { createContext, useState, useContext, useEffect } from 'react';
+﻿import React, { createContext, useState, useContext, useEffect } from 'react';
 import { authService } from '../services/api';
 
 const AuthContext = createContext({});
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth deve ser usado dentro de AuthProvider');
-  }
-  return context;
-};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Carregar usuário do localStorage ao iniciar
   useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const storedUser = localStorage.getItem('@HotelParadise:user');
-        const storedToken = localStorage.getItem('@HotelParadise:token');
-        
-        if (storedUser && storedToken) {
-          // Validar token com backend
-          const response = await authService.getProfile();
-          setUser(response.data.data);
-        }
-      } catch (err) {
-        console.error('Erro ao carregar usuário:', err);
-        localStorage.removeItem('@HotelParadise:user');
-        localStorage.removeItem('@HotelParadise:token');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUser();
+    const token = localStorage.getItem('token');
+    if (token) {
+      carregarUsuario(token);
+    } else {
+      setLoading(false);
+    }
   }, []);
 
-  // Função de login
-  const login = async (email, password) => {
+  const carregarUsuario = async (token) => {
     try {
-      setError(null);
-      setLoading(true);
-      
-      const response = await authService.login({ email, password });
-      const { user: userData, accessToken } = response.data.data;
-      
-      // Salvar no localStorage
-      localStorage.setItem('@HotelParadise:user', JSON.stringify(userData));
-      localStorage.setItem('@HotelParadise:token', accessToken);
-      
-      setUser(userData);
-      
-      return { success: true, user: userData };
+      const response = await authService.getPerfil();
+      if (response.data.success) {
+        setUser(response.data.data);
+      }
     } catch (err) {
-      const message = err.response?.data?.message || 'Erro ao fazer login';
-      setError(message);
-      return { success: false, error: message };
+      console.error('Erro ao carregar usuário:', err);
+      localStorage.removeItem('token');
     } finally {
       setLoading(false);
     }
   };
 
-  // Função de logout
+  const login = async (email, password) => {
+    setError(null);
+    try {
+      const response = await authService.login(email, password);
+      if (response.data.success) {
+        const { token, user } = response.data;
+        localStorage.setItem('token', token);
+        setUser(user);
+        return { success: true };
+      } else {
+        setError(response.data.message || 'Erro no login');
+        return { success: false, error: response.data.message };
+      }
+    } catch (err) {
+      const message = err.response?.data?.message || 'Erro ao conectar ao servidor';
+      setError(message);
+      return { success: false, error: message };
+    }
+  };
+
   const logout = async () => {
     try {
       await authService.logout();
     } catch (err) {
       console.error('Erro no logout:', err);
     } finally {
-      // Limpar localStorage
-      localStorage.removeItem('@HotelParadise:user');
-      localStorage.removeItem('@HotelParadise:token');
+      localStorage.removeItem('token');
       setUser(null);
     }
   };
 
-  // Função para atualizar dados do usuário
-  const updateUser = (userData) => {
-    setUser(userData);
-    localStorage.setItem('@HotelParadise:user', JSON.stringify(userData));
-  };
-
-  // Função para refresh token (chamada automaticamente pelo interceptor)
-  const refreshToken = async () => {
-    try {
-      const response = await authService.refreshToken();
-      const { accessToken } = response.data.data;
-      
-      localStorage.setItem('@HotelParadise:token', accessToken);
-      return accessToken;
-    } catch (err) {
-      // Se refresh falhar, fazer logout
-      await logout();
-      throw err;
-    }
-  };
-
-  // Verificar se tem permissão
-  const hasPermission = (allowedRoles) => {
-    if (!user) return false;
-    if (!allowedRoles || allowedRoles.length === 0) return true;
-    return allowedRoles.includes(user.role);
-  };
-
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        error,
-        login,
-        logout,
-        updateUser,
-        refreshToken,
-        hasPermission,
-        isAuthenticated: !!user,
-        isAdmin: user?.role === 'admin',
-        isReceptionist: user?.role === 'receptionist',
-        isFinancial: user?.role === 'financial',
-      }}
-    >
+    <AuthContext.Provider value={{ user, loading, error, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
+};
+
+export default AuthContext;
