@@ -1,83 +1,76 @@
-// =====================================================
-// COMPONENTE - FORMULÁRIO DE DADOS PESSOAIS
-// =====================================================
-
-import React from 'react';
-import { mascaraTelefone, removerMascara } from '../../../../../shared/utils/mascaras';
+﻿import React from 'react';
 import styles from '../styles/Checkout.module.css';
 
 const FormularioDadosPessoais = ({ guestData, setGuestData, errors, isIdentificado }) => {
-  
   const handleChange = (e) => {
     const { name, value } = e.target;
-    let novoValor = value;
-    
-    if (name === 'telefone') {
-      novoValor = mascaraTelefone(value);
-    }
-    
-    setGuestData(prev => ({ ...prev, [name]: novoValor }));
+    setGuestData(prev => ({ ...prev, [name]: value }));
   };
+
+  console.log('📝 Dados do cliente:', guestData);
+  console.log('🔑 Identificado:', isIdentificado);
 
   return (
     <div className={styles.formContainer}>
-      <div className={styles.formGrid}>
-        {/* Nome completo */}
-        <div className={styles.formGroup}>
-          <label htmlFor="nome">
-            Nome completo <span className={styles.required}>*</span>
-          </label>
-          <input
-            type="text"
-            id="nome"
-            name="nome"
-            value={guestData.nome}
-            onChange={handleChange}
-            placeholder="Digite seu nome completo"
-            className={`${styles.input} ${errors.nome ? styles.inputError : ''}`}
-          />
-          {errors.nome && <span className={styles.errorMessage}>{errors.nome}</span>}
-        </div>
-
-        {/* Telefone */}
-        <div className={styles.formGroup}>
-          <label htmlFor="telefone">
-            Telefone <span className={styles.required}>*</span>
-          </label>
-          <input
-            type="tel"
-            id="telefone"
-            name="telefone"
-            value={guestData.telefone}
-            onChange={handleChange}
-            placeholder="84 123 4567"
-            className={`${styles.input} ${errors.telefone ? styles.inputError : ''}`}
-          />
-          {errors.telefone && <span className={styles.errorMessage}>{errors.telefone}</span>}
-          <span className={styles.hint}>Ex: 84 123 4567</span>
-        </div>
-
-        {/* Documento (opcional) */}
-        <div className={styles.formGroup}>
-          <label htmlFor="documento">Documento (opcional)</label>
-          <input
-            type="text"
-            id="documento"
-            name="documento"
-            value={guestData.documento}
-            onChange={handleChange}
-            placeholder="BI ou Passaporte"
-            className={`${styles.input} ${errors.documento ? styles.inputError : ''}`}
-          />
-          {errors.documento && <span className={styles.errorMessage}>{errors.documento}</span>}
-        </div>
+      <div className={styles.formGroup}>
+        <label className={styles.label}>
+          Nome completo <span className={styles.required}>*</span>
+        </label>
+        <input
+          type="text"
+          name="nome"
+          value={guestData.nome || ''}
+          onChange={handleChange}
+          className={styles.input}
+          placeholder="Digite seu nome completo"
+        />
+        {errors.nome && <span className={styles.error}>{errors.nome}</span>}
       </div>
 
-      {!isIdentificado && (
-        <p className={styles.loginInfo}>
-          Já tem cadastro? <a href="/login-cliente">Faça login</a> para preencher automaticamente.
-        </p>
-      )}
+      <div className={styles.formGroup}>
+        <label className={styles.label}>
+          Email <span className={styles.required}>*</span>
+        </label>
+        <input
+          type="email"
+          name="email"
+          value={guestData.email || ''}
+          onChange={handleChange}
+          className={styles.input}
+          placeholder="Digite seu email"
+        />
+        {errors.email && <span className={styles.error}>{errors.email}</span>}
+      </div>
+
+      <div className={styles.formGroup}>
+        <label className={styles.label}>
+          Telefone <span className={styles.required}>*</span>
+        </label>
+        <input
+          type="tel"
+          name="telefone"
+          value={guestData.telefone || ''}
+          onChange={handleChange}
+          className={styles.input}
+          placeholder="Digite seu telefone"
+        />
+        {errors.telefone && <span className={styles.error}>{errors.telefone}</span>}
+      </div>
+
+      <div className={styles.formGroup}>
+        <label className={styles.label}>
+          Nº de Identificação
+        </label>
+        <input
+          type="text"
+          name="documento"
+          value={guestData.documento || ''}
+          onChange={handleChange}
+          className={styles.input}
+          placeholder="Digite seu número de identificação"
+        />
+        {errors.documento && <span className={styles.error}>{errors.documento}</span>}
+      </div>
     </div>
   );
 };

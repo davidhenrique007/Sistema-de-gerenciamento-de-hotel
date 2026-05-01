@@ -9,83 +9,119 @@ const ResumoReserva = ({
   pricePerNight, 
   quantidadeQuartos = 1,
   servicosAdicionais = [],
-  taxaImposto = 0.05
+  taxaImposto = 0.05 
 }) => {
-  const formatDate = (date) => {
-    if (!date) return '';
-    return new Date(date).toLocaleDateString('pt-MZ', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
-  };
-
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('pt-MZ', {
-      style: 'currency',
-      currency: 'MZN'
-    }).format(value);
-  };
-
-  const subtotalQuartos = pricePerNight * nights * quantidadeQuartos;
-  const subtotalServicos = servicosAdicionais.reduce((sum, s) => sum + (s.preco * nights), 0);
+  const subtotalQuartos = (pricePerNight || 0) * (nights || 1) * quantidadeQuartos;
+  const subtotalServicos = servicosAdicionais.reduce((total, servico) => {
+    const preco = servico.tipo === 'por_noite' ? (servico.preco || 0) * (nights || 1) : (servico.preco || 0);
+    return total + preco;
+  }, 0);
   const subtotal = subtotalQuartos + subtotalServicos;
-  const taxas = subtotal * taxaImposto;
-  const totalFinal = subtotal + taxas;
+  const taxas = subtotal * (taxaImposto || 0);
+  const total = subtotal + taxas;
+
+  const formatarData = (data) => {
+    if (!data) return '-';
+    const d = new Date(data);
+    return d.toLocaleDateString('pt-BR');
+  };
+
+  const formatarMoeda = (valor) => {
+    return valor.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
 
   return (
     <div className={styles.resumoCard}>
-      <h3 className={styles.resumoTitulo}>Resumo da Reserva</h3>
+      <div className={styles.resumoHeader}>
+        <h3 className={styles.resumoTitle}>📋 Resumo da Reserva</h3>
+      </div>
       
-      <div className={styles.resumoLinha}>
-        <span>Estadia</span>
-        <span>{formatDate(checkIn)} – {formatDate(checkOut)}</span>
-      </div>
-
-      <div className={styles.resumoLinha}>
-        <span>Hóspedes</span>
-        <span>{quantidadeQuartos * 2}</span>
-      </div>
-
-      <div className={styles.resumoLinha}>
-        <span>Noites</span>
-        <span>{nights}</span>
-      </div>
-
-      <div className={styles.resumoLinha}>
-        <span>Quarto</span>
-        <span>{formatCurrency(pricePerNight)} x {nights} noites</span>
-      </div>
-
-      {servicosAdicionais.length > 0 && (
-        <>
-          <h4 style={{ margin: '12px 0 8px', fontSize: '0.9rem' }}>Serviços Adicionais</h4>
-          {servicosAdicionais.map(servico => (
-            <div key={servico.id} className={styles.resumoLinha}>
-              <span>{servico.nome}</span>
-              <span>{formatCurrency(servico.preco * nights)} / {nights} noites</span>
-            </div>
-          ))}
-          <div className={styles.resumoLinha}>
-            <span>Subtotal serviços</span>
-            <span>{formatCurrency(subtotalServicos)}</span>
+      <div className={styles.resumoContent}>
+        {/* Quarto */}
+        <div className={styles.resumoLinha}>
+          <span className={styles.resumoIcon}>🏨</span>
+          <div className={styles.resumoInfo}>
+            <span className={styles.resumoLabel}>Quarto:</span>
+            <span className={styles.resumoValor}>{tipoQuarto || 'Standard'}</span>
           </div>
-        </>
-      )}
+        </div>
 
-      <div className={styles.resumoLinha}>
-        <span>Subtotal</span>
-        <span>{formatCurrency(subtotal)}</span>
-      </div>
+        {/* Check-in */}
+        <div className={styles.resumoLinha}>
+          <span className={styles.resumoIcon}>📅</span>
+          <div className={styles.resumoInfo}>
+            <span className={styles.resumoLabel}>Check-in:</span>
+            <span className={styles.resumoValor}>{formatarData(checkIn)}</span>
+          </div>
+        </div>
 
-      <div className={styles.resumoLinha}>
-        <span>Taxas ({taxaImposto * 100}%)</span>
-        <span>{formatCurrency(taxas)}</span>
-      </div>
+        {/* Check-out */}
+        <div className={styles.resumoLinha}>
+          <span className={styles.resumoIcon}>📅</span>
+          <div className={styles.resumoInfo}>
+            <span className={styles.resumoLabel}>Check-out:</span>
+            <span className={styles.resumoValor}>{formatarData(checkOut)}</span>
+          </div>
+        </div>
 
-      <div className={styles.totalLinha}>
-        <span>TOTAL</span>
-        <span className={styles.totalValor}>{formatCurrency(totalFinal)}</span>
+        {/* Noites */}
+        <div className={styles.resumoLinha}>
+          <span className={styles.resumoIcon}>🌙</span>
+          <div className={styles.resumoInfo}>
+            <span className={styles.resumoLabel}>Noites:</span>
+            <span className={styles.resumoValor}>{nights || 1}</span>
+          </div>
+        </div>
+
+        {/* Quantidade Quartos */}
+        <div className={styles.resumoLinha}>
+          <span className={styles.resumoIcon}>🛏️</span>
+          <div className={styles.resumoInfo}>
+            <span className={styles.resumoLabel}>Quartos:</span>
+            <span className={styles.resumoValor}>{quantidadeQuartos}</span>
+          </div>
+        </div>
+
+        {/* Preço por noite */}
+        <div className={styles.resumoLinha}>
+          <span className={styles.resumoIcon}>💰</span>
+          <div className={styles.resumoInfo}>
+            <span className={styles.resumoLabel}>Preço/Noite:</span>
+            <span className={styles.resumoValor}>{formatarMoeda(pricePerNight)} MZN</span>
+          </div>
+        </div>
+
+        {/* Linha divisória */}
+        <div className={styles.resumoDivisor}></div>
+
+        {/* Subtotal quartos */}
+        <div className={styles.resumoLinhaTotal}>
+          <span className={styles.resumoIcon}>🏷️</span>
+          <div className={styles.resumoInfo}>
+            <span className={styles.resumoLabel}>Subtotal quartos:</span>
+            <span className={styles.resumoValor}>{formatarMoeda(subtotalQuartos)} MZN</span>
+          </div>
+        </div>
+
+        {/* Serviços adicionais */}
+        {servicosAdicionais.length > 0 && (
+          <div className={styles.resumoLinhaServico}>
+            <span className={styles.resumoIcon}>✨</span>
+            <div className={styles.resumoInfo}>
+              <span className={styles.resumoLabel}>Serviços:</span>
+              <span className={styles.resumoValor}>{formatarMoeda(subtotalServicos)} MZN</span>
+            </div>
+          </div>
+        )}
+
+        {/* TOTAL */}
+        <div className={styles.resumoLinhaGrandeTotal}>
+          <span className={styles.resumoIcon}>🎯</span>
+          <div className={styles.resumoInfo}>
+            <span className={styles.resumoLabelTotal}>TOTAL:</span>
+            <span className={styles.resumoValorTotal}>{formatarMoeda(total)} MZN</span>
+          </div>
+        </div>
       </div>
     </div>
   );

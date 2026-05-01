@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '@contexts/CartContext';
 import { useServices } from '@contexts/ServicesContext';
 import { useCliente } from '@hooks/useCliente';
@@ -13,7 +13,6 @@ import ResumoFinal from './components/ResumoFinal';
 import ServicosAdicionais from './components/ServicosAdicionais';
 import PagamentoMpesa from './components/PagamentoMpesa';
 import StripeElements from './components/StripeElements';
-import { Link } from 'react-router-dom';
 import { useValidacaoCheckout } from './hooks/useValidacaoCheckout';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';

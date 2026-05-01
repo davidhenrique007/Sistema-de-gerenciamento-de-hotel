@@ -1,4 +1,5 @@
-﻿import React, { useState, useEffect } from 'react';
+import React
+import { useI18n } from '../../../../contexts/I18nContext';, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '@contexts/CartContext';
 import { useServices } from '@contexts/ServicesContext';
@@ -32,21 +33,23 @@ const HeaderTeste = () => (
     }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', flexWrap: 'wrap' }}>
-                <div style={{ fontSize: '48px' }}>🏨</div>
+                <div style={{ fontSize: '48px' }}>??</div>
                 <div>
                     <p style={{ color: '#fbbf24', fontSize: '12px', margin: '0 0 4px 0' }}>HOTEL PARADISE</p>
                     <h1 style={{ fontSize: '28px', margin: 0, background: 'linear-gradient(135deg, #ffffff 0%, #fbbf24 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Checkout</h1>
-                    <p style={{ fontSize: '12px', opacity: 0.8, margin: '4px 0 0 0' }}>Complete sua reserva com segurança e rapidez</p>
+                    <p style={{ fontSize: '12px', opacity: 0.8, margin: '4px 0 0 0' }}>Complete sua reserva com seguran�a e rapidez</p>
                 </div>
             </div>
             <div style={{ marginTop: '16px' }}>
-                <Link to="/" style={{ color: 'white', textDecoration: 'none', background: 'rgba(255,255,255,0.1)', padding: '8px 20px', borderRadius: '30px', marginRight: '12px' }}>← Voltar</Link>
+                <Link to="/" style={{ color: 'white', textDecoration: 'none', background: 'rgba(255,255,255,0.1)', padding: '8px 20px', borderRadius: '30px', marginRight: '12px' }}>? Voltar</Link>
             </div>
         </div>
     </div>
 );
 
 const Checkout = () => {
+  const { t } = useI18n();
+  () => {
   const navigate = useNavigate();
   const { reservation, room } = useCart();
   const { servicosSelecionados: servicosContexto } = useServices();
@@ -98,7 +101,9 @@ const Checkout = () => {
 
   const tipoQuarto = reservation?.roomType || room?.type || 'Standard';
   const checkIn = reservation?.checkIn || '';
-  const checkOut = reservation?.checkOut || '';
+  const Checkout = () => {
+  const { t } = useI18n();
+  reservation?.checkOut || '';
   const nights = reservation?.nights || 1;
   const pricePerNight = reservation?.pricePerNight || room?.price_per_night || 0;
   const quantidadeQuartos = modalQuarto.quartosSelecionados.length || 1;
@@ -126,7 +131,7 @@ const Checkout = () => {
   };
 
   const handlePagamentoConfirmado = (data) => {
-    console.log('✅ Pagamento confirmado!', data);
+    console.log('? Pagamento confirmado!', data);
     setPagamentoStatus('confirmed');
 
     const codigoReal = data.reservation_code || data.codigo;
@@ -143,12 +148,12 @@ const Checkout = () => {
   };
 
   const handlePagamentoFalhou = (error) => {
-    console.error('❌ Pagamento falhou:', error);
+    console.error('? Pagamento falhou:', error);
     setPagamentoStatus('failed');
   };
 
   const handlePagamentoPendente = (data) => {
-    console.log('⏳ Pagamento pendente:', data);
+    console.log('? Pagamento pendente:', data);
     setPagamentoStatus('pending');
   };
 
@@ -172,7 +177,7 @@ const Checkout = () => {
       }
 
       const { reservation_code } = respostaReserva.data.data;
-      console.log('✅ Reserva criada no banco:', reservation_code);
+      console.log('? Reserva criada no banco:', reservation_code);
 
       await api.put(`/reservas/${reservation_code}/confirmar-pagamento`, {
         payment_method: paymentMethod,
@@ -181,7 +186,7 @@ const Checkout = () => {
       handlePagamentoConfirmado({ reservation_code });
 
     } catch (error) {
-      console.error('❌ Erro:', error);
+      console.error('? Erro:', error);
       const mensagem = error.response?.data?.message || 'Erro ao processar. Tente novamente.';
       alert(mensagem);
     } finally {
@@ -202,12 +207,12 @@ const Checkout = () => {
                 <div className={styles.quartosList}>
                   {modalQuarto.quartosSelecionados.map((quarto) => (
                     <div key={quarto.id} className={styles.quartoSelecionadoItem}>
-                      <span>🏨 Quarto {quarto.numero} ✅</span>
+                      <span>?? Quarto {quarto.numero} ?</span>
                       <button
                         onClick={() => modalQuarto.removerQuarto(quarto.id)}
                         className={styles.removerQuartoButton}
                       >
-                        ✕
+                        ?
                       </button>
                     </div>
                   ))}
@@ -221,7 +226,7 @@ const Checkout = () => {
               </div>
             ) : (
               <button onClick={modalQuarto.abrirModal} className={styles.escolherButton}>
-                Escolher Números dos Quartos
+                Escolher N�meros dos Quartos
               </button>
             )}
           </div>
@@ -229,7 +234,7 @@ const Checkout = () => {
 
         <div className={styles.columnRight}>
           <div className={styles.sectionCompact}>
-            <h2 className={styles.sectionTitle}>2. Dados do hóspede</h2>
+            <h2 className={styles.sectionTitle}>2. Dados do h�spede</h2>
             <FormularioDadosPessoais
               guestData={guestData}
               setGuestData={setGuestData}
@@ -241,7 +246,7 @@ const Checkout = () => {
       </div>
 
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>3. Serviços Adicionais</h2>
+        <h2 className={styles.sectionTitle}>3. Servi�os Adicionais</h2>
         <ServicosAdicionais
           nights={nights}
           servicosSelecionados={servicosSelecionados}
