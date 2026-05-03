@@ -1,12 +1,12 @@
-﻿// frontend/src/features/home/pages/HomePage.jsx
-import React, { useCallback, useEffect, useState } from 'react';
+﻿import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useI18n } from '../../../contexts/I18nContext'; // ✅ ADICIONADO
+import { useI18n } from '../../../contexts/I18nContext';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import RoomsSection from '../components/RoomsSection/RoomsSection';
 import { ReservationForm } from '../components/ReservationForm';
-import ServicesSection from '../components/ServicesSection';
+import MapSection from '../components/MapSection/MapSection';
+import HotelCarousel from '../components/HotelCarousel/HotelCarousel';
 import Footer from '../components/Footer';
 import RoomDetailsModal from '../components/RoomsSection/RoomDetailsModal';
 import useRoomSelection from '../hooks/useRoomSelection';
@@ -18,7 +18,7 @@ import { useCart } from '../../../contexts/CartContext';
 import './home.css';
 
 const HomePage = () => {
-  const { t } = useI18n(); // ✅ HOOK DE TRADUÇÃO
+  const { t } = useI18n();
   const navigate = useNavigate();
   const cart = useCart();
   const { selectRoom } = cart;
@@ -74,7 +74,7 @@ const HomePage = () => {
       );
 
       await new Promise(resolve => setTimeout(resolve, 800));
-      notifySuccess(t('common.success')); // ✅ TRADUZIDO
+      notifySuccess(t('common.success'));
 
       if (clearSelectedServices) clearSelectedServices();
 
@@ -82,7 +82,7 @@ const HomePage = () => {
 
     } catch (error) {
       console.error('❌ Erro:', error);
-      notifyError(t('errors.server_error')); // ✅ TRADUZIDO
+      notifyError(t('errors.server_error'));
     }
   }, [selectRoom, navigate, notifySuccess, notifyError, clearSelectedServices, t]);
 
@@ -99,15 +99,15 @@ const HomePage = () => {
           onCtaClick={scrollToForm}
           size="small"
           parallax={true}
-          title={t('hero.title')} // ✅ TRADUZIDO
-          subtitle={t('hero.subtitle')} // ✅ TRADUZIDO
-          ctaText={t('hero.cta')} // ✅ TRADUZIDO
+          title={t('hero.title')}
+          subtitle={t('hero.subtitle')}
+          ctaText={t('hero.cta')}
         />
 
         <RoomsSection
           onSelectRoom={handleRoomSelect}
           onDetailsRoom={handleDetailsRoom}
-          title={t('hero.featured_rooms')} // ✅ TRADUZIDO
+          title={t('hero.featured_rooms')}
           subtitle={t('hero.rooms_subtitle') || "Explore nossos quartos e serviços exclusivos"}
         />
 
@@ -131,12 +131,9 @@ const HomePage = () => {
           </div>
         </section>
 
-        <ServicesSection
-          onServiceToggle={handleServiceToggle}
-          selectedServiceIds={selectedServices || []}
-          title={t('services.title') || "Serviços Adicionais"}
-          subtitle={t('services.subtitle') || "Personalize sua estadia"}
-        />
+        <MapSection />
+
+        <HotelCarousel />
       </main>
 
       <Footer
