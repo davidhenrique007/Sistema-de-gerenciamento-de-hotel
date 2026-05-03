@@ -173,11 +173,12 @@
                    "invalid_date_range":  "Data de saída deve ser após data de entrada"
                },
     "map":  {
-                "subtitle":  "Venha nos visitar",
-                "title":  "Nossa Localização"
+                "title":  "Nossa Localização",
+                "description":  "Estamos prontos para recebê-lo com conforto, qualidade e um atendimento de excelência.",
+                "subtitle":  "Encontre-nos com facilidade e venha viver uma experiência única."
             },
     "carousel":  {
-                     "subtitle":  "Conheça nossas instalações",
+                     "subtitle":  "Descubra nossos espaços, desde acomodações confortáveis até áreas de lazer, tudo pensado para proporcionar uma experiência inesquecível.",
                      "drinks":  "Bebidas Exclusivas",
                      "gym":  "Academia Moderna",
                      "pool":  "Piscina do Hotel",

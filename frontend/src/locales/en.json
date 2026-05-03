@@ -173,11 +173,12 @@
                    "invalid_date_range":  "Check-out date must be after check-in date"
                },
     "map":  {
-                "subtitle":  "Come visit us",
-                "title":  "Our Location"
+                "title":  "Our Location",
+                "description":  "We are ready to welcome you with comfort, quality and excellent service.",
+                "subtitle":  "Find us easily and come live a unique experience."
             },
     "carousel":  {
-                     "subtitle":  "Discover our facilities",
+                     "subtitle":  "Discover our spaces, from comfortable accommodations to leisure areas, all designed to provide an unforgettable experience.",
                      "drinks":  "Exclusive Drinks",
                      "gym":  "Modern Gym",
                      "pool":  "Hotel Pool",
