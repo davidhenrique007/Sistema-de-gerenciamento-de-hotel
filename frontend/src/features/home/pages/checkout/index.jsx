@@ -22,6 +22,33 @@ import CheckoutHeader from './components/CheckoutHeader/CheckoutHeader';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
+// Função para converter IDs mock para UUIDs reais
+const getRealRoomId = (mockId) => {
+  if (!mockId) return null;
+  
+  const roomMap = {
+    // Quartos reais do banco
+    '38': '533fc3b1-864b-40b6-81a9-77a414f6872f',
+    '28': 'd4cbe344-e7a2-43bd-8b6d-887ad72edf1d',
+    '44': '11b74d81-a107-4480-a109-c93bc37038d5',
+    '04': '3fdadf3f-b5b5-444b-bda9-42beaacf6bfc',
+    '05': '56a0c94f-8d9b-44c8-b984-f6b311393402',
+    '03': 'a7aa148b-922c-4641-b9c3-064242a4bc8f',
+    '43': '8549a901-efac-4037-889b-fab8c10f9246',
+    '39': '3a24563f-8e23-4995-bda6-9c6b93899b6f',
+    '07': 'd129ba9d-bb77-4294-a4d6-795a3806aa47',
+    '06': '7350e309-0234-4b10-97b6-887b0528b92c',
+    // Mapeamento de nomes antigos
+    'room-002': 'd4cbe344-e7a2-43bd-8b6d-887ad72edf1d',
+    'room-004': '3fdadf3f-b5b5-444b-bda9-42beaacf6bfc',
+    'mock-43': '8549a901-efac-4037-889b-fab8c10f9246',
+    'mock-45': '11b74d81-a107-4480-a109-c93bc37038d5',
+    'mock-47': '3a24563f-8e23-4995-bda6-9c6b93899b6f'
+  };
+  
+  return roomMap[mockId] || mockId;
+};
+
 const Checkout = () => {
   const navigate = useNavigate();
   const { reservation, room } = useCart();
@@ -56,7 +83,6 @@ const Checkout = () => {
     }
   }, [servicosContexto]);
 
-  // Gerar reservaId temporário
   useEffect(() => {
     if (!reservaId) {
       const tempId = `TEMP_${Date.now()}`;
@@ -82,13 +108,15 @@ const Checkout = () => {
   const taxas = subtotal * taxaImposto;
   const total = subtotal + taxas;
 
-  // IMPORTANTE: Pegar o ID do primeiro quarto selecionado
   const primeiroQuarto = modalQuarto.quartosSelecionados[0];
-  const room_id = primeiroQuarto?.id || room?.id || reservation?.roomId;
+  const room_id = getRealRoomId(primeiroQuarto?.id || room?.id || reservation?.roomId);
+  
+  // Converter todos os IDs do array
+  const room_ids_converted = modalQuarto.quartosSelecionados.map((q) => getRealRoomId(q.id)).filter(id => id);
 
   const dadosReservaParaBackend = {
     room_id: room_id,
-    room_ids: modalQuarto.quartosSelecionados.map((q) => q.id),
+    room_ids: room_ids_converted,
     check_in: checkIn,
     check_out: checkOut,
     adults_count: reservation?.guests?.adults || 1,
