@@ -13,6 +13,7 @@ const MapSection = () => {
         <div className={styles.header}>
           <h2 className={styles.title}>{t('map.title')}</h2>
           <p className={styles.subtitle}>{t('map.subtitle')}</p>
+          <p className={styles.description}>{t('map.description')}</p>
         </div>
         
         <div className={styles.mapWrapper}>

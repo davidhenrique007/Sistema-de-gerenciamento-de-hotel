@@ -76,3 +76,20 @@
     font-size: 20px;
   }
 }
+
+.description {
+  font-size: 14px;
+  color: #666;
+  margin-top: 8px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .description {
+    font-size: 12px;
+    padding: 0 16px;
+  }
+}
