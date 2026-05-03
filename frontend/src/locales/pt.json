@@ -36,9 +36,9 @@
                  "rooms_subtitle":  "Explore nossos quartos e serviços exclusivos",
                  "special_offers":  "Ofertas Especiais"
              },
-    "reservation": {
-    "room": "Quarto",
-    "room_price": "Preço do quarto",
+    "reservation":  {
+                        "room":  "Quarto",
+                        "room_price":  "Preço do quarto",
                         "title":  "Faça sua Reserva",
                         "checkin":  "Check-in",
                         "checkout":  "Check-out",
@@ -52,8 +52,9 @@
                         "night":  "noite",
                         "nights":  "noites"
                     },
-    "checkout": {
-    "no_room_selected": "Nenhum quarto selecionado","empty_cart": "Seu carrinho está vazio",
+    "checkout":  {
+                     "no_room_selected":  "Nenhum quarto selecionado",
+                     "empty_cart":  "Seu carrinho está vazio",
                      "title":  "Finalizar Reserva",
                      "personal_data":  "Dados Pessoais",
                      "reservation_summary":  "Resumo da Reserva",
@@ -170,7 +171,18 @@
                    "required_field":  "Campo obrigatório",
                    "room_unavailable":  "Quarto indisponível para as datas selecionadas",
                    "invalid_date_range":  "Data de saída deve ser após data de entrada"
-               }
+               },
+    "map":  {
+                "subtitle":  "Venha nos visitar",
+                "title":  "Nossa Localização"
+            },
+    "carousel":  {
+                     "subtitle":  "Conheça nossas instalações",
+                     "drinks":  "Bebidas Exclusivas",
+                     "gym":  "Academia Moderna",
+                     "pool":  "Piscina do Hotel",
+                     "gastronomy":  "Gastronomia",
+                     "title":  "Galeria do Hotel",
+                     "view":  "Vista Paradisíaca"
+                 }
 }
-
-

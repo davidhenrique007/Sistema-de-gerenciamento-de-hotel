@@ -36,9 +36,9 @@
                  "rooms_subtitle":  "Explore our exclusive rooms and services",
                  "special_offers":  "Special Offers"
              },
-    "reservation": {
-    "room": "Room",
-    "room_price": "Room price",
+    "reservation":  {
+                        "room":  "Room",
+                        "room_price":  "Room price",
                         "title":  "Make a Reservation",
                         "checkin":  "Check-in",
                         "checkout":  "Check-out",
@@ -52,8 +52,9 @@
                         "night":  "night",
                         "nights":  "nights"
                     },
-    "checkout": {
-    "no_room_selected": "No room selected","empty_cart": "Your cart is empty",
+    "checkout":  {
+                     "no_room_selected":  "No room selected",
+                     "empty_cart":  "Your cart is empty",
                      "title":  "Checkout",
                      "personal_data":  "Personal Data",
                      "reservation_summary":  "Reservation Summary",
@@ -170,7 +171,18 @@
                    "required_field":  "Required field",
                    "room_unavailable":  "Room unavailable for selected dates",
                    "invalid_date_range":  "Check-out date must be after check-in date"
-               }
+               },
+    "map":  {
+                "subtitle":  "Come visit us",
+                "title":  "Our Location"
+            },
+    "carousel":  {
+                     "subtitle":  "Discover our facilities",
+                     "drinks":  "Exclusive Drinks",
+                     "gym":  "Modern Gym",
+                     "pool":  "Hotel Pool",
+                     "gastronomy":  "Gastronomy",
+                     "title":  "Hotel Gallery",
+                     "view":  "Paradise View"
+                 }
 }
-
-
