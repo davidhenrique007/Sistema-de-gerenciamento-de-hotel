@@ -1,12 +1,12 @@
-ï»¿/**
- * Dados mockados dos quartos - VERSÃƒO COM SUPORTE A i18n
+/**
+ * Dados mockados dos quartos - VERSÃO COM SUPORTE A i18n
  * 
- * As descriÃ§Ãµes agora usam KEYS de traduÃ§Ã£o em vez de texto fixo
+ * As descrições agora usam KEYS de tradução em vez de texto fixo
  */
 
 export const roomsData = [
   {
-    id: 'room-001',
+    id: '1b24f268-a857-4428-a720-43997c223975',
     number: '01',
     type: 'standard',
     typeLabelKey: 'rooms.types.standard',
@@ -31,7 +31,7 @@ export const roomsData = [
     floor: 1,
   },
   {
-    id: 'room-002',
+    id: '66f3cd77-86ec-4951-8dbe-e6bb98943080',
     number: '15',
     type: 'deluxe',
     typeLabelKey: 'rooms.types.deluxe',
@@ -56,7 +56,7 @@ export const roomsData = [
     floor: 2,
   },
   {
-    id: 'room-003',
+    id: '29ee2d94-1cbd-4d85-acb7-ad24819011f2',
     number: '25',
     type: 'deluxe',
     typeLabelKey: 'rooms.types.deluxe',
@@ -81,7 +81,7 @@ export const roomsData = [
     floor: 2,
   },
   {
-    id: 'room-004',
+    id: '07b0b4fb-2dca-4931-8620-71e955aa4f15',
     number: '35',
     type: 'executive',
     typeLabelKey: 'rooms.types.executive',
@@ -106,7 +106,7 @@ export const roomsData = [
     floor: 3,
   },
   {
-    id: 'room-005',
+    id: '8b925b7a-0909-4014-aea7-474f29b28cbb',
     number: '40',
     type: 'family',
     typeLabelKey: 'rooms.types.family',
@@ -131,7 +131,7 @@ export const roomsData = [
     floor: 4,
   },
   {
-    id: 'room-006',
+    id: 'dc91df40-abb1-48d2-b74f-4961e78dabc6',
     number: '43',
     type: 'presidential',
     typeLabelKey: 'rooms.types.presidential',
