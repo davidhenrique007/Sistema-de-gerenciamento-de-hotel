@@ -158,23 +158,79 @@ O sistema suporta múltiplos métodos de pagamento (M-Pesa, cartão via Stripe e
 
 ## Funcionalidades
 
-### Área do Cliente
-- Visualização de quartos disponíveis com imagens e detalhes
-- Seleção de datas e cálculo automático de preço
-- Processo de reserva com checkout completo
-- Pagamento via M-Pesa, Stripe (cartão) ou dinheiro
-- Recibo digital em PDF enviado por e-mail
-- Área de perfil com histórico de reservas
-- Cancelamento e alteração de reservas
+### 👤 Área do Cliente (Experiência Completa de Reservas)
 
-### Painel Administrativo
-- Dashboard com métricas em tempo real (ocupação, receita, reservas)
-- Gráficos de análise (ocupação, receita, distribuição por tipo de quarto)
-- Gestão completa de quartos (CRUD + lixeira com recuperação)
-- Gestão de reservas com check-in / check-out
-- Gestão de utilizadores e permissões
-- Relatórios exportáveis
-- Logs de auditoria
+* **Visualização dinâmica de quartos** com galeria de imagens, filtros avançados e detalhes completos (preço, capacidade, comodidades e disponibilidade em tempo real)
+* **Sistema inteligente de pesquisa** com verificação automática de conflitos de datas e disponibilidade instantânea
+* **Motor de cálculo de preços** com regras de negócio (período de estadia, tipo de quarto, sazonalidade)
+* **Fluxo completo de reserva multi-etapas** com validação de dados, confirmação e controlo de integridade
+* **Sistema de pagamentos integrado e flexível:**
+
+  * 💳 Cartões internacionais via Stripe
+  * 📱 Pagamentos móveis via M-Pesa
+  * 💵 Pagamento presencial (cash on arrival)
+* **Geração automática de recibos em PDF** com identificador único e estrutura profissional
+* **Notificações automáticas por e-mail** com confirmação e detalhes completos da reserva
+* **Área pessoal do cliente** com autenticação segura baseada em JWT
+* **Gestão completa de reservas:**
+
+  * Visualização de histórico (pendente, confirmado, cancelado, concluído)
+  * Cancelamento com regras configuráveis
+  * Alteração de datas com validação de disponibilidade
+* **Interface responsiva (mobile-first)** adaptada a smartphone, tablet e desktop
+* **Experiência de utilizador optimizada** com feedback em tempo real (loading states, alerts e validações dinâmicas)
+
+---
+
+### ⚙️ Painel Administrativo (Sistema de Gestão Hoteleira Profissional)
+
+* **Dashboard analítico em tempo real** com KPIs estratégicos:
+
+  * Taxa de ocupação
+  * Receita diária, mensal e acumulada
+  * Reservas activas, concluídas e canceladas
+  * Indicadores de performance operacional
+* **Visualização avançada de dados** com gráficos interactivos (tendências, distribuição por tipo de quarto e comportamento de reservas)
+* **Gestão avançada de quartos (CRUD completo):**
+
+  * Criação, edição e eliminação lógica (soft delete)
+  * Recuperação de registos via lixeira
+  * Controlo de disponibilidade em tempo real
+* **Sistema robusto de gestão de reservas:**
+
+  * Check-in e check-out (manual ou automático)
+  * Monitorização de estadias activas
+  * Actualização de estados em tempo real
+* **Gestão de utilizadores e permissões (RBAC):**
+
+  * Perfis: Admin, Staff e Cliente
+  * Controlo granular de acesso por nível
+* **Módulo financeiro integrado:**
+
+  * Registo e rastreio de pagamentos
+  * Reconciliação de transacções
+  * Análise de receitas por período
+* **Geração de relatórios exportáveis (PDF/Excel):**
+
+  * Reservas
+  * Receita
+  * Ocupação
+  * Actividade do sistema
+* **Sistema completo de auditoria:**
+
+  * Logs detalhados de acções dos utilizadores
+  * Rastreabilidade de alterações críticas
+  * Histórico de operações administrativas
+* **Camada de segurança e monitorização:**
+
+  * Autenticação JWT com refresh token
+  * Validação e sanitização de dados (proteção contra XSS e SQL Injection)
+  * Proteção contra acessos não autorizados
+  * Controlo de sessões e integridade de dados
+* **Painel optimizado para operações reais de hotel**, garantindo eficiência, controlo e tomada de decisão baseada em dados
+
+---
+
 
 ### Segurança
 - Autenticação JWT com refresh token
