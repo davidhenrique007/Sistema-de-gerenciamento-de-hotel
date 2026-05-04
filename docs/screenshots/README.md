@@ -50,6 +50,10 @@ Este diretório contém as capturas de tela do sistema, organizadas por áreas d
 ---
 
 # ⚙️ Área Administrativa
+## 📊 Autenticação do admin/usuários
+<p align="center">
+  <img src="admin/autenticacao admin/autenticação admin.png" width="700"/>
+</p>
 
 ## 📊 Dashboard
 <p align="center">
