@@ -16,18 +16,9 @@ Este diretório contém as capturas de tela do sistema, organizadas por áreas d
 
 ## 🔐 Autenticação do Cliente
 <p align="center">
-  <img src="client/auth/login.png" width="45%"/>
-  <img src="client/auth/register.png" width="45%"/>
+  <img src="client/auth/reserva.png" width="45%"/>
 </p>
 
----
-
-## 📅 Reserva
-<p align="center">
-  <img src="client/booking/reserva.png" width="700"/>
-</p>
-
----
 
 ## 💳 Checkout
 <p align="center">
