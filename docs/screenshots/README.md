@@ -44,7 +44,7 @@ Este diretório contém as capturas de tela do sistema, organizadas por áreas d
 <p align="center">
   <img src="client/my-reservations/Minha-Reserva-cliente-1.png" width="45%"/>
   <img src="client/my-reservations/Minha-Reserva-cliente-2.png" width="45%"/>
-  <img src="client/my-reservations/Minha-Reserva-cliente-3.png" width="45%"/>
+  <img src="client/my-reservations/Minha-Reserva-cliente.png" width="45%"/>
 </p>
 
 ---
