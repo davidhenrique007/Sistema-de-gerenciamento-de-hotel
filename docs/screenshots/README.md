@@ -12,6 +12,8 @@ Este diretório contém as capturas de tela do sistema, organizadas por áreas d
   <img src="client/home/home-2.png" width="700"/>
   <img src="client/home/home-3.png" width="700"/>
   <img src="client/home/home-4.png" width="700"/>
+  <img src="client/home/home-5.png" width="700"/>
+  <img src="client/home/home-6.png" width="700"/>
 </p>
 
 ---
@@ -40,9 +42,9 @@ Este diretório contém as capturas de tela do sistema, organizadas por áreas d
 
 ## 📋 Minhas Reservas
 <p align="center">
-  <img src="client/my-reservations/Minha-Reserva-Cliente-1.png" width="45%"/>
-  <img src="client/my-reservations/Minha-Reserva-Cliente-2.png" width="45%"/>
-  <img src="client/my-reservations/Minha-Reserva-Cliente-3.png" width="45%"/>
+  <img src="client/my-reservations/Minha-Reserva-cliente-1.png" width="45%"/>
+  <img src="client/my-reservations/Minha-Reserva-cliente-2.png" width="45%"/>
+  <img src="client/my-reservations/Minha-Reserva-cliente-3.png" width="45%"/>
 </p>
 
 ---
