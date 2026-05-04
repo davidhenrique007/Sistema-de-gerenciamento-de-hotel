@@ -22,6 +22,7 @@ import Reservas from './features/home/pages/admin/Reservas';
 import Utilizadores from './features/home/pages/admin/Utilizadores';
 import Auditoria from './features/home/pages/admin/Auditoria';
 import Relatorios from './features/home/pages/admin/Relatorios'; // ✅ NOVO IMPORT
+import Financeiro from './features/home/pages/admin/Financeiro';
 
 // Placeholders para outras páginas admin
 const PagamentosAdmin = () => (
@@ -99,6 +100,15 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="/admin/financeiro"
+                  element={
+                    <AdminRoute>
+                      <Financeiro />
+                    </AdminRoute>
+                  }
+                />
+
+                <Route
                   path="/admin/quartos"
                   element={
                     <AdminRoute>
@@ -123,7 +133,7 @@ const App = () => {
                   }
                 />
                 <Route
-                  path="/admin/relatorios"  // ✅ NOVA ROTA
+                  path="/admin/relatorios" // ✅ NOVA ROTA
                   element={
                     <AdminRoute>
                       <Relatorios />
@@ -158,3 +168,4 @@ const App = () => {
 };
 
 export default App;
+

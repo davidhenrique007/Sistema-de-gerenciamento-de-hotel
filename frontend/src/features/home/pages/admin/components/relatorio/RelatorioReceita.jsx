@@ -1,5 +1,4 @@
-// frontend/src/features/home/pages/admin/components/relatorio/RelatorioReceita.jsx
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer, Area, ComposedChart
@@ -123,4 +122,4 @@ const RelatorioReceita = ({ filtros }) => {
   );
 };
 
-export default RelatorioReceita; 
+export default RelatorioReceita;
