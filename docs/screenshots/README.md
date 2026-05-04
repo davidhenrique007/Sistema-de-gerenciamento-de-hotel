@@ -10,6 +10,10 @@ Este diretório contém as capturas de tela do sistema, organizadas por áreas d
 <p align="center">
   <img src="client/home/home-1.png" width="700"/>
   <img src="client/home/home-2.png" width="700"/>
+  <img src="client/home/home-3.png" width="700"/>
+  <img src="client/home/home-4.png" width="700"/>
+  <img src="client/home/home-5.png" width="700"/>
+  <img src="client/home/home-6.png" width="700"/>
 </p>
 
 ---
@@ -24,26 +28,32 @@ Este diretório contém as capturas de tela do sistema, organizadas por áreas d
 <p align="center">
   <img src="client/checkout/checkout-1.png" width="45%"/>
   <img src="client/checkout/checkout-2.png" width="45%"/>
+  <img src="client/checkout/checkout-3.png" width="45%"/>
 </p>
 
 ---
 
 ## 🧾 Recibo de Pagamento
 <p align="center">
-  <img src="client/receipt/recibo.png" width="700"/>
+  <img src="client/receipt/Recibo.png" width="600"/>
 </p>
 
 ---
 
 ## 📋 Minhas Reservas
 <p align="center">
-  <img src="client/my-reservations/minha-reserva-1.png" width="45%"/>
-  <img src="client/my-reservations/minha-reserva-2.png" width="45%"/>
+  <img src="client/my-reservations/Minha-Reserva-cliente-1.png" width="45%"/>
+  <img src="client/my-reservations/Minha-Reserva-cliente-2.png" width="45%"/>
+  <img src="client/my-reservations/Minha-Reserva-cliente.png" width="45%"/>
 </p>
 
 ---
 
 # ⚙️ Área Administrativa
+## 📊 Autenticação do admin/usuários
+<p align="center">
+  <img src="admin/autenticacao admin/autenticacao admin.png" width="700"/>
+</p>
 
 ## 📊 Dashboard
 <p align="center">
