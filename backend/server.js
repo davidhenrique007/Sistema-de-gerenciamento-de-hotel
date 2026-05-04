@@ -29,6 +29,8 @@ const reservaAdminRoutes = require('./routes/admin/reservaAdminRoutes');
 const utilizadorRoutes = require('./routes/admin/utilizadorRoutes');
 const logRoutes = require('./routes/admin/logRoutes');
 const relatorioRoutes = require('./routes/admin/relatorioRoutes');
+const financeiroRoutes = require('./routes/admin/financeiroRoutes');
+const reconciliacaoRoutes = require('./routes/admin/reconciliacaoRoutes');
 
 app.use('/api/reservas', reservaRoutes);
 app.use('/api/clientes', clienteRoutes);
@@ -40,6 +42,8 @@ app.use('/api/admin', reservaAdminRoutes);
 app.use('/api/admin', utilizadorRoutes);
 app.use('/api/admin', logRoutes);
 app.use('/api/admin', relatorioRoutes);
+app.use('/api/admin', financeiroRoutes);
+app.use('/api/admin', reconciliacaoRoutes);
 
 // ==================== ROTA DE LOGIN ====================
 app.post('/api/auth/login', async (req, res) => {

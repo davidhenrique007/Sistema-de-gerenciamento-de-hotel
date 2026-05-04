@@ -11,6 +11,7 @@ const Sidebar = ({ isOpen, onToggle, onLogout, user }) => {
     { path: '/admin/analises', label: 'Análises', icon: '📈', roles: ['admin', 'receptionist', 'financial'] },
     { path: '/admin/reservas', label: 'Reservas', icon: '📅', roles: ['admin', 'receptionist'] },
     { path: '/admin/pagamentos', label: 'Pagamentos', icon: '💰', roles: ['admin', 'financial'] },
+    { path: '/admin/financeiro', label: 'Financeiro', icon: '💰', roles: ['admin', 'financial'] },
     { path: '/admin/quartos', label: 'Quartos', icon: '🏨', roles: ['admin'] },
     { path: '/admin/relatorios', label: 'Relatórios', icon: '📊', roles: ['admin', 'financial'] },
     { path: '/admin/utilizadores', label: 'Utilizadores', icon: '👥', roles: ['admin'] },
