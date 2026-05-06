@@ -292,3 +292,22 @@
     padding: 12px;
   }
 }
+
+/* Título "Quartos em Destaque" */
+.title {
+  color: #ffffff !important;
+}
+
+/* Subtítulo "Explore nossos quartos..." */
+.subtitle {
+  color: #cccccc !important;
+}
+
+/* Stats "6 tipos de quartos" */
+.statItem {
+  color: #aaaaaa !important;
+}
+
+.statItem strong {
+  color: #c8a86b !important;  /* dourado para os números */
+}

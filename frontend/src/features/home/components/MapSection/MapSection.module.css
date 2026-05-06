@@ -3,7 +3,7 @@
 .mapSection {
   width: 100%;
   padding: 60px 20px;
-  background: #ffffff;
+  background: #0b303a;
 }
 
 .container {
@@ -19,13 +19,13 @@
 .title {
   font-size: 28px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: #46bff2;
   margin-bottom: 8px;
 }
 
 .subtitle {
   font-size: 16px;
-  color: #666666;
+  color: #f0e9e9;
 }
 
 .mapWrapper {
@@ -79,7 +79,7 @@
 
 .description {
   font-size: 14px;
-  color: #666;
+  color: #fffefe;
   margin-top: 8px;
   max-width: 600px;
   margin-left: auto;

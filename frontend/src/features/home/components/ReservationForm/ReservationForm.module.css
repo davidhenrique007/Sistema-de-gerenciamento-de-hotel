@@ -3,7 +3,7 @@
 .form {
   max-width: 900px;
   margin: 0 auto;
-  background: #ffffff;
+  background: #5e7f84;
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   padding: 1.5rem;
@@ -44,10 +44,10 @@
 .submitButton {
   width: 100%;
   padding: 0.875rem;
-  font-size: 0.9375rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  background: #c8a86b;
-  color: white;
+  background: #f3f4f4;
+  color: rgb(0, 0, 0);
   border: none;
   border-radius: 40px;
   cursor: pointer;

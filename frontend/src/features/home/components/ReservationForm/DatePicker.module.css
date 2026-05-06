@@ -1,7 +1,7 @@
 ﻿/* DatePicker.module.css - Design Compacto */
 
 .container {
-  background: #faf8f8;
+  background: #ffffff;
   border-radius: 12px;
   padding: 0.875rem;
   text-align: center;
@@ -10,9 +10,9 @@
 
 .label {
   display: block;
-  font-size: 0.7rem;
+  font-size: 1rem;
   font-weight: 600;
-  color: #6c757d;
+  color: #000000;
   margin-bottom: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;

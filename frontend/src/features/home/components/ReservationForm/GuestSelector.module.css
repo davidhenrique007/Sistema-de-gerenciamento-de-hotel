@@ -1,7 +1,7 @@
 ﻿/* GuestSelector.module.css - Design Compacto */
 
 .container {
-  background: #f8f9fa;
+  background: #f8faf8;
   border-radius: 12px;
   padding: 0.875rem;
   text-align: center;
@@ -10,9 +10,9 @@
 
 .label {
   display: block;
-  font-size: 0.7rem;
+  font-size: 1rem;
   font-weight: 600;
-  color: #6c757d;
+  color: #000000;
   margin-bottom: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -33,7 +33,7 @@
   display: block;
   font-size: 0.75rem;
   font-weight: 500;
-  color: #495057;
+  color: #000000;
   margin-bottom: 0.25rem;
 }
 
@@ -42,7 +42,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: white;
+  background: rgb(115, 116, 117);
   border-radius: 30px;
   padding: 0.125rem;
   border: 1px solid #e9ecef;
@@ -56,7 +56,7 @@
   background: #f8f9fa;
   font-size: 1rem;
   font-weight: 600;
-  color: #c8a86b;
+  color: #bb8b31;
   cursor: pointer;
   transition: all 0.2s ease;
 }
