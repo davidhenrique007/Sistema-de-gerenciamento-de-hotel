@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useWidgetSettings } from '@/hooks/useWidgetSettings';
 import LayoutAdmin from './components/LayoutAdmin';
 import CardMetrica from './components/CardMetrica';
 import HeatmapOcupacao from './components/HeatmapOcupacao';
@@ -10,6 +11,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { isWidgetEnabled } = useWidgetSettings();
 
   const carregarMetricas = useCallback(async () => {
     try {
@@ -21,8 +23,6 @@ const Dashboard = () => {
         return;
       }
       
-      console.log('🔑 Carregando métricas com token...');
-      
       const response = await fetch('http://localhost:5000/api/admin/dashboard/metrics', {
         method: 'GET',
         headers: {
@@ -32,7 +32,6 @@ const Dashboard = () => {
       });
       
       if (response.status === 401) {
-        console.error('❌ Token inválido ou expirado');
         localStorage.removeItem('admin_token');
         localStorage.removeItem('admin_user');
         navigate('/login-admin');
@@ -40,7 +39,6 @@ const Dashboard = () => {
       }
       
       const data = await response.json();
-      console.log('📊 Dados recebidos:', data);
       
       if (data.success) {
         setMetrics(data.data);
@@ -58,10 +56,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     carregarMetricas();
-    
-    // Polling a cada 30 segundos
     const interval = setInterval(carregarMetricas, 30000);
-    
     return () => clearInterval(interval);
   }, [carregarMetricas]);
 
@@ -113,65 +108,85 @@ const Dashboard = () => {
         </div>
 
         <div className={styles.metricsGrid}>
-          <CardMetrica
-            titulo="Reservas Hoje"
-            valor={metrics?.reservasHoje || 0}
-            icone="📅"
-            cor="blue"
-            variacao={metrics?.variacaoPercentual}
-            loading={loading}
-          />
-          <CardMetrica
-            titulo="Reservas no Mês"
-            valor={metrics?.reservasMes || 0}
-            icone="📊"
-            cor="purple"
-            loading={loading}
-          />
-          <CardMetrica
-            titulo="Quartos Ocupados"
-            valor={metrics?.quartosOcupados || 0}
-            icone="🏨"
-            cor="orange"
-            loading={loading}
-          />
-          <CardMetrica
-            titulo="Quartos Disponíveis"
-            valor={metrics?.quartosDisponiveis || 0}
-            icone="✅"
-            cor="green"
-            loading={loading}
-          />
-          <CardMetrica
-            titulo="Receita Hoje"
-            valor={metrics?.receitaDia || 0}
-            icone="💰"
-            cor="green"
-            loading={loading}
-          />
-          <CardMetrica
-            titulo="Receita no Mês"
-            valor={metrics?.receitaMes || 0}
-            icone="💵"
-            cor="blue"
-            loading={loading}
-          />
-          <CardMetrica
-            titulo="Taxa de Ocupação"
-            valor={`${metrics?.taxaOcupacao || 0}%`}
-            icone="📈"
-            cor="purple"
-            loading={loading}
-          />
+          {isWidgetEnabled('revenueChart') && (
+            <CardMetrica
+              titulo="Receita Hoje"
+              valor={metrics?.receitaDia || 0}
+              icone="💰"
+              cor="green"
+              loading={loading}
+            />
+          )}
+          
+          {isWidgetEnabled('revenueChart') && (
+            <CardMetrica
+              titulo="Receita no Mês"
+              valor={metrics?.receitaMes || 0}
+              icone="💵"
+              cor="blue"
+              loading={loading}
+            />
+          )}
+          
+          {isWidgetEnabled('occupancyChart') && (
+            <CardMetrica
+              titulo="Taxa de Ocupação"
+              valor={`${metrics?.taxaOcupacao || 0}%`}
+              icone="📈"
+              cor="purple"
+              loading={loading}
+            />
+          )}
+          
+          {isWidgetEnabled('availableRooms') && (
+            <>
+              <CardMetrica
+                titulo="Quartos Ocupados"
+                valor={metrics?.quartosOcupados || 0}
+                icone="🏨"
+                cor="orange"
+                loading={loading}
+              />
+              <CardMetrica
+                titulo="Quartos Disponíveis"
+                valor={metrics?.quartosDisponiveis || 0}
+                icone="✅"
+                cor="green"
+                loading={loading}
+              />
+            </>
+          )}
+          
+          {isWidgetEnabled('recentReservations') && (
+            <>
+              <CardMetrica
+                titulo="Reservas Hoje"
+                valor={metrics?.reservasHoje || 0}
+                icone="📅"
+                cor="blue"
+                variacao={metrics?.variacaoPercentual}
+                loading={loading}
+              />
+              <CardMetrica
+                titulo="Reservas no Mês"
+                valor={metrics?.reservasMes || 0}
+                icone="📊"
+                cor="purple"
+                loading={loading}
+              />
+            </>
+          )}
         </div>
 
-        <div className={styles.heatmapSection}>
-          <h3 className={styles.sectionTitle}>Mapa de Ocupação</h3>
-          <p className={styles.sectionSubtitle}>
-            Ocupação por tipo de quarto e disponibilidade
-          </p>
-          <HeatmapOcupacao />
-        </div>
+        {isWidgetEnabled('occupancyChart') && (
+          <div className={styles.heatmapSection}>
+            <h3 className={styles.sectionTitle}>Mapa de Ocupação</h3>
+            <p className={styles.sectionSubtitle}>
+              Ocupação por tipo de quarto e disponibilidade
+            </p>
+            <HeatmapOcupacao />
+          </div>
+        )}
 
         <div className={styles.updateInfo}>
           <span className={styles.updateIcon}>🔄</span>

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import FormQuarto from './FormQuarto';
 import styles from './ModalQuarto.module.css';
 
@@ -16,7 +16,7 @@ const ModalQuarto = ({ isOpen, onClose, title, initialData, onSubmit, loading })
       <div className={styles.modal}>
         <div className={styles.modalHeader}>
           <h2 className={styles.modalTitle}>{title}</h2>
-          <button onClick={onClose} className={styles.closeBtn}>×</button>
+          <button onClick={onClose} className={styles.closeBtn}>Fechar</button>
         </div>
         <div className={styles.modalBody}>
           <FormQuarto

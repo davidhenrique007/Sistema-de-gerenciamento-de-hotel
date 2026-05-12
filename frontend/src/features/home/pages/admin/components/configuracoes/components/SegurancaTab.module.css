@@ -1,0 +1,360 @@
+.container {
+  width: 100%;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  margin-bottom: 28px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.description {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.securityGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cardIcon {
+  font-size: 28px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-icon);
+  border-radius: 14px;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.cardDescription {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.cardContent {
+  padding: 20px 24px;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.infoRow:last-child {
+  border-bottom: none;
+}
+
+.infoLabel {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.infoValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.timeValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #10b981;
+}
+
+.roleBadge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.roleBadge.admin {
+  background: #8b5cf6;
+  color: white;
+}
+
+.roleBadge.receptionist {
+  background: #3b82f6;
+  color: white;
+}
+
+.roleBadge.financial {
+  background: #10b981;
+  color: white;
+}
+
+.logoutButton {
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px 16px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logoutButton:hover {
+  background: #dc2626;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+}
+
+.actionButton:hover:not(.disabled) {
+  background: var(--bg-card);
+  border-color: var(--border-hover);
+}
+
+.actionButton.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.actionIcon {
+  font-size: 24px;
+}
+
+.actionInfo {
+  flex: 1;
+  text-align: left;
+}
+
+.actionTitle {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.actionDesc {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.actionArrow {
+  color: var(--text-secondary);
+}
+
+.comingSoonBadge {
+  font-size: 11px;
+  padding: 4px 8px;
+  background: var(--bg-icon);
+  border-radius: 12px;
+  color: var(--text-secondary);
+}
+
+.permissionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.permissionItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  opacity: 0.5;
+}
+
+.permissionItem.allowed {
+  opacity: 1;
+  background: var(--bg-card);
+  border: 1px solid #10b981;
+}
+
+.permissionIcon {
+  font-size: 18px;
+}
+
+.permissionName {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.permissionStatus {
+  font-size: 16px;
+  color: #10b981;
+  font-weight: 600;
+}
+
+.logsPreview {
+  margin-top: 8px;
+}
+
+.logsTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.logItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 13px;
+}
+
+.logUser {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.logAction {
+  color: var(--text-secondary);
+  flex: 1;
+  margin: 0 12px;
+}
+
+.logDate {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.logsLoading, .logsEmpty {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-secondary);
+}
+
+.viewLogsButton {
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.viewLogsButton:hover {
+  background: var(--bg-secondary);
+  border-color: var(--border-hover);
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+  .securityGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .cardHeader {
+    padding: 16px 20px;
+  }
+
+  .cardContent {
+    padding: 16px 20px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .infoRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
+/* Tema Light */
+:root {
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --bg-card: #ffffff;
+  --bg-icon: #f1f5f9;
+  --bg-secondary: #f1f5f9;
+  --border-color: #e2e8f0;
+  --border-hover: #cbd5e1;
+}
+
+/* Tema Dark */
+[data-theme="dark"] {
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --bg-card: #1e293b;
+  --bg-icon: #334155;
+  --bg-secondary: #334155;
+  --border-color: #334155;
+  --border-hover: #475569;
+}
