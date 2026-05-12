@@ -31,7 +31,7 @@ const ModalCancelarReserva = ({ reserva, onClose, onConfirm }) => {
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
                 <div className={styles.modalHeader}>
                     <h2>Cancelar Reserva</h2>
-                    <button onClick={onClose}>×</button>
+                    <button onClick={onClose}>Fechar</button>
                 </div>
                 <div className={styles.modalContent}>
                     <p>Tem certeza que deseja cancelar a reserva <strong>{reserva.reservation_code}</strong>?</p>

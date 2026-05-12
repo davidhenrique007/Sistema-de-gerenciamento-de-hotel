@@ -1,27 +1,36 @@
-﻿import React from 'react';
+﻿// frontend/src/middlewares/ClienteRoute.jsx
+import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useCliente } from '@hooks/useCliente';
+import { useCliente } from '../contexts/ClienteContext';
+import { useI18n } from '../contexts/I18nContext';
 
 const ClienteRoute = ({ children, redirectTo = '/login-cliente' }) => {
   const { isIdentificado, loading, cliente } = useCliente();
+  const { t } = useI18n(); // Consumindo i18n para mensagens traduzidas
   const location = useLocation();
 
-  console.log('🔒🔒🔒 ClienteRoute EXECUTANDO 🔒🔒🔒');
+  // Mensagens traduzidas para debug/log (opcional)
+  console.log('🔒🔒🔒 ' + t('common.loading') + ' 🔒🔒🔒');
   console.log('  - loading:', loading);
   console.log('  - isIdentificado:', isIdentificado);
   console.log('  - path:', location.pathname);
 
   if (loading) {
-    console.log('  ⏳ Loading...');
-    return <div>Carregando...</div>;
+    console.log('  ⏳ ' + t('common.loading'));
+    // Mensagem de loading traduzida
+    return <div>{t('common.loading')}</div>;
   }
 
   if (!isIdentificado) {
-    console.log('  🚫 Redirecionando para:', redirectTo);
-    return <Navigate to={redirectTo} state={{ from: location.pathname }} replace />;
+    console.log('  🚫 ' + t('errors.access_denied') + ' ' + redirectTo);
+    // Redirecionamento com mensagem traduzida (opcional via toast/notification)
+    return <Navigate to={redirectTo} state={{ 
+      from: location.pathname,
+      message: t('errors.session_expired')
+    }} replace />;
   }
 
-  console.log('  ✅ Acesso permitido');
+  console.log('  ✅ ' + t('common.success'));
   return children;
 };
 

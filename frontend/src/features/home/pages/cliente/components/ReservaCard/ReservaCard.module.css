@@ -1,4 +1,4 @@
-.card {
+﻿.card {
     background: rgb(254, 252, 252);
     border-radius: 20px;
     margin-bottom: 20px;
@@ -188,4 +188,75 @@
     .priceValue {
         font-size: 18px;
     }
+}
+
+/* Ícones via CSS */
+.statusBadge.confirmed::before {
+    content: "✓";
+    margin-right: 4px;
+    color: #28a745;
+    font-weight: bold;
+}
+
+.cancelPolicy::before {
+    content: "⚠️";
+    margin-right: 6px;
+    color: #ffc107;
+}
+
+.priceLabel::before {
+    content: "💰";
+    margin-right: 6px;
+}
+
+.infoLabel.checkin::before {
+    content: "📅";
+    margin-right: 4px;
+}
+
+.infoLabel.checkout::before {
+    content: "📅";
+    margin-right: 4px;
+}
+
+.infoLabel.nights::before {
+    content: "🌙";
+    margin-right: 4px;
+}
+
+.infoLabel.guests::before {
+    content: "👥";
+    margin-right: 4px;
+}
+/* Labels com ícones */
+.checkinLabel::before {
+    content: "📅";
+    margin-right: 6px;
+}
+
+.checkoutLabel::before {
+    content: "📅";
+    margin-right: 6px;
+}
+
+.nightsLabel::before {
+    content: "🌙";
+    margin-right: 6px;
+}
+
+.guestsLabel::before {
+    content: "👥";
+    margin-right: 6px;
+}
+
+.priceLabel::before {
+    content: "💰";
+    margin-right: 6px;
+    font-size: 0.9rem;
+}
+
+.cancelPolicy::before {
+    content: "⚠️";
+    margin-right: 8px;
+    color: #ffc107;
 }

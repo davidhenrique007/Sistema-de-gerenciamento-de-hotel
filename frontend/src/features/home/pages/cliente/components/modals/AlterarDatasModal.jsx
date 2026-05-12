@@ -1,22 +1,30 @@
 ﻿import React, { useState } from 'react';
+import { useI18n } from '@/contexts/I18nContext';
+import { formatDate } from '@/core/utils/dateFormatter';
 import styles from './Modal.module.css';
 
 const AlterarDatasModal = ({ reserva, onConfirm, onClose }) => {
+    const { t, language } = useI18n();
     const [checkIn, setCheckIn] = useState(reserva.check_in?.split('T')[0] || '');
     const [checkOut, setCheckOut] = useState(reserva.check_out?.split('T')[0] || '');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    const getTranslation = (key, defaultValue) => {
+        const result = t(key);
+        return typeof result === 'string' ? result : defaultValue;
+    };
     
     const hoje = new Date().toISOString().split('T')[0];
     
     const handleConfirm = async () => {
         if (!checkIn || !checkOut) {
-            setError('Preencha as datas');
+            setError(getTranslation('errors.fill_dates', 'Preencha as datas'));
             return;
         }
         
         if (new Date(checkOut) <= new Date(checkIn)) {
-            setError('Check-out deve ser após check-in');
+            setError(getTranslation('errors.checkout_after_checkin', 'Check-out deve ser após check-in'));
             return;
         }
         
@@ -24,7 +32,7 @@ const AlterarDatasModal = ({ reserva, onConfirm, onClose }) => {
         try {
             await onConfirm(checkIn, checkOut);
         } catch (err) {
-            setError(err.message || 'Erro ao alterar reserva');
+            setError(err.message || getTranslation('errors.change_dates', 'Erro ao alterar reserva'));
         } finally {
             setLoading(false);
         }
@@ -34,18 +42,18 @@ const AlterarDatasModal = ({ reserva, onConfirm, onClose }) => {
         <div className={styles.modalOverlay} onClick={onClose}>
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
                 <div className={styles.modalHeader}>
-                    <h2>Alterar Datas da Reserva</h2>
-                    <button onClick={onClose} className={styles.closeButton}>×</button>
+                    <h2>{getTranslation('reservation.change_dates', 'Alterar Datas da Reserva')}</h2>
+                    <button onClick={onClose} className={styles.closeButton}>Fechar</button>
                 </div>
                 
                 <div className={styles.modalBody}>
-                    <p className={styles.reservaInfo}>
+                    <div className={styles.reservaInfo}>
                         <strong>{reserva?.reservation_code}</strong><br />
-                        Quarto {reserva?.room_number} - {reserva?.room_type}
-                    </p>
+                        {getTranslation('rooms.room', 'Quarto')} {reserva?.room_number} - {reserva?.room_type}
+                    </div>
                     
                     <div className={styles.formGroup}>
-                        <label>Check-in</label>
+                        <label>{getTranslation('reservation.checkin', 'Check-in')}</label>
                         <input
                             type="date"
                             value={checkIn}
@@ -56,7 +64,7 @@ const AlterarDatasModal = ({ reserva, onConfirm, onClose }) => {
                     </div>
                     
                     <div className={styles.formGroup}>
-                        <label>Check-out</label>
+                        <label>{getTranslation('reservation.checkout', 'Check-out')}</label>
                         <input
                             type="date"
                             value={checkOut}
@@ -71,14 +79,14 @@ const AlterarDatasModal = ({ reserva, onConfirm, onClose }) => {
                 
                 <div className={styles.modalFooter}>
                     <button onClick={onClose} className={styles.cancelButton}>
-                        Cancelar
+                        {getTranslation('common.cancel', 'Cancelar')}
                     </button>
                     <button 
                         onClick={handleConfirm}
                         disabled={loading}
                         className={styles.confirmButton}
                     >
-                        {loading ? 'Alterando...' : 'Confirmar alteração'}
+                        {loading ? getTranslation('common.changing', 'Alterando...') : getTranslation('common.confirm_change', 'Confirmar alteração')}
                     </button>
                 </div>
             </div>

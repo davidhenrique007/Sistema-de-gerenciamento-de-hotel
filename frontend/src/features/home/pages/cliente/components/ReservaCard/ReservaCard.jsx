@@ -1,13 +1,14 @@
-import React from 'react';
+﻿import React from 'react';
+import { useI18n } from '@/contexts/I18nContext';
+import { formatDate, calculateNights } from '@/core/utils/dateFormatter';
 import styles from './ReservaCard.module.css';
 
 const ReservaCard = ({ reserva, onAlterar, onTrocarQuarto, onCancelar, onRecibo }) => {
-    const formatarData = (data) => {
-        return new Date(data).toLocaleDateString('pt-BR', { 
-            day: '2-digit', 
-            month: 'short', 
-            year: 'numeric' 
-        }).replace('.', '');
+    const { t, language } = useI18n();
+
+    const getTranslation = (key, defaultValue) => {
+        const result = t(key);
+        return typeof result === 'string' ? result : defaultValue;
     };
 
     const formatarMoeda = (valor) => {
@@ -19,15 +20,25 @@ const ReservaCard = ({ reserva, onAlterar, onTrocarQuarto, onCancelar, onRecibo 
 
     const getTipoQuarto = (tipo) => {
         const tipos = {
-            standard: 'Quarto Standard',
-            deluxe: 'Suite Deluxe',
-            suite: 'Suite Presidencial',
-            family: 'Quarto Família'
+            standard: t('rooms.types.standard') || 'Standard',
+            deluxe: t('rooms.types.deluxe') || 'Deluxe',
+            suite: t('rooms.types.suite') || 'Suite',
+            family: t('rooms.types.family') || 'Family'
         };
         return tipos[tipo] || tipo;
     };
 
-    const noites = Math.ceil((new Date(reserva.check_out) - new Date(reserva.check_in)) / (1000 * 60 * 60 * 24));
+    const getStatusText = (status) => {
+        const statusMap = {
+            confirmed: getTranslation('reservation.confirmed', 'Confirmada'),
+            pending: getTranslation('reservation.pending', 'Pendente'),
+            cancelled: getTranslation('reservation.cancelled', 'Cancelada'),
+            finalized: getTranslation('reservation.finalized', 'Finalizada')
+        };
+        return statusMap[status] || status;
+    };
+
+    const noites = calculateNights(reserva.check_in, reserva.check_out);
 
     return (
         <div className={styles.card}>
@@ -35,7 +46,7 @@ const ReservaCard = ({ reserva, onAlterar, onTrocarQuarto, onCancelar, onRecibo 
                 <div className={styles.cardHeaderLeft}>
                     <span className={styles.reservaCode}>{reserva.reservation_code}</span>
                     <span className={`${styles.statusBadge} ${styles.confirmed}`}>
-                        ✓ Confirmada
+                        {getStatusText(reserva.status)}
                     </span>
                 </div>
                 <span className={styles.roomType}>
@@ -46,21 +57,21 @@ const ReservaCard = ({ reserva, onAlterar, onTrocarQuarto, onCancelar, onRecibo 
             <div className={styles.cardBody}>
                 <div className={styles.infoGrid}>
                     <div className={styles.infoItem}>
-                        <div className={styles.infoLabel}>CHECK-IN</div>
-                        <div className={styles.infoValue}>{formatarData(reserva.check_in)}</div>
+                        <div className={`${styles.infoLabel} ${styles.checkinLabel}`}>{getTranslation('reservation.checkin', 'CHECK-IN')}</div>
+                        <div className={styles.infoValue}>{formatDate(reserva.check_in, language)}</div>
                         <div className={styles.infoTime}>14:00</div>
                     </div>
                     <div className={styles.infoItem}>
-                        <div className={styles.infoLabel}>CHECK-OUT</div>
-                        <div className={styles.infoValue}>{formatarData(reserva.check_out)}</div>
+                        <div className={`${styles.infoLabel} ${styles.checkoutLabel}`}>{getTranslation('reservation.checkout', 'CHECK-OUT')}</div>
+                        <div className={styles.infoValue}>{formatDate(reserva.check_out, language)}</div>
                         <div className={styles.infoTime}>12:00</div>
                     </div>
                     <div className={styles.infoItem}>
-                        <div className={styles.infoLabel}>NOITES</div>
+                        <div className={`${styles.infoLabel} ${styles.nightsLabel}`}>{getTranslation('reservation.nights', 'NOITES')}</div>
                         <div className={styles.nightsValue}>{noites}</div>
                     </div>
                     <div className={styles.infoItem}>
-                        <div className={styles.infoLabel}>HÓSPEDES</div>
+                        <div className={`${styles.infoLabel} ${styles.guestsLabel}`}>{getTranslation('reservation.guests', 'HÓSPEDES')}</div>
                         <div className={styles.guestsValue}>
                             {reserva.adults_count || 2}
                             {reserva.children_count > 0 ? ` + ${reserva.children_count}` : ''}
@@ -69,27 +80,27 @@ const ReservaCard = ({ reserva, onAlterar, onTrocarQuarto, onCancelar, onRecibo 
                 </div>
 
                 <div className={styles.priceRow}>
-                    <span className={styles.priceLabel}>TOTAL</span>
+                    <span className={styles.priceLabel}>{getTranslation('common.total', 'TOTAL')}</span>
                     <span className={styles.priceValue}>{formatarMoeda(reserva.total_price)}</span>
                 </div>
 
                 <div className={styles.cancelPolicy}>
-                    <span>⚠️</span> Cancelamento grátis até 24h antes do check-in
+                    {getTranslation('policy.free_cancellation', 'Cancelamento grátis até 24h antes do check-in')}
                 </div>
             </div>
 
             <div className={styles.cardFooter}>
                 <button onClick={() => onAlterar(reserva)} className={`${styles.actionBtn} ${styles.alterarBtn}`}>
-                    Alterar Reserva
+                    {getTranslation('reservation.modify', 'Alterar Reserva')}
                 </button>
                 <button onClick={() => onTrocarQuarto(reserva)} className={`${styles.actionBtn} ${styles.trocarBtn}`}>
-                    Trocar Quarto
+                    {getTranslation('reservation.change_room', 'Trocar Quarto')}
                 </button>
                 <button onClick={() => onCancelar(reserva)} className={`${styles.actionBtn} ${styles.cancelarBtn}`}>
-                    Cancelar Reserva
+                    {getTranslation('reservation.cancel', 'Cancelar Reserva')}
                 </button>
                 <button onClick={() => onRecibo(reserva)} className={`${styles.actionBtn} ${styles.reciboBtn}`}>
-                    Reenviar Recibo
+                    {getTranslation('receipt.resend', 'Reenviar Recibo')}
                 </button>
             </div>
         </div>

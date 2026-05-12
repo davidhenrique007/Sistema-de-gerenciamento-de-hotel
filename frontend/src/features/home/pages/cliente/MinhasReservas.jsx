@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCliente } from '@hooks/useCliente';
+import { useI18n } from '@/contexts/I18nContext'; // ✅ CORRIGIDO
 import api from '@services/api';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -9,16 +10,33 @@ import HistoricoTable from './components/HistoricoTable/HistoricoTable';
 import PolicySection from './components/PolicySection/PolicySection';
 import AlterarDatasModal from './components/modals/AlterarDatasModal';
 import TrocarQuartoModal from './components/modals/TrocarQuartoModal';
+import CancelarReservaModal from './components/modals/CancelarReservaModal';
 import styles from './styles/MinhasReservas.module.css';
 
 const MinhasReservas = () => {
     const { cliente, isIdentificado, loading: authLoading } = useCliente();
+    const { t } = useI18n();
     const navigate = useNavigate();
     const [reservas, setReservas] = useState([]);
     const [historico, setHistorico] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [modalState, setModalState] = useState({ open: false, type: null, reserva: null });
+    const [cancelModal, setCancelModal] = useState({ open: false, reserva: null });
+
+    const getTranslation = (key, defaultValue) => {
+        const result = t(key);
+        return typeof result === 'string' ? result : defaultValue;
+    };
+
+    const showMessage = (message, isError = false) => {
+        const msg = getTranslation(message, message);
+        if (isError) {
+            alert(`❌ ${msg}`);
+        } else {
+            alert(`✅ ${msg}`);
+        }
+    };
 
     const carregarReservas = useCallback(async () => {
         if (!isIdentificado || !cliente?.id) {
@@ -43,11 +61,11 @@ const MinhasReservas = () => {
             setError(null);
         } catch (err) {
             console.error('Erro ao carregar reservas:', err);
-            setError('Não foi possível carregar suas reservas');
+            setError(getTranslation('errors.load_reservations', 'Não foi possível carregar suas reservas'));
         } finally {
             setLoading(false);
         }
-    }, [isIdentificado, cliente?.id]);
+    }, [isIdentificado, cliente?.id, t]);
 
     useEffect(() => {
         if (!authLoading && !isIdentificado) {
@@ -70,6 +88,10 @@ const MinhasReservas = () => {
         setModalState({ open: true, type: 'trocar', reserva });
     };
 
+    const handleCancelarClick = (reserva) => {
+        setCancelModal({ open: true, reserva });
+    };
+
     const handleConfirmarTroca = async (novoQuartoId, novoTotal) => {
         try {
             const response = await api.put(`/reservas/${modalState.reserva.id}/alterar`, {
@@ -78,42 +100,35 @@ const MinhasReservas = () => {
             });
             
             if (response.data.success) {
-                alert(response.data.message || 'Quarto alterado com sucesso!');
+                showMessage('success.room_changed', false);
                 setModalState({ open: false, type: null, reserva: null });
-                // Recarregar reservas sem recarregar a página
                 await carregarReservas();
             } else {
-                throw new Error(response.data.message || 'Erro ao trocar de quarto');
+                throw new Error(response.data.message || getTranslation('errors.change_room', 'Erro ao trocar de quarto'));
             }
         } catch (err) {
-            const errorMsg = err.response?.data?.message || err.message || 'Erro ao trocar de quarto';
-            alert(errorMsg);
+            const errorMsg = err.response?.data?.message || err.message || getTranslation('errors.change_room', 'Erro ao trocar de quarto');
+            showMessage(errorMsg, true);
             throw new Error(errorMsg);
         }
     };
 
-    const handleCancelar = async (reserva) => {
-        const checkIn = new Date(reserva.check_in);
-        const hoje = new Date();
-        const diffHoras = (checkIn - hoje) / (1000 * 60 * 60);
-        
-        let mensagem = `Tem certeza que deseja cancelar a reserva ${reserva.reservation_code}?`;
-        
-        if (diffHoras < 24) {
-            mensagem += `\n\n⚠️ ATENÇÃO: O check-in é em menos de 24h. O cancelamento pode estar sujeito a multa.`;
-        } else {
-            mensagem += `\n\n✓ Cancelamento grátis (até 24h antes do check-in).`;
-        }
-        
-        if (window.confirm(mensagem)) {
-            try {
-                await api.put(`/reservas/${reserva.id}/cancelar`, { motivo: 'Cancelado pelo cliente' });
-                alert('Reserva cancelada com sucesso!');
-                // Recarregar reservas sem recarregar a página
+    const handleConfirmarCancelamento = async (motivo) => {
+        try {
+            const response = await api.put(`/reservas/${cancelModal.reserva.id}/cancelar`, { 
+                motivo: motivo || 'Cancelado pelo cliente' 
+            });
+            
+            if (response.data.success) {
+                showMessage('success.reservation_cancelled', false);
+                setCancelModal({ open: false, reserva: null });
                 await carregarReservas();
-            } catch (err) {
-                alert('Erro ao cancelar reserva: ' + (err.response?.data?.message || err.message));
+            } else {
+                throw new Error(response.data.message || getTranslation('errors.cancel_reservation', 'Erro ao cancelar reserva'));
             }
+        } catch (err) {
+            const errorMsg = err.response?.data?.message || err.message || getTranslation('errors.cancel_reservation', 'Erro ao cancelar reserva');
+            showMessage(errorMsg, true);
         }
     };
 
@@ -125,16 +140,15 @@ const MinhasReservas = () => {
             });
             
             if (response.data.success) {
-                alert('Reserva alterada com sucesso!');
+                showMessage('success.reservation_changed', false);
                 setModalState({ open: false, type: null, reserva: null });
-                // Recarregar reservas sem recarregar a página
                 await carregarReservas();
             } else {
-                throw new Error(response.data.message || 'Erro ao alterar reserva');
+                throw new Error(response.data.message || getTranslation('errors.change_reservation', 'Erro ao alterar reserva'));
             }
         } catch (err) {
-            const errorMsg = err.response?.data?.message || err.message || 'Erro ao alterar reserva';
-            alert(errorMsg);
+            const errorMsg = err.response?.data?.message || err.message || getTranslation('errors.change_reservation', 'Erro ao alterar reserva');
+            showMessage(errorMsg, true);
             throw new Error(errorMsg);
         }
     };
@@ -148,7 +162,7 @@ const MinhasReservas = () => {
             <div className={styles.container}>
                 <div className={styles.loadingContainer}>
                     <div className={styles.spinner}></div>
-                    <p>Carregando suas reservas...</p>
+                    <p>{getTranslation('common.loading', 'Carregando suas reservas...')}</p>
                 </div>
             </div>
         );
@@ -170,12 +184,12 @@ const MinhasReservas = () => {
             )}
 
             <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Reservas Ativas</h2>
+                <h2 className={styles.sectionTitle}>{getTranslation('guest_area.active_reservations', 'Reservas Ativas')}</h2>
                 {reservas.length === 0 ? (
                     <div className={styles.emptyState}>
-                        <p>Você não possui reservas ativas.</p>
+                        <p>{getTranslation('guest_area.no_active_reservations', 'Você não possui reservas ativas.')}</p>
                         <button onClick={() => navigate('/')} className={styles.reservarButton}>
-                            Fazer uma reserva
+                            {getTranslation('guest_area.make_reservation', 'Fazer uma reserva')}
                         </button>
                     </div>
                 ) : (
@@ -185,8 +199,9 @@ const MinhasReservas = () => {
                             reserva={reserva}
                             onAlterar={handleAlterar}
                             onTrocarQuarto={handleTrocarQuarto}
-                            onCancelar={handleCancelar}
+                            onCancelar={handleCancelarClick}
                             onRecibo={handleRecibo}
+                            t={t}
                         />
                     ))
                 )}
@@ -194,7 +209,7 @@ const MinhasReservas = () => {
 
             {historico.length > 0 && (
                 <section className={styles.section}>
-                    <h2 className={styles.sectionTitle}>Histórico de Reservas</h2>
+                    <h2 className={styles.sectionTitle}>{getTranslation('guest_area.history', 'Histórico de Reservas')}</h2>
                     <HistoricoTable historico={historico} />
                 </section>
             )}
@@ -216,6 +231,15 @@ const MinhasReservas = () => {
                     reserva={modalState.reserva}
                     onConfirm={handleConfirmarTroca}
                     onClose={() => setModalState({ open: false, type: null, reserva: null })}
+                />
+            )}
+
+            {cancelModal.open && (
+                <CancelarReservaModal
+                    reserva={cancelModal.reserva}
+                    onConfirm={handleConfirmarCancelamento}
+                    onClose={() => setCancelModal({ open: false, reserva: null })}
+                    loading={false}
                 />
             )}
         </div>

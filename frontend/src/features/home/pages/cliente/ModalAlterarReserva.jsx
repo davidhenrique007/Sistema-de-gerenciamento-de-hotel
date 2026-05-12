@@ -36,7 +36,7 @@ const ModalAlterarReserva = ({ reserva, onClose, onConfirm }) => {
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
                 <div className={styles.modalHeader}>
                     <h2>Alterar Reserva</h2>
-                    <button onClick={onClose}>×</button>
+                    <button onClick={onClose}>Fechar</button>
                 </div>
                 <div className={styles.modalContent}>
                     <div className={styles.formGroup}>

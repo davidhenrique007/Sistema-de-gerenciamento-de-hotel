@@ -1,9 +1,16 @@
-// src/features/home/pages/cliente/components/modals/CancelarReservaModal.jsx
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
+import { useI18n } from '@/contexts/I18nContext';
+import { formatDate } from '@/core/utils/dateFormatter';
 import styles from './Modal.module.css';
 
 const CancelarReservaModal = ({ reserva, onConfirm, onClose, loading }) => {
+    const { t, language } = useI18n();
     const [motivo, setMotivo] = useState('');
+
+    const getTranslation = (key, defaultValue) => {
+        const result = t(key);
+        return typeof result === 'string' ? result : defaultValue;
+    };
 
     const handleConfirm = () => {
         if (motivo.trim()) {
@@ -15,28 +22,28 @@ const CancelarReservaModal = ({ reserva, onConfirm, onClose, loading }) => {
         <div className={styles.modalOverlay} onClick={onClose}>
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
                 <div className={styles.modalHeader}>
-                    <h2>Cancelar Reserva</h2>
-                    <button onClick={onClose} className={styles.closeButton}>×</button>
+                    <h2>{getTranslation('reservation.cancel', 'Cancelar Reserva')}</h2>
+                    <button onClick={onClose} className={styles.closeButton}>X</button>
                 </div>
                 
                 <div className={styles.modalBody}>
-                    <div className={styles.warningIcon}>⚠️</div>
+                    <div className={styles.warningIcon}>[!]</div>
                     <p className={styles.warningText}>
-                        Tem certeza que deseja cancelar a reserva?
+                        {getTranslation('reservation.cancel_confirm', 'Tem certeza que deseja cancelar a reserva?')}
                     </p>
                     <p className={styles.reservaInfo}>
                         <strong>{reserva?.reservation_code}</strong><br />
-                        Quarto {reserva?.room_number} - {reserva?.room_type}<br />
-                        Período: {new Date(reserva?.check_in).toLocaleDateString()} a {new Date(reserva?.check_out).toLocaleDateString()}
+                        {getTranslation('rooms.room', 'Quarto')} {reserva?.room_number} - {reserva?.room_type}<br />
+                        {getTranslation('reservation.period', 'Período')}: {formatDate(reserva?.check_in, language)} a {formatDate(reserva?.check_out, language)}
                     </p>
                     
                     <div className={styles.formGroup}>
-                        <label htmlFor="motivo">Motivo do cancelamento:</label>
+                        <label htmlFor="motivo">{getTranslation('reservation.cancel_reason', 'Motivo do cancelamento')}:</label>
                         <textarea
                             id="motivo"
                             value={motivo}
                             onChange={(e) => setMotivo(e.target.value)}
-                            placeholder="Por favor, informe o motivo do cancelamento..."
+                            placeholder={getTranslation('reservation.cancel_reason_placeholder', 'Por favor, informe o motivo do cancelamento...')}
                             rows={3}
                         />
                     </div>
@@ -44,14 +51,14 @@ const CancelarReservaModal = ({ reserva, onConfirm, onClose, loading }) => {
                 
                 <div className={styles.modalFooter}>
                     <button onClick={onClose} className={styles.cancelButton}>
-                        Voltar
+                        {getTranslation('common.back', 'Voltar')}
                     </button>
                     <button 
                         onClick={handleConfirm}
                         disabled={!motivo.trim() || loading}
                         className={styles.confirmButton}
                     >
-                        {loading ? 'Cancelando...' : 'Confirmar cancelamento'}
+                        {loading ? getTranslation('common.cancelling', 'Cancelando...') : getTranslation('common.confirm_cancel', 'Confirmar cancelamento')}
                     </button>
                 </div>
             </div>
