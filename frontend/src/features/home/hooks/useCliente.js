@@ -1,9 +1,10 @@
 // =====================================================
 // HOTEL PARADISE - HOOK USECLIENTE
 // Versão: 1.0.0
+// Localização: src/features/home/hooks/useCliente.js
 // =====================================================
 
-import { useCliente as useClienteContext } from '../../../contexts/ClienteContext'; 
+import { useCliente as useClienteContext } from '../../../contexts/ClienteContext'; // ✅ CORRIGIDO: 3 níveis para cima
 
 /**
  * Hook personalizado para acessar o contexto do cliente
@@ -11,6 +12,11 @@ import { useCliente as useClienteContext } from '../../../contexts/ClienteContex
  */
 export const useCliente = () => {
   const context = useClienteContext();
+  
+  // Validação de segurança
+  if (!context) {
+    throw new Error('useCliente must be used within ClienteProvider');
+  }
   
   // Funções auxiliares para uso comum
   const getNomeAbreviado = () => {
@@ -24,8 +30,8 @@ export const useCliente = () => {
   const getIniciais = () => {
     if (!context.cliente?.name) return '';
     const partes = context.cliente.name.split(' ');
-    if (partes.length === 1) return partes[0][0];
-    return `${partes[0][0]}${partes[partes.length-1][0]}`;
+    if (partes.length === 1) return partes[0][0].toUpperCase();
+    return `${partes[0][0]}${partes[partes.length-1][0]}`.toUpperCase();
   };
 
   const getTempoSessao = () => {
@@ -39,11 +45,16 @@ export const useCliente = () => {
     if (diffMin < 60) return `${diffMin} minutos`;
     
     const diffHr = Math.floor(diffMin / 60);
-    return diffHr === 1 ? '1 hora' : `${diffHr} horas`;
+    const diffRestoMin = diffMin % 60;
+    
+    if (diffHr === 1) {
+      return diffRestoMin > 0 ? `1 hora e ${diffRestoMin} minutos` : '1 hora';
+    }
+    return diffRestoMin > 0 ? `${diffHr} horas e ${diffRestoMin} minutos` : `${diffHr} horas`;
   };
 
   return {
-    // Dados do contexto
+    // Dados do contexto (espalhamento)
     ...context,
     
     // Dados derivados
@@ -55,10 +66,20 @@ export const useCliente = () => {
     temCliente: !!context.cliente,
     temEmail: !!context.cliente?.email,
     temDocumento: !!context.cliente?.document,
+    temTelefone: !!context.cliente?.phone,
     
     // Função para renovar sessão em ações importantes
     registrarAcao: () => {
-      context.renovarSessao();
+      if (context.renovarSessao) {
+        context.renovarSessao();
+      }
+    },
+    
+    // Função para logout rápido
+    sair: () => {
+      if (context.logoutCliente) {
+        context.logoutCliente();
+      }
     }
   };
 };
