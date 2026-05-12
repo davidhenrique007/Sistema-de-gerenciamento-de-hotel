@@ -1,14 +1,16 @@
 ﻿import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCliente } from "../../../contexts/ClienteContext";
+import { useI18n } from "../../../contexts/I18nContext";
 import FormularioIdentificacao from "../components/FormularioIdentificacao";
-import logoImage from "../../../assets/images/login/logo.png"; // Mesmo caminho do LoginAdmin
+import logoImage from "../../../assets/images/login/logo.png";
 import styles from "./LoginCliente.module.css";
 
 const LoginCliente = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { identificarCliente, cliente, loading } = useCliente();
+  const { t } = useI18n(); // Consumindo o contexto global de idioma
   const [error, setError] = useState(null);
 
   const handleSubmit = async (dados) => {
@@ -20,18 +22,35 @@ const LoginCliente = () => {
         const destino = location.state?.from || '/';
         navigate(destino, { replace: true });
       } else {
-        setError(resultado.error);
+        // Mapear erro para chave i18n
+        const errorKey = mapErrorToKey(resultado.error);
+        setError(t(errorKey));
       }
     } catch (err) {
-      setError('Erro ao conectar com o servidor. Tente novamente.');
+      setError(t('errors.server_error'));
     }
+  };
+
+  // Função para mapear erros do backend para chaves i18n
+  const mapErrorToKey = (errorMessage) => {
+    const errorMap = {
+      'Credenciais inválidas': 'errors.invalid_credentials',
+      'Invalid credentials': 'errors.invalid_credentials',
+      'Utilizador não encontrado': 'errors.user_not_found',
+      'User not found': 'errors.user_not_found',
+      'Email não verificado': 'errors.email_not_verified',
+      'Email not verified': 'errors.email_not_verified',
+      'Conta bloqueada': 'errors.account_locked',
+      'Account locked': 'errors.account_locked'
+    };
+    
+    return errorMap[errorMessage] || 'errors.login_failed';
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.illustration}>
-          {/* Logo com imagem real - mesmo padrão do LoginAdmin */}
           <div className={styles.logoContainer}>
             <div className={styles.logoCircle}></div>
             <img 
@@ -50,24 +69,24 @@ const LoginCliente = () => {
 
           <img 
             src="/assets/images/login-illustration.svg" 
-            alt="Faça sua reserva" 
+            alt={t('auth.login.title')}
             className={styles.illustrationImage}
           />
-          <h1>Finalize sua reserva em poucos passos</h1>
-          <p>Preencha seus dados e confirme sua estadia</p>
+          <h1>{t('auth.login.title')}</h1>
+          <p>{t('auth.login.subtitle')}</p>
           
           <div className={styles.benefits}>
             <div className={styles.benefit}>
               <span className={styles.benefitIcon}>✓</span>
-              <span>Processo rápido e seguro</span>
+              <span>{t('checkout.personal_data')}</span>
             </div>
             <div className={styles.benefit}>
               <span className={styles.benefitIcon}>✓</span>
-              <span>Dados protegidos com criptografia</span>
+              <span>{t('common.loading')}</span>
             </div>
             <div className={styles.benefit}>
               <span className={styles.benefitIcon}>✓</span>
-              <span>Confirmação imediata por e-mail</span>
+              <span>{t('common.confirm')}</span>
             </div>
           </div>
         </div>
@@ -82,16 +101,17 @@ const LoginCliente = () => {
           <FormularioIdentificacao 
             onSubmit={handleSubmit}
             isLoading={loading}
+            t={t}
           />
 
           {cliente && (
             <div className={styles.welcomeBack}>
-              <p>Bem-vindo de volta, {cliente.name.split(' ')[0]}!</p>
+              <p>{t('auth.login.welcome_back', { name: cliente.name.split(' ')[0] })}</p>
               <button 
                 onClick={() => navigate('/quartos/disponiveis')}
                 className={styles.continueButton}
               >
-                Continuar reserva
+                {t('common.next')}
               </button>
             </div>
           )}

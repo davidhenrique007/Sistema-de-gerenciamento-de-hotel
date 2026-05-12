@@ -1,4 +1,4 @@
-// ============================================
+﻿// ============================================
 // SERVICE: DefaultPricingService
 // ============================================
 // Responsabilidade: Centralizar lógica técnica de cálculo de preços
@@ -14,14 +14,14 @@ import { AppError, ValidationError } from '../../../../shared/utils/errorUtils.j
 import { createLogger } from '../../../utils.js';
 
 // ============================================
-// CONSTANTES - CONFIGURAÇÕES DE TAXAS
+// CONSTANTES - CONFIGURAÇÕES DE TAFecharAS
 // ============================================
 
-const DEFAULT_TAX_CONFIG = {
-  serviceTax: 0.10, // 10% de taxa de serviço
-  cityTax: 0.05,    // 5% de taxa municipal
+const DEFAULT_TAFechar_CONFIG = {
+  serviceTaFechar: 0.10, // 10% de taFechara de serviço
+  cityTaFechar: 0.05,    // 5% de taFechara municipal
   vat: 0.23,        // 23% de IVA
-  touristTax: 2.50  // Taxa turística fixa por noite
+  touristTaFechar: 2.50  // TaFechara turística fiFechara por noite
 };
 
 // ============================================
@@ -39,7 +39,7 @@ const DEFAULT_DISCOUNT_CONFIG = {
     { month: 1, discount: 0.10 },  // Ano Novo: 10%
     { month: 7, discount: 0.10 }   // Julho: 10%
   ],
-  maxTotalDiscount: 0.30, // 30% máximo acumulado
+  maFecharTotalDiscount: 0.30, // 30% máFecharimo acumulado
   earlyBirdDiscount: 0.05, // 5% para reservas com 30+ dias de antecedência
   lastMinuteDiscount: 0.10 // 10% para reservas com < 3 dias de antecedência
 };
@@ -68,10 +68,10 @@ class ServiceBreakdownItem {
 
   _getFormula(type, nights, guests, quantity) {
     const formulas = {
-      [ServiceType.PER_NIGHT]: `${quantity} × ${nights} noites`,
-      [ServiceType.PER_STAY]: `${quantity} × estadia`,
-      [ServiceType.PER_PERSON]: `${quantity} × ${guests} pessoas`,
-      [ServiceType.PER_PERSON_NIGHT]: `${quantity} × ${guests} pessoas × ${nights} noites`
+      [ServiceType.PER_NIGHT]: `${quantity} Fechar ${nights} noites`,
+      [ServiceType.PER_STAY]: `${quantity} Fechar estadia`,
+      [ServiceType.PER_PERSON]: `${quantity} Fechar ${guests} pessoas`,
+      [ServiceType.PER_PERSON_NIGHT]: `${quantity} Fechar ${guests} pessoas Fechar ${nights} noites`
     };
     return formulas[type] || 'cálculo personalizado';
   }
@@ -103,7 +103,7 @@ export class PriceBreakdown {
     guestsCount,
     services = [],
     discounts = [],
-    taxes = {},
+    taFechares = {},
     subtotal,
     total
   }) {
@@ -116,7 +116,7 @@ export class PriceBreakdown {
     this.checkOut = dateRange.checkOut.toISOString().split('T')[0];
     this.services = services;
     this.discounts = discounts;
-    this.taxes = taxes;
+    this.taFechares = taFechares;
     this.subtotal = {
       amount: subtotal.amount,
       formatted: subtotal.toString()
@@ -139,7 +139,7 @@ export class PriceBreakdown {
       checkOut: this.checkOut,
       services: this.services.map(s => s.toJSON()),
       discounts: this.discounts,
-      taxes: this.taxes,
+      taFechares: this.taFechares,
       subtotal: this.subtotal,
       total: this.total,
       timestamp: this.timestamp
@@ -154,16 +154,16 @@ export class PriceBreakdown {
 export class DefaultPricingService {
   /**
    * @param {Object} options - Opções de configuração
-   * @param {Object} options.taxConfig - Configuração de impostos
+   * @param {Object} options.taFecharConfig - Configuração de impostos
    * @param {Object} options.discountConfig - Configuração de descontos
    * @param {Object} options.logger - Logger (opcional)
    */
   constructor({ 
-    taxConfig = DEFAULT_TAX_CONFIG,
+    taFecharConfig = DEFAULT_TAFechar_CONFIG,
     discountConfig = DEFAULT_DISCOUNT_CONFIG,
     logger = createLogger('DefaultPricingService')
   } = {}) {
-    this.taxConfig = taxConfig;
+    this.taFecharConfig = taFecharConfig;
     this.discountConfig = discountConfig;
     this.logger = logger;
   }
@@ -177,7 +177,7 @@ export class DefaultPricingService {
    * @param {Array<Service>} params.services - Lista de serviços
    * @param {Object} params.options - Opções adicionais
    * @param {Date} params.options.checkInDate - Data de check-in (para descontos sazonais)
-   * @param {boolean} params.options.applyTaxes - Aplicar impostos (default: true)
+   * @param {boolean} params.options.applyTaFechares - Aplicar impostos (default: true)
    * @param {boolean} params.options.applyDiscounts - Aplicar descontos (default: true)
    * @returns {PriceBreakdown} Breakdown detalhado
    * @throws {ValidationError} Se parâmetros inválidos
@@ -215,13 +215,13 @@ export class DefaultPricingService {
       }
 
       // 6. Aplicar impostos
-      let taxResult = { taxes: {}, totalAfterTaxes: discountResult.totalAfterDiscounts };
-      if (options.applyTaxes !== false) {
-        taxResult = this._applyTaxes(discountResult.totalAfterDiscounts, dateRange);
+      let taFecharResult = { taFechares: {}, totalAfterTaFechares: discountResult.totalAfterDiscounts };
+      if (options.applyTaFechares !== false) {
+        taFecharResult = this._applyTaFechares(discountResult.totalAfterDiscounts, dateRange);
       }
 
       // 7. Calcular total final
-      const total = taxResult.totalAfterTaxes;
+      const total = taFecharResult.totalAfterTaFechares;
 
       // 8. Preparar breakdown
       const breakdown = new PriceBreakdown({
@@ -230,7 +230,7 @@ export class DefaultPricingService {
         guestsCount,
         services: serviceBreakdown.items,
         discounts: discountResult.discounts,
-        taxes: taxResult.taxes,
+        taFechares: taFecharResult.taFechares,
         subtotal,
         total
       });
@@ -398,21 +398,21 @@ export class DefaultPricingService {
       }
     }
 
-    // 4. Limitar desconto máximo
+    // 4. Limitar desconto máFecharimo
     const totalDiscountAmount = discounts.reduce((sum, d) => sum + d.amount, 0);
-    const maxDiscount = subtotal.multiply(this.discountConfig.maxTotalDiscount);
+    const maFecharDiscount = subtotal.multiply(this.discountConfig.maFecharTotalDiscount);
 
-    if (totalDiscountAmount > maxDiscount.amount) {
+    if (totalDiscountAmount > maFecharDiscount.amount) {
       // Ajustar descontos proporcionalmente
-      const factor = maxDiscount.amount / totalDiscountAmount;
+      const factor = maFecharDiscount.amount / totalDiscountAmount;
       
       discounts.forEach(d => {
         d.amount = d.amount * factor;
         d.amountFormatted = new Money(d.amount).toString();
-        d.description += ' (ajustado ao limite máximo)';
+        d.description += ' (ajustado ao limite máFecharimo)';
       });
 
-      currentTotal = subtotal.subtract(maxDiscount);
+      currentTotal = subtotal.subtract(maFecharDiscount);
     }
 
     return { discounts, totalAfterDiscounts: currentTotal };
@@ -422,61 +422,61 @@ export class DefaultPricingService {
    * Aplica impostos
    * @private
    */
-  _applyTaxes(subtotal, dateRange) {
-    const taxes = {};
+  _applyTaFechares(subtotal, dateRange) {
+    const taFechares = {};
 
-    // Taxa de serviço (percentual)
-    if (this.taxConfig.serviceTax > 0) {
-      const amount = subtotal.multiply(this.taxConfig.serviceTax);
-      taxes.serviceTax = {
-        rate: this.taxConfig.serviceTax * 100,
+    // TaFechara de serviço (percentual)
+    if (this.taFecharConfig.serviceTaFechar > 0) {
+      const amount = subtotal.multiply(this.taFecharConfig.serviceTaFechar);
+      taFechares.serviceTaFechar = {
+        rate: this.taFecharConfig.serviceTaFechar * 100,
         amount: amount.amount,
         amountFormatted: amount.toString()
       };
     }
 
-    // Taxa municipal (percentual)
-    if (this.taxConfig.cityTax > 0) {
-      const amount = subtotal.multiply(this.taxConfig.cityTax);
-      taxes.cityTax = {
-        rate: this.taxConfig.cityTax * 100,
+    // TaFechara municipal (percentual)
+    if (this.taFecharConfig.cityTaFechar > 0) {
+      const amount = subtotal.multiply(this.taFecharConfig.cityTaFechar);
+      taFechares.cityTaFechar = {
+        rate: this.taFecharConfig.cityTaFechar * 100,
         amount: amount.amount,
         amountFormatted: amount.toString()
       };
     }
 
     // IVA (percentual)
-    if (this.taxConfig.vat > 0) {
-      const amount = subtotal.multiply(this.taxConfig.vat);
-      taxes.vat = {
-        rate: this.taxConfig.vat * 100,
+    if (this.taFecharConfig.vat > 0) {
+      const amount = subtotal.multiply(this.taFecharConfig.vat);
+      taFechares.vat = {
+        rate: this.taFecharConfig.vat * 100,
         amount: amount.amount,
         amountFormatted: amount.toString()
       };
     }
 
-    // Taxa turística (fixa por noite)
-    if (this.taxConfig.touristTax > 0) {
+    // TaFechara turística (fiFechara por noite)
+    if (this.taFecharConfig.touristTaFechar > 0) {
       const nights = dateRange.getNights();
-      const amount = new Money(this.taxConfig.touristTax * nights);
-      taxes.touristTax = {
-        rate: `R$ ${this.taxConfig.touristTax.toFixed(2)}/noite`,
+      const amount = new Money(this.taFecharConfig.touristTaFechar * nights);
+      taFechares.touristTaFechar = {
+        rate: `R$ ${this.taFecharConfig.touristTaFechar.toFiFechared(2)}/noite`,
         amount: amount.amount,
         amountFormatted: amount.toString()
       };
     }
 
     // Calcular total de impostos
-    let totalTaxes = zeroMoney();
-    for (const tax of Object.values(taxes)) {
-      totalTaxes = totalTaxes.add(new Money(tax.amount));
+    let totalTaFechares = zeroMoney();
+    for (const taFechar of Object.values(taFechares)) {
+      totalTaFechares = totalTaFechares.add(new Money(taFechar.amount));
     }
 
-    const totalAfterTaxes = subtotal.add(totalTaxes);
+    const totalAfterTaFechares = subtotal.add(totalTaFechares);
 
     return {
-      taxes,
-      totalAfterTaxes
+      taFechares,
+      totalAfterTaFechares
     };
   }
 

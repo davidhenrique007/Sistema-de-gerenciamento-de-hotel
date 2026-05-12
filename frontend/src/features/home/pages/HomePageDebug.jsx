@@ -1,5 +1,5 @@
-// ============================================
-// PAGE: HomePageDebug (VERSÃO CORRIGIDA - HOOKS INCONDICIONAIS)
+﻿// ============================================
+// PAGE: HomePageDebug (VERSÃƒO CORRIGIDA - HOOKS INCONDICIONAIS)
 // ============================================
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -23,30 +23,30 @@ export const HomePageDebug = () => {
   const [activeHook, setActiveHook] = useState('data'); // 'data', 'reservation', 'form'
 
   // ========================================
-  // TODOS OS HOOKS SÃO CHAMADOS INCONDICIONALMENTE
+  // TODOS OS HOOKS SÃƒO CHAMADOS INCONDICIONALMENTE
   // ========================================
   
-  // Hook 1: useHomeData (sempre necessário)
+  // Hook 1: useHomeData (sempre necessÃ¡rio)
   const homeData = useHomeData({
     onError: (type, err) => notification.error(`Erro: ${err.message}`)
   });
 
-  // Hook 2: useHomeReservation (sempre chamado, mesmo se não usado)
+  // Hook 2: useHomeReservation (sempre chamado, mesmo se nÃ£o usado)
   const reservation = useHomeReservation({
     calculatePriceUseCase: null,
-    onPriceCalculated: (bd) => console.log('Preço calculado:', bd)
+    onPriceCalculated: (bd) => console.log('PreÃ§o calculado:', bd)
   });
 
-  // Hook 3: useReservationForm (sempre chamado, mesmo se não usado)
+  // Hook 3: useReservationForm (sempre chamado, mesmo se nÃ£o usado)
   const form = useReservationForm({
     reservationState: reservation.reservationState
   });
 
   // ========================================
-  // DESTRUTURAÇÃO CONDICIONAL (só afeta o retorno, não os hooks)
+  // DESTRUTURAÃ‡ÃƒO CONDICIONAL (sÃ³ afeta o retorno, nÃ£o os hooks)
   // ========================================
   
-  // Dados base (sempre disponíveis)
+  // Dados base (sempre disponÃ­veis)
   const {
     rooms,
     services,
@@ -74,7 +74,7 @@ export const HomePageDebug = () => {
     <div className="home-page">
       <Header onNavigate={navigate} />
       <main style={{ padding: '40px' }}>
-        <h1>🏨 Modo Debug - Hotel Paradise</h1>
+        <h1>ðŸ¨ Modo Debug - Hotel Paradise</h1>
         
         <div style={{ marginBottom: '30px', display: 'flex', gap: '10px' }}>
           <button 
@@ -98,26 +98,26 @@ export const HomePageDebug = () => {
         </div>
 
         <div style={{ background: '#f5f5f5', padding: '20px', borderRadius: '8px' }}>
-          <h3>📊 Status:</h3>
+          <h3>ðŸ“Š Status:</h3>
           <p>Quartos: {rooms.length}</p>
-          <p>Serviços: {services?.categories ? Object.keys(services.categories).length : 0}</p>
+          <p>ServiÃ§os: {services?.categories ? Object.keys(services.categories).length : 0}</p>
           <p>Hook Ativo: <strong>{activeHook}</strong></p>
           
-          {/* Renderização condicional apenas para exibição */}
+          {/* RenderizaÃ§Ã£o condicional apenas para exibiÃ§Ã£o */}
           {activeHook !== 'data' && (
             <>
               <p>Reserva: {reservation.room ? 'Quarto selecionado' : 'Nenhum quarto'}</p>
               {activeHook === 'form' && (
-                <p>Formulário: {form.isValid ? 'Válido' : 'Inválido'}</p>
+                <p>FormulÃ¡rio: {form.isValid ? 'VÃ¡lido' : 'InvÃ¡lido'}</p>
               )}
             </>
           )}
         </div>
 
-        {/* Simulador de seleção de quarto - só aparece se o hook de reserva estiver "ativo" para UI */}
+        {/* Simulador de seleÃ§Ã£o de quarto - sÃ³ aparece se o hook de reserva estiver "ativo" para UI */}
         {activeHook !== 'data' && rooms.length > 0 && (
           <div style={{ marginTop: '30px' }}>
-            <h3>🛏️ Simular Seleção de Quarto</h3>
+            <h3>ðŸ›ï¸ Simular SeleÃ§Ã£o de Quarto</h3>
             <button 
               onClick={() => reservation.selectRoom(rooms[0])}
               style={{ padding: '10px', marginRight: '10px' }}
@@ -126,7 +126,7 @@ export const HomePageDebug = () => {
             </button>
             {reservation.room && (
               <button onClick={() => reservation.clearReservation()}>
-                Limpar Seleção
+                Limpar SeleÃ§Ã£o
               </button>
             )}
           </div>
@@ -136,3 +136,5 @@ export const HomePageDebug = () => {
     </div>
   );
 };
+
+export default HomePageDebug;
