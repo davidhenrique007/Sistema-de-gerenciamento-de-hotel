@@ -39,7 +39,7 @@ const Toast = ({ message, title, type = 'info', duration = 5000, onClose }) => {
         <div className={styles.toastMessage}>{message}</div>
       </div>
       <button className={styles.toastClose} onClick={handleClose} aria-label="Fechar">
-        ✕
+        Fechar
       </button>
     </div>
   );

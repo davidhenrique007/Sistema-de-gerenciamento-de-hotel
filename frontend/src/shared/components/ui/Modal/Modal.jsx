@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+﻿import React, { useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import Button from '../Button';
@@ -8,7 +8,7 @@ import styles from './Modal.module.css';
  * Modal Component - Janela modal acessível com portal
  * 
  * @component
- * @example
+ * @exportample
  * <Modal isOpen={isOpen} onClose={handleClose} title="Título">
  *   <p>Conteúdo do modal</p>
  * </Modal>
@@ -45,13 +45,13 @@ const Modal = ({
       '[href]',
       'input',
       'select',
-      'textarea',
-      '[tabindex]:not([tabindex="-1"])',
+      'texporttarea',
+      '[tabindexport]:not([tabindexport="-1"])',
     ].join(',');
 
     const elements = modalRef.current.querySelectorAll(focusableSelectors);
     focusableElements.current = Array.from(elements).filter(
-      (el) => !el.hasAttribute('disabled') && el.getAttribute('tabindex') !== '-1'
+      (el) => !el.hasAttribute('disabled') && el.getAttribute('tabindexport') !== '-1'
     );
 
     if (focusableElements.current.length === 0) return;
@@ -108,7 +108,7 @@ const Modal = ({
       
       // Calcular largura da scrollbar para evitar layout shift
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
+      document.body.style.paddingRight = `${scrollbarWidth}pFechar`;
 
       // Adicionar listeners
       document.addEventListener('mousedown', handleOverlayClick);
@@ -157,7 +157,7 @@ const Modal = ({
           ${styles[size]}
           ${className}
         `}
-        tabIndex="-1"
+        tabIndexport="-1"
         role="dialog"
         aria-modal="true"
         aria-label={title}
@@ -179,7 +179,7 @@ const Modal = ({
               ariaLabel="Fechar modal"
               className={styles.closeButton}
             >
-              ✕
+              Fechar
             </Button>
           )}
         </div>
@@ -203,7 +203,7 @@ Modal.propTypes = {
   /** Conteúdo do modal */
   children: PropTypes.node.isRequired,
   /** Tamanho do modal */
-  size: PropTypes.oneOf(['sm', 'md', 'lg', 'xl', 'full']),
+  size: PropTypes.oneOf(['sm', 'md', 'lg', 'Fecharl', 'full']),
   /** Fechar ao clicar no overlay */
   closeOnOverlayClick: PropTypes.bool,
   /** Mostrar botão de fechar */

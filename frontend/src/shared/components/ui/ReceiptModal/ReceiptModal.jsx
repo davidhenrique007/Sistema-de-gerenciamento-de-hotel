@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+﻿import React, { useRef } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 // import html2canvas from 'html2canvas'; // REMOVIDO - não está sendo usado
@@ -18,7 +18,7 @@ const ReceiptModal = ({ isOpen, onClose, receiptData }) => {
     nights = 1,
     pricePerNight = 7000,
     servicesTotal = 0,
-    taxes = 350,
+    taFechares = 350,
     total = 7350,
     selectedServices = [],
     // NOVOS CAMPOS PARA PROFISSIONALIZAR O RECIBO
@@ -45,18 +45,18 @@ const ReceiptModal = ({ isOpen, onClose, receiptData }) => {
     
     // Título
     doc.setFontSize(20);
-    doc.setTextColor(37, 99, 235);
-    doc.text('HOTEL PARADISE', 105, 20, { align: 'center' });
+    doc.setTexporttColor(37, 99, 235);
+    doc.texportt('HOTEL PARADISE', 105, 20, { align: 'center' });
     
     doc.setFontSize(16);
-    doc.setTextColor(0, 0, 0);
-    doc.text('Recibo de Checkout', 105, 30, { align: 'center' });
+    doc.setTexporttColor(0, 0, 0);
+    doc.texportt('Recibo de Checkout', 105, 30, { align: 'center' });
     
     // Número do recibo e data
     doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.text(`Recibo Nº: ${receiptNumber}`, 20, 40);
-    doc.text(`Data: ${paymentDate}`, 190, 40, { align: 'right' });
+    doc.setTexporttColor(100, 100, 100);
+    doc.texportt(`Recibo Nº: ${receiptNumber}`, 20, 40);
+    doc.texportt(`Data: ${paymentDate}`, 190, 40, { align: 'right' });
     
     // Linha separadora
     doc.setDrawColor(37, 99, 235);
@@ -65,35 +65,35 @@ const ReceiptModal = ({ isOpen, onClose, receiptData }) => {
     
     // Informações do hóspede
     doc.setFontSize(12);
-    doc.setTextColor(100, 100, 100);
-    doc.text('Hóspede:', 20, 55);
-    doc.setTextColor(0, 0, 0);
-    doc.text(guestName, 60, 55);
+    doc.setTexporttColor(100, 100, 100);
+    doc.texportt('Hóspede:', 20, 55);
+    doc.setTexporttColor(0, 0, 0);
+    doc.texportt(guestName, 60, 55);
     
-    doc.setTextColor(100, 100, 100);
-    doc.text('Documento:', 20, 62);
-    doc.setTextColor(0, 0, 0);
-    doc.text(document, 60, 62);
+    doc.setTexporttColor(100, 100, 100);
+    doc.texportt('Documento:', 20, 62);
+    doc.setTexporttColor(0, 0, 0);
+    doc.texportt(document, 60, 62);
     
-    doc.setTextColor(100, 100, 100);
-    doc.text('Quarto:', 20, 69);
-    doc.setTextColor(0, 0, 0);
-    doc.text(roomNumber, 60, 69);
+    doc.setTexporttColor(100, 100, 100);
+    doc.texportt('Quarto:', 20, 69);
+    doc.setTexporttColor(0, 0, 0);
+    doc.texportt(roomNumber, 60, 69);
     
-    doc.setTextColor(100, 100, 100);
-    doc.text('Período:', 20, 76);
-    doc.setTextColor(0, 0, 0);
-    doc.text(`${checkIn} a ${checkOut}`, 60, 76);
+    doc.setTexporttColor(100, 100, 100);
+    doc.texportt('Período:', 20, 76);
+    doc.setTexporttColor(0, 0, 0);
+    doc.texportt(`${checkIn} a ${checkOut}`, 60, 76);
     
-    doc.setTextColor(100, 100, 100);
-    doc.text('Noites:', 20, 83);
-    doc.setTextColor(0, 0, 0);
-    doc.text(nights.toString(), 60, 83);
+    doc.setTexporttColor(100, 100, 100);
+    doc.texportt('Noites:', 20, 83);
+    doc.setTexporttColor(0, 0, 0);
+    doc.texportt(nights.toString(), 60, 83);
     
-    doc.setTextColor(100, 100, 100);
-    doc.text('Pagamento:', 20, 90);
-    doc.setTextColor(0, 0, 0);
-    doc.text(paymentMethod, 60, 90);
+    doc.setTexporttColor(100, 100, 100);
+    doc.texportt('Pagamento:', 20, 90);
+    doc.setTexporttColor(0, 0, 0);
+    doc.texportt(paymentMethod, 60, 90);
     
     // Tabela de valores
     const tableData = [];
@@ -101,7 +101,7 @@ const ReceiptModal = ({ isOpen, onClose, receiptData }) => {
     // Linha do quarto
     tableData.push(['Quarto', formatCurrency(roomSubtotal)]);
     
-    // Serviços extras
+    // Serviços exporttras
     if (selectedServices && selectedServices.length > 0) {
       selectedServices.forEach(service => {
         tableData.push([service.name, formatCurrency(service.price)]);
@@ -111,8 +111,8 @@ const ReceiptModal = ({ isOpen, onClose, receiptData }) => {
       tableData.push(['Total serviços', formatCurrency(servicesTotal)]);
     }
     
-    // Taxas
-    tableData.push(['Taxas', formatCurrency(taxes)]);
+    // TaFecharas
+    tableData.push(['TaFecharas', formatCurrency(taFechares)]);
     
     autoTable(doc, {
       startY: 100,
@@ -120,16 +120,16 @@ const ReceiptModal = ({ isOpen, onClose, receiptData }) => {
       body: tableData,
       foot: [['TOTAL PAGO', formatCurrency(total)]],
       theme: 'striped',
-      headStyles: { fillColor: [37, 99, 235], textColor: 255 },
-      footStyles: { fillColor: [240, 240, 240], textColor: [37, 99, 235], fontStyle: 'bold' },
+      headStyles: { fillColor: [37, 99, 235], texporttColor: 255 },
+      footStyles: { fillColor: [240, 240, 240], texporttColor: [37, 99, 235], fontStyle: 'bold' },
       alternateRowStyles: { fillColor: [245, 245, 245] },
     });
     
     // Rodapé
     const finalY = doc.lastAutoTable.finalY + 10;
     doc.setFontSize(10);
-    doc.setTextColor(150, 150, 150);
-    doc.text('Obrigado por escolher o Hotel Paradise.', 105, finalY, { align: 'center' });
+    doc.setTexporttColor(150, 150, 150);
+    doc.texportt('Obrigado por escolher o Hotel Paradise.', 105, finalY, { align: 'center' });
     
     // Salvar PDF
     doc.save(`recibo_quarto_${roomNumber}_${new Date().toISOString().slice(0,10)}.pdf`);
@@ -146,19 +146,19 @@ const ReceiptModal = ({ isOpen, onClose, receiptData }) => {
         <head>
           <title>Recibo - Hotel Paradise</title>
           <style>
-            body { font-family: Arial, sans-serif; padding: 40px; max-width: 600px; margin: 0 auto; }
-            h1 { color: #2563eb; text-align: center; }
-            h2 { color: #333; text-align: center; margin-bottom: 30px; }
-            .receipt-info { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 12px; color: #666; }
-            .info { margin-bottom: 30px; }
-            .info p { margin: 8px 0; }
-            .label { color: #666; display: inline-block; width: 100px; }
-            table { width: 100%; border-collapse: collapse; margin: 30px 0; }
-            th { background: #2563eb; color: white; padding: 12px; text-align: left; }
-            td { padding: 10px; border-bottom: 1px solid #ddd; }
+            body { font-family: Arial, sans-serif; padding: 40pFechar; maFechar-width: 600pFechar; margin: 0 auto; }
+            h1 { color: #2563eb; texportt-align: center; }
+            h2 { color: #333; texportt-align: center; margin-bottom: 30pFechar; }
+            .receipt-info { display: flexport; justify-content: space-between; margin-bottom: 20pFechar; font-size: 12pFechar; color: #666; }
+            .info { margin-bottom: 30pFechar; }
+            .info p { margin: 8pFechar 0; }
+            .label { color: #666; display: inline-block; width: 100pFechar; }
+            table { width: 100%; border-collapse: collapse; margin: 30pFechar 0; }
+            th { background: #2563eb; color: white; padding: 12pFechar; texportt-align: left; }
+            td { padding: 10pFechar; border-bottom: 1pFechar solid #ddd; }
             .total-row { font-weight: bold; background: #f0f0f0; }
-            .total-value { color: #2563eb; font-size: 18px; }
-            .footer { text-align: center; margin-top: 40px; color: #888; font-style: italic; }
+            .total-value { color: #2563eb; font-size: 18pFechar; }
+            .footer { texportt-align: center; margin-top: 40pFechar; color: #888; font-style: italic; }
           </style>
         </head>
         <body>
@@ -190,7 +190,7 @@ const ReceiptModal = ({ isOpen, onClose, receiptData }) => {
               ).join('') : ''}
               ${selectedServices && selectedServices.length > 0 ? 
                 `<tr><td><strong>Total serviços</strong></td><td><strong>${formatCurrency(servicesTotal)}</strong></td></tr>` : ''}
-              <tr><td>Taxas</td><td>${formatCurrency(taxes)}</td></tr>
+              <tr><td>TaFecharas</td><td>${formatCurrency(taFechares)}</td></tr>
             </tbody>
             <tfoot>
               <tr class="total-row"><td>TOTAL PAGO</td><td class="total-value">${formatCurrency(total)}</td></tr>
@@ -218,7 +218,7 @@ const ReceiptModal = ({ isOpen, onClose, receiptData }) => {
     // Criar corpo do email
     const subject = encodeURIComponent(`Recibo de Checkout - Quarto ${roomNumber}`);
     const body = encodeURIComponent(
-      `Segue em anexo o recibo de checkout do Hotel Paradise.\n\n` +
+      `Segue em anexporto o recibo de checkout do Hotel Paradise.\n\n` +
       `Recibo Nº: ${receiptNumber}\n` +
       `Data: ${paymentDate}\n` +
       `Hóspede: ${guestName}\n` +
@@ -246,7 +246,7 @@ const ReceiptModal = ({ isOpen, onClose, receiptData }) => {
       try {
         await navigator.share({
           title: 'Recibo Hotel Paradise',
-          text: `Recibo Nº: ${receiptNumber}\nQuarto ${roomNumber}\nTotal: ${formatCurrency(total)}`,
+          texportt: `Recibo Nº: ${receiptNumber}\nQuarto ${roomNumber}\nTotal: ${formatCurrency(total)}`,
           url: window.location.href,
         });
       } catch (error) {
@@ -254,7 +254,7 @@ const ReceiptModal = ({ isOpen, onClose, receiptData }) => {
       }
     } else {
       // Fallback para desktop - copiar para área de transferência
-      const shareText = 
+      const shareTexportt = 
         `HOTEL PARADISE - Recibo de Checkout\n` +
         `Recibo Nº: ${receiptNumber}\n` +
         `Data: ${paymentDate}\n` +
@@ -265,7 +265,7 @@ const ReceiptModal = ({ isOpen, onClose, receiptData }) => {
         `Forma de pagamento: ${paymentMethod}\n` +
         `Total pago: ${formatCurrency(total)}`;
       
-      navigator.clipboard.writeText(shareText).then(() => {
+      navigator.clipboard.writeTexportt(shareTexportt).then(() => {
         alert('Informações copiadas para a área de transferência!');
       }).catch(() => {
         alert('Clique em "Gerar PDF" para compartilhar');
@@ -276,7 +276,7 @@ const ReceiptModal = ({ isOpen, onClose, receiptData }) => {
   return (
     <div className={styles.overlay}>
       <div className={styles.modal}>
-        <button className={styles.closeButton} onClick={onClose}>×</button>
+        <button className={styles.closeButton} onClick={onClose}>Fechar</button>
 
         <div className={styles.header}>
           <h2 className={styles.title}>✅ PAGAMENTO CONCLUÍDO</h2>
@@ -336,8 +336,8 @@ const ReceiptModal = ({ isOpen, onClose, receiptData }) => {
 
             {selectedServices && selectedServices.length > 0 && (
               <>
-                {selectedServices.map((service, index) => (
-                  <div key={index} className={styles.tableRow}>
+                {selectedServices.map((service, indexport) => (
+                  <div key={indexport} className={styles.tableRow}>
                     <span className={styles.serviceName}>{service.name}</span>
                     <span>{formatCurrency(service.price)}</span>
                   </div>
@@ -353,8 +353,8 @@ const ReceiptModal = ({ isOpen, onClose, receiptData }) => {
             )}
 
             <div className={styles.tableRow}>
-              <span>Taxas</span>
-              <span>{formatCurrency(taxes)}</span>
+              <span>TaFecharas</span>
+              <span>{formatCurrency(taFechares)}</span>
             </div>
 
             <div className={styles.tableTotal}>

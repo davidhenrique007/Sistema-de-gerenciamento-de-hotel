@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Button from '../Button';
@@ -17,22 +17,22 @@ describe('Button Component', () => {
       render(<Button>Reservar</Button>);
       
       const button = screen.getByRole('button', { name: /reservar/i });
-      expect(button).toBeInTheDocument();
-      expect(button).toHaveTextContent('Reservar');
+      exportpect(button).toBeInTheDocument();
+      exportpect(button).toHaveTexporttContent('Reservar');
     });
 
     it('deve aplicar className customizada', () => {
       render(<Button className="custom-class">Teste</Button>);
       
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('custom-class');
+      exportpect(button).toHaveClass('custom-class');
     });
 
     it('deve passar props adicionais para o elemento', () => {
       render(<Button data-testid="test-button">Teste</Button>);
       
       const button = screen.getByTestId('test-button');
-      expect(button).toBeInTheDocument();
+      exportpect(button).toBeInTheDocument();
     });
   });
 
@@ -45,21 +45,21 @@ describe('Button Component', () => {
       render(<Button>Primary</Button>);
       
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('primary');
+      exportpect(button).toHaveClass('primary');
     });
 
     it('deve aplicar classe secondary quando variant="secondary"', () => {
       render(<Button variant="secondary">Secondary</Button>);
       
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('secondary');
+      exportpect(button).toHaveClass('secondary');
     });
 
     it('deve aplicar classe outline quando variant="outline"', () => {
       render(<Button variant="outline">Outline</Button>);
       
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('outline');
+      exportpect(button).toHaveClass('outline');
     });
   });
 
@@ -72,21 +72,21 @@ describe('Button Component', () => {
       render(<Button>Medium</Button>);
       
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('md');
+      exportpect(button).toHaveClass('md');
     });
 
     it('deve aplicar classe sm quando size="sm"', () => {
       render(<Button size="sm">Small</Button>);
       
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('sm');
+      exportpect(button).toHaveClass('sm');
     });
 
     it('deve aplicar classe lg quando size="lg"', () => {
       render(<Button size="lg">Large</Button>);
       
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('lg');
+      exportpect(button).toHaveClass('lg');
     });
   });
 
@@ -99,8 +99,8 @@ describe('Button Component', () => {
       render(<Button disabled>Desabilitado</Button>);
       
       const button = screen.getByRole('button');
-      expect(button).toBeDisabled();
-      expect(button).toHaveAttribute('aria-disabled', 'true');
+      exportpect(button).toBeDisabled();
+      exportpect(button).toHaveAttribute('aria-disabled', 'true');
     });
 
     it('não deve chamar onClick quando desabilitado', async () => {
@@ -114,7 +114,7 @@ describe('Button Component', () => {
       const button = screen.getByRole('button');
       await userEvent.click(button);
 
-      expect(handleClick).not.toHaveBeenCalled();
+      exportpect(handleClick).not.toHaveBeenCalled();
     });
   });
 
@@ -130,7 +130,7 @@ describe('Button Component', () => {
       const button = screen.getByRole('button');
       await userEvent.click(button);
 
-      expect(handleClick).toHaveBeenCalledTimes(1);
+      exportpect(handleClick).toHaveBeenCalledTimes(1);
     });
 
     it('deve passar o evento para onClick', async () => {
@@ -140,7 +140,7 @@ describe('Button Component', () => {
       const button = screen.getByRole('button');
       await userEvent.click(button);
 
-      expect(handleClick).toHaveBeenCalledWith(expect.any(Object));
+      exportpect(handleClick).toHaveBeenCalledWith(exportpect.any(Object));
     });
   });
 
@@ -153,21 +153,21 @@ describe('Button Component', () => {
       render(<Button>Botão</Button>);
       
       const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('type', 'button');
+      exportpect(button).toHaveAttribute('type', 'button');
     });
 
     it('deve aceitar type="submit"', () => {
       render(<Button type="submit">Submit</Button>);
       
       const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('type', 'submit');
+      exportpect(button).toHaveAttribute('type', 'submit');
     });
 
     it('deve aceitar type="reset"', () => {
       render(<Button type="reset">Reset</Button>);
       
       const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('type', 'reset');
+      exportpect(button).toHaveAttribute('type', 'reset');
     });
   });
 
@@ -180,14 +180,14 @@ describe('Button Component', () => {
       render(<Button fullWidth>Largura Total</Button>);
       
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('fullWidth');
+      exportpect(button).toHaveClass('fullWidth');
     });
 
     it('não deve aplicar fullWidth quando false', () => {
       render(<Button>Normal</Button>);
       
       const button = screen.getByRole('button');
-      expect(button).not.toHaveClass('fullWidth');
+      exportpect(button).not.toHaveClass('fullWidth');
     });
   });
 
@@ -200,19 +200,19 @@ describe('Button Component', () => {
       render(<Button loading>Carregando</Button>);
       
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('loading');
-      expect(button).toBeDisabled();
-      expect(button).toHaveAttribute('aria-busy', 'true');
+      exportpect(button).toHaveClass('loading');
+      exportpect(button).toBeDisabled();
+      exportpect(button).toHaveAttribute('aria-busy', 'true');
       
       // Verificar se o spinner está presente
       const spinner = document.querySelector(`.${styles.spinner}`);
-      expect(spinner).toBeInTheDocument();
+      exportpect(spinner).toBeInTheDocument();
     });
 
-    it('deve manter o texto visível durante loading', () => {
+    it('deve manter o texportto visível durante loading', () => {
       render(<Button loading>Salvar</Button>);
       
-      expect(screen.getByText('Salvar')).toBeInTheDocument();
+      exportpect(screen.getByTexportt('Salvar')).toBeInTheDocument();
     });
 
     it('não deve chamar onClick durante loading', async () => {
@@ -226,7 +226,7 @@ describe('Button Component', () => {
       const button = screen.getByRole('button');
       await userEvent.click(button);
 
-      expect(handleClick).not.toHaveBeenCalled();
+      exportpect(handleClick).not.toHaveBeenCalled();
     });
   });
 
@@ -238,7 +238,7 @@ describe('Button Component', () => {
     it('deve ter role="button"', () => {
       render(<Button>Botão</Button>);
       
-      expect(screen.getByRole('button')).toBeInTheDocument();
+      exportpect(screen.getByRole('button')).toBeInTheDocument();
     });
 
     it('deve ser focusable', async () => {
@@ -247,28 +247,28 @@ describe('Button Component', () => {
       const button = screen.getByRole('button');
       await userEvent.tab();
       
-      expect(button).toHaveFocus();
+      exportpect(button).toHaveFocus();
     });
 
     it('deve aceitar ariaLabel', () => {
-      render(<Button ariaLabel="Fechar modal">✕</Button>);
+      render(<Button ariaLabel="Fechar modal">Fechar</Button>);
       
       const button = screen.getByRole('button', { name: /fechar modal/i });
-      expect(button).toBeInTheDocument();
+      exportpect(button).toBeInTheDocument();
     });
 
     it('deve ter aria-disabled quando disabled', () => {
       render(<Button disabled>Desabilitado</Button>);
       
       const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('aria-disabled', 'true');
+      exportpect(button).toHaveAttribute('aria-disabled', 'true');
     });
 
     it('deve ter aria-busy quando loading', () => {
       render(<Button loading>Carregando</Button>);
       
       const button = screen.getByRole('button');
-      expect(button).toHaveAttribute('aria-busy', 'true');
+      exportpect(button).toHaveAttribute('aria-busy', 'true');
     });
   });
 
@@ -281,7 +281,7 @@ describe('Button Component', () => {
       const ref = React.createRef();
       render(<Button ref={ref}>Com ref</Button>);
       
-      expect(ref.current).toBeInstanceOf(HTMLButtonElement);
+      exportpect(ref.current).toBeInstanceOf(HTMLButtonElement);
     });
   });
 
@@ -296,6 +296,6 @@ describe('Button Component', () => {
       </Button>
     );
     
-    expect(container.firstChild).toMatchSnapshot();
+    exportpect(container.firstChild).toMatchSnapshot();
   });
 });
