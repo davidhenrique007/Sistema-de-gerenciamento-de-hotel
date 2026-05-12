@@ -1,59 +1,60 @@
 ﻿import React, { useState, useEffect } from 'react';
 import styles from '../styles/Checkout.module.css';
 
-const servicosDisponiveis = [
+const getServicosDisponiveis = (t) => [
   {
     id: 'cafe_manha',
-    nome: 'Café da manhã',
-    descricao: 'Café da manhã completo com opções regionais',
+    nome: t('services.breakfast'),
+    descricao: t('services.breakfast_desc'),
     preco: 300,
     tipo: 'por_noite',
     icone: '🍳'
   },
   {
     id: 'spa',
-    nome: 'Spa & Bem-estar',
-    descricao: 'Sessão de massagem relaxante',
+    nome: t('services.spa'),
+    descricao: t('services.spa_desc'),
     preco: 2000,
     tipo: 'por_noite',
     icone: '💆'
   },
   {
     id: 'piscina',
-    nome: 'Piscina aquecida',
-    descricao: 'Acesso à piscina aquecida',
+    nome: t('services.pool'),
+    descricao: t('services.pool_desc'),
     preco: 1000,
     tipo: 'por_noite',
     icone: '🏊'
   },
   {
     id: 'academia',
-    nome: 'Academia moderna',
-    descricao: 'Equipamentos modernos e acompanhamento',
+    nome: t('services.gym'),
+    descricao: t('services.gym_desc'),
     preco: 1500,
     tipo: 'por_noite',
     icone: '💪'
   },
   {
     id: 'translado',
-    nome: 'Translado aeroporto',
-    descricao: 'Ida e volta ao aeroporto',
+    nome: t('services.airport_shuttle'),
+    descricao: t('services.airport_shuttle_desc'),
     preco: 1000,
     tipo: 'unico',
     icone: '🚗'
   },
   {
     id: 'wifi_premium',
-    nome: 'Wi-Fi Premium',
-    descricao: 'Internet de alta velocidade',
+    nome: t('services.wifi_premium'),
+    descricao: t('services.wifi_premium_desc'),
     preco: 500,
     tipo: 'por_noite',
     icone: '📶'
   }
 ];
 
-const ServicosAdicionais = ({ nights, servicosSelecionados, onServicosChange }) => {
+const ServicosAdicionais = ({ nights, servicosSelecionados, onServicosChange, t }) => {
   const [servicosTemp, setServicosTemp] = useState([]);
+  const servicosDisponiveis = getServicosDisponiveis(t);
 
   useEffect(() => {
     setServicosTemp(servicosSelecionados || []);
@@ -88,21 +89,19 @@ const ServicosAdicionais = ({ nights, servicosSelecionados, onServicosChange }) 
 
   return (
     <div className={styles.servicosContainer}>
-      {/* Cabeçalho simplificado - apenas título e subtítulo */}
       <div className={styles.servicosHeader}>
         <h3 className={styles.servicosTitle}>
-          ✨ Serviços Adicionais
+          ✨ {t('checkout.additional_services')}
         </h3>
         <p className={styles.servicosSubtitle}>
-          Personalize sua estadia com serviços exclusivos
+          {t('checkout.personalize_your_stay')}
         </p>
       </div>
 
-      {/* Grid de Serviços - sem filtros de categoria */}
       <div className={styles.servicosGrid}>
         {servicosDisponiveis.map(servico => {
           const precoExibido = servico.tipo === 'por_noite' 
-            ? `${formatCurrency(servico.preco)} / noite`
+            ? `${formatCurrency(servico.preco)} ${t('services.per_night')}`
             : formatCurrency(servico.preco);
           
           const precoTotal = servico.tipo === 'por_noite' 
@@ -122,7 +121,7 @@ const ServicosAdicionais = ({ nights, servicosSelecionados, onServicosChange }) 
                   <span className={styles.precoPorNoite}>{precoExibido}</span>
                   {isSelecionado(servico.id) && (
                     <span className={styles.precoTotal}>
-                      Total: {formatCurrency(precoTotal)}
+                      {t('common.total')}: {formatCurrency(precoTotal)}
                     </span>
                   )}
                 </div>
@@ -131,19 +130,18 @@ const ServicosAdicionais = ({ nights, servicosSelecionados, onServicosChange }) 
                 className={`${styles.servicoButton} ${isSelecionado(servico.id) ? styles.buttonRemover : styles.buttonAdicionar}`}
                 onClick={() => handleToggleServico(servico)}
               >
-                {isSelecionado(servico.id) ? 'Remover' : 'Adicionar'}
+                {isSelecionado(servico.id) ? t('common.remove') : t('common.add')}
               </button>
             </div>
           );
         })}
       </div>
 
-      {/* Resumo dos Serviços Selecionados */}
       {servicosTemp.length > 0 && (
         <div className={styles.servicosResumo}>
           <div className={styles.resumoHeader}>
-            <span>📋 Serviços selecionados ({servicosTemp.length})</span>
-            <span className={styles.resumoTotal}>Total: {formatCurrency(totalServicos)}</span>
+            <span>📋 {t('services.selected_services')} ({servicosTemp.length})</span>
+            <span className={styles.resumoTotal}>{t('services.total_services')}: {formatCurrency(totalServicos)}</span>
           </div>
           <div className={styles.resumoLista}>
             {servicosTemp.map(servico => (
@@ -151,7 +149,7 @@ const ServicosAdicionais = ({ nights, servicosSelecionados, onServicosChange }) 
                 <span>{servico.icone} {servico.nome}</span>
                 <span>
                   {servico.tipo === 'por_noite' 
-                    ? `${formatCurrency(servico.preco)} x ${nights} noites`
+                    ? `${formatCurrency(servico.preco)} x ${nights} ${t('reservation.nights')}`
                     : formatCurrency(servico.preco)}
                   = {formatCurrency(servico.tipo === 'por_noite' ? servico.preco * nights : servico.preco)}
                 </span>

@@ -1,5 +1,6 @@
 ﻿// =====================================================
 // COMPONENTE - MODAL DE SELEÇÃO DE QUARTO (MÚLTIPLA)
+// Versão: 2.0.0 (Com suporte a i18n - CORRIGIDO)
 // =====================================================
 
 import React, { useState, useEffect } from 'react';
@@ -14,12 +15,20 @@ const ModalSelecionarQuarto = ({
   onConfirm,
   quartosTemp,
   onToggleTemp,
-  tipoQuarto
+  tipoQuarto,
+  t
 }) => {
   const [quartos, setQuartos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [usingFallback, setUsingFallback] = useState(false);
+
+  // Função segura para obter tradução
+  const getTranslation = (key, defaultValue) => {
+    const result = t(key);
+    if (typeof result === 'string') return result;
+    return defaultValue;
+  };
 
   // Normalizar tipo para o banco
   const normalizarTipo = (tipo) => {
@@ -55,7 +64,6 @@ const ModalSelecionarQuarto = ({
       const response = await api.get(`/quartos/disponiveis?tipo=${tipoNormalizado}`);
       console.log('📦 Resposta da API:', response.data);
       
-      // Verificar estrutura da resposta
       let quartosData = [];
       if (response.data && response.data.data) {
         quartosData = response.data.data;
@@ -64,11 +72,10 @@ const ModalSelecionarQuarto = ({
       }
       
       if (quartosData && quartosData.length > 0) {
-        // Mapear os dados corretamente - usando os campos do banco
         const quartosComAndar = quartosData.map(q => ({
           id: q.id,
-          numero: q.room_number || q.numero,      // room_number do banco
-          tipo: q.type || q.tipo,                 // type do banco
+          numero: q.room_number || q.numero,
+          tipo: q.type || q.tipo,
           status: q.status,
           preco: q.price_per_night || q.preco,
           andar: q.floor || calcularAndar(q.room_number || q.numero)
@@ -92,7 +99,6 @@ const ModalSelecionarQuarto = ({
     setUsingFallback(true);
     const tipoNormalizado = normalizarTipo(tipo);
     
-    // Criar dados mockados com números sequenciais
     const mockQuartos = [];
     const prefixo = tipoNormalizado === 'standard' ? 1 : 
                      tipoNormalizado === 'deluxe' ? 15 :
@@ -117,7 +123,7 @@ const ModalSelecionarQuarto = ({
     setQuartos(mockQuartos);
     console.log('📦 Usando dados mockados:', mockQuartos.length);
     if (mockQuartos.length === 0) {
-      setError(`Nenhum quarto do tipo "${tipo}" encontrado.`);
+      setError(getTranslation('errors.room_unavailable', `Nenhum quarto do tipo "${tipo}" encontrado.`));
     }
   };
 
@@ -149,14 +155,20 @@ const ModalSelecionarQuarto = ({
         {/* Cabeçalho */}
         <div className={styles.modalHeader}>
           <div>
-            <h2 className={styles.modalTitle}>Selecionar Quarto {tipoQuarto}</h2>
-            <p className={styles.modalSubtitle}>Escolha os quartos disponíveis para sua reserva</p>
+            <h2 className={styles.modalTitle}>
+              {getTranslation('reservation.select_room', 'Selecionar Quarto')} {tipoQuarto}
+            </h2>
+            <p className={styles.modalSubtitle}>
+              {getTranslation('reservation.choose_rooms_available', 'Escolha os quartos disponíveis para sua reserva')}
+            </p>
             <small className={styles.modalStats}>
-              Total: {quartos.length} | Disponíveis: {totalDisponiveis}
-              {usingFallback && <span style={{ marginLeft: '10px', color: '#ffc107' }}>⚠️ Dados de exemplo</span>}
+              {getTranslation('reservation.total', 'Total')}: {quartos.length} | {getTranslation('rooms.available', 'Disponíveis')}: {totalDisponiveis}
+              {usingFallback && <span style={{ marginLeft: '10px', color: '#ffc107' }}>⚠️ {getTranslation('common.demo_data', 'Dados de exemplo')}</span>}
             </small>
           </div>
-          <button onClick={onClose} className={styles.closeButton}>✕</button>
+          <button onClick={onClose} className={styles.closeButton} aria-label={getTranslation('common.close', 'Fechar')}>
+            X
+          </button>
         </div>
 
         {/* Corpo */}
@@ -166,13 +178,13 @@ const ModalSelecionarQuarto = ({
             <div className={styles.errorMessage}>
               <p>{error}</p>
               <button onClick={() => buscarQuartos(tipoQuarto)} className={styles.retryButton}>
-                Tentar novamente
+                {getTranslation('common.retry', 'Tentar novamente')}
               </button>
             </div>
           )}
           {!loading && !error && quartos.length === 0 && (
             <div className={styles.emptyMessage}>
-              <p>Nenhum quarto disponível para este tipo.</p>
+              <p>{getTranslation('checkout.no_room_selected', 'Nenhum quarto disponível para este tipo.')}</p>
             </div>
           )}
           {!loading && !error && quartos.length > 0 && (
@@ -180,6 +192,7 @@ const ModalSelecionarQuarto = ({
               quartos={quartos}
               quartosTemp={quartosTemp}
               onToggle={onToggleTemp}
+              t={t}
             />
           )}
         </div>
@@ -188,18 +201,20 @@ const ModalSelecionarQuarto = ({
         <div className={styles.modalFooter}>
           <div className={styles.quartosSelecionadosInfo}>
             {quartosTemp.length > 0 && (
-              <span>{quartosTemp.length} quarto(s) selecionado(s)</span>
+              <span>
+                {quartosTemp.length} {getTranslation('reservation.rooms_selected', 'quarto(s) selecionado(s)')}
+              </span>
             )}
           </div>
           <button onClick={onClose} className={styles.buttonCancel}>
-            Cancelar
+            {getTranslation('common.cancel', 'Cancelar')}
           </button>
           <button
             onClick={onConfirm}
             disabled={quartosTemp.length === 0}
             className={styles.buttonConfirm}
           >
-            Confirmar ({quartosTemp.length})
+            {getTranslation('common.confirm', 'Confirmar')} ({quartosTemp.length})
           </button>
         </div>
       </div>

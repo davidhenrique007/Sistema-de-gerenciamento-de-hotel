@@ -1,12 +1,19 @@
-﻿import React from 'react';
+import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
+import { useI18n } from '../../../../../../contexts/I18nContext';
 import styles from './QRCodeGenerator.module.css';
 
 const QRCodeGenerator = ({ value, size = 120 }) => {
+    const { t } = useI18n();
+    
     if (!value) return null;
     
-    // URL para validação da reserva
     const qrValue = `${window.location.origin}/validar-reserva/${value}`;
+    
+    const getTranslation = (key, defaultValue) => {
+        const result = t(key);
+        return typeof result === 'string' ? result : defaultValue;
+    };
     
     return (
         <div className={styles.qrContainer}>
@@ -17,7 +24,7 @@ const QRCodeGenerator = ({ value, size = 120 }) => {
                 includeMargin={true}
                 className={styles.qrCode}
             />
-            <p className={styles.qrLabel}>Escaneie para validar reserva</p>
+            <p className={styles.qrLabel}>{getTranslation('qr.scan_validate', 'Escaneie para validar reserva')}</p>
         </div>
     );
 };

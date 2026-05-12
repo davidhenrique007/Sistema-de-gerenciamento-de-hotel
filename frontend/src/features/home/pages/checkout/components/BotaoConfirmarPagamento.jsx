@@ -1,5 +1,6 @@
 // =====================================================
 // COMPONENTE - BOTÃO CONFIRMAR PAGAMENTO
+// Versão: 2.0.0 (Com suporte a i18n)
 // =====================================================
 
 import React from 'react';
@@ -9,8 +10,25 @@ const BotaoConfirmarPagamento = ({
   isFormValid, 
   isLoading, 
   onClick,
-  texto = 'Confirmar Pagamento'
+  texto,
+  t  // ✅ Adicionado suporte a i18n
 }) => {
+  // Função para obter o texto do botão com fallback
+  const getButtonText = () => {
+    if (isLoading) {
+      return t('common.loading') || 'Processando...';
+    }
+    if (texto) {
+      return texto;
+    }
+    return t('payment.confirm_button') || 'Confirmar Pagamento';
+  };
+
+  // Função para obter a mensagem de hint
+  const getHintMessage = () => {
+    return t('checkout.fill_required_fields') || 'Preencha todos os campos obrigatórios e selecione um método de pagamento';
+  };
+
   return (
     <div className={styles.confirmButtonContainer}>
       <button
@@ -21,16 +39,16 @@ const BotaoConfirmarPagamento = ({
         {isLoading ? (
           <>
             <span className={styles.spinner}></span>
-            Processando...
+            {getButtonText()}
           </>
         ) : (
-          texto
+          getButtonText()
         )}
       </button>
       
       {!isFormValid && (
         <p className={styles.confirmHint}>
-          Preencha todos os campos obrigatórios e selecione um método de pagamento
+          {getHintMessage()}
         </p>
       )}
     </div>

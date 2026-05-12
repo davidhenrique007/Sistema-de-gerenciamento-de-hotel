@@ -1,8 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useCart } from '@contexts/CartContext';
-import { useServices } from '@contexts/ServicesContext';
+import { useCart } from '@contexts/Cartcontext';
+import { useServices } from '@contexts/Servicescontext';
 import { useCliente } from '@hooks/useCliente';
+import { useI18n } from '../../../../contexts/I18ncontext';
 import { useModalQuarto } from './hooks/useModalQuarto';
 import ResumoReserva from './components/ResumoReserva';
 import ModalSelecionarQuarto from './components/room-selection/ModalSelecionarQuarto';
@@ -27,7 +28,6 @@ const getRealRoomId = (mockId) => {
   if (!mockId) return null;
   
   const roomMap = {
-    // Quartos reais do banco
     '38': '533fc3b1-864b-40b6-81a9-77a414f6872f',
     '28': 'd4cbe344-e7a2-43bd-8b6d-887ad72edf1d',
     '44': '11b74d81-a107-4480-a109-c93bc37038d5',
@@ -38,7 +38,6 @@ const getRealRoomId = (mockId) => {
     '39': '3a24563f-8e23-4995-bda6-9c6b93899b6f',
     '07': 'd129ba9d-bb77-4294-a4d6-795a3806aa47',
     '06': '7350e309-0234-4b10-97b6-887b0528b92c',
-    // Mapeamento de nomes antigos
     'room-002': 'd4cbe344-e7a2-43bd-8b6d-887ad72edf1d',
     'room-004': '3fdadf3f-b5b5-444b-bda9-42beaacf6bfc',
     'mock-43': '8549a901-efac-4037-889b-fab8c10f9246',
@@ -51,8 +50,9 @@ const getRealRoomId = (mockId) => {
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const { t } = useI18n(); // ✅ Consumindo i18n
   const { reservation, room } = useCart();
-  const { servicosSelecionados: servicosContexto } = useServices();
+  const { servicosSelecionados: servicoscontexto } = useServices();
   const { cliente, isIdentificado } = useCliente();
   const modalQuarto = useModalQuarto();
 
@@ -67,9 +67,10 @@ const Checkout = () => {
   const [paymentDetails, setPaymentDetails] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [servicosSelecionados, setServicosSelecionados] = useState([]);
-  const [taxaImposto] = useState(0.05);
+  const [taFecharaImposto] = useState(0.05);
   const [reservaId, setReservaId] = useState(null);
   const [pagamentoStatus, setPagamentoStatus] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const { errors, isFormValid } = useValidacaoCheckout(guestData, paymentMethod, paymentDetails);
 
@@ -78,10 +79,10 @@ const Checkout = () => {
   }, [reservation, room, navigate]);
 
   useEffect(() => {
-    if (servicosContexto && servicosContexto.length > 0) {
-      setServicosSelecionados(servicosContexto);
+    if (servicoscontexto && servicoscontexto.length > 0) {
+      setServicosSelecionados(servicoscontexto);
     }
-  }, [servicosContexto]);
+  }, [servicoscontexto]);
 
   useEffect(() => {
     if (!reservaId) {
@@ -105,13 +106,12 @@ const Checkout = () => {
     return total + preco;
   }, 0);
   const subtotal = subtotalQuartos + subtotalServicos;
-  const taxas = subtotal * taxaImposto;
-  const total = subtotal + taxas;
+  const taFecharas = subtotal * taFecharaImposto;
+  const total = subtotal + taFecharas;
 
   const primeiroQuarto = modalQuarto.quartosSelecionados[0];
   const room_id = getRealRoomId(primeiroQuarto?.id || room?.id || reservation?.roomId);
   
-  // Converter todos os IDs do array
   const room_ids_converted = modalQuarto.quartosSelecionados.map((q) => getRealRoomId(q.id)).filter(id => id);
 
   const dadosReservaParaBackend = {
@@ -127,10 +127,6 @@ const Checkout = () => {
     guest_email: guestData.email,
     servicos: servicosSelecionados.map((s) => s.id),
   };
-
-  console.log('📦 Dados da reserva para backend:', dadosReservaParaBackend);
-  console.log('📦 reservaId:', reservaId);
-  console.log('📦 paymentMethod:', paymentMethod);
 
   const handlePagamentoConfirmado = (data) => {
     console.log('✅ Pagamento confirmado!', data);
@@ -152,6 +148,11 @@ const Checkout = () => {
   const handlePagamentoFalhou = (error) => {
     console.error('❌ Pagamento falhou:', error);
     setPagamentoStatus('failed');
+    const errorMsg = error?.message || t('errors.payment_declined');
+    setErrorMessage(errorMsg);
+    
+    // Limpar mensagem após 5 segundos
+    setTimeout(() => setErrorMessage(''), 5000);
   };
 
   const handlePagamentoPendente = (data) => {
@@ -160,12 +161,17 @@ const Checkout = () => {
   };
 
   const handleConfirmPayment = async () => {
-    if (!isFormValid) return;
+    if (!isFormValid) {
+      setErrorMessage(t('errors.required_field'));
+      return;
+    }
+    
     if (modalQuarto.quartosSelecionados.length === 0 && !room_id) {
-      alert('Por favor, selecione pelo menos um quarto');
+      setErrorMessage(t('checkout.no_room_selected'));
       return;
     }
 
+    setErrorMessage('');
     setIsLoading(true);
 
     try {
@@ -175,7 +181,7 @@ const Checkout = () => {
       });
 
       if (!respostaReserva.data.success) {
-        throw new Error(respostaReserva.data.message || 'Erro ao criar reserva');
+        throw new Error(respostaReserva.data.message || t('errors.booking_creation_failed'));
       }
 
       const { reservation_code } = respostaReserva.data.data;
@@ -189,8 +195,8 @@ const Checkout = () => {
 
     } catch (error) {
       console.error('❌ Erro:', error);
-      const mensagem = error.response?.data?.message || 'Erro ao processar. Tente novamente.';
-      alert(mensagem);
+      const mensagem = error.response?.data?.message || error.message || t('errors.generic');
+      setErrorMessage(mensagem);
     } finally {
       setIsLoading(false);
     }
@@ -198,37 +204,46 @@ const Checkout = () => {
 
   return (
     <div className={styles.container}>
-      <CheckoutHeader isIdentificado={isIdentificado} />
+      <CheckoutHeader isIdentificado={isIdentificado} t={t} />
+
+      {/* Mensagem de erro global */}
+      {errorMessage && (
+        <div className={styles.globalError}>
+          <span className={styles.errorIcon}>⚠️</span>
+          <span>{errorMessage}</span>
+          <button onClick={() => setErrorMessage('')} className={styles.closeError}>Fechar</button>
+        </div>
+      )}
 
       <div className={styles.twoColumns}>
         <div className={styles.columnLeft}>
           <div className={styles.sectionCompact}>
-            <h2 className={styles.sectionTitle}>1. Escolha seus quartos</h2>
+            <h2 className={styles.sectionTitle}>1. {t('reservation.choose_rooms')}</h2>
             {modalQuarto.quartosSelecionados.length > 0 ? (
               <div className={styles.quartosSelecionados}>
                 <div className={styles.quartosList}>
                   {modalQuarto.quartosSelecionados.map((quarto) => (
                     <div key={quarto.id} className={styles.quartoSelecionadoItem}>
-                      <span>🏨 Quarto {quarto.numero} ✅</span>
+                      <span>🏨 {t('rooms.room')} {quarto.numero} ✅</span>
                       <button
                         onClick={() => modalQuarto.removerQuarto(quarto.id)}
                         className={styles.removerQuartoButton}
                       >
-                        ✕
+                        Fechar
                       </button>
                     </div>
                   ))}
                 </div>
                 <button onClick={modalQuarto.abrirModal} className={styles.adicionarQuartoButton}>
-                  + Adicionar outro quarto
+                  + {t('reservation.add_another_room')}
                 </button>
                 <p className={styles.totalQuartosHint}>
-                  Total: {modalQuarto.quartosSelecionados.length} quarto(s)
+                  {t('reservation.total_rooms')}: {modalQuarto.quartosSelecionados.length}
                 </p>
               </div>
             ) : (
               <button onClick={modalQuarto.abrirModal} className={styles.escolherButton}>
-                Escolher Números dos Quartos
+                {t('reservation.select_room_numbers')}
               </button>
             )}
           </div>
@@ -236,30 +251,32 @@ const Checkout = () => {
 
         <div className={styles.columnRight}>
           <div className={styles.sectionCompact}>
-            <h2 className={styles.sectionTitle}>2. Dados do hóspede</h2>
+            <h2 className={styles.sectionTitle}>2. {t('checkout.personal_data')}</h2>
             <FormularioDadosPessoais
               guestData={guestData}
               setGuestData={setGuestData}
               errors={errors}
               isIdentificado={isIdentificado}
+              t={t}
             />
           </div>
         </div>
       </div>
 
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>3. Serviços Adicionais</h2>
+        <h2 className={styles.sectionTitle}>3. {t('checkout.additional_services')}</h2>
         <ServicosAdicionais
           nights={nights}
           servicosSelecionados={servicosSelecionados}
           onServicosChange={setServicosSelecionados}
+          t={t}
         />
       </div>
 
       <div className={styles.twoColumns}>
         <div className={styles.columnLeft}>
           <div className={styles.sectionCompact}>
-            <h2 className={styles.sectionTitle}>4. Pagamento</h2>
+            <h2 className={styles.sectionTitle}>4. {t('checkout.payment')}</h2>
             {paymentMethod === 'mpesa' ? (
               <PagamentoMpesa
                 reservaId={reservaId}
@@ -268,6 +285,7 @@ const Checkout = () => {
                 onSuccess={handlePagamentoConfirmado}
                 onError={handlePagamentoFalhou}
                 onPending={handlePagamentoPendente}
+                t={t}
               />
             ) : (
               <MetodosPagamento
@@ -276,6 +294,7 @@ const Checkout = () => {
                 paymentDetails={paymentDetails}
                 setPaymentDetails={setPaymentDetails}
                 errors={errors}
+                t={t}
               />
             )}
             {paymentMethod === 'cartao' && (
@@ -302,7 +321,8 @@ const Checkout = () => {
             pricePerNight={pricePerNight}
             quantidadeQuartos={quantidadeQuartos}
             servicosAdicionais={servicosSelecionados}
-            taxaImposto={taxaImposto}
+            taFecharaImposto={taFecharaImposto}
+            t={t}
           />
         </div>
       </div>
@@ -319,7 +339,7 @@ const Checkout = () => {
             nights={nights}
             pricePerNight={pricePerNight}
             servicosAdicionais={servicosSelecionados}
-            taxaImposto={taxaImposto}
+            taFecharaImposto={taFecharaImposto}
           />
         )}
 
@@ -328,6 +348,7 @@ const Checkout = () => {
           isFormValid={isFormValid && modalQuarto.quartosSelecionados.length > 0}
           isLoading={isLoading}
           onClick={handleConfirmPayment}
+          t={t}
         />
       )}
 
@@ -338,6 +359,7 @@ const Checkout = () => {
         quartosTemp={modalQuarto.quartosTemp}
         onToggleTemp={modalQuarto.toggleQuartoTemp}
         tipoQuarto={tipoQuarto}
+        t={t}
       />
     </div>
   );

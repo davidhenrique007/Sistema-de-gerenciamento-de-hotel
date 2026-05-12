@@ -2,7 +2,7 @@
 import api from '@/services/api';
 import styles from '../styles/Checkout.module.css';
 
-const PagamentoMpesa = ({ reservaId, valor, dadosReserva, onSuccess, onError, onPending }) => {
+const PagamentoMpesa = ({ reservaId, valor, dadosReserva, onSuccess, onError, onPending, t }) => {
     const [telefone, setTelefone] = useState('');
     const [confirmando, setConfirmando] = useState(false);
     const [status, setStatus] = useState(null);
@@ -25,61 +25,53 @@ const PagamentoMpesa = ({ reservaId, valor, dadosReserva, onSuccess, onError, on
 
         const numeros = telefone.replace(/\D/g, '');
         if (!telefone || numeros.length < 9) {
-            alert('Por favor, insira um número de telefone válido (9 dígitos)');
+            alert(t('errors.invalid_phone'));
             return;
         }
 
         setConfirmando(true);
         setStatus('processando');
-        setMensagem('Iniciando pagamento...');
+        setMensagem(t('payment.processing_payment'));
 
         try {
-            // ── PASSO 1: Criar reserva real no banco ──────────────────────────
             let codigoReserva = reservaId;
 
             if (dadosReserva) {
-                setMensagem('Criando reserva...');
+                setMensagem(t('common.loading'));
                 const respostaReserva = await api.post('/reservas', {
                     ...dadosReserva,
                     payment_method: 'mpesa'
                 });
 
                 if (!respostaReserva.data.success) {
-                    throw new Error(respostaReserva.data.message || 'Erro ao criar reserva');
+                    throw new Error(respostaReserva.data.message || t('errors.booking_creation_failed'));
                 }
 
-                // Usar SEMPRE o código vindo do banco
                 codigoReserva = respostaReserva.data.data.reservation_code;
                 console.log('✅ Reserva criada no banco:', codigoReserva);
             }
 
-            // ── PASSO 2: Simular processamento M-Pesa ─────────────────────────
-            setMensagem('Processando pagamento M-Pesa...');
+            setMensagem(t('payment.processing_payment'));
             await new Promise(resolve => setTimeout(resolve, 1500));
 
-            // ── PASSO 3: Confirmar pagamento no banco ─────────────────────────
-            setMensagem('Confirmando pagamento...');
-
+            setMensagem(t('common.confirm'));
             const confirmacao = await api.put(`/reservas/${codigoReserva}/confirmar-pagamento`, {
                 payment_method: 'mpesa',
                 valor: valor
             });
 
             if (!confirmacao.data.success) {
-                throw new Error(confirmacao.data.message || 'Falha na confirmação do pagamento');
+                throw new Error(confirmacao.data.message || t('errors.payment_declined'));
             }
 
             console.log('✅ Pagamento confirmado para reserva:', codigoReserva);
 
-            // ── PASSO 4: Guardar APENAS o código da reserva no localStorage ───
-            // O PDF vai buscar os dados reais directamente do banco usando este código.
-            // NUNCA guardar valores calculados aqui — podem estar desactualizados.
             localStorage.setItem('ultima_reserva', JSON.stringify({
                 reservation_code: codigoReserva
             }));
 
             setStatus('success');
-            setMensagem('Pagamento confirmado! Redirecionando...');
+            setMensagem(t('payment.payment_confirmed'));
 
             setTimeout(() => {
                 onSuccess?.({
@@ -91,8 +83,9 @@ const PagamentoMpesa = ({ reservaId, valor, dadosReserva, onSuccess, onError, on
         } catch (err) {
             console.error('❌ Erro no pagamento:', err);
             setStatus('failed');
-            setMensagem(err.response?.data?.message || err.message || 'Erro ao processar pagamento');
-            onError?.({ message: err.response?.data?.message || err.message });
+            const errorMsg = err.response?.data?.message || err.message || t('errors.payment_declined');
+            setMensagem(errorMsg);
+            onError?.({ message: errorMsg });
         }
     };
 
@@ -107,42 +100,37 @@ const PagamentoMpesa = ({ reservaId, valor, dadosReserva, onSuccess, onError, on
         <div className={styles.mpesaPaymentContainer}>
             <div className={styles.paymentHeader}>
                 <span className={styles.paymentIcon}>📱</span>
-                <h3>Pagamento M-Pesa / E-mola / mKesh</h3>
+                <h3>{t('payment.mpesa')}</h3>
             </div>
 
             {!confirmando ? (
                 <form onSubmit={handleSubmit} className={styles.paymentForm}>
                     <div className={styles.formGroup}>
-                        <label>Número de telefone</label>
+                        <label>{t('payment.phone_number')}</label>
                         <input
                             type="tel"
                             value={telefone}
                             onChange={handlePhoneChange}
-                            placeholder="84 123 4567"
+                            placeholder={t('payment.phone_placeholder')}
                             className={styles.input}
                         />
                         <small className={styles.hint}>
-                            Digite o seu número de telefone (ex: 84 123 4567)
+                            {t('payment.you_will_receive_notification')}
                         </small>
                     </div>
 
                     <div className={styles.paymentInfo}>
                         <p>
-                            <strong>Valor a pagar:</strong>{' '}
+                            <strong>{t('payment.amount_to_pay')}:</strong>{' '}
                             {new Intl.NumberFormat('pt-MZ', {
                                 style: 'currency',
                                 currency: 'MZN'
                             }).format(valor)}
                         </p>
-                        <p>
-                            <small>
-                                Receberá uma notificação no seu telefone para confirmar o pagamento
-                            </small>
-                        </p>
                     </div>
 
                     <button type="submit" className={styles.pagarButton}>
-                        Pagar{' '}
+                        {t('payment.button')} {' '}
                         {new Intl.NumberFormat('pt-MZ', {
                             style: 'currency',
                             currency: 'MZN'
@@ -153,9 +141,6 @@ const PagamentoMpesa = ({ reservaId, valor, dadosReserva, onSuccess, onError, on
                 <div className={styles.paymentWaiting}>
                     <div className={styles.spinner}></div>
                     <p className={styles.waitingMessage}>{getMensagem()}</p>
-                    <small className={styles.waitingHint}>
-                        {status === 'processando' ? 'A processar pagamento...' : ''}
-                    </small>
 
                     {status === 'failed' && (
                         <button
@@ -167,7 +152,7 @@ const PagamentoMpesa = ({ reservaId, valor, dadosReserva, onSuccess, onError, on
                             }}
                             className={styles.tentarNovamenteButton}
                         >
-                            Tentar Novamente
+                            {t('payment.try_again')}
                         </button>
                     )}
                 </div>

@@ -1,20 +1,17 @@
 ﻿import React from 'react';
 import styles from '../styles/Checkout.module.css';
 
-const FormularioDadosPessoais = ({ guestData, setGuestData, errors, isIdentificado }) => {
+const FormularioDadosPessoais = ({ guestData, setGuestData, errors, isIdentificado, t }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setGuestData(prev => ({ ...prev, [name]: value }));
   };
 
-  console.log('📝 Dados do cliente:', guestData);
-  console.log('🔑 Identificado:', isIdentificado);
-
   return (
     <div className={styles.formContainer}>
       <div className={styles.formGroup}>
         <label className={styles.label}>
-          Nome completo <span className={styles.required}>*</span>
+          {t('form.full_name')} <span className={styles.required}>*</span>
         </label>
         <input
           type="text"
@@ -22,14 +19,14 @@ const FormularioDadosPessoais = ({ guestData, setGuestData, errors, isIdentifica
           value={guestData.nome || ''}
           onChange={handleChange}
           className={styles.input}
-          placeholder="Digite seu nome completo"
+          placeholder={t('form.full_name_placeholder')}
         />
         {errors.nome && <span className={styles.error}>{errors.nome}</span>}
       </div>
 
       <div className={styles.formGroup}>
         <label className={styles.label}>
-          Email <span className={styles.required}>*</span>
+          {t('form.email')} <span className={styles.required}>*</span>
         </label>
         <input
           type="email"
@@ -37,14 +34,14 @@ const FormularioDadosPessoais = ({ guestData, setGuestData, errors, isIdentifica
           value={guestData.email || ''}
           onChange={handleChange}
           className={styles.input}
-          placeholder="Digite seu email"
+          placeholder={t('form.email_placeholder')}
         />
         {errors.email && <span className={styles.error}>{errors.email}</span>}
       </div>
 
       <div className={styles.formGroup}>
         <label className={styles.label}>
-          Telefone <span className={styles.required}>*</span>
+          {t('form.phone')} <span className={styles.required}>*</span>
         </label>
         <input
           type="tel"
@@ -52,14 +49,14 @@ const FormularioDadosPessoais = ({ guestData, setGuestData, errors, isIdentifica
           value={guestData.telefone || ''}
           onChange={handleChange}
           className={styles.input}
-          placeholder="Digite seu telefone"
+          placeholder={t('form.phone_placeholder')}
         />
         {errors.telefone && <span className={styles.error}>{errors.telefone}</span>}
       </div>
 
       <div className={styles.formGroup}>
         <label className={styles.label}>
-          Nº de Identificação
+          {t('form.id_number')} ({t('common.optional')})
         </label>
         <input
           type="text"
@@ -67,9 +64,13 @@ const FormularioDadosPessoais = ({ guestData, setGuestData, errors, isIdentifica
           value={guestData.documento || ''}
           onChange={handleChange}
           className={styles.input}
-          placeholder="Digite seu número de identificação"
+          placeholder={t('form.id_number_placeholder')}
         />
         {errors.documento && <span className={styles.error}>{errors.documento}</span>}
+      </div>
+
+      <div className={styles.formHint}>
+        <small>✉️ {t('form.email_confirmation_hint')}</small>
       </div>
     </div>
   );

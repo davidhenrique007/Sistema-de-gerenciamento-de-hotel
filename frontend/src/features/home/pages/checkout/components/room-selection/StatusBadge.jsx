@@ -1,14 +1,25 @@
-﻿import React from 'react';
+﻿// =====================================================
+// COMPONENTE - STATUS BADGE
+// Versão: 2.0.0 (Com suporte a i18n - CORRIGIDO)
+// =====================================================
 
-const StatusBadge = ({ status }) => {
+import React from 'react';
+
+const StatusBadge = ({ status, t }) => {
+  // Função segura para obter tradução
+  const getStatusText = (statusKey, defaultValue) => {
+    const result = t(`rooms.${statusKey}`);
+    if (typeof result === 'string') return result;
+    return defaultValue;
+  };
+
   const getBadgeConfig = () => {
     switch (status) {
       case 'disponível':
       case 'available':
         return { 
           emoji: '🟢', 
-          text: 'Disponível', 
-          className: 'badge-disponivel',
+          text: getStatusText('available', 'Disponível'),
           bgColor: '#d4edda',
           textColor: '#155724'
         };
@@ -16,8 +27,7 @@ const StatusBadge = ({ status }) => {
       case 'occupied':
         return { 
           emoji: '🔴', 
-          text: 'Ocupado', 
-          className: 'badge-ocupado',
+          text: getStatusText('occupied', 'Ocupado'),
           bgColor: '#f8d7da',
           textColor: '#721c24'
         };
@@ -25,16 +35,14 @@ const StatusBadge = ({ status }) => {
       case 'maintenance':
         return { 
           emoji: '🟡', 
-          text: 'Manutenção', 
-          className: 'badge-manutencao',
+          text: getStatusText('maintenance', 'Manutenção'),
           bgColor: '#fff3cd',
           textColor: '#856404'
         };
       default:
         return { 
           emoji: '⚪', 
-          text: status, 
-          className: '',
+          text: status || getStatusText('unknown', 'Desconhecido'),
           bgColor: '#e9ecef',
           textColor: '#495057'
         };
@@ -57,7 +65,7 @@ const StatusBadge = ({ status }) => {
   };
 
   return (
-    <span style={badgeStyle} className={config.className}>
+    <span style={badgeStyle}>
       <span style={{ fontSize: '1rem' }}>{config.emoji}</span>
       <span>{config.text}</span>
     </span>

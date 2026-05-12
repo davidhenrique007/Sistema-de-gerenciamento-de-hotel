@@ -1,11 +1,12 @@
 ﻿// =====================================================
 // COMPONENTE - TABELA DE QUARTOS (COM MÚLTIPLA SELEÇÃO)
+// Versão: 2.0.0 (Com suporte a i18n - CORRIGIDO)
 // =====================================================
 
 import React from 'react';
 import StatusBadge from './StatusBadge';
 
-const TabelaQuartosModal = ({ quartos, quartosTemp, onToggle }) => {
+const TabelaQuartosModal = ({ quartos, quartosTemp, onToggle, t }) => {
   const isQuartoDisponivel = (status) => {
     return status === 'available' || status === 'disponível';
   };
@@ -18,6 +19,13 @@ const TabelaQuartosModal = ({ quartos, quartosTemp, onToggle }) => {
     if (isQuartoDisponivel(quarto.status)) {
       onToggle(quarto);
     }
+  };
+
+  // Função segura para obter tradução de string
+  const getTranslation = (key, defaultValue) => {
+    const result = t(key);
+    if (typeof result === 'string') return result;
+    return defaultValue;
   };
 
   const styles = {
@@ -57,11 +65,11 @@ const TabelaQuartosModal = ({ quartos, quartosTemp, onToggle }) => {
       <table style={styles.table}>
         <thead>
           <tr>
-            <th style={styles.th}>Selecionar</th>
-            <th style={styles.th}>Nº Quarto</th>
-            <th style={styles.th}>Tipo</th>
-            <th style={styles.th}>Andar</th>
-            <th style={styles.th}>Status</th>
+            <th style={styles.th}>{getTranslation('common.select', 'Selecionar')}</th>
+            <th style={styles.th}>{getTranslation('rooms.room_number', 'Nº Quarto')}</th>
+            <th style={styles.th}>{getTranslation('rooms.type', 'Tipo')}</th>
+            <th style={styles.th}>{getTranslation('reservation.floor', 'Andar')}</th>
+            <th style={styles.th}>{getTranslation('rooms.status', 'Status')}</th>
           </tr>
         </thead>
         <tbody>
@@ -105,13 +113,13 @@ const TabelaQuartosModal = ({ quartos, quartosTemp, onToggle }) => {
                   <strong>{quarto.numero || '-'}</strong>
                 </td>
                 <td style={styles.td}>
-                  {quarto.tipo || 'standard'}
+                  {(quarto.tipo || 'standard')?.charAt(0)?.toUpperCase() + (quarto.tipo || 'standard')?.slice(1) || 'Standard'}
                 </td>
                 <td style={styles.td}>
-                  {quarto.andar || '-'}
+                  {quarto.andar || 1}
                 </td>
                 <td style={styles.td}>
-                  <StatusBadge status={quarto.status} />
+                  <StatusBadge status={quarto.status} t={t} />
                 </td>
               </tr>
             );

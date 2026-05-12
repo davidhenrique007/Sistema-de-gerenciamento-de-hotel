@@ -1,4 +1,9 @@
-﻿import React from 'react';
+﻿// =====================================================
+// COMPONENTE - SKELETON QUARTO
+// Versão: 1.0.0 (Componente puro de UI - sem i18n necessário)
+// =====================================================
+
+import React from 'react';
 
 const SkeletonQuarto = () => {
   const skeletonRowStyle = {

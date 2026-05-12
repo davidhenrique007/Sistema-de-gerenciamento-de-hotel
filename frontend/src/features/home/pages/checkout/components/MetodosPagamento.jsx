@@ -2,35 +2,30 @@
 import styles from '../styles/Checkout.module.css';
 
 // Componente de pagamento M-Pesa - AGORA VAZIO (só a aba, sem formulário)
-const FormaPagamentoMPesa = ({ paymentDetails, setPaymentDetails, errors, setPaymentMethod }) => {
-  // Componente vazio - apenas para manter a aba visível
+const FormaPagamentoMPesa = ({ t }) => {
   return (
     <div className={styles.mpesaEmptyMessage}>
-      <p>Selecione Cartão de Crédito ou Dinheiro para continuar</p>
+      <p>{t('checkout.select_credit_card_or_cash')}</p>
     </div>
   );
 };
 
 // Componente de pagamento em Dinheiro
-const FormaPagamentoDinheiro = () => {
+const FormaPagamentoDinheiro = ({ t }) => {
   return (
     <div className={styles.cashInfo}>
       <div className={styles.cashIcon}>💵</div>
-      <h4>Pagamento na chegada</h4>
-      <p>Você poderá pagar diretamente na recepção do hotel.</p>
+      <h4>{t('checkout.payment_on_arrival')}</h4>
+      <p>{t('checkout.you_can_pay_at_reception')}</p>
       <div className={styles.cashWarning}>
         <span>⚠️</span>
-        <small>Reserva será confirmada após o pagamento. Cancelamento gratuito até 24h antes.</small>
+        <small>{t('checkout.free_cancellation')}</small>
       </div>
     </div>
   );
 };
 
-// =====================================================
-// COMPONENTE PRINCIPAL - MÉTODOS DE PAGAMENTO
-// =====================================================
-
-const MetodosPagamento = ({ paymentMethod, setPaymentMethod, paymentDetails, setPaymentDetails, errors }) => {
+const MetodosPagamento = ({ paymentMethod, setPaymentMethod, paymentDetails, setPaymentDetails, errors, t }) => {
   const [activeTab, setActiveTab] = useState('mpesa');
 
   const handleTabChange = (tab) => {
@@ -40,14 +35,13 @@ const MetodosPagamento = ({ paymentMethod, setPaymentMethod, paymentDetails, set
   };
 
   const tabs = [
-    { id: 'mpesa', label: 'M-Pesa / E-mola', icon: '📱' },
-    { id: 'cartao', label: 'Cartão de Crédito', icon: '💳' },
-    { id: 'dinheiro', label: 'Dinheiro', icon: '💵' }
+    { id: 'mpesa', label: t('payment.mpesa'), icon: '📱' },
+    { id: 'cartao', label: t('payment.credit_card'), icon: '💳' },
+    { id: 'dinheiro', label: t('payment.cash'), icon: '💵' }
   ];
 
   return (
     <div>
-      {/* Tabs */}
       <div className={styles.paymentTabs}>
         {tabs.map(tab => (
           <button
@@ -61,26 +55,20 @@ const MetodosPagamento = ({ paymentMethod, setPaymentMethod, paymentDetails, set
         ))}
       </div>
 
-      {/* Conteúdo - M-Pesa agora está vazio */}
       <div className={styles.tabContent}>
         {activeTab === 'mpesa' && (
-          <FormaPagamentoMPesa
-            paymentDetails={paymentDetails}
-            setPaymentDetails={setPaymentDetails}
-            errors={errors}
-            setPaymentMethod={setPaymentMethod}
-          />
+          <FormaPagamentoMPesa t={t} />
         )}
         
         {activeTab === 'cartao' && (
           <div className={styles.stripePlaceholder}>
-            <p>🔒 Pagamento seguro com Stripe</p>
-            <p className={styles.hint}>O formulário de cartão aparecerá abaixo</p>
+            <p>🔒 {t('checkout.secure_payment')}</p>
+            <p className={styles.hint}>{t('checkout.card_form_below')}</p>
           </div>
         )}
         
         {activeTab === 'dinheiro' && (
-          <FormaPagamentoDinheiro />
+          <FormaPagamentoDinheiro t={t} />
         )}
       </div>
     </div>
