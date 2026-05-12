@@ -1,7 +1,12 @@
 ﻿// frontend/src/App.jsx
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { I18nProvider } from './contexts/I18nContext'; // ✅ ADICIONADO
+import { I18nProvider } from './contexts/I18nContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { CurrencyProvider } from './contexts/CurrencyContext';
+import { NotificationProvider } from './contexts/NotificationContext';
+import { WidgetProvider } from './contexts/WidgetContext';
+import { AuthProvider } from './contexts/AuthContext';
 import { ClienteProvider } from './contexts/ClienteContext';
 import { CartProvider } from './contexts/CartContext';
 import { ServicesProvider } from './contexts/ServicesContext';
@@ -24,147 +29,155 @@ import Utilizadores from './features/home/pages/admin/Utilizadores';
 import Auditoria from './features/home/pages/admin/Auditoria';
 import Relatorios from './features/home/pages/admin/Relatorios';
 import Financeiro from './features/home/pages/admin/Financeiro';
+import Configuracoes from './features/home/pages/admin/components/configuracoes/Configuracoes';
 
 const PagamentosAdmin = () => (
   <div style={{ padding: 40 }}>Página de Pagamentos - Em desenvolvimento</div>
 );
 
-const ConfiguracoesAdmin = () => (
-  <div style={{ padding: 40 }}>Página de Configurações - Em desenvolvimento</div>
-);
-
 const App = () => {
   return (
-    <I18nProvider> {/* ✅ ENVOLVENDO TODA APLICAÇÃO */}
-      <ToastProvider>
-        <BrowserRouter>
-          <ClienteProvider>
-            <CartProvider>
-              <ServicesProvider>
-                <Routes>
-                  {/* Rotas públicas */}
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/login-cliente" element={<LoginCliente />} />
-                  <Route path="/login-admin" element={<LoginAdmin />} />
-                  <Route path="/pagamento-falha" element={<PagamentoFalha />} />
+    <BrowserRouter>
+      <I18nProvider>
+        <ThemeProvider>
+          <CurrencyProvider>
+            <NotificationProvider>
+              <WidgetProvider>
+                <ToastProvider>
+                  <AuthProvider>
+                    <ClienteProvider>
+                      <CartProvider>
+                        <ServicesProvider>
+                          <Routes>
+                            {/* Rotas públicas */}
+                            <Route path="/" element={<HomePage />} />
+                            <Route path="/login-cliente" element={<LoginCliente />} />
+                            <Route path="/login-admin" element={<LoginAdmin />} />
+                            <Route path="/pagamento-falha" element={<PagamentoFalha />} />
 
-                  {/* Rotas de cliente */}
-                  <Route
-                    path="/checkout"
-                    element={
-                      <ClienteRoute>
-                        <Checkout />
-                      </ClienteRoute>
-                    }
-                  />
-                  <Route path="/recibo" element={<ReciboPage />} />
-                  <Route
-                    path="/minhas-reservas"
-                    element={
-                      <ClienteRoute>
-                        <MinhasReservas />
-                      </ClienteRoute>
-                    }
-                  />
+                            {/* Rotas de cliente (protegidas) */}
+                            <Route
+                              path="/checkout"
+                              element={
+                                <ClienteRoute>
+                                  <Checkout />
+                                </ClienteRoute>
+                              }
+                            />
+                            <Route path="/recibo" element={<ReciboPage />} />
+                            <Route
+                              path="/minhas-reservas"
+                              element={
+                                <ClienteRoute>
+                                  <MinhasReservas />
+                                </ClienteRoute>
+                              }
+                            />
 
-                  {/* Rotas administrativas */}
-                  <Route
-                    path="/admin/dashboard"
-                    element={
-                      <AdminRoute>
-                        <Dashboard />
-                      </AdminRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/analises"
-                    element={
-                      <AdminRoute>
-                        <DashboardAnalises />
-                      </AdminRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/reservas"
-                    element={
-                      <AdminRoute>
-                        <Reservas />
-                      </AdminRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/pagamentos"
-                    element={
-                      <AdminRoute>
-                        <PagamentosAdmin />
-                      </AdminRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/financeiro"
-                    element={
-                      <AdminRoute>
-                        <Financeiro />
-                      </AdminRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/quartos"
-                    element={
-                      <AdminRoute>
-                        <Quartos />
-                      </AdminRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/utilizadores"
-                    element={
-                      <AdminRoute>
-                        <Utilizadores />
-                      </AdminRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/auditoria"
-                    element={
-                      <AdminRoute>
-                        <Auditoria />
-                      </AdminRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/relatorios"
-                    element={
-                      <AdminRoute>
-                        <Relatorios />
-                      </AdminRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/configuracoes"
-                    element={
-                      <AdminRoute>
-                        <ConfiguracoesAdmin />
-                      </AdminRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/lixeira"
-                    element={
-                      <AdminRoute>
-                        <LixeiraQuartos />
-                      </AdminRoute>
-                    }
-                  />
+                            {/* Rotas administrativas (protegidas) */}
+                            <Route
+                              path="/admin/dashboard"
+                              element={
+                                <AdminRoute>
+                                  <Dashboard />
+                                </AdminRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/analises"
+                              element={
+                                <AdminRoute>
+                                  <DashboardAnalises />
+                                </AdminRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/reservas"
+                              element={
+                                <AdminRoute>
+                                  <Reservas />
+                                </AdminRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/pagamentos"
+                              element={
+                                <AdminRoute>
+                                  <PagamentosAdmin />
+                                </AdminRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/financeiro"
+                              element={
+                                <AdminRoute>
+                                  <Financeiro />
+                                </AdminRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/quartos"
+                              element={
+                                <AdminRoute>
+                                  <Quartos />
+                                </AdminRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/utilizadores"
+                              element={
+                                <AdminRoute>
+                                  <Utilizadores />
+                                </AdminRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/auditoria"
+                              element={
+                                <AdminRoute>
+                                  <Auditoria />
+                                </AdminRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/relatorios"
+                              element={
+                                <AdminRoute>
+                                  <Relatorios />
+                                </AdminRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/configuracoes"
+                              element={
+                                <AdminRoute>
+                                  <Configuracoes />
+                                </AdminRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/lixeira"
+                              element={
+                                <AdminRoute>
+                                  <LixeiraQuartos />
+                                </AdminRoute>
+                              }
+                            />
 
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </ServicesProvider>
-            </CartProvider>
-          </ClienteProvider>
-        </BrowserRouter>
-      </ToastProvider>
-    </I18nProvider>
+                            {/* Rota padrão para 404 */}
+                            <Route path="*" element={<Navigate to="/" replace />} />
+                          </Routes>
+                        </ServicesProvider>
+                      </CartProvider>
+                    </ClienteProvider>
+                  </AuthProvider>
+                </ToastProvider>
+              </WidgetProvider>
+            </NotificationProvider>
+          </CurrencyProvider>
+        </ThemeProvider>
+      </I18nProvider>
+    </BrowserRouter>
   );
 };
 
