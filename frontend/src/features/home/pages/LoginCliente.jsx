@@ -3,14 +3,15 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useCliente } from "../../../contexts/ClienteContext";
 import { useI18n } from "../../../contexts/I18nContext";
 import FormularioIdentificacao from "../components/FormularioIdentificacao";
-import logoImage from "../../../assets/images/login/logo.png";
+// ❌ REMOVA esta linha - não precisa mais importar
+// import logoImage from "../../../assets/images/login/logo.png";
 import styles from "./LoginCliente.module.css";
 
 const LoginCliente = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { identificarCliente, cliente, loading } = useCliente();
-  const { t } = useI18n(); // Consumindo o contexto global de idioma
+  const { t } = useI18n();
   const [error, setError] = useState(null);
 
   const handleSubmit = async (dados) => {
@@ -22,7 +23,6 @@ const LoginCliente = () => {
         const destino = location.state?.from || '/';
         navigate(destino, { replace: true });
       } else {
-        // Mapear erro para chave i18n
         const errorKey = mapErrorToKey(resultado.error);
         setError(t(errorKey));
       }
@@ -31,7 +31,6 @@ const LoginCliente = () => {
     }
   };
 
-  // Função para mapear erros do backend para chaves i18n
   const mapErrorToKey = (errorMessage) => {
     const errorMap = {
       'Credenciais inválidas': 'errors.invalid_credentials',
@@ -53,8 +52,9 @@ const LoginCliente = () => {
         <div className={styles.illustration}>
           <div className={styles.logoContainer}>
             <div className={styles.logoCircle}></div>
+            {/* ✅ Usar caminho direto da pasta public */}
             <img 
-              src={logoImage} 
+              src="/logo.png"
               alt="Hotel Paradise" 
               className={styles.logoImage}
               onError={(e) => {
