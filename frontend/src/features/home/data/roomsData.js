@@ -1,7 +1,7 @@
 /**
- * Dados mockados dos quartos - VERSÃO COM SUPORTE A i18n
+ * Dados mockados dos quartos - VERSÃƒO COM SUPORTE A i18n
  * 
- * As descrições agora usam KEYS de tradução em vez de texto fixo
+ * As descriÃ§Ãµes agora usam KEYS de traduÃ§Ã£o em vez de texto fixo
  */
 
 export const roomsData = [
