@@ -1,4 +1,4 @@
-﻿const ReconciliacaoService = require('../../services/ReconciliacaoService');
+﻿const ReconciliacaoService = require('../../services/reconciliacaoService');
 
 class ReconciliacaoController {
   async reconciliar(req, res) {
