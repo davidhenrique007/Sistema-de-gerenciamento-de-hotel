@@ -37,7 +37,7 @@ const HeaderTeste = () => (
                 <div>
                     <p style={{ color: '#fbbf24', fontSize: '12px', margin: '0 0 4px 0' }}>HOTEL PARADISE</p>
                     <h1 style={{ fontSize: '28px', margin: 0, background: 'linear-gradient(135deg, #ffffff 0%, #fbbf24 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Checkout</h1>
-                    <p style={{ fontSize: '12px', opacity: 0.8, margin: '4px 0 0 0' }}>Complete sua reserva com segurança e rapidez</p>
+                    <p style={{ fontSize: '12px', opacity: 0.8, margin: '4px 0 0 0' }}>Complete sua reserva com seguranÃ§a e rapidez</p>
                 </div>
             </div>
             <div style={{ marginTop: '16px' }}>
@@ -226,7 +226,7 @@ const Checkout = () => {
               </div>
             ) : (
               <button onClick={modalQuarto.abrirModal} className={styles.escolherButton}>
-                Escolher Números dos Quartos
+                Escolher NÃºmeros dos Quartos
               </button>
             )}
           </div>
@@ -234,7 +234,7 @@ const Checkout = () => {
 
         <div className={styles.columnRight}>
           <div className={styles.sectionCompact}>
-            <h2 className={styles.sectionTitle}>2. Dados do hóspede</h2>
+            <h2 className={styles.sectionTitle}>2. Dados do hÃ³spede</h2>
             <FormularioDadosPessoais
               guestData={guestData}
               setGuestData={setGuestData}
@@ -246,7 +246,7 @@ const Checkout = () => {
       </div>
 
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>3. Serviços Adicionais</h2>
+        <h2 className={styles.sectionTitle}>3. ServiÃ§os Adicionais</h2>
         <ServicosAdicionais
           nights={nights}
           servicosSelecionados={servicosSelecionados}
