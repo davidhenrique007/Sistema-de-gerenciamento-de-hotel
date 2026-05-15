@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@contexts/CartContext';  
 import { useCliente } from '../../../features/home/hooks/useCliente';   
 import ReceiptModal from '../../../shared/components/ui/ReceiptModal';
 import styles from './CheckoutPage.module.css';
 
-// Ícones
-const UserIcon = () => <span className={styles.icon}>👤</span>;
-const ClipboardIcon = () => <span className={styles.icon}>📋</span>;
-const MoneyIcon = () => <span className={styles.icon}>💰</span>;
-const PaymentIcon = () => <span className={styles.icon}>💳</span>;
-const ReceiptIcon = () => <span className={styles.icon}>🧾</span>;
+// Ãcones
+const UserIcon = () => <span className={styles.icon}>ðŸ‘¤</span>;
+const ClipboardIcon = () => <span className={styles.icon}>ðŸ“‹</span>;
+const MoneyIcon = () => <span className={styles.icon}>ðŸ’°</span>;
+const PaymentIcon = () => <span className={styles.icon}>ðŸ’³</span>;
+const ReceiptIcon = () => <span className={styles.icon}>ðŸ§¾</span>;
 
 const CheckoutPage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -24,16 +24,16 @@ const CheckoutPage = () => {
   const { cliente, isIdentificado } = useCliente();
 
   // ==========================================================================
-  // 1. VERIFICAR SE HÁ DADOS DA RESERVA
+  // 1. VERIFICAR SE HÃ DADOS DA RESERVA
   // ==========================================================================
   useEffect(() => {
     if (!reservation && !room) {
-      // Se não tiver dados da reserva, redireciona para página de quartos
+      // Se nÃ£o tiver dados da reserva, redireciona para pÃ¡gina de quartos
       navigate('/quartos/disponiveis', { replace: true });
     }
   }, [reservation, room, navigate]);
 
-  // Se não tiver dados, não renderiza nada (aguarda redirecionamento)
+  // Se nÃ£o tiver dados, nÃ£o renderiza nada (aguarda redirecionamento)
   if (!reservation && !room) return null;
 
   // ==========================================================================
@@ -56,7 +56,7 @@ const CheckoutPage = () => {
   } = reservation || room || {};
 
   // ==========================================================================
-  // 3. ESTADO PARA DADOS DO HÓSPEDE (preenche com dados do cliente se logado)
+  // 3. ESTADO PARA DADOS DO HÃ“SPEDE (preenche com dados do cliente se logado)
   // ==========================================================================
   const [guestData, setGuestData] = useState({
     nome: cliente?.name || '',
@@ -97,7 +97,7 @@ const CheckoutPage = () => {
   }, [cliente, isIdentificado]);
 
   // ==========================================================================
-  // 7. FUNÇÕES AUXILIARES DE FORMATAÇÃO
+  // 7. FUNÃ‡Ã•ES AUXILIARES DE FORMATAÃ‡ÃƒO
   // ==========================================================================
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -114,7 +114,7 @@ const CheckoutPage = () => {
   };
 
   // ==========================================================================
-  // 8. HANDLERS PARA DADOS DO HÓSPEDE
+  // 8. HANDLERS PARA DADOS DO HÃ“SPEDE
   // ==========================================================================
   const handleGuestChange = (e) => {
     const { name, value } = e.target;
@@ -143,17 +143,17 @@ const CheckoutPage = () => {
       if (field === 'phone') {
         const cleanNumber = value.replace(/\D/g, '');
         if (cleanNumber.length !== 9) {
-          error = 'Número inválido. Deve ter 9 dígitos';
+          error = 'NÃºmero invÃ¡lido. Deve ter 9 dÃ­gitos';
         } else if (!cleanNumber.startsWith('8')) {
-          error = 'Número deve começar com 8';
+          error = 'NÃºmero deve comeÃ§ar com 8';
         } else {
           const prefix = cleanNumber.substring(0, 2);
           if (paymentMethod === 'mpesa' && !['84', '85'].includes(prefix)) {
-            error = 'M-Pesa: número deve começar com 84 ou 85';
+            error = 'M-Pesa: nÃºmero deve comeÃ§ar com 84 ou 85';
           } else if (paymentMethod === 'emola' && !['86', '87'].includes(prefix)) {
-            error = 'e-Mola: número deve começar com 86 ou 87';
+            error = 'e-Mola: nÃºmero deve comeÃ§ar com 86 ou 87';
           } else if (paymentMethod === 'mkesh' && !['82', '83'].includes(prefix)) {
-            error = 'mKesh: número deve começar com 82 ou 83';
+            error = 'mKesh: nÃºmero deve comeÃ§ar com 82 ou 83';
           }
         }
       }
@@ -170,7 +170,7 @@ const CheckoutPage = () => {
   const getPaymentMethodName = (method) => {
     const methods = {
       dinheiro: 'Dinheiro',
-      cartao: 'Cartão',
+      cartao: 'CartÃ£o',
       mpesa: 'M-Pesa',
       emola: 'e-Mola',
       mkesh: 'mKesh',
@@ -179,24 +179,24 @@ const CheckoutPage = () => {
   };
 
   // ==========================================================================
-  // 10. VALIDAÇÃO DO FORMULÁRIO
+  // 10. VALIDAÃ‡ÃƒO DO FORMULÃRIO
   // ==========================================================================
   const isFormValid = () => {
-    // Validar dados do hóspede (campos obrigatórios)
+    // Validar dados do hÃ³spede (campos obrigatÃ³rios)
     const guestValid = guestData.nome.trim() !== '' && 
                       guestData.telefone.trim() !== '' && 
                       guestData.documento.trim() !== '';
 
     if (!guestValid) return false;
 
-    // Validar método de pagamento
+    // Validar mÃ©todo de pagamento
     if (!paymentMethod) return false;
 
-    // Validar se há erros
+    // Validar se hÃ¡ erros
     const hasErrors = Object.values(paymentErrors).some((err) => err !== '');
     if (hasErrors) return false;
 
-    // Validar detalhes do pagamento por método
+    // Validar detalhes do pagamento por mÃ©todo
     if (paymentMethod === 'dinheiro') {
       return parseFloat(paymentDetails.paidAmount) >= total;
     }
@@ -249,7 +249,7 @@ const CheckoutPage = () => {
     setShowReceiptModal(true);
     setCheckoutConfirmed(true);
 
-    // Aqui você faria a chamada para a API criar a reserva
+    // Aqui vocÃª faria a chamada para a API criar a reserva
     console.log('Checkout confirmado', {
       guest: guestData,
       reservation: { roomId, roomNumber, checkIn, checkOut, nights, total },
@@ -299,7 +299,7 @@ const CheckoutPage = () => {
               />
             </div>
             <div className={styles.fieldGroup}>
-              <label>Número do cartão</label>
+              <label>NÃºmero do cartÃ£o</label>
               <input
                 type="text"
                 name="cardNumber"
@@ -353,7 +353,7 @@ const CheckoutPage = () => {
         return (
           <div className={styles.paymentFields}>
             <div className={styles.fieldGroup}>
-              <label>Número de telefone</label>
+              <label>NÃºmero de telefone</label>
               <input
                 type="tel"
                 name="phone"
@@ -387,7 +387,7 @@ const CheckoutPage = () => {
 
       <div className={styles.receiptBody}>
         <p>
-          <span>Hóspede:</span> {guestData.nome}
+          <span>HÃ³spede:</span> {guestData.nome}
         </p>
         <p>
           <span>Documento:</span> {guestData.documento}
@@ -396,13 +396,13 @@ const CheckoutPage = () => {
           <span>Quarto:</span> {roomNumber} - {roomType}
         </p>
         <p>
-          <span>Período:</span> {formatDate(checkIn)} a {formatDate(checkOut)}
+          <span>PerÃ­odo:</span> {formatDate(checkIn)} a {formatDate(checkOut)}
         </p>
 
         <table className={styles.receiptTable}>
           <thead>
             <tr>
-              <th>Descrição</th>
+              <th>DescriÃ§Ã£o</th>
               <th>Valor</th>
             </tr>
           </thead>
@@ -413,7 +413,7 @@ const CheckoutPage = () => {
             </tr>
             {servicesTotal > 0 && (
               <tr>
-                <td>Serviços extras</td>
+                <td>ServiÃ§os extras</td>
                 <td>{formatCurrency(servicesTotal)}</td>
               </tr>
             )}
@@ -446,18 +446,18 @@ const CheckoutPage = () => {
         <h2 className={styles.mainTitle}>CHECKOUT</h2>
         <p className={styles.subtitle}>Finalizar Reserva</p>
         <p className={styles.description}>
-          Confirme os dados da reserva, preencha suas informações e finalize o pagamento.
+          Confirme os dados da reserva, preencha suas informaÃ§Ãµes e finalize o pagamento.
         </p>
       </header>
 
       <div className={styles.grid}>
         {/* COLUNA ESQUERDA */}
         <div className={styles.leftColumn}>
-          {/* CARD 1 - INFORMAÇÕES DO HÓSPEDE */}
+          {/* CARD 1 - INFORMAÃ‡Ã•ES DO HÃ“SPEDE */}
           <div className={styles.card}>
             <div className={styles.cardHeader}>
               <UserIcon />
-              <h3 className={styles.cardTitle}>INFORMAÇÕES DO HÓSPEDE</h3>
+              <h3 className={styles.cardTitle}>INFORMAÃ‡Ã•ES DO HÃ“SPEDE</h3>
             </div>
             <div className={styles.cardContent}>
               <div className={styles.formGrid}>
@@ -496,7 +496,7 @@ const CheckoutPage = () => {
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label>Documento de identificação *</label>
+                  <label>Documento de identificaÃ§Ã£o *</label>
                   <input
                     type="text"
                     name="documento"
@@ -533,7 +533,7 @@ const CheckoutPage = () => {
               </div>
               {!isIdentificado && (
                 <p className={styles.loginInfo}>
-                  Já tem cadastro? <a href="/login-cliente">Faça login</a> para preencher automaticamente.
+                  JÃ¡ tem cadastro? <a href="/login-cliente">FaÃ§a login</a> para preencher automaticamente.
                 </p>
               )}
             </div>
@@ -548,11 +548,11 @@ const CheckoutPage = () => {
             <div className={styles.cardContent}>
               <div className={styles.paymentSummary}>
                 <div className={styles.summaryRow}>
-                  <span>Preço por noite</span>
+                  <span>PreÃ§o por noite</span>
                   <strong>{formatCurrency(pricePerNight)}</strong>
                 </div>
                 <div className={styles.summaryRow}>
-                  <span>Número de noites</span>
+                  <span>NÃºmero de noites</span>
                   <strong>{nights}x</strong>
                 </div>
                 <div className={styles.summaryRow}>
@@ -561,7 +561,7 @@ const CheckoutPage = () => {
                 </div>
                 {servicesTotal > 0 && (
                   <div className={styles.summaryRow}>
-                    <span>Serviços extras</span>
+                    <span>ServiÃ§os extras</span>
                     <strong>{formatCurrency(servicesTotal)}</strong>
                   </div>
                 )}
@@ -605,7 +605,7 @@ const CheckoutPage = () => {
                   <span className={styles.detailValue}>{formatDate(checkOut)}</span>
                 </div>
                 <div className={styles.detailRow}>
-                  <span className={styles.detailLabel}>Nº de noites:</span>
+                  <span className={styles.detailLabel}>NÂº de noites:</span>
                   <span className={styles.detailValue}>{nights}</span>
                 </div>
               </div>
@@ -613,17 +613,17 @@ const CheckoutPage = () => {
               <div className={styles.divider} />
 
               <div className={styles.guestList}>
-                <h4 className={styles.subsectionTitle}>Hóspedes</h4>
+                <h4 className={styles.subsectionTitle}>HÃ³spedes</h4>
                 <div className={styles.guestItem}>
                   <span>Adultos:</span>
                   <span className={styles.guestCount}>{guests.adults}</span>
                 </div>
                 <div className={styles.guestItem}>
-                  <span>Crianças:</span>
+                  <span>CrianÃ§as:</span>
                   <span className={styles.guestCount}>{guests.children || 0}</span>
                 </div>
                 <div className={styles.guestItem}>
-                  <span>Bebês:</span>
+                  <span>BebÃªs:</span>
                   <span className={styles.guestCount}>{guests.babies || 0}</span>
                 </div>
               </div>
@@ -632,7 +632,7 @@ const CheckoutPage = () => {
                 <>
                   <div className={styles.divider} />
                   <div className={styles.servicesList}>
-                    <h4 className={styles.subsectionTitle}>Serviços Extras</h4>
+                    <h4 className={styles.subsectionTitle}>ServiÃ§os Extras</h4>
                     {selectedServices.map((service, index) => (
                       <div key={index} className={styles.serviceItem}>
                         <span>{service.name}</span>
@@ -653,7 +653,7 @@ const CheckoutPage = () => {
             </div>
             <div className={styles.cardContent}>
               <div className={styles.paymentMethods}>
-                {['Dinheiro', 'Cartão', 'M-Pesa', 'e-Mola', 'mKesh'].map((method) => (
+                {['Dinheiro', 'CartÃ£o', 'M-Pesa', 'e-Mola', 'mKesh'].map((method) => (
                   <label key={method} className={styles.methodLabel}>
                     <input
                       type="radio"
@@ -676,7 +676,7 @@ const CheckoutPage = () => {
         </div>
       </div>
 
-      {/* BOTÃO CONFIRMAR CHECKOUT */}
+      {/* BOTÃƒO CONFIRMAR CHECKOUT */}
       {!checkoutConfirmed && (
         <div className={styles.actionButtons}>
           <button
@@ -689,7 +689,7 @@ const CheckoutPage = () => {
         </div>
       )}
 
-      {/* SEÇÃO DE RECIBO (APÓS CONFIRMAÇÃO) */}
+      {/* SEÃ‡ÃƒO DE RECIBO (APÃ“S CONFIRMAÃ‡ÃƒO) */}
       {checkoutConfirmed && (
         <div className={styles.receiptSection}>
           <div className={styles.card}>
@@ -709,14 +709,14 @@ const CheckoutPage = () => {
         </div>
       )}
 
-      {/* BOTÃO VOLTAR */}
+      {/* BOTÃƒO VOLTAR */}
       <div className={styles.backButtonContainer}>
         <button
           className={styles.backButton}
           onClick={() => navigate(-1)}
           aria-label="Voltar"
         >
-          <span className={styles.backIcon}>←</span>
+          <span className={styles.backIcon}>â†</span>
           <span>Voltar</span>
         </button>
       </div>
@@ -732,6 +732,7 @@ const CheckoutPage = () => {
 };
 
 export default CheckoutPage;
+
 
 
 

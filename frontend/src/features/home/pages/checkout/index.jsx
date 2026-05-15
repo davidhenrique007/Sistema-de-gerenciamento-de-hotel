@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useCart } from '@contexts/Cartcontext';
+import { useCart } from '@contexts/CartContext';
 import { useServices } from '@contexts/Servicescontext';
 import { useCliente } from '@hooks/useCliente';
 import { useI18n } from '../../../../contexts/I18nContext';
@@ -366,5 +366,7 @@ const Checkout = () => {
 };
 
 export default Checkout;
+
+
 
 
