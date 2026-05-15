@@ -1,0 +1,396 @@
+﻿.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  background: #1e293b;
+  color: white;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.sidebar.open {
+  width: 260px;
+}
+
+.sidebar.closed {
+  width: 70px;
+}
+
+.menuButton {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  width: 44px;
+  height: 44px;
+  background: #3b82f6;
+  border: none;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.menuButton:hover {
+  background: #2563eb;
+}
+
+.menuIcon {
+  font-size: 24px;
+  color: white;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 16px;
+  border-bottom: 1px solid #334155;
+}
+
+.logoArea {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.logoWrapper {
+  position: relative;
+  width: 55px;
+  height: 55px;
+  flex-shrink: 0;
+}
+
+.logoCircle {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(255, 255, 255, 0.05) 70%);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 215, 0, 0.5);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  animation: pulse 2s ease-in-out infinite;
+  top: 0;
+  left: 0;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.6; }
+}
+
+.logoImage {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  top: 5px;
+  left: 5px;
+  z-index: 2;
+}
+
+.logoText {
+  font-size: 18px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #ffffff 0%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  white-space: nowrap;
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.toggleBtn:hover {
+  background: #334155;
+  color: white;
+}
+
+.nav {
+  flex: 1;
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.navLink:hover {
+  background: #334155;
+  color: white;
+}
+
+.navLink.active {
+  background: #3b82f6;
+  color: white;
+}
+
+.navIcon {
+  font-size: 20px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.navLabel {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.sidebarFooter {
+  padding: 16px;
+  border-top: 1px solid #334155;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 8px;
+  border-radius: 12px;
+  background: #334155;
+}
+
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  background: #3b82f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.userDetails {
+  flex: 1;
+  overflow: hidden;
+}
+
+.userName {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+}
+
+.userRole {
+  display: block;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.logoutBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #ef4444;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.logoutBtn:hover {
+  background: #dc2626;
+}
+
+.sidebar.closed .logoText {
+  display: none;
+}
+
+.sidebar.closed .toggleBtn {
+  display: none;
+}
+
+.sidebar.closed .navLink {
+  justify-content: center;
+  padding: 12px;
+}
+
+.sidebar.closed .userDetails {
+  display: none;
+}
+
+.sidebar.closed .logoutBtn {
+  justify-content: center;
+  padding: 10px;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    width: 80%;
+    max-width: 280px;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .sidebar.closed {
+    transform: translateX(-100%);
+  }
+  
+  .menuButton {
+    display: flex;
+  }
+  
+  .toggleBtn {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .menuButton {
+    display: none;
+  }
+}
+
+/* Botão de toggle (◀/▶) - aparece ao passar o mouse */
+.toggleBtn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.sidebar:hover .toggleBtn {
+  opacity: 1;
+  visibility: visible;
+}
+
+.toggleBtn:hover {
+  background: #334155;
+  color: white;
+}
+
+/* Sidebar fechada - ajustar posição do botão toggle */
+.sidebar.closed .sidebarHeader {
+  justify-content: center;
+  padding: 20px 8px;
+}
+
+.sidebar.closed .logoArea {
+  justify-content: center;
+}
+
+.sidebar.closed .logoWrapper {
+  margin: 0 auto;
+}
+
+.sidebar.closed .toggleBtn {
+  position: absolute;
+  right: -10px;
+  top: 20px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  opacity: 1;
+  visibility: visible;
+}
+
+.sidebar.closed:hover .toggleBtn {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+/* Ajuste do header para posicionamento relativo */
+.sidebarHeader {
+  position: relative;
+}
+
+
+/* Aumento adicional para melhor visibilidade */
+.logoWrapper {
+  width: 55px !important;
+  height: 55px !important;
+}
+
+.logoCircle {
+  width: 55px !important;
+  height: 55px !important;
+  border-width: 2px !important;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4) !important;
+}
+
+.logoImage {
+  width: 45px !important;
+  height: 45px !important;
+  top: 5px !important;
+  left: 5px !important;
+  border-width: 2px !important;
+}
+
+.logoText {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+}
+
+/* Ajuste do espaçamento do header */
+.sidebarHeader {
+  padding: 20px 16px !important;
+  gap: 12px !important;
+}
+
+.logoArea {
+  gap: 14px !important;
+}

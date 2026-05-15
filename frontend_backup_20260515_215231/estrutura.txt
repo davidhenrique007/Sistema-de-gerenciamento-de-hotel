@@ -1,0 +1,372 @@
+Folder PATH listing
+Volume serial number is 3A65-267D
+C:\USERS\DELL\DESKTOP\CODE 01\VERSÃO PROFISSIONAL 01\SISTEMA P1\HOTEL-PARADISE\FRONTEND\SRC
+¦   App.jsx
+¦   index.css
+¦   main.jsx
+¦   teste-selecao.js
+¦   
++---assets
+¦   ¦   react.svg
+¦   ¦   
+¦   +---fonts
+¦   +---icons
+¦       ¦   Icon.jsx
+¦       ¦   index.js
+¦       ¦   
+¦       +---rooms
+¦       ¦       AirconIcon.jsx
+¦       ¦       BedIcon.jsx
+¦       ¦       index.js
+¦       ¦       TvIcon.jsx
+¦       ¦       WifiIcon.jsx
+¦       ¦       
+¦       +---services
+¦       ¦       BreakfastIcon.jsx
+¦       ¦       index.js
+¦       ¦       PoolIcon.jsx
+¦       ¦       SpaIcon.jsx
+¦       ¦       
+¦       +---social
+¦       ¦       index.js
+¦       ¦       InstagramIcon.jsx
+¦       ¦       
+¦       +---ui
+¦               CheckIcon.jsx
+¦               CloseIcon.jsx
+¦               index.js
+¦               MenuIcon.jsx
+¦               
++---contexts
+¦       AuthContext.jsx
+¦       CartContext.jsx
+¦       ClienteContext.jsx
+¦       TestCartContext.jsx
+¦       
++---core
+¦   ¦   utils.js
+¦   ¦   
+¦   +---application
+¦   ¦   +---dtos
+¦   ¦   ¦   +---room
+¦   ¦   ¦           RoomDetailsDTO.js
+¦   ¦   ¦           
+¦   ¦   +---use-cases
+¦   ¦       +---reservation
+¦   ¦       ¦       CalculatePriceUseCase.js
+¦   ¦       ¦       ValidateReservationUseCase.js
+¦   ¦       ¦       
+¦   ¦       +---rooms
+¦   ¦       ¦       GetRoomDetailsUseCase.js
+¦   ¦       ¦       ListAvailableRoomsUseCase.js
+¦   ¦       ¦       UpdateRoomOccupancyUseCase.js
+¦   ¦       ¦       ValidateRoomAvailabilityUseCase.js
+¦   ¦       ¦       
+¦   ¦       +---services
+¦   ¦               CalculateServicesPriceUseCase.js
+¦   ¦               ListServicesUseCase.js
+¦   ¦               
+¦   +---domain
+¦   ¦   +---entities
+¦   ¦   ¦       Reservation.js
+¦   ¦   ¦       Room.js
+¦   ¦   ¦       Service.js
+¦   ¦   ¦       
+¦   ¦   +---events
+¦   ¦   ¦       DomainEventPublisher.js
+¦   ¦   ¦       RoomEvents.js
+¦   ¦   ¦       
+¦   ¦   +---interfaces
+¦   ¦   ¦   +---repositories
+¦   ¦   ¦       ¦   IReservationRepository.js
+¦   ¦   ¦       ¦   IRoomRepository.js
+¦   ¦   ¦       ¦   
+¦   ¦   ¦       +---localStorage
+¦   ¦   ¦               LocalStorageReservationRepository.js
+¦   ¦   ¦               LocalStorageRoomRepository.js
+¦   ¦   ¦               LocalStorageServiceRepository.js
+¦   ¦   ¦               
+¦   ¦   +---value-objects
+¦   ¦           DateRange.js
+¦   ¦           Money.js
+¦   ¦           OccupancyStatus.js
+¦   ¦           
+¦   +---infrastructure
+¦       +---repositories
+¦       ¦   +---localStorage
+¦       ¦           LocalStorageReservationRepository.js
+¦       ¦           LocalStorageRoomRepository.js
+¦       ¦           LocalStorageServiceRepository.js
+¦       ¦           
+¦       +---services
+¦       ¦   +---availability
+¦       ¦   ¦       DefaultAvailabilityService.js
+¦       ¦   ¦       
+¦       ¦   +---pricing
+¦       ¦           DefaultPricingService.js
+¦       ¦           
+¦       +---utils
+¦               index.js
+¦               
++---di
+¦       container.js
+¦       homeDependencies.jsx
+¦       providers.jsx
+¦       
++---features
+¦   +---home
+¦   ¦   +---components
+¦   ¦   ¦   ¦   FormularioIdentificacao.jsx
+¦   ¦   ¦   ¦   FormularioIdentificacao.module.css
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---Footer
+¦   ¦   ¦   ¦       Footer.jsx
+¦   ¦   ¦   ¦       Footer.module.css
+¦   ¦   ¦   ¦       index.js
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---Header
+¦   ¦   ¦   ¦       Header.jsx
+¦   ¦   ¦   ¦       Header.module.css
+¦   ¦   ¦   ¦       index.js
+¦   ¦   ¦   ¦       Logo.jsx
+¦   ¦   ¦   ¦       MobileMenu.jsx
+¦   ¦   ¦   ¦       NavMenu.jsx
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---Hero
+¦   ¦   ¦   ¦       Hero.jsx
+¦   ¦   ¦   ¦       Hero.module.css
+¦   ¦   ¦   ¦       HeroBackground.jsx
+¦   ¦   ¦   ¦       index.js
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---ReservationForm
+¦   ¦   ¦   ¦       Calendar.jsx
+¦   ¦   ¦   ¦       Calendar.module.css
+¦   ¦   ¦   ¦       DatePicker.jsx
+¦   ¦   ¦   ¦       DatePicker.module.css
+¦   ¦   ¦   ¦       GuestSelector.jsx
+¦   ¦   ¦   ¦       GuestSelector.module.css
+¦   ¦   ¦   ¦       index.js
+¦   ¦   ¦   ¦       PriceSummary.jsx
+¦   ¦   ¦   ¦       PriceSummary.module.css
+¦   ¦   ¦   ¦       ReservationForm.jsx
+¦   ¦   ¦   ¦       ReservationForm.module.css
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---RoomsSection
+¦   ¦   ¦   ¦       index.js
+¦   ¦   ¦   ¦       RoomCard.jsx
+¦   ¦   ¦   ¦       RoomCard.module.css
+¦   ¦   ¦   ¦       RoomDetailsModal.jsx
+¦   ¦   ¦   ¦       RoomDetailsModal.module.css
+¦   ¦   ¦   ¦       RoomGrid.jsx
+¦   ¦   ¦   ¦       RoomGrid.module.css
+¦   ¦   ¦   ¦       RoomGridItem.jsx
+¦   ¦   ¦   ¦       RoomsSection.jsx
+¦   ¦   ¦   ¦       RoomsSection.module.css
+¦   ¦   ¦   ¦       RoomStatusBadge.jsx
+¦   ¦   ¦   ¦       RoomStatusBadge.module.css
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---ServicesSection
+¦   ¦   ¦           index.js
+¦   ¦   ¦           ServiceCard.jsx
+¦   ¦   ¦           ServiceCard.module.css
+¦   ¦   ¦           ServicesSection.jsx
+¦   ¦   ¦           ServicesSection.module.css
+¦   ¦   ¦           
+¦   ¦   +---constants
+¦   ¦   ¦       navigation.js
+¦   ¦   ¦       room.types.js
+¦   ¦   ¦       
+¦   ¦   +---data
+¦   ¦   ¦       roomsData.js
+¦   ¦   ¦       servicesData.js
+¦   ¦   ¦       
+¦   ¦   +---hooks
+¦   ¦   ¦       index.js
+¦   ¦   ¦       useCliente.js
+¦   ¦   ¦       useDatePicker.js
+¦   ¦   ¦       useGuestCounter.js
+¦   ¦   ¦       useHomeData.js
+¦   ¦   ¦       useHomeReservation.js
+¦   ¦   ¦       usePriceCalculation.js
+¦   ¦   ¦       useReservationForm.js
+¦   ¦   ¦       useReservationValidation.js
+¦   ¦   ¦       useRoomOccupancy.js
+¦   ¦   ¦       useRooms.js
+¦   ¦   ¦       useRoomSelection.js
+¦   ¦   ¦       useScrollToForm.js
+¦   ¦   ¦       useServices.js
+¦   ¦   ¦       
+¦   ¦   +---pages
+¦   ¦       ¦   CheckoutPage.jsx
+¦   ¦       ¦   CheckoutPage.module.css
+¦   ¦       ¦   home.css
+¦   ¦       ¦   HomePage.jsx
+¦   ¦       ¦   HomePageDebug.jsx
+¦   ¦       ¦   index.js
+¦   ¦       ¦   LoginCliente.jsx
+¦   ¦       ¦   LoginCliente.module.css
+¦   ¦       ¦   PerfilCliente.jsx
+¦   ¦       ¦   
+¦   ¦       +---admin
+¦   ¦               LoginAdmin.jsx
+¦   ¦               LoginAdmin.module.css
+¦   ¦               
+¦   +---payment
+¦       +---components
+¦               index.js
+¦               PaymentButton.jsx
+¦               PaymentButton.module.css
+¦               PaymentSummary.jsx
+¦               PaymentSummary.module.css
+¦               
++---middlewares
+¦       ClienteRoute.jsx
+¦       TipoQuartoRoute.jsx
+¦       
++---router
+¦       index.jsx
+¦       PrivateRoute.jsx
+¦       
++---services
+¦       api.js
+¦       
++---shared
+¦   +---components
+¦   ¦   ¦   HeaderCliente.jsx
+¦   ¦   ¦   LogoutButton.jsx
+¦   ¦   ¦   LogoutButton.module.css
+¦   ¦   ¦   
+¦   ¦   +---layout
+¦   ¦   ¦   ¦   index.js
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---Container
+¦   ¦   ¦           Container.jsx
+¦   ¦   ¦           Container.module.css
+¦   ¦   ¦           
+¦   ¦   +---ui
+¦   ¦       ¦   index.js
+¦   ¦       ¦   
+¦   ¦       +---Button
+¦   ¦       ¦   ¦   Button.jsx
+¦   ¦       ¦   ¦   Button.module.css
+¦   ¦       ¦   ¦   index.js
+¦   ¦       ¦   ¦   
+¦   ¦       ¦   +---__tests__
+¦   ¦       ¦           Button.test.jsx
+¦   ¦       ¦           
+¦   ¦       +---Container
+¦   ¦       ¦       Container.jsx
+¦   ¦       ¦       Container.module.css
+¦   ¦       ¦       index.js
+¦   ¦       ¦       
+¦   ¦       +---Input
+¦   ¦       ¦       Input.jsx
+¦   ¦       ¦       Input.module.css
+¦   ¦       ¦       
+¦   ¦       +---Modal
+¦   ¦       ¦       index.js
+¦   ¦       ¦       Modal.jsx
+¦   ¦       ¦       Modal.module.css
+¦   ¦       ¦       
+¦   ¦       +---Notification
+¦   ¦       ¦   ¦   index.js
+¦   ¦       ¦   ¦   Notification.jsx
+¦   ¦       ¦   ¦   Notification.module.css
+¦   ¦       ¦   ¦   NotificationContext.jsx
+¦   ¦       ¦   ¦   useNotification.js
+¦   ¦       ¦   ¦   
+¦   ¦       ¦   +---__tests__
+¦   ¦       ¦           Notification.test.jsx
+¦   ¦       ¦           
+¦   ¦       +---ReceiptModal
+¦   ¦       ¦       index.js
+¦   ¦       ¦       ReceiptModal.jsx
+¦   ¦       ¦       ReceiptModal.module.css
+¦   ¦       ¦       
+¦   ¦       +---Spinner
+¦   ¦       ¦       index.js
+¦   ¦       ¦       Spinner.jsx
+¦   ¦       ¦       Spinner.module.css
+¦   ¦       ¦       
+¦   ¦       +---Splash
+¦   ¦               HotelSplash.jsx
+¦   ¦               HotelSplash.module.css
+¦   ¦               index.js
+¦   ¦               
+¦   +---hooks
+¦   ¦       useDependency.js
+¦   ¦       useLocalStorage.js
+¦   ¦       
+¦   +---styles
+¦   ¦       global.css
+¦   ¦       variables.css
+¦   ¦       
+¦   +---utils
+¦           dateUtils.js
+¦           errorUtils.js
+¦           formatters.js
+¦           mascaras.js
+¦           sanitizer.js
+¦           storage.js
+¦           validators.js
+¦           
++---__tests__
+    +---home
+            GuestSelector.test.jsx
+            ReservationForm.test.jsx
+            RoomCard.test.jsx
+            RoomSelection.test.jsx
+            
+Folder PATH listing
+Volume serial number is 3A65-267D
+C:\USERS\DELL\DESKTOP\CODE 01\VERSÃO PROFISSIONAL 01\SISTEMA P1\HOTEL-PARADISE\FRONTEND\PUBLIC
+¦   vite.svg
+¦   
++---assets
+    +---images
+        ¦   hero-bg.jpg
+        ¦   
+        +---rooms
+            +---deluxe
+            ¦       1.jpg
+            ¦       2.jpg
+            ¦       3.jpg
+            ¦       main.jpg
+            ¦       
+            +---executive
+            ¦       1.jpg
+            ¦       2.jpg
+            ¦       3.jpg
+            ¦       main.jpg
+            ¦       
+            +---family
+            ¦       1.jpg
+            ¦       2.jpg
+            ¦       3.jpg
+            ¦       main.jpg
+            ¦       
+            +---presidential
+            ¦       1.jpg
+            ¦       2.jpg
+            ¦       3.jpg
+            ¦       main.jpg
+            ¦       
+            +---standard
+                    1.jpg
+                    2.jpg
+                    3.jpg
+                    main.jpg
+                    
+Folder PATH listing
+Volume serial number is 3A65-267D
+C:\USERS\DELL\DESKTOP\CODE 01\VERSÃO PROFISSIONAL 01\SISTEMA P1\HOTEL-PARADISE\FRONTEND\SRC\SERVICES
+    api.js
+    
+No subfolders exist 
+
+Folder PATH listing
+Volume serial number is 3A65-267D
+C:\USERS\DELL\DESKTOP\CODE 01\VERSÃO PROFISSIONAL 01\SISTEMA P1\HOTEL-PARADISE\FRONTEND\SRC\STYLES
+Invalid path - \USERS\DELL\DESKTOP\CODE 01\VERSÃO PROFISSIONAL 01\SISTEMA P1\HOTEL-PARADISE\FRONTEND\SRC\STYLES
+No subfolders exist 
+

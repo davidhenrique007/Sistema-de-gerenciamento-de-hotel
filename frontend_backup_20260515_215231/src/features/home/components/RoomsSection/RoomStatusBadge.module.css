@@ -1,0 +1,346 @@
+/* ============================================
+   ROOM STATUS BADGE MODULE CSS
+   ============================================
+   Estilos profissionais para badge de status de quarto
+   Versão corporativa com cores consistentes
+   ============================================ */
+
+@import '../../../../shared/styles/variables.css';
+
+/* ============================================
+   BADGE BASE
+   ============================================ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100px;
+  font-weight: 600;
+  line-height: 1;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  letter-spacing: 0.3px;
+  border: 1px solid transparent;
+}
+
+.badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   TAMANHOS
+   ============================================ */
+
+.small {
+  padding: 4px 10px;
+  font-size: 11px;
+  gap: 4px;
+  min-height: 24px;
+}
+
+.small .icon {
+  font-size: 12px;
+}
+
+.medium {
+  padding: 6px 14px;
+  font-size: 13px;
+  gap: 6px;
+  min-height: 32px;
+}
+
+.medium .icon {
+  font-size: 14px;
+}
+
+.large {
+  padding: 8px 18px;
+  font-size: 15px;
+  gap: 8px;
+  min-height: 40px;
+}
+
+.large .icon {
+  font-size: 16px;
+}
+
+/* ============================================
+   VARIANTES DE STATUS - CORPORATIVAS
+   ============================================ */
+
+/* Disponível - Verde */
+.available {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border-color: #a5d6a7;
+}
+
+.available .icon {
+  color: #2e7d32;
+}
+
+/* Ocupado - Vermelho */
+.occupied {
+  background-color: #ffebee;
+  color: #c62828;
+  border-color: #ef9a9a;
+}
+
+.occupied .icon {
+  color: #c62828;
+}
+
+/* Manutenção - Amarelo/Laranja */
+.maintenance {
+  background-color: #fff3e0;
+  color: #ef6c00;
+  border-color: #ffb74d;
+}
+
+.maintenance .icon {
+  color: #ef6c00;
+}
+
+/* Reservado - Azul */
+.reserved {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border-color: #90caf9;
+}
+
+.reserved .icon {
+  color: #1565c0;
+}
+
+/* Limpeza - Cinza */
+.cleaning {
+  background-color: #f5f5f5;
+  color: #616161;
+  border-color: #bdbdbd;
+}
+
+.cleaning .icon {
+  color: #616161;
+}
+
+/* ============================================
+   ÍCONE
+   ============================================ */
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-weight: 400;
+}
+
+/* ============================================
+   LABEL
+   ============================================ */
+
+.label {
+  line-height: 1;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================
+   VERSÃO COMPACT (APENAS ÍCONE)
+   ============================================ */
+
+.compact {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.compact:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.compactIcon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* ============================================
+   VERSÃO PÍLULA (APENAS TEXTO)
+   ============================================ */
+
+.pill {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid transparent;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================
+   ANIMAÇÕES
+   ============================================ */
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(46, 125, 50, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(46, 125, 50, 0);
+  }
+}
+
+.badge.available:not(.compact) {
+  animation: pulse 2s infinite;
+}
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .small {
+    padding: 3px 8px;
+    font-size: 10px;
+    min-height: 22px;
+  }
+
+  .medium {
+    padding: 5px 12px;
+    font-size: 12px;
+    min-height: 28px;
+  }
+
+  .large {
+    padding: 7px 16px;
+    font-size: 14px;
+    min-height: 36px;
+  }
+
+  .compact {
+    width: 24px;
+    height: 24px;
+  }
+
+  .compactIcon {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .badge.medium .label {
+    font-size: 11px;
+  }
+
+  .compact {
+    width: 22px;
+    height: 22px;
+  }
+
+  .pill {
+    padding: 3px 10px;
+    font-size: 11px;
+  }
+}
+
+/* ============================================
+   ACESSIBILIDADE
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .badge,
+  .compact,
+  .pill {
+    border-width: 2px;
+  }
+
+  .available {
+    background-color: #fff;
+    color: #000;
+    border-color: #000;
+  }
+
+  .occupied {
+    background-color: #fff;
+    color: #000;
+    border-color: #000;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge,
+  .compact,
+  .badge.available:not(.compact) {
+    animation: none;
+    transition: none;
+  }
+
+  .badge:hover,
+  .compact:hover {
+    transform: none;
+  }
+}
+
+/* ============================================
+   IMPRESSÃO
+   ============================================ */
+
+@media print {
+  .badge,
+  .compact,
+  .pill {
+    border: 1px solid #000;
+    background: none;
+    color: #000;
+    box-shadow: none;
+  }
+
+  .badge .icon,
+  .compact .compactIcon {
+    color: #000;
+  }
+
+  .badge.available:not(.compact) {
+    animation: none;
+  }
+}
+
+/* ============================================
+   UTILITÁRIOS PARA POSICIONAMENTO
+   ============================================ */
+
+/* Posicionamento absoluto para cards */
+.absolute {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+}
+
+/* Com sombra para melhor legibilidade */
+.withShadow {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Borda branca para contraste em imagens escuras */
+.withBorder {
+  border: 2px solid white;
+}

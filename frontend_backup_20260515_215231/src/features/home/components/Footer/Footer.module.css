@@ -1,0 +1,256 @@
+/* ============================================================================
+   FOOTER PRINCIPAL
+   =========================================================================== */
+
+.footer {
+  background-color: #111827;
+  color: #e5e7eb;
+  padding: 60px 0 20px;
+  margin-top: auto;
+  width: 100%;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ============================================================================
+   LINHA PRINCIPAL COM COLUNAS
+   =========================================================================== */
+
+.mainRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+@media (min-width: 640px) {
+  .mainRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .mainRow {
+    grid-template-columns: 2fr 1fr 1fr 1.5fr;
+    gap: 30px;
+  }
+}
+
+/* ============================================================================
+   COLUNAS
+   =========================================================================== */
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.columnTitle {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.columnTitle::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  border-radius: 2px;
+}
+
+/* ============================================================================
+   COLUNA 1 - SOBRE
+   =========================================================================== */
+
+.aboutText {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #9ca3af;
+}
+
+/* ============================================================================
+   REDES SOCIAIS
+   =========================================================================== */
+
+.socialLinks {
+  display: flex;
+  gap: 12px;
+}
+
+.socialLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #1f2937;
+  border-radius: 50%;
+  color: #9ca3af;
+  transition: all 0.3s ease;
+}
+
+.socialLink:hover {
+  background-color: #2563eb;
+  color: white;
+  transform: translateY(-3px);
+}
+
+.socialIcon {
+  font-size: 18px;
+}
+
+/* ============================================================================
+   LISTAS DE LINKS
+   =========================================================================== */
+
+.linkList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.link {
+  color: #9ca3af;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s ease;
+  display: inline-block;
+}
+
+.link:hover {
+  color: white;
+  transform: translateX(5px);
+}
+
+/* ============================================================================
+   LISTA DE CONTATO
+   =========================================================================== */
+
+.contactList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.contactIcon {
+  font-size: 16px;
+  min-width: 20px;
+}
+
+.contactLink {
+  color: #9ca3af;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.contactLink:hover {
+  color: white;
+}
+
+.contactText {
+  color: #9ca3af;
+}
+
+/* ============================================================================
+   LINHA DE COPYRIGHT
+   =========================================================================== */
+
+.copyrightRow {
+  padding-top: 20px;
+  border-top: 1px solid #1f2937;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .copyrightRow {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+}
+
+.copyright {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.legalLinks {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.legalLink {
+  color: #6b7280;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.legalLink:hover {
+  color: white;
+}
+
+.separator {
+  color: #6b7280;
+}
+
+/* ============================================================================
+   RESPONSIVIDADE ADICIONAL
+   =========================================================================== */
+
+@media (max-width: 640px) {
+  .footer {
+    padding: 40px 0 20px;
+  }
+
+  .columnTitle::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .column {
+    text-align: center;
+    align-items: center;
+  }
+
+  .socialLinks {
+    justify-content: center;
+  }
+
+  .contactItem {
+    justify-content: center;
+  }
+}

@@ -1,0 +1,361 @@
+.container {
+  width: 100%;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  margin-bottom: 28px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.description {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.settingsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cardIcon {
+  font-size: 28px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-icon);
+  border-radius: 14px;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.cardDescription {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.cardContent {
+  padding: 24px;
+}
+
+.currencySelector {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.currencyButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.currencyButton:hover {
+  background: var(--bg-card);
+  border-color: var(--border-hover);
+}
+
+.currencyButton.active {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.currencyButton.active .currencySymbol,
+.currencyButton.active .currencyCode,
+.currencyButton.active .currencyName {
+  color: white;
+}
+
+.currencySymbol {
+  font-size: 18px;
+}
+
+.currencyCode {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.currencyName {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.previewBox {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.previewLabel {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.previewValue {
+  font-size: 18px;
+  font-weight: 600;
+  color: #10b981;
+}
+
+.selectInput {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--text-primary);
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.selectInput:hover {
+  border-color: var(--border-hover);
+}
+
+.currentTimeBox {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.currentTimeLabel {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.currentTimeValue {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.toggleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.toggleInfo {
+  flex: 1;
+}
+
+.toggleTitle {
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.toggleDesc {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.toggleSlider {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  background: var(--bg-secondary);
+  border-radius: 26px;
+  display: block;
+  transition: all 0.2s ease;
+}
+
+.toggleActive .toggleSlider {
+  background: #10b981;
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.toggleActive .toggleKnob {
+  transform: translateX(22px);
+}
+
+.intervalSelector {
+  margin-bottom: 20px;
+}
+
+.intervalLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.statusBox {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.statusLabel {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.statusValue {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.statusActive {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.statusInactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Responsividade */
+@media (max-width: 640px) {
+  .cardHeader {
+    padding: 16px 20px;
+  }
+
+  .cardContent {
+    padding: 20px;
+  }
+
+  .currencyButton {
+    padding: 8px 16px;
+  }
+
+  .currencyName {
+    display: none;
+  }
+
+  .previewBox {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .currentTimeBox {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .toggleRow {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+}
+
+/* Tema Light */
+:root {
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --bg-card: #ffffff;
+  --bg-icon: #f1f5f9;
+  --bg-secondary: #f1f5f9;
+  --border-color: #e2e8f0;
+  --border-hover: #cbd5e1;
+}
+
+/* Tema Dark */
+[data-theme="dark"] {
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --bg-card: #1e293b;
+  --bg-icon: #334155;
+  --bg-secondary: #334155;
+  --border-color: #334155;
+  --border-hover: #475569;
+}

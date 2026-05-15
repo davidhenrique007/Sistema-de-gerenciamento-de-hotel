@@ -1,0 +1,144 @@
+﻿import React, { useState } from 'react';
+import styles from '../styles/Checkout.module.css';
+
+// Componente de pagamento M-Pesa
+const FormaPagamentoMPesa = ({ paymentDetails, setPaymentDetails, errors, setPaymentMethod }) => {
+  const [operadora, setOperadora] = useState('mpesa');
+
+  const operadoras = [
+    { id: 'mpesa', label: 'M-Pesa', prefixos: ['84', '85'] },
+    { id: 'emola', label: 'E-mola', prefixos: ['86', '87'] },
+    { id: 'mkesh', label: 'mKesh', prefixos: ['82', '83'] }
+  ];
+
+  const handlePhoneChange = (e) => {
+    const valor = e.target.value;
+    const numeros = valor.replace(/\D/g, '');
+    let mascara = numeros;
+    
+    if (numeros.length > 2) {
+      mascara = `${numeros.substring(0, 2)} ${numeros.substring(2, 5)} ${numeros.substring(5, 9)}`;
+    }
+    
+    setPaymentDetails({ phone: mascara.trim() });
+    
+    if (numeros.length >= 2) {
+      const prefixo = numeros.substring(0, 2);
+      const op = operadoras.find(o => o.prefixos.includes(prefixo));
+      if (op) {
+        setOperadora(op.id);
+        setPaymentMethod(op.id);
+      }
+    }
+  };
+
+  const getOperadoraNome = () => {
+    if (operadora === 'mpesa') return 'M-Pesa';
+    if (operadora === 'emola') return 'E-mola';
+    if (operadora === 'mkesh') return 'mKesh';
+    return 'Pagamento Móvel';
+  };
+
+  return (
+    <div>
+      <div className={styles.operadoraInfo}>
+        <span className={styles.operadoraBadge}>
+          📱 {getOperadoraNome()}
+        </span>
+      </div>
+      
+      <div className={styles.formGroup}>
+        <label>Número de telefone</label>
+        <input
+          type="tel"
+          value={paymentDetails?.phone || ''}
+          onChange={handlePhoneChange}
+          placeholder="84 123 4567"
+          className={errors?.payment ? styles.inputError : styles.input}
+        />
+        {errors?.payment && <span className={styles.errorMessage}>{errors.payment}</span>}
+        <small>Você receberá uma notificação para confirmar o pagamento</small>
+      </div>
+    </div>
+  );
+};
+
+// Componente de pagamento em Dinheiro
+const FormaPagamentoDinheiro = () => {
+  return (
+    <div className={styles.cashInfo}>
+      <div className={styles.cashIcon}>💵</div>
+      <h4>Pagamento na chegada</h4>
+      <p>Você poderá pagar diretamente na recepção do hotel.</p>
+      <div className={styles.cashWarning}>
+        <span>⚠️</span>
+        <small>Reserva será confirmada após o pagamento. Cancelamento gratuito até 24h antes.</small>
+      </div>
+    </div>
+  );
+};
+
+// =====================================================
+// COMPONENTE PRINCIPAL - MÉTODOS DE PAGAMENTO
+// =====================================================
+
+const MetodosPagamento = ({ paymentMethod, setPaymentMethod, paymentDetails, setPaymentDetails, errors }) => {
+  const [activeTab, setActiveTab] = useState('mpesa');
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setPaymentMethod(tab);
+    setPaymentDetails({});
+  };
+
+  const tabs = [
+    { id: 'mpesa', label: 'M-Pesa / E-mola', icon: '📱' },
+    { id: 'cartao', label: 'Cartão de Crédito', icon: '💳' },
+    { id: 'dinheiro', label: 'Dinheiro', icon: '💵' }
+  ];
+
+  return (
+    <div>
+      {/* Tabs */}
+      <div className={styles.paymentTabs}>
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            className={`${styles.tabButton} ${activeTab === tab.id ? styles.tabActive : ''}`}
+            onClick={() => handleTabChange(tab.id)}
+          >
+            <span className={styles.tabIcon}>{tab.icon}</span>
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Conteúdo - NOTA: O componente de cartão é renderizado pelo pai (Checkout) */}
+      <div className={styles.tabContent}>
+        {activeTab === 'mpesa' && (
+          <FormaPagamentoMPesa
+            paymentDetails={paymentDetails}
+            setPaymentDetails={setPaymentDetails}
+            errors={errors}
+            setPaymentMethod={setPaymentMethod}
+          />
+        )}
+        
+        {activeTab === 'cartao' && (
+          // O Stripe Elements será renderizado pelo Checkout
+          // Esta div é um placeholder
+          <div className={styles.stripePlaceholder}>
+            <p>🔒 Pagamento seguro com Stripe</p>
+            <p className={styles.hint}>O formulário de cartão aparecerá abaixo</p>
+          </div>
+        )}
+        
+        {activeTab === 'dinheiro' && (
+          <FormaPagamentoDinheiro />
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default MetodosPagamento;

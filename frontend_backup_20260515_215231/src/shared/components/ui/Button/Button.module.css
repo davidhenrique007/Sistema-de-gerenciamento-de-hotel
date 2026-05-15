@@ -1,0 +1,217 @@
+/* ============================================================================
+   BUTTON BASE
+   =========================================================================== */
+
+.button {
+  /* Layout */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  
+  /* Tipografia */
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+  
+  /* Borda e fundo */
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  
+  /* Cursor */
+  cursor: pointer;
+  
+  /* Transições */
+  transition: all var(--transition-fast) var(--transition-ease);
+  
+  /* Acessibilidade */
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================================================
+   TAMANHOS
+   =========================================================================== */
+
+.sm {
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-sm);
+  min-height: 32px;
+}
+
+.md {
+  padding: var(--spacing-3) var(--spacing-6);
+  font-size: var(--font-size-md);
+  min-height: 40px;
+}
+
+.lg {
+  padding: var(--spacing-4) var(--spacing-8);
+  font-size: var(--font-size-lg);
+  min-height: 48px;
+}
+
+/* ============================================================================
+   VARIANTES
+   =========================================================================== */
+
+/* Primary */
+.primary {
+  background-color: var(--color-primary-600);
+  color: var(--color-text-inverse);
+  border-color: var(--color-primary-600);
+}
+
+.primary:hover:not(:disabled) {
+  background-color: var(--color-primary-700);
+  border-color: var(--color-primary-700);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.primary:active:not(:disabled) {
+  background-color: var(--color-primary-800);
+  border-color: var(--color-primary-800);
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.primary:focus-visible {
+  outline: 2px solid var(--color-primary-400);
+  outline-offset: 2px;
+}
+
+/* Secondary */
+.secondary {
+  background-color: var(--color-neutral-100);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-medium);
+}
+
+.secondary:hover:not(:disabled) {
+  background-color: var(--color-neutral-200);
+  border-color: var(--color-neutral-400);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.secondary:active:not(:disabled) {
+  background-color: var(--color-neutral-300);
+  border-color: var(--color-neutral-500);
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.secondary:focus-visible {
+  outline: 2px solid var(--color-neutral-400);
+  outline-offset: 2px;
+}
+
+/* Outline */
+.outline {
+  background-color: transparent;
+  color: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+}
+
+.outline:hover:not(:disabled) {
+  background-color: var(--color-primary-50);
+  border-color: var(--color-primary-700);
+  color: var(--color-primary-700);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.outline:active:not(:disabled) {
+  background-color: var(--color-primary-100);
+  border-color: var(--color-primary-800);
+  color: var(--color-primary-800);
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.outline:focus-visible {
+  outline: 2px solid var(--color-primary-300);
+  outline-offset: 2px;
+}
+
+/* ============================================================================
+   ESTADOS
+   =========================================================================== */
+
+/* Disabled */
+.button:disabled,
+.button[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Loading */
+.loading {
+  cursor: wait;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.loadingContent {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--radius-full);
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================================
+   VARIAÇÕES DE LAYOUT
+   =========================================================================== */
+
+.fullWidth {
+  width: 100%;
+}
+
+/* ============================================================================
+   RESPONSIVIDADE
+   =========================================================================== */
+
+@media (max-width: var(--breakpoint-sm)) {
+  .lg {
+    padding: var(--spacing-3) var(--spacing-6);
+    font-size: var(--font-size-md);
+    min-height: 44px;
+  }
+  
+  .md {
+    min-height: 44px; /* Acessibilidade: tamanho mínimo para toque */
+  }
+}
+
+/* ============================================================================
+   DARK MODE PREPARATION
+   =========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  .secondary {
+    background-color: var(--color-neutral-800);
+    color: var(--color-text-inverse);
+  }
+}

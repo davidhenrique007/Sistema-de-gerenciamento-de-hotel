@@ -4,7 +4,7 @@ import { useI18n } from '@/contexts/I18ncontext';
 import { formatDate, calculateNights } from '@/core/utils/dateFormatter';
 import api from '@/services/api';
 import styles from './ReciboPage.module.css';
-import logo from '@/assets/images/login/logo.png';
+
 
 const ReciboPage = () => {
     const navigate = useNavigate();
@@ -103,7 +103,7 @@ const ReciboPage = () => {
             <div className={styles.recibo}>
                 <div className={styles.header}>
                     <div className={styles.hotelBrand}>
-                        <img src={logo} alt="Hotel Paradise" className={styles.hotelIcon} />
+                        <img src="/logo.png" alt="Hotel Paradise" className={styles.hotelIcon} />
                         <div>
                             <h1 className={styles.hotelName}>Hotel Paradise</h1>
                             <p className={styles.hotelMeta}>Maputo, Moçambique · +258 84 123 4567</p>

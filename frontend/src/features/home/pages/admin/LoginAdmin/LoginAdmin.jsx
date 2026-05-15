@@ -1,7 +1,7 @@
 ﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './LoginAdmin.module.css';
-import logoImage from '../../../../../assets/images/login/logo.png';
+
 
 const LoginAdmin = () => {
   const navigate = useNavigate();
@@ -59,7 +59,7 @@ const LoginAdmin = () => {
           <div className={styles.logoContainer}>
             <div className={styles.logoCircle}></div>
             <img 
-              src={logoImage} 
+              src="/logo.png" 
               alt="Hotel Paradise" 
               className={styles.logoImage}
               onError={(e) => {
@@ -95,3 +95,4 @@ const LoginAdmin = () => {
 };
 
 export default LoginAdmin;
+

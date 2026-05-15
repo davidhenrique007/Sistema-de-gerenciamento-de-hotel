@@ -1,0 +1,82 @@
+﻿/* PriceSummary.module.css - Design Compacto */
+
+.summary {
+  background: #1c3439;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+  text-align: center;
+  border: 1px solid #eef2f6;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fffbfb;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.dates {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dateItem {
+  display: flex;
+  gap: 0.375rem;
+  font-size: 1.125rem;
+  color: #fdfdfd;
+}
+
+.dateItem strong {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.nights {
+  text-align: center;
+  font-size: 1.25rem;
+  color: #f9f9f9;
+  font-weight: 500;
+  margin: 0.5rem 0;
+  background: rgb(67, 67, 65);
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: 20px;
+}
+
+.prices {
+  margin-top: 0.75rem;
+  text-align: left;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+  font-size: 0.75rem;
+  color: #ffffff;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0 0;
+  margin-top: 0.375rem;
+  border-top: 1px solid #e9ecef;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.totalRow strong:last-child {
+  color: #f7a203;
+}

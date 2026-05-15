@@ -1,0 +1,48 @@
+﻿.selector {
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2rem;
+  padding: 0.25rem;
+}
+
+.langButton {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  background: transparent;
+  border-radius: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  color: #333;
+}
+
+.langButton:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.langButton.active {
+  background: #c8a86b;
+  color: white;
+}
+
+.flag {
+  font-size: 1rem;
+}
+
+.short {
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .short {
+    display: none;
+  }
+  
+  .langButton {
+    padding: 0.5rem;
+  }
+}

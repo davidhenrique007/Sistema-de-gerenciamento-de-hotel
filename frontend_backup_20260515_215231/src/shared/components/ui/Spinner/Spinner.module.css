@@ -1,0 +1,92 @@
+/* ============================================================================
+   SPINNER BASE
+   =========================================================================== */
+
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* ============================================================================
+   CÍRCULO ANIMADO
+   =========================================================================== */
+
+.circle {
+  border: 3px solid var(--color-neutral-200);
+  border-top-color: var(--color-primary-600);
+  border-right-color: var(--color-primary-300);
+  border-radius: var(--radius-full);
+  animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+  will-change: transform;
+}
+
+/* ============================================================================
+   TAMANHOS
+   =========================================================================== */
+
+.sm .circle {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+}
+
+.md .circle {
+  width: 32px;
+  height: 32px;
+  border-width: 3px;
+}
+
+.lg .circle {
+  width: 48px;
+  height: 48px;
+  border-width: 4px;
+}
+
+/* ============================================================================
+   FULL SCREEN
+   =========================================================================== */
+
+.fullScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-bg-overlay);
+  backdrop-filter: blur(4px);
+  z-index: var(--z-index-modal);
+}
+
+.fullScreen .circle {
+  width: 64px;
+  height: 64px;
+  border-width: 5px;
+}
+
+/* ============================================================================
+   ANIMAÇÃO
+   =========================================================================== */
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================================
+   OTIMIZAÇÕES DE PERFORMANCE
+   =========================================================================== */
+
+.spinner {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.circle {
+  transform: translateZ(0);
+}
