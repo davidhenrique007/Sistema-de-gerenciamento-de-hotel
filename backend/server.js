@@ -230,7 +230,7 @@ app.post('/api/clientes/identificar', async (req, res) => {
     
     // Buscar cliente existente pelo telefone
     let result = await pool.query(
-      'SELECT * FROM clients WHERE phone = $1',
+      'SELECT * FROM clientes WHERE phone = $1',
       [phone]
     );
     
@@ -240,7 +240,7 @@ app.post('/api/clientes/identificar', async (req, res) => {
       // Criar novo cliente
       console.log('📝 Criando novo cliente:', name);
       const insertResult = await pool.query(
-        `INSERT INTO clients (name, phone, document, email, created_at, updated_at) 
+        `INSERT INTO clientes (name, phone, document, email, created_at, updated_at) 
          VALUES ($1, $2, $3, $4, NOW(), NOW()) 
          RETURNING *`,
         [name, phone, document || null, email || null]
@@ -347,6 +347,7 @@ if (require.main === module) {
 }
 
 module.exports = app;
+
 
 
 
