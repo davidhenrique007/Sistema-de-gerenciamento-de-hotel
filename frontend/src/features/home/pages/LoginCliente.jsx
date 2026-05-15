@@ -1,38 +1,46 @@
 ﻿import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../../../contexts/AuthContext";
-import { useI18n } from "../../../../contexts/I18nContext";
-import styles from "./LoginAdmin.module.css";
+import { useCliente } from "../../../contexts/ClienteContext";
+import { useI18n } from "../../../contexts/I18nContext";
+import FormularioIdentificacao from "../components/FormularioIdentificacao";
+import styles from "./LoginCliente.module.css";
 
-const LoginAdmin = () => {
+const LoginCliente = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, loading, error: authError } = useAuth();
+  const { identificarCliente, cliente, loading } = useCliente();
   const { t } = useI18n();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
-    
-    if (!email || !password) {
-      setError(t('errors.required_field'));
-      return;
-    }
-
+  const handleSubmit = async (dados) => {
     try {
-      const result = await login(email, password);
-      if (result.success) {
-        const from = location.state?.from?.pathname || "/admin/dashboard";
-        navigate(from, { replace: true });
+      setError(null);
+      const resultado = await identificarCliente(dados);
+      
+      if (resultado.success) {
+        const destino = location.state?.from || '/';
+        navigate(destino, { replace: true });
       } else {
-        setError(result.error || t('errors.login_failed'));
+        const errorKey = mapErrorToKey(resultado.error);
+        setError(t(errorKey));
       }
     } catch (err) {
       setError(t('errors.server_error'));
     }
+  };
+
+  const mapErrorToKey = (errorMessage) => {
+    const errorMap = {
+      'Credenciais inválidas': 'errors.invalid_credentials',
+      'Invalid credentials': 'errors.invalid_credentials',
+      'Utilizador não encontrado': 'errors.user_not_found',
+      'User not found': 'errors.user_not_found',
+      'Email não verificado': 'errors.email_not_verified',
+      'Email not verified': 'errors.email_not_verified',
+      'Conta bloqueada': 'errors.account_locked',
+      'Account locked': 'errors.account_locked'
+    };
+    return errorMap[errorMessage] || 'errors.login_failed';
   };
 
   return (
@@ -41,9 +49,8 @@ const LoginAdmin = () => {
         <div className={styles.illustration}>
           <div className={styles.logoContainer}>
             <div className={styles.logoCircle}></div>
-            {/* ✅ Usar caminho direto da pasta public */}
             <img 
-              src="/logo.png"
+              src="/assets/images/login/logo.png"
               alt="Hotel Paradise" 
               className={styles.logoImage}
               onError={(e) => {
@@ -56,54 +63,58 @@ const LoginAdmin = () => {
             <span className={styles.logoFallback} style={{ display: 'none' }}>🏨</span>
           </div>
 
+          <img 
+            src="/assets/images/login-illustration.svg" 
+            alt={t('auth.login.title')}
+            className={styles.illustrationImage}
+          />
           <h1>{t('auth.login.title')}</h1>
           <p>{t('auth.login.subtitle')}</p>
+          
+          <div className={styles.benefits}>
+            <div className={styles.benefit}>
+              <span className={styles.benefitIcon}>✓</span>
+              <span>{t('checkout.personal_data')}</span>
+            </div>
+            <div className={styles.benefit}>
+              <span className={styles.benefitIcon}>✓</span>
+              <span>{t('common.loading')}</span>
+            </div>
+            <div className={styles.benefit}>
+              <span className={styles.benefitIcon}>✓</span>
+              <span>{t('common.confirm')}</span>
+            </div>
+          </div>
         </div>
 
         <div className={styles.formWrapper}>
-          {(error || authError) && (
+          {error && (
             <div className={styles.alertError}>
-              {error || authError}
+              {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className={styles.form}>
-            <div className={styles.formGroup}>
-              <label>{t('auth.login.email')}</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t('auth.login.email_placeholder')}
-                disabled={loading}
-                className={styles.input}
-              />
-            </div>
+          <FormularioIdentificacao 
+            onSubmit={handleSubmit}
+            isLoading={loading}
+            t={t}
+          />
 
-            <div className={styles.formGroup}>
-              <label>{t('auth.login.password')}</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder={t('auth.login.password_placeholder')}
-                disabled={loading}
-                className={styles.input}
-              />
+          {cliente && (
+            <div className={styles.welcomeBack}>
+              <p>{t('auth.login.welcome_back', { name: cliente.name.split(' ')[0] })}</p>
+              <button 
+                onClick={() => navigate('/quartos/disponiveis')}
+                className={styles.continueButton}
+              >
+                {t('common.next')}
+              </button>
             </div>
-
-            <button 
-              type="submit" 
-              disabled={loading}
-              className={styles.submitButton}
-            >
-              {loading ? t('common.loading') : t('auth.login.button')}
-            </button>
-          </form>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default LoginAdmin;
+export default LoginCliente;
