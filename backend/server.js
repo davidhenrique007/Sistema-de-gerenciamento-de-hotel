@@ -210,6 +210,71 @@ app.post('/api/auth/heartbeat', async (req, res) => {
   }
 });
 
+
+// ==================== ROTA PÚBLICA PARA CLIENTE ====================
+app.post('/api/clientes/identificar', async (req, res) => {
+  console.log('📝 Identificando cliente:', req.body);
+  
+  const pool = require('./config/database');
+  
+  try {
+    const { name, phone, document, email } = req.body;
+    
+    // Validar campos obrigatórios
+    if (!name || !phone) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Nome e telefone são obrigatórios' 
+      });
+    }
+    
+    // Buscar cliente existente pelo telefone
+    let result = await pool.query(
+      'SELECT * FROM clients WHERE phone = $1',
+      [phone]
+    );
+    
+    let client;
+    
+    if (result.rows.length === 0) {
+      // Criar novo cliente
+      console.log('📝 Criando novo cliente:', name);
+      const insertResult = await pool.query(
+        `INSERT INTO clients (name, phone, document, email, created_at, updated_at) 
+         VALUES ($1, $2, $3, $4, NOW(), NOW()) 
+         RETURNING *`,
+        [name, phone, document || null, email || null]
+      );
+      client = insertResult.rows[0];
+    } else {
+      client = result.rows[0];
+      console.log('✅ Cliente encontrado:', client.name);
+    }
+    
+    // Gerar token JWT para o cliente
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign(
+      { id: client.id, phone: client.phone, name: client.name },
+      process.env.JWT_SECRET || 'hotel-paradise-secret',
+      { expiresIn: '7d' }
+    );
+    
+    res.json({
+      success: true,
+      data: client,
+      token: token
+    });
+    
+  } catch (error) {
+    console.error('❌ Erro ao identificar cliente:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Erro ao processar requisição' 
+    });
+  }
+});
+
+
 // ==================== ROTAS PROTEGIDAS ====================
 
 // Importar rotas
@@ -282,5 +347,6 @@ if (require.main === module) {
 }
 
 module.exports = app;
+
 
 
