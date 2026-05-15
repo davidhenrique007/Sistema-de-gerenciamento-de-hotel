@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useI18n } from '@/contexts/I18nContext';
 import styles from './ConfigTabs.module.css';
 
@@ -6,11 +6,11 @@ const ConfigTabs = ({ activeTab, onTabChange }) => {
   const { t } = useI18n();
 
   const tabs = [
-    { id: 'aparencia', label: t('configuracoes.aparencia', 'Aparência'), icon: '🎨' },
-    { id: 'widgets', label: t('configuracoes.widgets', 'Widgets'), icon: '📊' },
-    { id: 'notificacoes', label: t('configuracoes.notificacoes', 'Notificações'), icon: '🔔' },
-    { id: 'seguranca', label: t('configuracoes.seguranca', 'Segurança'), icon: '🔒' },
-    { id: 'sistema', label: t('configuracoes.sistema', 'Sistema'), icon: '⚙️' },
+    { id: 'aparencia', label: t('configuracoes.aparencia', 'AparÃªncia'), icon: 'ðŸŽ¨' },
+    { id: 'widgets', label: t('configuracoes.widgets', 'Widgets'), icon: 'ðŸ“Š' },
+    { id: 'notificacoes', label: t('configuracoes.notificacoes', 'NotificaÃ§Ãµes'), icon: 'ðŸ””' },
+    { id: 'seguranca', label: t('configuracoes.seguranca', 'SeguranÃ§a'), icon: 'ðŸ”’' },
+    { id: 'sistema', label: t('configuracoes.sistema', 'Sistema'), icon: 'âš™ï¸' },
   ];
 
   return (

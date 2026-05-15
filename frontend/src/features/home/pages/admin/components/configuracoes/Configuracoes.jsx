@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useI18n } from '@/contexts/I18nContext';
 import ConfigTabs from './components/ConfigTabs';
 import AparenciaTab from './components/AparenciaTab';
@@ -32,17 +32,17 @@ const Configuracoes = () => {
   const getPageTitle = () => {
     switch (activeTab) {
       case 'aparencia':
-        return t('configuracoes.aparencia', 'Aparência');
+        return t('configuracoes.aparencia', 'AparÃªncia');
       case 'widgets':
         return t('configuracoes.widgets', 'Widgets');
       case 'notificacoes':
-        return t('configuracoes.notificacoes', 'Notificações');
+        return t('configuracoes.notificacoes', 'NotificaÃ§Ãµes');
       case 'seguranca':
-        return t('configuracoes.seguranca', 'Segurança');
+        return t('configuracoes.seguranca', 'SeguranÃ§a');
       case 'sistema':
         return t('configuracoes.sistema', 'Sistema');
       default:
-        return t('configuracoes.title', 'Configurações');
+        return t('configuracoes.title', 'ConfiguraÃ§Ãµes');
     }
   };
 
@@ -50,10 +50,10 @@ const Configuracoes = () => {
     <div className={styles.configuracoesContainer}>
       <div className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>
-          {t('configuracoes.title', 'Configurações do Sistema')}
+          {t('configuracoes.title', 'ConfiguraÃ§Ãµes do Sistema')}
         </h1>
         <p className={styles.pageDescription}>
-          {t('configuracoes.description', 'Gerencie as preferências e configurações do painel administrativo')}
+          {t('configuracoes.description', 'Gerencie as preferÃªncias e configuraÃ§Ãµes do painel administrativo')}
         </p>
       </div>
 
@@ -66,7 +66,7 @@ const Configuracoes = () => {
           <div className={styles.tabHeader}>
             <h2 className={styles.tabTitle}>{getPageTitle()}</h2>
             <p className={styles.tabDescription}>
-              {t(`configuracoes.${activeTab}_description`, 'Configure as opções relacionadas a esta seção')}
+              {t(`configuracoes.${activeTab}_description`, 'Configure as opÃ§Ãµes relacionadas a esta seÃ§Ã£o')}
             </p>
           </div>
           <div className={styles.tabBody}>

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useI18n } from '@/contexts/I18nContext';
 import { useNotificationSettings } from '@/hooks/useNotificationSettings';
 import styles from './NotificacoesTab.module.css';
@@ -10,15 +10,15 @@ const NotificacoesTab = () => {
   const notificationCategories = [
     {
       title: 'Reservas',
-      icon: '📅',
+      icon: 'ðŸ“…',
       items: [
-        { id: 'reservations', name: 'Novas reservas', description: 'Notifica quando uma nova reserva é criada' },
-        { id: 'cancellations', name: 'Cancelamentos', description: 'Alerta quando uma reserva é cancelada' }
+        { id: 'reservations', name: 'Novas reservas', description: 'Notifica quando uma nova reserva Ã© criada' },
+        { id: 'cancellations', name: 'Cancelamentos', description: 'Alerta quando uma reserva Ã© cancelada' }
       ]
     },
     {
       title: 'Check-ins / Check-outs',
-      icon: '🏨',
+      icon: 'ðŸ¨',
       items: [
         { id: 'checkIns', name: 'Check-ins pendentes', description: 'Notifica sobre check-ins agendados para hoje' },
         { id: 'checkOuts', name: 'Check-outs programados', description: 'Alerta sobre check-outs do dia' }
@@ -26,20 +26,20 @@ const NotificacoesTab = () => {
     },
     {
       title: 'Financeiro',
-      icon: '💰',
+      icon: 'ðŸ’°',
       items: [
-        { id: 'payments', name: 'Pagamentos recebidos', description: 'Notifica quando um pagamento é confirmado' },
+        { id: 'payments', name: 'Pagamentos recebidos', description: 'Notifica quando um pagamento Ã© confirmado' },
         { id: 'pendingPayments', name: 'Pagamentos pendentes', description: 'Alerta sobre pagamentos em atraso' },
-        { id: 'financialAlerts', name: 'Alertas financeiros', description: 'Notificações sobre contas e prazos' }
+        { id: 'financialAlerts', name: 'Alertas financeiros', description: 'NotificaÃ§Ãµes sobre contas e prazos' }
       ]
     },
     {
       title: 'Sistema',
-      icon: '⚙️',
+      icon: 'âš™ï¸',
       items: [
-        { id: 'maintenance', name: 'Manutenção de quartos', description: 'Notifica sobre quartos em manutenção' },
-        { id: 'toastEnabled', name: 'Notificações Toast', description: 'Exibe notificações flutuantes na tela' },
-        { id: 'soundEnabled', name: 'Sons de notificação', description: 'Reproduz som ao receber notificações' }
+        { id: 'maintenance', name: 'ManutenÃ§Ã£o de quartos', description: 'Notifica sobre quartos em manutenÃ§Ã£o' },
+        { id: 'toastEnabled', name: 'NotificaÃ§Ãµes Toast', description: 'Exibe notificaÃ§Ãµes flutuantes na tela' },
+        { id: 'soundEnabled', name: 'Sons de notificaÃ§Ã£o', description: 'Reproduz som ao receber notificaÃ§Ãµes' }
       ]
     }
   ];
@@ -51,17 +51,17 @@ const NotificacoesTab = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h2 className={styles.title}>
-          {t('configuracoes.preferencias_notificacoes', 'Preferências de Notificações')}
+          {t('configuracoes.preferencias_notificacoes', 'PreferÃªncias de NotificaÃ§Ãµes')}
         </h2>
         <p className={styles.description}>
-          {t('configuracoes.notificacoes_desc', 'Configure como e quando receber notificações')}
+          {t('configuracoes.notificacoes_desc', 'Configure como e quando receber notificaÃ§Ãµes')}
         </p>
         <div className={styles.stats}>
           <span className={styles.statsBadge}>
             {enabledCount} / {totalCount} {t('configuracoes.ativos', 'ativos')}
           </span>
           <button onClick={resetSettings} className={styles.resetButton}>
-            {t('configuracoes.resetar_padrao', 'Resetar para padrão')}
+            {t('configuracoes.resetar_padrao', 'Resetar para padrÃ£o')}
           </button>
         </div>
       </div>
@@ -83,7 +83,7 @@ const NotificacoesTab = () => {
                   <button
                     className={`${styles.toggle} ${settings[item.id] ? styles.toggleActive : ''}`}
                     onClick={() => toggleNotification(item.id)}
-                    aria-label={settings[item.id] ? 'Desativar notificação' : 'Ativar notificação'}
+                    aria-label={settings[item.id] ? 'Desativar notificaÃ§Ã£o' : 'Ativar notificaÃ§Ã£o'}
                   >
                     <span className={styles.toggleSlider}>
                       <span className={styles.toggleKnob} />
@@ -98,7 +98,7 @@ const NotificacoesTab = () => {
 
       <div className={styles.footer}>
         <p className={styles.footerText}>
-          💡 {t('configuracoes.notificacoes_dica', 'As alterações são salvas automaticamente e aplicadas imediatamente')}
+          ðŸ’¡ {t('configuracoes.notificacoes_dica', 'As alteraÃ§Ãµes sÃ£o salvas automaticamente e aplicadas imediatamente')}
         </p>
       </div>
     </div>

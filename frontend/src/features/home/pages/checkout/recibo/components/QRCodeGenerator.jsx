@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useI18n } from '../../../../../../contexts/I18nContext';
 import styles from './QRCodeGenerator.module.css';

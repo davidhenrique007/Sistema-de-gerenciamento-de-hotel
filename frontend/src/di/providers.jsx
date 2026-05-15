@@ -1,12 +1,12 @@
-// ============================================
+﻿// ============================================
 // PROVIDERS: React Integration Providers
 // ============================================
-// Responsabilidade: Expor dependências via Context API e hooks
-// Padrões: Provider Pattern, Hook Pattern, Factory Pattern
+// Responsabilidade: Expor dependÃªncias via Context API e hooks
+// PadrÃµes: Provider Pattern, Hook Pattern, Factory Pattern
 // ============================================
 
 // ============================================
-// IMPORTAÇÕES
+// IMPORTAÃ‡Ã•ES
 // ============================================
 import React, { createContext, useContext, useMemo } from 'react';
 import { getContainer } from './container.js';
@@ -18,7 +18,7 @@ import { getContainer } from './container.js';
 // Contexto principal do container
 const ContainerContext = createContext(null);
 
-// Contextos específicos por domínio
+// Contextos especÃ­ficos por domÃ­nio
 const RepositoriesContext = createContext(null);
 const RoomUseCasesContext = createContext(null);
 const ReservationUseCasesContext = createContext(null);
@@ -30,7 +30,7 @@ const InfrastructureServicesContext = createContext(null);
 // ============================================
 
 /**
- * Provider principal que expõe todas as dependências
+ * Provider principal que expÃµe todas as dependÃªncias
  * @param {Object} props - Propriedades
  * @param {React.ReactNode} props.children - Componentes filhos
  * @param {DIContainer} props.container - Container customizado (opcional)
@@ -39,7 +39,7 @@ export const DIContainerProvider = ({ children, container = null }) => {
   // Usar container fornecido ou o global
   const diContainer = useMemo(() => container || getContainer(), [container]);
 
-  // Memoizar contextos para evitar re-renders desnecessários
+  // Memoizar contextos para evitar re-renders desnecessÃ¡rios
   const repositories = useMemo(() => diContainer.getRepositories(), [diContainer]);
   const roomUseCases = useMemo(() => diContainer.getRoomUseCases(), [diContainer]);
   const reservationUseCases = useMemo(() => diContainer.getReservationUseCases(), [diContainer]);
@@ -69,7 +69,7 @@ export const DIContainerProvider = ({ children, container = null }) => {
 
 /**
  * Hook para acessar o container diretamente
- * @returns {DIContainer} Container de dependências
+ * @returns {DIContainer} Container de dependÃªncias
  */
 export const useContainer = () => {
   const context = useContext(ContainerContext);
@@ -80,8 +80,8 @@ export const useContainer = () => {
 };
 
 /**
- * Hook para acessar os repositórios
- * @returns {Object} Repositórios
+ * Hook para acessar os repositÃ³rios
+ * @returns {Object} RepositÃ³rios
  */
 export const useRepositories = () => {
   const context = useContext(RepositoriesContext);
@@ -116,8 +116,8 @@ export const useReservationUseCases = () => {
 };
 
 /**
- * Hook para acessar os use cases de serviços
- * @returns {Object} Use cases de serviços
+ * Hook para acessar os use cases de serviÃ§os
+ * @returns {Object} Use cases de serviÃ§os
  */
 export const useServiceUseCases = () => {
   const context = useContext(ServiceUseCasesContext);
@@ -128,8 +128,8 @@ export const useServiceUseCases = () => {
 };
 
 /**
- * Hook para acessar os serviços de infraestrutura
- * @returns {Object} Serviços de infraestrutura
+ * Hook para acessar os serviÃ§os de infraestrutura
+ * @returns {Object} ServiÃ§os de infraestrutura
  */
 export const useInfrastructureServices = () => {
   const context = useContext(InfrastructureServicesContext);
@@ -140,11 +140,11 @@ export const useInfrastructureServices = () => {
 };
 
 // ============================================
-// HOOKS ESPECÍFICOS PARA USE CASES
+// HOOKS ESPECÃFICOS PARA USE CASES
 // ============================================
 
 /**
- * Hook para acessar o use case de listar quartos disponíveis
+ * Hook para acessar o use case de listar quartos disponÃ­veis
  * @returns {ListAvailableRoomsUseCase} Use case
  */
 export const useListAvailableRooms = () => {
@@ -162,7 +162,7 @@ export const useGetRoomDetails = () => {
 };
 
 /**
- * Hook para acessar o use case de atualizar ocupação
+ * Hook para acessar o use case de atualizar ocupaÃ§Ã£o
  * @returns {UpdateRoomOccupancyUseCase} Use case
  */
 export const useUpdateRoomOccupancy = () => {
@@ -180,7 +180,7 @@ export const useValidateRoomAvailability = () => {
 };
 
 /**
- * Hook para acessar o use case de calcular preço
+ * Hook para acessar o use case de calcular preÃ§o
  * @returns {CalculatePriceUseCase} Use case
  */
 export const useCalculatePrice = () => {
@@ -198,7 +198,7 @@ export const useValidateReservation = () => {
 };
 
 /**
- * Hook para acessar o use case de listar serviços
+ * Hook para acessar o use case de listar serviÃ§os
  * @returns {ListServicesUseCase} Use case
  */
 export const useListServices = () => {
@@ -207,7 +207,7 @@ export const useListServices = () => {
 };
 
 /**
- * Hook para acessar o use case de calcular preço de serviços
+ * Hook para acessar o use case de calcular preÃ§o de serviÃ§os
  * @returns {CalculateServicesPriceUseCase} Use case
  */
 export const useCalculateServicesPrice = () => {
@@ -216,12 +216,12 @@ export const useCalculateServicesPrice = () => {
 };
 
 // ============================================
-// HOOKS ESPECÍFICOS PARA SERVIÇOS
+// HOOKS ESPECÃFICOS PARA SERVIÃ‡OS
 // ============================================
 
 /**
- * Hook para acessar o serviço de pricing
- * @returns {DefaultPricingService} Serviço de pricing
+ * Hook para acessar o serviÃ§o de pricing
+ * @returns {DefaultPricingService} ServiÃ§o de pricing
  */
 export const usePricingService = () => {
   const { pricingService } = useInfrastructureServices();
@@ -229,8 +229,8 @@ export const usePricingService = () => {
 };
 
 /**
- * Hook para acessar o serviço de disponibilidade
- * @returns {DefaultAvailabilityService} Serviço de disponibilidade
+ * Hook para acessar o serviÃ§o de disponibilidade
+ * @returns {DefaultAvailabilityService} ServiÃ§o de disponibilidade
  */
 export const useAvailabilityService = () => {
   const { availabilityService } = useInfrastructureServices();
@@ -238,12 +238,12 @@ export const useAvailabilityService = () => {
 };
 
 // ============================================
-// HOOKS DE REPOSITÓRIOS
+// HOOKS DE REPOSITÃ“RIOS
 // ============================================
 
 /**
- * Hook para acessar o repositório de quartos
- * @returns {LocalStorageRoomRepository} Repositório de quartos
+ * Hook para acessar o repositÃ³rio de quartos
+ * @returns {LocalStorageRoomRepository} RepositÃ³rio de quartos
  */
 export const useRoomRepository = () => {
   const { roomRepository } = useRepositories();
@@ -251,8 +251,8 @@ export const useRoomRepository = () => {
 };
 
 /**
- * Hook para acessar o repositório de reservas
- * @returns {LocalStorageReservationRepository} Repositório de reservas
+ * Hook para acessar o repositÃ³rio de reservas
+ * @returns {LocalStorageReservationRepository} RepositÃ³rio de reservas
  */
 export const useReservationRepository = () => {
   const { reservationRepository } = useRepositories();
@@ -260,8 +260,8 @@ export const useReservationRepository = () => {
 };
 
 /**
- * Hook para acessar o repositório de serviços
- * @returns {LocalStorageServiceRepository} Repositório de serviços
+ * Hook para acessar o repositÃ³rio de serviÃ§os
+ * @returns {LocalStorageServiceRepository} RepositÃ³rio de serviÃ§os
  */
 export const useServiceRepository = () => {
   const { serviceRepository } = useRepositories();
@@ -269,12 +269,12 @@ export const useServiceRepository = () => {
 };
 
 // ============================================
-// HIGHER-ORDER COMPONENT PARA INJEÇÃO
+// HIGHER-ORDER COMPONENT PARA INJEÃ‡ÃƒO
 // ============================================
 
 /**
- * HOC para injetar dependências em um componente
- * @param {Function} mapDependenciesToProps - Função que mapeia dependências para props
+ * HOC para injetar dependÃªncias em um componente
+ * @param {Function} mapDependenciesToProps - FunÃ§Ã£o que mapeia dependÃªncias para props
  * @returns {Function} HOC
  */
 export const withDependencies = (mapDependenciesToProps) => (WrappedComponent) => {

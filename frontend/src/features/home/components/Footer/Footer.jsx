@@ -117,3 +117,4 @@ Footer.defaultProps = {
 };
 
 export default memo(Footer);
+

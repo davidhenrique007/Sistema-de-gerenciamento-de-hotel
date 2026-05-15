@@ -1,6 +1,6 @@
-// =====================================================
+﻿// =====================================================
 // HOTEL PARADISE - CONTEXT DE CLIENTE
-// Versão: 2.0.0 (Completa - Sessão)
+// VersÃ£o: 2.0.0 (Completa - SessÃ£o)
 // =====================================================
 
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
@@ -37,14 +37,14 @@ export const ClienteProvider = ({ children }) => {
           const agora = Date.now();
           const umaHora = 60 * 60 * 1000; // 1 hora em ms
           
-          // Verificar se a sessão expirou (1 hora de inatividade)
+          // Verificar se a sessÃ£o expirou (1 hora de inatividade)
           if (agora - timestamp > umaHora) {
-            console.log('⏰ Sessão expirada - removendo');
+            console.log('â° SessÃ£o expirada - removendo');
             localStorage.removeItem('@HotelParadise:cliente');
             localStorage.removeItem('@HotelParadise:cliente_timestamp');
             setCliente(null);
           } else {
-            console.log('🔄 Sessão restaurada do localStorage');
+            console.log('ðŸ”„ SessÃ£o restaurada do localStorage');
             setCliente(parsedCliente);
             setUltimaAtualizacao(new Date(timestamp));
             
@@ -52,7 +52,7 @@ export const ClienteProvider = ({ children }) => {
             try {
               await api.get(`/clientes/${parsedCliente.phone}`);
             } catch (err) {
-              console.log('⚠️ Cliente não encontrado no backend, removendo sessão');
+              console.log('âš ï¸ Cliente nÃ£o encontrado no backend, removendo sessÃ£o');
               localStorage.removeItem('@HotelParadise:cliente');
               localStorage.removeItem('@HotelParadise:cliente_timestamp');
               setCliente(null);
@@ -83,7 +83,7 @@ export const ClienteProvider = ({ children }) => {
   }, [cliente]);
 
   // =====================================================
-  // FUNÇÃO PARA IDENTIFICAR CLIENTE
+  // FUNÃ‡ÃƒO PARA IDENTIFICAR CLIENTE
   // =====================================================
   const identificarCliente = async (dados) => {
     try {
@@ -106,10 +106,10 @@ export const ClienteProvider = ({ children }) => {
   };
 
   // =====================================================
-  // FUNÇÃO PARA LOGOUT
+  // FUNÃ‡ÃƒO PARA LOGOUT
   // =====================================================
   const logoutCliente = useCallback(() => {
-    console.log('👋 Cliente fazendo logout');
+    console.log('ðŸ‘‹ Cliente fazendo logout');
     setCliente(null);
     localStorage.removeItem('@HotelParadise:cliente');
     localStorage.removeItem('@HotelParadise:cliente_timestamp');
@@ -117,15 +117,15 @@ export const ClienteProvider = ({ children }) => {
   }, []);
 
   // =====================================================
-  // FUNÇÃO PARA TROCAR DE CLIENTE
+  // FUNÃ‡ÃƒO PARA TROCAR DE CLIENTE
   // =====================================================
   const trocarCliente = useCallback(() => {
     logoutCliente();
-    // Redirecionamento será feito pelo componente que chamar
+    // Redirecionamento serÃ¡ feito pelo componente que chamar
   }, [logoutCliente]);
 
   // =====================================================
-  // FUNÇÃO PARA ATUALIZAR DADOS DO CLIENTE
+  // FUNÃ‡ÃƒO PARA ATUALIZAR DADOS DO CLIENTE
   // =====================================================
   const atualizarCliente = async (id, dados) => {
     try {
@@ -148,7 +148,7 @@ export const ClienteProvider = ({ children }) => {
   };
 
   // =====================================================
-  // FUNÇÃO PARA VERIFICAR SE TEM PERMISSÃO
+  // FUNÃ‡ÃƒO PARA VERIFICAR SE TEM PERMISSÃƒO
   // =====================================================
   const verificarAcesso = useCallback(() => {
     if (!cliente) {
@@ -167,7 +167,7 @@ export const ClienteProvider = ({ children }) => {
   }, [cliente]);
 
   // =====================================================
-  // FUNÇÃO PARA RENOVAR SESSÃO
+  // FUNÃ‡ÃƒO PARA RENOVAR SESSÃƒO
   // =====================================================
   const renovarSessao = useCallback(() => {
     if (cliente) {
@@ -185,14 +185,14 @@ export const ClienteProvider = ({ children }) => {
         error,
         ultimaAtualizacao,
         
-        // Funções principais
+        // FunÃ§Ãµes principais
         identificarCliente,
         logoutCliente,
         trocarCliente,
         atualizarCliente,
         renovarSessao,
         
-        // Utilitários
+        // UtilitÃ¡rios
         verificarAcesso,
         
         // Flags

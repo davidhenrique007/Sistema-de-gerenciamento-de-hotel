@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '@contexts/CartContext';
-import { useServices } from '@contexts/Servicescontext';
+import { useServices } from '@contexts/ServicesContext';
 import { useCliente } from '@hooks/useCliente';
 import { useI18n } from '../../../../contexts/I18nContext';
 import { useModalQuarto } from './hooks/useModalQuarto';
@@ -366,6 +366,8 @@ const Checkout = () => {
 };
 
 export default Checkout;
+
+
 
 
 

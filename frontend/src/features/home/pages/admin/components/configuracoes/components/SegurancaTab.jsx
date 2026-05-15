@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '@/contexts/I18nContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -30,7 +30,7 @@ const SegurancaTab = () => {
   };
 
   const handleLogoutAll = () => {
-    if (window.confirm(t('seguranca.confirmar_logout', 'Tem certeza que deseja encerrar sua sessão?'))) {
+    if (window.confirm(t('seguranca.confirmar_logout', 'Tem certeza que deseja encerrar sua sessÃ£o?'))) {
       logout();
       navigate('/login-admin');
     }
@@ -68,30 +68,30 @@ const SegurancaTab = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h2 className={styles.title}>
-          {t('configuracoes.seguranca', 'Segurança')}
+          {t('configuracoes.seguranca', 'SeguranÃ§a')}
         </h2>
         <p className={styles.description}>
-          {t('configuracoes.seguranca_desc', 'Gerencie políticas de segurança e permissões do sistema')}
+          {t('configuracoes.seguranca_desc', 'Gerencie polÃ­ticas de seguranÃ§a e permissÃµes do sistema')}
         </p>
       </div>
 
       <div className={styles.securityGrid}>
-        {/* Sessão Atual */}
+        {/* SessÃ£o Atual */}
         <div className={styles.card}>
           <div className={styles.cardHeader}>
-            <span className={styles.cardIcon}>🕒</span>
+            <span className={styles.cardIcon}>ðŸ•’</span>
             <div>
               <h3 className={styles.cardTitle}>
-                {t('seguranca.sessao_atual', 'Sessão Atual')}
+                {t('seguranca.sessao_atual', 'SessÃ£o Atual')}
               </h3>
               <p className={styles.cardDescription}>
-                {t('seguranca.sessao_desc', 'Informações da sua sessão atual')}
+                {t('seguranca.sessao_desc', 'InformaÃ§Ãµes da sua sessÃ£o atual')}
               </p>
             </div>
           </div>
           <div className={styles.cardContent}>
             <div className={styles.infoRow}>
-              <span className={styles.infoLabel}>{t('seguranca.usuario', 'Usuário')}:</span>
+              <span className={styles.infoLabel}>{t('seguranca.usuario', 'UsuÃ¡rio')}:</span>
               <span className={styles.infoValue}>{user?.name || 'Admin'}</span>
             </div>
             <div className={styles.infoRow}>
@@ -107,7 +107,7 @@ const SegurancaTab = () => {
               <span className={styles.timeValue}>{formatTimeLeft()}</span>
             </div>
             <div className={styles.infoRow}>
-              <span className={styles.infoLabel}>{t('seguranca.ultima_atividade', 'Última atividade')}:</span>
+              <span className={styles.infoLabel}>{t('seguranca.ultima_atividade', 'Ãšltima atividade')}:</span>
               <span>{formatLastActivity()}</span>
             </div>
             {deviceInfo && (
@@ -117,79 +117,79 @@ const SegurancaTab = () => {
               </div>
             )}
             <button onClick={handleLogoutAll} className={styles.logoutButton}>
-              {t('seguranca.encerrar_sessao', 'Encerrar Sessão')}
+              {t('seguranca.encerrar_sessao', 'Encerrar SessÃ£o')}
             </button>
           </div>
         </div>
 
-        {/* Segurança da Conta */}
+        {/* SeguranÃ§a da Conta */}
         <div className={styles.card}>
           <div className={styles.cardHeader}>
-            <span className={styles.cardIcon}>🔑</span>
+            <span className={styles.cardIcon}>ðŸ”‘</span>
             <div>
               <h3 className={styles.cardTitle}>
-                {t('seguranca.seguranca_conta', 'Segurança da Conta')}
+                {t('seguranca.seguranca_conta', 'SeguranÃ§a da Conta')}
               </h3>
               <p className={styles.cardDescription}>
-                {t('seguranca.seguranca_desc', 'Gerencie a segurança da sua conta')}
+                {t('seguranca.seguranca_desc', 'Gerencie a seguranÃ§a da sua conta')}
               </p>
             </div>
           </div>
           <div className={styles.cardContent}>
             <button onClick={handleChangePassword} className={styles.actionButton}>
-              <span className={styles.actionIcon}>🔒</span>
+              <span className={styles.actionIcon}>ðŸ”’</span>
               <div className={styles.actionInfo}>
                 <span className={styles.actionTitle}>{t('seguranca.alterar_senha', 'Alterar Senha')}</span>
                 <span className={styles.actionDesc}>{t('seguranca.alterar_senha_desc', 'Atualize sua senha regularmente')}</span>
               </div>
-              <span className={styles.actionArrow}>→</span>
+              <span className={styles.actionArrow}>â†’</span>
             </button>
             
             <div className={`${styles.actionButton} ${styles.disabled}`}>
-              <span className={styles.actionIcon}>📱</span>
+              <span className={styles.actionIcon}>ðŸ“±</span>
               <div className={styles.actionInfo}>
-                <span className={styles.actionTitle}>{t('seguranca.autenticacao_dois_fatores', 'Autenticação de Dois Fatores')}</span>
-                <span className={styles.actionDesc}>{t('seguranca.2fa_desc', 'Adicione uma camada extra de segurança')}</span>
+                <span className={styles.actionTitle}>{t('seguranca.autenticacao_dois_fatores', 'AutenticaÃ§Ã£o de Dois Fatores')}</span>
+                <span className={styles.actionDesc}>{t('seguranca.2fa_desc', 'Adicione uma camada extra de seguranÃ§a')}</span>
               </div>
               <span className={styles.comingSoonBadge}>{t('configuracoes.em_breve', 'Em breve')}</span>
             </div>
           </div>
         </div>
 
-        {/* Permissões */}
+        {/* PermissÃµes */}
         <div className={styles.card}>
           <div className={styles.cardHeader}>
-            <span className={styles.cardIcon}>🛡️</span>
+            <span className={styles.cardIcon}>ðŸ›¡ï¸</span>
             <div>
               <h3 className={styles.cardTitle}>
-                {t('seguranca.permissoes', 'Permissões')}
+                {t('seguranca.permissoes', 'PermissÃµes')}
               </h3>
               <p className={styles.cardDescription}>
-                {t('seguranca.permissoes_desc', 'Seu nível de acesso no sistema')}
+                {t('seguranca.permissoes_desc', 'Seu nÃ­vel de acesso no sistema')}
               </p>
             </div>
           </div>
           <div className={styles.cardContent}>
             <div className={styles.permissionsList}>
               <div className={`${styles.permissionItem} ${hasRole('admin') ? styles.allowed : ''}`}>
-                <span className={styles.permissionIcon}>👑</span>
+                <span className={styles.permissionIcon}>ðŸ‘‘</span>
                 <span className={styles.permissionName}>{t('seguranca.acesso_total', 'Acesso Total')}</span>
-                {hasRole('admin') && <span className={styles.permissionStatus}>✓</span>}
+                {hasRole('admin') && <span className={styles.permissionStatus}>âœ“</span>}
               </div>
               <div className={`${styles.permissionItem} ${hasRole('admin') || hasRole('receptionist') ? styles.allowed : ''}`}>
-                <span className={styles.permissionIcon}>🏨</span>
+                <span className={styles.permissionIcon}>ðŸ¨</span>
                 <span className={styles.permissionName}>{t('seguranca.gerenciar_reservas', 'Gerenciar Reservas')}</span>
-                {(hasRole('admin') || hasRole('receptionist')) && <span className={styles.permissionStatus}>✓</span>}
+                {(hasRole('admin') || hasRole('receptionist')) && <span className={styles.permissionStatus}>âœ“</span>}
               </div>
               <div className={`${styles.permissionItem} ${hasRole('admin') || hasRole('financial') ? styles.allowed : ''}`}>
-                <span className={styles.permissionIcon}>💰</span>
+                <span className={styles.permissionIcon}>ðŸ’°</span>
                 <span className={styles.permissionName}>{t('seguranca.gerenciar_financeiro', 'Gerenciar Financeiro')}</span>
-                {(hasRole('admin') || hasRole('financial')) && <span className={styles.permissionStatus}>✓</span>}
+                {(hasRole('admin') || hasRole('financial')) && <span className={styles.permissionStatus}>âœ“</span>}
               </div>
               <div className={`${styles.permissionItem} ${hasRole('admin') ? styles.allowed : ''}`}>
-                <span className={styles.permissionIcon}>⚙️</span>
-                <span className={styles.permissionName}>{t('seguranca.gerenciar_configuracoes', 'Gerenciar Configurações')}</span>
-                {hasRole('admin') && <span className={styles.permissionStatus}>✓</span>}
+                <span className={styles.permissionIcon}>âš™ï¸</span>
+                <span className={styles.permissionName}>{t('seguranca.gerenciar_configuracoes', 'Gerenciar ConfiguraÃ§Ãµes')}</span>
+                {hasRole('admin') && <span className={styles.permissionStatus}>âœ“</span>}
               </div>
             </div>
           </div>
@@ -198,7 +198,7 @@ const SegurancaTab = () => {
         {/* Auditoria */}
         <div className={styles.card}>
           <div className={styles.cardHeader}>
-            <span className={styles.cardIcon}>📜</span>
+            <span className={styles.cardIcon}>ðŸ“œ</span>
             <div>
               <h3 className={styles.cardTitle}>
                 {t('seguranca.auditoria', 'Auditoria')}
@@ -225,7 +225,7 @@ const SegurancaTab = () => {
                 <div className={styles.logsEmpty}>{t('seguranca.nenhuma_atividade', 'Nenhuma atividade recente')}</div>
               )}
               <button onClick={handleViewLogs} className={styles.viewLogsButton}>
-                {t('seguranca.ver_todos_logs', 'Ver todos os logs')} →
+                {t('seguranca.ver_todos_logs', 'Ver todos os logs')} â†’
               </button>
             </div>
           </div>

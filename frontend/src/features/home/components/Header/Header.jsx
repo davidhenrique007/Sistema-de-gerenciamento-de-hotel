@@ -1,15 +1,15 @@
-// frontend/src/features/home/components/Header/Header.jsx
+﻿// frontend/src/features/home/components/Header/Header.jsx
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useI18n } from '../../../../contexts/I18nContext'; // ✅ ADICIONADO
+import { useI18n } from '../../../../contexts/I18nContext'; // âœ… ADICIONADO
 import Logo from './Logo';
 import NavMenu from './NavMenu';
 import MobileMenu from './MobileMenu';
-import LanguageSelector from '../../../../shared/components/LanguageSelector'; // ✅ ADICIONADO
+import LanguageSelector from '../../../../shared/components/LanguageSelector'; // âœ… ADICIONADO
 import styles from './Header.module.css';
 
 /**
- * Header Component - Cabeçalho principal da aplicação
+ * Header Component - CabeÃ§alho principal da aplicaÃ§Ã£o
  * 
  * @component
  * @example
@@ -27,7 +27,7 @@ const Header = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const { language, t } = useI18n(); // ✅ ADICIONADO
+  const { language, t } = useI18n(); // âœ… ADICIONADO
 
   // ==========================================================================
   // DETECTAR SCROLL

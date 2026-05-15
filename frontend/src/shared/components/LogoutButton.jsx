@@ -28,3 +28,4 @@ const LogoutButton = ({ variant = 'outline', size = 'md', className = '' }) => {
 };
 
 export default LogoutButton;
+

@@ -1,8 +1,8 @@
-// ============================================
+﻿// ============================================
 // COMPONENT: PaymentButton
 // ============================================
-// Responsabilidade: Botão de pagamento da Home, controlado por estado da reserva
-// Arquitetura: Componente puramente presentacional, sem lógica de negócio
+// Responsabilidade: BotÃ£o de pagamento da Home, controlado por estado da reserva
+// Arquitetura: Componente puramente presentacional, sem lÃ³gica de negÃ³cio
 // ============================================
 
 import React
@@ -33,7 +33,7 @@ export const PaymentButton = memo(({
   // Callbacks
   onProceed,
   
-  // Configurações
+  // ConfiguraÃ§Ãµes
   showTotal = true,
   loading = false,
   
@@ -70,7 +70,7 @@ export const PaymentButton = memo(({
   };
 
   const handleKeyDown = (e) => {
-    // Tecla Enter ou Espaço ativam o botão apenas se habilitado
+    // Tecla Enter ou EspaÃ§o ativam o botÃ£o apenas se habilitado
     if ((e.key === 'Enter' || e.key === ' ') && isEnabled && !loading) {
       e.preventDefault();
       if (onProceed) {
@@ -114,7 +114,7 @@ export const PaymentButton = memo(({
           </span>
           {showTotal && total > 0 && !loading && (
             <>
-              <span className={styles.separator}>·</span>
+              <span className={styles.separator}>Â·</span>
               <span className={styles.total}>
                 {totalFormatted}
               </span>
@@ -146,7 +146,7 @@ PaymentButton.displayName = 'PaymentButton';
 // ============================================
 // COMPONENTE: FloatingPaymentButton
 // ============================================
-// Versão flutuante para mobile/scroll
+// VersÃ£o flutuante para mobile/scroll
 // ============================================
 
 export const FloatingPaymentButton = memo((props) => {
@@ -158,3 +158,4 @@ export const FloatingPaymentButton = memo((props) => {
 });
 
 FloatingPaymentButton.displayName = 'FloatingPaymentButton';
+

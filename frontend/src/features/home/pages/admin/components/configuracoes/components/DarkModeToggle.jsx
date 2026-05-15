@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useI18n } from '@/contexts/I18nContext';
 import styles from './DarkModeToggle.module.css';
@@ -16,7 +16,7 @@ const DarkModeToggle = () => {
             : t('configuracoes.modo_claro', 'Modo Claro')}
         </span>
         <span className={styles.status}>
-          {isDark ? '🌙' : '☀️'}
+          {isDark ? 'ðŸŒ™' : 'â˜€ï¸'}
         </span>
       </div>
       
@@ -29,7 +29,7 @@ const DarkModeToggle = () => {
       >
         <span className={styles.slider}>
           <span className={styles.knob}>
-            {isDark ? '🌙' : '☀️'}
+            {isDark ? 'ðŸŒ™' : 'â˜€ï¸'}
           </span>
         </span>
       </button>

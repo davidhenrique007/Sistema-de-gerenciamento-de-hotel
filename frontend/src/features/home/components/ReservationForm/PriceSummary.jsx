@@ -64,3 +64,4 @@ PriceSummary.propTypes = {
 };
 
 export default PriceSummary;
+

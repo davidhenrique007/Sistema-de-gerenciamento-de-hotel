@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useI18n } from '../../../../../../contexts/I18nContext';
 import styles from './BotoesRecibo.module.css';
 import api from '@services/api';
@@ -20,12 +20,12 @@ const BotoesRecibo = ({ reservaId, reservaCodigo, emailCliente }) => {
 
     const handleImprimir = () => {
         window.print();
-        showMessage('success', getTranslation('receipt.printing', 'Enviando para impressão...'));
+        showMessage('success', getTranslation('receipt.printing', 'Enviando para impressÃ£o...'));
     };
 
     const handleBaixarPDF = () => {
         if (!reservaCodigo) {
-            showMessage('error', getTranslation('receipt.no_code', 'Código da reserva não disponível'));
+            showMessage('error', getTranslation('receipt.no_code', 'CÃ³digo da reserva nÃ£o disponÃ­vel'));
             return;
         }
         window.open(`http://localhost:5000/api/recibos/${reservaCodigo}/pdf`, '_blank');
@@ -34,13 +34,13 @@ const BotoesRecibo = ({ reservaId, reservaCodigo, emailCliente }) => {
 
     const handleCompartilharWhatsApp = () => {
         if (!reservaCodigo) {
-            showMessage('error', getTranslation('receipt.no_code', 'Código da reserva não disponível'));
+            showMessage('error', getTranslation('receipt.no_code', 'CÃ³digo da reserva nÃ£o disponÃ­vel'));
             return;
         }
 
         const shareText = language === 'en' 
             ? `Hotel Paradise - Booking Confirmed!\n\nCode: ${reservaCodigo}\nDate: ${new Date().toLocaleDateString('en-US')}\n\nPresent this code at check-in.\n\nHotel Paradise - The perfect paradise for your vacation`
-            : `Hotel Paradise - Reserva Confirmada!\n\nCódigo: ${reservaCodigo}\nData: ${new Date().toLocaleDateString('pt-BR')}\n\nApresente este código no check-in.\n\nHotel Paradise - O paraíso perfeito para suas férias`;
+            : `Hotel Paradise - Reserva Confirmada!\n\nCÃ³digo: ${reservaCodigo}\nData: ${new Date().toLocaleDateString('pt-BR')}\n\nApresente este cÃ³digo no check-in.\n\nHotel Paradise - O paraÃ­so perfeito para suas fÃ©rias`;
 
         const url = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
         window.open(url, '_blank');
@@ -49,11 +49,11 @@ const BotoesRecibo = ({ reservaId, reservaCodigo, emailCliente }) => {
 
     const handleEnviarEmail = async () => {
         if (!reservaCodigo) {
-            showMessage('error', getTranslation('receipt.no_code', 'Código da reserva não disponível'));
+            showMessage('error', getTranslation('receipt.no_code', 'CÃ³digo da reserva nÃ£o disponÃ­vel'));
             return;
         }
         if (!emailCliente) {
-            showMessage('error', getTranslation('receipt.no_email', 'E-mail do cliente não disponível'));
+            showMessage('error', getTranslation('receipt.no_email', 'E-mail do cliente nÃ£o disponÃ­vel'));
             return;
         }
 
@@ -103,3 +103,4 @@ const BotoesRecibo = ({ reservaId, reservaCodigo, emailCliente }) => {
 };
 
 export default BotoesRecibo;
+

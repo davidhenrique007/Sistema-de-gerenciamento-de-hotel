@@ -135,3 +135,4 @@ const HotelCarousel = () => {
 };
 
 export default HotelCarousel;
+

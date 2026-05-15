@@ -48,3 +48,4 @@ NavMenu.defaultProps = {
 };
 
 export default memo(NavMenu);
+

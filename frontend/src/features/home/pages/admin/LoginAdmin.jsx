@@ -1,6 +1,6 @@
-// =====================================================
+﻿// =====================================================
 // HOTEL PARADISE - TELA DE LOGIN DO ADMIN
-// Versão: 1.0.0
+// VersÃ£o: 1.0.0
 // =====================================================
 
 import React, { useState } from 'react';
@@ -40,13 +40,13 @@ const LoginAdmin = () => {
     const newErrors = {};
     
     if (!formData.email) {
-      newErrors.email = 'Email é obrigatório';
+      newErrors.email = 'Email Ã© obrigatÃ³rio';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email inválido';
+      newErrors.email = 'Email invÃ¡lido';
     }
     
     if (!formData.password) {
-      newErrors.password = 'Senha é obrigatória';
+      newErrors.password = 'Senha Ã© obrigatÃ³ria';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Senha deve ter pelo menos 6 caracteres';
     }
@@ -107,7 +107,7 @@ const LoginAdmin = () => {
           <div className={styles.formGroup}>
             <label htmlFor="email">E-mail</label>
             <div className={styles.inputWrapper}>
-              <span className={styles.inputIcon}>📧</span>
+              <span className={styles.inputIcon}>ðŸ“§</span>
               <input
                 type="email"
                 id="email"
@@ -127,14 +127,14 @@ const LoginAdmin = () => {
           <div className={styles.formGroup}>
             <label htmlFor="password">Senha</label>
             <div className={styles.inputWrapper}>
-              <span className={styles.inputIcon}>🔒</span>
+              <span className={styles.inputIcon}>ðŸ”’</span>
               <input
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="••••••••"
+                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                 className={errors.password ? styles.inputError : ''}
                 disabled={isLoading}
               />
@@ -143,7 +143,7 @@ const LoginAdmin = () => {
                 className={styles.passwordToggle}
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? '👁️' : '👁️‍🗨️'}
+                {showPassword ? 'ðŸ‘ï¸' : 'ðŸ‘ï¸â€ðŸ—¨ï¸'}
               </button>
             </div>
             {errors.password && (
@@ -169,7 +169,7 @@ const LoginAdmin = () => {
           </button>
 
           <div className={styles.demoInfo}>
-            <p>Usuários de demonstração:</p>
+            <p>UsuÃ¡rios de demonstraÃ§Ã£o:</p>
             <p>admin@hotelparadise.com / admin123</p>
             <p>recepcao@hotelparadise.com / receptionist123</p>
           </div>
