@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useI18n } from '@/contexts/I18ncontext';
+import { useI18n } from '@/contexts/I18nContext';
 import { formatDate, calculateNights } from '@/core/utils/dateFormatter';
 import api from '@/services/api';
 import styles from './ReciboPage.module.css';
@@ -207,3 +207,4 @@ const ReciboPage = () => {
 };
 
 export default ReciboPage;
+

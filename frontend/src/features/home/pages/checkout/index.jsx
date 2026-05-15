@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '@contexts/Cartcontext';
 import { useServices } from '@contexts/Servicescontext';
 import { useCliente } from '@hooks/useCliente';
-import { useI18n } from '../../../../contexts/I18ncontext';
+import { useI18n } from '../../../../contexts/I18nContext';
 import { useModalQuarto } from './hooks/useModalQuarto';
 import ResumoReserva from './components/ResumoReserva';
 import ModalSelecionarQuarto from './components/room-selection/ModalSelecionarQuarto';
@@ -366,3 +366,4 @@ const Checkout = () => {
 };
 
 export default Checkout;
+
