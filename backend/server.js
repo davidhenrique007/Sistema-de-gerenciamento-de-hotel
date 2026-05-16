@@ -98,7 +98,7 @@ app.post('/api/auth/login', async (req, res) => {
   
   try {
     console.log('?? Buscando usuário:', email);
-    const result = await pool.query('SELECT id, name, email, password_hash, role, is_active FROM users WHERE email = $1', [email]);
+    const result = await pool.query('SELECT id, nome, email, password_hash, role, is_active FROM users WHERE email = $1', [email]);
     
     if (result.rows.length === 0) {
       console.log('? Usuário não encontrado');
@@ -147,7 +147,7 @@ app.post('/api/auth/login', async (req, res) => {
     // Log de auditoria - login bem-sucedido
     await auditService.log({
       userId: user.id,
-      userName: user.name,
+      usernome: user.nome,
       userRole: user.role,
       acao: 'LOGIN_SUCCESS',
       entidade: 'Autenticacao',
@@ -160,7 +160,7 @@ app.post('/api/auth/login', async (req, res) => {
     res.json({ 
       success: true, 
       token, 
-      user: { id: user.id, name: user.name, email: user.email, role: user.role } 
+      user: { id: user.id, nome: user.nome, email: user.email, role: user.role } 
     });
     
   } catch (error) {
@@ -218,10 +218,10 @@ app.post('/api/clientes/identificar', async (req, res) => {
   const pool = require('./config/database');
   
   try {
-    const { name, phone, document, email } = req.body;
+    const { nome, telefone, documento, email } = req.body;
     
     // Validar campos obrigatórios
-    if (!name || !phone) {
+    if (!nome || !telefone) {
       return res.status(400).json({ 
         success: false, 
         message: 'Nome e telefone são obrigatórios' 
@@ -230,31 +230,31 @@ app.post('/api/clientes/identificar', async (req, res) => {
     
     // Buscar cliente existente pelo telefone
     let result = await pool.query(
-      'SELECT * FROM clientes WHERE phone = $1',
-      [phone]
+      'SELECT * FROM clientes WHERE telefone = $1',
+      [telefone]
     );
     
     let client;
     
     if (result.rows.length === 0) {
       // Criar novo cliente
-      console.log('📝 Criando novo cliente:', name);
+      console.log('📝 Criando novo cliente:', nome);
       const insertResult = await pool.query(
-        `INSERT INTO clientes (name, phone, document, email, created_at, updated_at) 
-         VALUES ($1, $2, $3, $4, NOW(), NOW()) 
+        `        INSERT INTO clientes (nome, telefone, documento, email, data_cadastro)
+         VALUES ($1, $2, $3, $4, NOW())
          RETURNING *`,
-        [name, phone, document || null, email || null]
+        [nome, telefone, documento || null, email || null]
       );
       client = insertResult.rows[0];
     } else {
       client = result.rows[0];
-      console.log('✅ Cliente encontrado:', client.name);
+      console.log('✅ Cliente encontrado:', client.nome);
     }
     
     // Gerar token JWT para o cliente
     const jwt = require('jsonwebtoken');
     const token = jwt.sign(
-      { id: client.id, phone: client.phone, name: client.name },
+      { id: client.id, telefone: client.telefone, nome: client.nome },
       process.env.JWT_SECRET || 'hotel-paradise-secret',
       { expiresIn: '7d' }
     );
@@ -320,7 +320,7 @@ if (process.env.NODE_ENV !== 'test') {
   
   cron.schedule('0 * * * *', () => {
     console.log('?? Executando refresh agendado das Materialized Views...');
-    exec('node scripts/refreshViews.js', { cwd: __dirname }, (error, stdout, stderr) => {
+    exec('node scripts/refreshViews.js', { cwd: __dirnome }, (error, stdout, stderr) => {
       if (error) {
         console.error('? Erro no refresh agendado:', error);
       } else {
@@ -347,6 +347,9 @@ if (require.main === module) {
 }
 
 module.exports = app;
+
+
+
 
 
 

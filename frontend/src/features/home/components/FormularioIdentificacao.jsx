@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   validatePhone,
   validateRequired,
@@ -19,9 +19,9 @@ const FormularioIdentificacao = ({ onSubmit, isLoading, t }) => {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
 
-  // Função de validação com suporte a i18n
+  // FunÃ§Ã£o de validaÃ§Ã£o com suporte a i18n
   const validarCampo = (name, value) => {
-    console.log(`🔍 Validando campo ${name}:`, value);
+    console.log(`ðŸ” Validando campo ${name}:`, value);
 
     try {
       switch (name) {
@@ -31,12 +31,12 @@ const FormularioIdentificacao = ({ onSubmit, isLoading, t }) => {
           break;
 
         case 'telefone':
-          console.log('📞 Telefone COM máscara:', value);
+          console.log('ðŸ“ž Telefone COM mÃ¡scara:', value);
           const semMascara = removerMascara(value);
-          console.log('📞 Telefone SEM máscara:', semMascara);
+          console.log('ðŸ“ž Telefone SEM mÃ¡scara:', semMascara);
           validateRequired(value, t('form.phone'));
           validatePhone(semMascara, { format: 'international' });
-          console.log('✅ Telefone válido!');
+          console.log('âœ… Telefone vÃ¡lido!');
           break;
 
         case 'documento':
@@ -52,7 +52,7 @@ const FormularioIdentificacao = ({ onSubmit, isLoading, t }) => {
       }
       return null;
     } catch (error) {
-      console.log('❌ Erro na validação:', error.message);
+      console.log('âŒ Erro na validaÃ§Ã£o:', error.message);
       return error.message;
     }
   };
@@ -89,24 +89,24 @@ const FormularioIdentificacao = ({ onSubmit, isLoading, t }) => {
     if (Object.keys(newErrors).length > 0) return;
 
     onSubmit({
-      name: formData.nome,
-      phone: removerMascara(formData.telefone),
-      document: formData.documento || undefined,
+      nome: formData.nome,
+      telefone: removerMascara(formData.telefone),
+      documento: formData.documento || undefined,
       email: formData.email || undefined,
     });
   };
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
-      {/* Título internacionalizado */}
+      {/* TÃ­tulo internacionalizado */}
       <div className={styles.headerSection}>
         <h2 className={styles.title}>{t('checkout.personal_data')}</h2>
         <p className={styles.subtitle}>
-          {t('form.instructions') || 'Preencha as informações para continuar com o checkout'}
+          {t('form.instructions') || 'Preencha as informaÃ§Ãµes para continuar com o checkout'}
         </p>
         <div className={styles.securityBadge}>
-          <span className={styles.lockIcon}>🔒</span>
-          <span className={styles.securityText}>{t('common.protected_data') || 'Seus dados são protegidos'}</span>
+          <span className={styles.lockIcon}>ðŸ”’</span>
+          <span className={styles.securityText}>{t('common.protected_data') || 'Seus dados sÃ£o protegidos'}</span>
         </div>
       </div>
 
@@ -170,7 +170,7 @@ const FormularioIdentificacao = ({ onSubmit, isLoading, t }) => {
         />
         {touched.email && errors.email && <span className={styles.error}>{errors.email}</span>}
         <p className={styles.fieldHint}>
-          ✉️ {t('form.email_confirmation_hint') || 'Enviaremos sua confirmação de reserva por e-mail'}
+          âœ‰ï¸ {t('form.email_confirmation_hint') || 'Enviaremos sua confirmaÃ§Ã£o de reserva por e-mail'}
         </p>
       </div>
 
