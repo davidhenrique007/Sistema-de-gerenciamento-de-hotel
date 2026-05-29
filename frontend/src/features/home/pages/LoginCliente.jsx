@@ -16,15 +16,30 @@ const LoginCliente = () => {
     try {
       setError(null);
       const resultado = await identificarCliente(dados);
-      
+
       if (resultado.success) {
-        const destino = location.state?.from || '/';
-        navigate(destino, { replace: true });
+        console.log('✅ Login bem sucedido!');
+
+        // Verificar se há reserva pendente
+        const pendingReservation = localStorage.getItem('@HotelParadise:pending_reservation');
+        
+        console.log('📦 pending_reservation:', pendingReservation);
+
+        if (pendingReservation === 'true') {
+          // Limpar a flag
+          localStorage.removeItem('@HotelParadise:pending_reservation');
+          console.log('🚀 Redirecionando para /checkout');
+          window.location.href = '/checkout';
+        } else {
+          console.log('🏠 Redirecionando para /');
+          window.location.href = '/';
+        }
       } else {
         const errorKey = mapErrorToKey(resultado.error);
         setError(t(errorKey));
       }
     } catch (err) {
+      console.error('❌ Erro no login:', err);
       setError(t('errors.server_error'));
     }
   };
@@ -49,9 +64,9 @@ const LoginCliente = () => {
         <div className={styles.illustration}>
           <div className={styles.logoContainer}>
             <div className={styles.logoCircle}></div>
-            <img 
+            <img
               src="/assets/images/login/logo.png"
-              alt="Hotel Paradise" 
+              alt="Hotel Paradise"
               className={styles.logoImage}
               onError={(e) => {
                 e.target.style.display = 'none';
@@ -63,14 +78,14 @@ const LoginCliente = () => {
             <span className={styles.logoFallback} style={{ display: 'none' }}>🏨</span>
           </div>
 
-          <img 
-            src="/assets/images/login-illustration.svg" 
+          <img
+            src="/assets/images/login-illustration.svg"
             alt={t('auth.login.title')}
             className={styles.illustrationImage}
           />
           <h1>{t('auth.login.title')}</h1>
           <p>{t('auth.login.subtitle')}</p>
-          
+
           <div className={styles.benefits}>
             <div className={styles.benefit}>
               <span className={styles.benefitIcon}>✓</span>
@@ -94,7 +109,7 @@ const LoginCliente = () => {
             </div>
           )}
 
-          <FormularioIdentificacao 
+          <FormularioIdentificacao
             onSubmit={handleSubmit}
             isLoading={loading}
             t={t}
@@ -102,8 +117,8 @@ const LoginCliente = () => {
 
           {cliente && (
             <div className={styles.welcomeBack}>
-              <p>{t('auth.login.welcome_back', { name: cliente.name.split(' ')[0] })}</p>
-              <button 
+              <p>{t('auth.login.welcome_back', { name: cliente.name?.split(' ')[0] || cliente.name })}</p>
+              <button
                 onClick={() => navigate('/quartos/disponiveis')}
                 className={styles.continueButton}
               >
@@ -118,5 +133,3 @@ const LoginCliente = () => {
 };
 
 export default LoginCliente;
-
-

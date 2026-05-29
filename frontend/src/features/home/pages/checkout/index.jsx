@@ -23,45 +23,54 @@ import CheckoutHeader from './components/CheckoutHeader/CheckoutHeader';
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
-// Função para converter IDs mock para UUIDs reais
 const getRealRoomId = (mockId) => {
   if (!mockId) return null;
-  
   const roomMap = {
-    '38': '533fc3b1-864b-40b6-81a9-77a414f6872f',
-    '28': 'd4cbe344-e7a2-43bd-8b6d-887ad72edf1d',
-    '44': '11b74d81-a107-4480-a109-c93bc37038d5',
+    38: '533fc3b1-864b-40b6-81a9-77a414f6872f',
+    28: 'd4cbe344-e7a2-43bd-8b6d-887ad72edf1d',
+    44: '11b74d81-a107-4480-a109-c93bc37038d5',
     '04': '3fdadf3f-b5b5-444b-bda9-42beaacf6bfc',
     '05': '56a0c94f-8d9b-44c8-b984-f6b311393402',
     '03': 'a7aa148b-922c-4641-b9c3-064242a4bc8f',
-    '43': '8549a901-efac-4037-889b-fab8c10f9246',
-    '39': '3a24563f-8e23-4995-bda6-9c6b93899b6f',
+    43: '8549a901-efac-4037-889b-fab8c10f9246',
+    39: '3a24563f-8e23-4995-bda6-9c6b93899b6f',
     '07': 'd129ba9d-bb77-4294-a4d6-795a3806aa47',
     '06': '7350e309-0234-4b10-97b6-887b0528b92c',
     'room-002': 'd4cbe344-e7a2-43bd-8b6d-887ad72edf1d',
     'room-004': '3fdadf3f-b5b5-444b-bda9-42beaacf6bfc',
     'mock-43': '8549a901-efac-4037-889b-fab8c10f9246',
     'mock-45': '11b74d81-a107-4480-a109-c93bc37038d5',
-    'mock-47': '3a24563f-8e23-4995-bda6-9c6b93899b6f'
+    'mock-47': '3a24563f-8e23-4995-bda6-9c6b93899b6f',
   };
-  
   return roomMap[mockId] || mockId;
 };
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const { t } = useI18n(); // ✅ Consumindo i18n
+  const { t } = useI18n();
   const { reservation, room } = useCart();
   const { servicosSelecionados: servicoscontexto } = useServices();
   const { cliente, isIdentificado } = useCliente();
   const modalQuarto = useModalQuarto();
 
   const [guestData, setGuestData] = useState({
-    nome: cliente?.name || '',
-    telefone: cliente?.phone || '',
-    documento: cliente?.document || '',
-    email: cliente?.email || '',
+    nome: '',
+    telefone: '',
+    documento: '',
+    email: '',
   });
+
+  // ✅ NOVO: preenche dados do cliente quando ele carrega
+  useEffect(() => {
+    if (cliente) {
+      setGuestData({
+        nome:      cliente.nome      || cliente.name     || '',
+        telefone:  cliente.telefone  || cliente.phone    || '',
+        documento: cliente.documento || cliente.document || '',
+        email:     cliente.email     || '',
+      });
+    }
+  }, [cliente]);
 
   const [paymentMethod, setPaymentMethod] = useState('');
   const [paymentDetails, setPaymentDetails] = useState({});
@@ -111,8 +120,9 @@ const Checkout = () => {
 
   const primeiroQuarto = modalQuarto.quartosSelecionados[0];
   const room_id = getRealRoomId(primeiroQuarto?.id || room?.id || reservation?.roomId);
-  
-  const room_ids_converted = modalQuarto.quartosSelecionados.map((q) => getRealRoomId(q.id)).filter(id => id);
+  const room_ids_converted = modalQuarto.quartosSelecionados
+    .map((q) => getRealRoomId(q.id))
+    .filter((id) => id);
 
   const dadosReservaParaBackend = {
     room_id: room_id,
@@ -131,18 +141,9 @@ const Checkout = () => {
   const handlePagamentoConfirmado = (data) => {
     console.log('✅ Pagamento confirmado!', data);
     setPagamentoStatus('confirmed');
-
     const codigoReal = data.reservation_code || data.codigo;
-
-    localStorage.setItem('ultima_reserva', JSON.stringify({
-      reservation_code: codigoReal
-    }));
-
-    navigate('/recibo', {
-      state: {
-        reservation_code: codigoReal
-      },
-    });
+    localStorage.setItem('ultima_reserva', JSON.stringify({ reservation_code: codigoReal }));
+    navigate('/recibo', { state: { reservation_code: codigoReal } });
   };
 
   const handlePagamentoFalhou = (error) => {
@@ -150,8 +151,6 @@ const Checkout = () => {
     setPagamentoStatus('failed');
     const errorMsg = error?.message || t('errors.payment_declined');
     setErrorMessage(errorMsg);
-    
-    // Limpar mensagem após 5 segundos
     setTimeout(() => setErrorMessage(''), 5000);
   };
 
@@ -165,34 +164,26 @@ const Checkout = () => {
       setErrorMessage(t('errors.required_field'));
       return;
     }
-    
     if (modalQuarto.quartosSelecionados.length === 0 && !room_id) {
       setErrorMessage(t('checkout.no_room_selected'));
       return;
     }
-
     setErrorMessage('');
     setIsLoading(true);
-
     try {
       const respostaReserva = await api.post('/reservas', {
         ...dadosReservaParaBackend,
         payment_method: paymentMethod,
       });
-
       if (!respostaReserva.data.success) {
         throw new Error(respostaReserva.data.message || t('errors.booking_creation_failed'));
       }
-
       const { reservation_code } = respostaReserva.data.data;
       console.log('✅ Reserva criada no banco:', reservation_code);
-
       await api.put(`/reservas/${reservation_code}/confirmar-pagamento`, {
         payment_method: paymentMethod,
       });
-
       handlePagamentoConfirmado({ reservation_code });
-
     } catch (error) {
       console.error('❌ Erro:', error);
       const mensagem = error.response?.data?.message || error.message || t('errors.generic');
@@ -206,7 +197,6 @@ const Checkout = () => {
     <div className={styles.container}>
       <CheckoutHeader isIdentificado={isIdentificado} t={t} />
 
-      {/* Mensagem de erro global */}
       {errorMessage && (
         <div className={styles.globalError}>
           <span className={styles.errorIcon}>⚠️</span>
@@ -366,9 +356,3 @@ const Checkout = () => {
 };
 
 export default Checkout;
-
-
-
-
-
-

@@ -234,3 +234,4 @@ RoomCard.defaultProps = {
 };
 
 export default memo(RoomCard);
+

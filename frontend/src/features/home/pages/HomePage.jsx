@@ -15,6 +15,7 @@ import useServices from '../hooks/useServices';
 import useRooms from '../hooks/useRooms';
 import useNotification from "../../../shared/components/ui/Notification/useNotification";
 import { useCart } from '../../../contexts/CartContext';
+import { useCliente } from '../../../contexts/ClienteContext';
 import './home.css';
 
 const HomePage = () => {
@@ -22,6 +23,7 @@ const HomePage = () => {
   const navigate = useNavigate();
   const cart = useCart();
   const { selectRoom } = cart;
+  const { isIdentificado } = useCliente();
   const { notifySuccess, notifyError } = useNotification();
   const { formRef, scrollToForm, scrollToFormWithDelay } = useScrollToForm({
     offset: 80,
@@ -45,7 +47,8 @@ const HomePage = () => {
     console.log('🏠 [HomePage] Estado:');
     console.log('   rooms:', rooms?.length || 0);
     console.log('   selectedRoom:', selectedRoom?.number || 'nenhum');
-  }, [rooms, selectedRoom]);
+    console.log('   isIdentificado:', isIdentificado);
+  }, [rooms, selectedRoom, isIdentificado]);
 
   const handleRoomSelect = useCallback((room) => {
     if (room) {
@@ -61,6 +64,10 @@ const HomePage = () => {
 
   const handleReservationSubmit = useCallback(async (reservationData) => {
     try {
+      console.log('📦 Dados da reserva:', reservationData);
+      console.log('📌 isIdentificado:', isIdentificado);
+      
+      // 1. Salvar no CartContext
       selectRoom(
         {
           id: reservationData.roomId,
@@ -73,18 +80,39 @@ const HomePage = () => {
         reservationData.guests
       );
 
-      await new Promise(resolve => setTimeout(resolve, 800));
-      notifySuccess(t('common.success'));
+      // 2. SEMPRE salvar os dados da reserva
+      const reservationDataComplete = {
+        room: {
+          id: reservationData.roomId,
+          number: reservationData.roomNumber,
+          type: reservationData.roomType,
+          price_per_night: reservationData.pricePerNight
+        },
+        checkIn: reservationData.checkIn,
+        checkOut: reservationData.checkOut,
+        guests: reservationData.guests,
+        services: selectedServicesDetails || []
+      };
+      
+      localStorage.setItem('@HotelParadise:pending_reservation', 'true');
+      localStorage.setItem('pending_reservation_data', JSON.stringify(reservationDataComplete));
+      
+      console.log('✅ Reserva salva no localStorage');
+      console.log('✅ Flag pending_reservation:', localStorage.getItem('@HotelParadise:pending_reservation'));
 
+      await new Promise(resolve => setTimeout(resolve, 300));
+      notifySuccess(t('common.success'));
       if (clearSelectedServices) clearSelectedServices();
 
-      navigate('/checkout');
+      // 3. 🔥 FORÇAR IR PARA LOGIN SEMPRE (para garantir token válido)
+      console.log('🔑 Redirecionando para /login-cliente (para obter token válido)');
+      window.location.href = '/login-cliente';
 
     } catch (error) {
       console.error('❌ Erro:', error);
       notifyError(t('errors.server_error'));
     }
-  }, [selectRoom, navigate, notifySuccess, notifyError, clearSelectedServices, t]);
+  }, [selectRoom, isIdentificado, notifySuccess, notifyError, clearSelectedServices, t, selectedServicesDetails]);
 
   const handleServiceToggle = useCallback((serviceId) => {
     if (toggleService) toggleService(serviceId);
@@ -151,5 +179,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
-
