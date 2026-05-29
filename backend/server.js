@@ -1,45 +1,13 @@
 ﻿process.env.TZ = "Africa/Maputo";
 const express = require('express');
-const wafMiddleware = require('./middlewares/waf');
-
 const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Configuração CORS
-app.use(wafMiddleware);
-
-// Configuração CORS para desenvolvimento e produção
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:5173',
-  'https://hotel-paradise.vercel.app',
-  'https://hotel-paradise-six.vercel.app',
-  'https://hotel-paradise-git-main-david-henrique-s-projects.vercel.app'
-];
-
-app.use(cors({
-  origin: function(origin, callback) {
-    // Permitir requisições sem origin (como mobile apps ou curl)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.CORS_ORIGIN === '*') {
-      callback(null, true);
-    } else {
-      console.log('❌ CORS bloqueado para:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
-
-// Adicionar suporte para preflight requests
-app.options('*', cors());
-
 // ==================== IMPORTS DOS MIDDLEWARES ====================
+const wafMiddleware = require('./middlewares/waf');
 const helmet = require('helmet');
 const { globalLimiter, authLimiter, reservaLimiter, checkBlockedIP } = require('./middlewares/rateLimit');
 const { sanitizeInput, validateDataTypes, securityHeaders } = require('./middlewares/sanitize');
@@ -47,38 +15,36 @@ const { verificarToken, verificarRole } = require('./middlewares/auth');
 const { performanceLogger } = require('./middlewares/performanceLogger');
 // const auditLogger = require('./middlewares/auditLogger'); // Desativado
 
-// ==================== APLICAR MIDDLEWARES ====================
+// ==================== APLICAR MIDDLEWARES (ORDEM CORRIGIDA) ====================
 
-// Headers de segurança
+// 1. Headers de segurança e WAF (aplicados ANTES de tudo)
 app.use(helmet());
 app.use(securityHeaders);
+app.use(wafMiddleware);
 
-// Verificar IP bloqueado
+// 2. CORS (deve vir cedo, mas depois dos headers de segurança)
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
+// 3. Rate Limiting e Bloqueio de IP
 app.use(checkBlockedIP);
-
-// Rate limiting global
 app.use(globalLimiter);
 
-// Sanitização de inputs (ANTES de qualquer rota)
+// 4. Sanitização de inputs (ANTES das rotas, mas DEPOIS de json()/urlencoded())
+app.use(performanceLogger);
+app.use(express.json()); // <-- Movido para ANTES da sanitização e das rotas
+app.use(express.urlencoded({ extended: true }));
 app.use(sanitizeInput);
 app.use(validateDataTypes);
 
-// Performance logger
-app.use(performanceLogger);
-
-// Middleware de auditoria
-// // app.use(auditLogger); // Desativado // Desativado temporariamente
-
-// Rate limiting específico para auth
+// 5. Rate limiting específico para rotas
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
-
-// Rate limiting para reservas
 app.use('/api/reservas', reservaLimiter);
-
-// Middlewares básicos
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // ==================== ROTAS PÚBLICAS ====================
 
@@ -86,8 +52,106 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() }); 
 });
 
+// ==================== ROTA PÚBLICA PARA IDENTIFICAR CLIENTE ====================
+app.post('/api/clientes/identificar', async (req, res) => {
+  console.log('📝 Identificando cliente:', req.body);
+  
+  const pool = require('./config/database');
+  
+  try {
+    const { nome, telefone, documento, email } = req.body;
+    
+    if (!nome || !telefone) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Nome e telefone são obrigatórios' 
+      });
+    }
+    
+    // 1. Buscar ou criar na tabela clientes (id inteiro)
+    let clientResult = await pool.query(
+      'SELECT * FROM clientes WHERE telefone = $1',
+      [telefone]
+    );
+    
+    let client;
+    if (clientResult.rows.length === 0) {
+      console.log('📝 Criando novo cliente na tabela clientes:', nome);
+      const insertResult = await pool.query(
+        `INSERT INTO clientes (nome, telefone, documento, email, data_cadastro)
+         VALUES ($1, $2, $3, $4, NOW())
+         RETURNING *`,
+        [nome, telefone, documento || null, email || null]
+      );
+      client = insertResult.rows[0];
+    } else {
+      client = clientResult.rows[0];
+      console.log('✅ Cliente encontrado na tabela clientes:', client.nome);
+    }
+    
+    // 2. Buscar ou criar na tabela guests (UUID)
+    let guestResult = await pool.query(
+      'SELECT id FROM guests WHERE phone = $1',
+      [telefone]
+    );
+    
+    let guestId;
+    if (guestResult.rows.length === 0) {
+      console.log('📝 Criando novo guest na tabela guests:', nome);
+      const insertGuest = await pool.query(
+        `INSERT INTO guests (name, phone, email, document, created_at)
+         VALUES ($1, $2, $3, $4, NOW())
+         RETURNING id`,
+        [nome, telefone, email || null, documento || null]
+      );
+      guestId = insertGuest.rows[0].id;
+      console.log('✅ Guest criado com UUID:', guestId);
+    } else {
+      guestId = guestResult.rows[0].id;
+      console.log('✅ Guest encontrado com UUID:', guestId);
+    }
+    
+    // 3. Gerar token JWT com ambos os IDs
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign(
+      { 
+        id: client.id, 
+        guest_id: guestId, 
+        telefone: client.telefone, 
+        nome: client.nome,
+        email: client.email 
+      },
+      process.env.JWT_SECRET || 'hotel-paradise-secret',
+      { expiresIn: '7d' }
+    );
+    
+    // 4. Retornar AMBOS os IDs
+    res.json({
+      success: true,
+      data: {
+        id: client.id,
+        guest_id: guestId,
+        nome: client.nome,
+        telefone: client.telefone,
+        documento: client.documento,
+        email: client.email
+      },
+      token: token
+    });
+    
+  } catch (error) {
+    console.error('❌ Erro ao identificar cliente:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Erro ao processar requisição',
+      error: error.message
+    });
+  }
+});
+
+// Login
 app.post('/api/auth/login', async (req, res) => {
-  console.log('?? Recebendo login request:', req.body);
+  console.log('🔑 Recebendo login request:', req.body);
   
   const { email, password } = req.body;
   const bcrypt = require('bcryptjs');
@@ -97,11 +161,11 @@ app.post('/api/auth/login', async (req, res) => {
   const auditService = require('./services/auditService');
   
   try {
-    console.log('?? Buscando usuário:', email);
-    const result = await pool.query('SELECT id, nome, email, password_hash, role, is_active FROM users WHERE email = $1', [email]);
+    console.log('🔍 Buscando usuário:', email);
+    const result = await pool.query('SELECT id, name, email, password_hash, role, is_active FROM users WHERE email = $1', [email]);
     
     if (result.rows.length === 0) {
-      console.log('? Usuário não encontrado');
+      console.log('❌ Usuário não encontrado');
       await auditService.log({
         acao: 'LOGIN_FAILURE',
         entidade: 'Autenticacao',
@@ -116,15 +180,15 @@ app.post('/api/auth/login', async (req, res) => {
     const user = result.rows[0];
     
     if (!user.is_active) {
-      console.log('? Usuário inativo:', user.email);
+      console.log('⛔ Usuário inativo:', user.email);
       return res.status(401).json({ success: false, message: 'Conta desativada. Contacte o administrador.' });
     }
     
-    console.log('? Usuário encontrado:', user.email);
+    console.log('✅ Usuário encontrado:', user.email);
     
     const isValid = await bcrypt.compare(password, user.password_hash);
     if (!isValid) {
-      console.log('? Senha inválida');
+      console.log('❌ Senha inválida');
       await auditService.log({
         acao: 'LOGIN_FAILURE',
         entidade: 'Autenticacao',
@@ -144,10 +208,9 @@ app.post('/api/auth/login', async (req, res) => {
     
     await registrarLogin(user.id, req.ip, req.get('user-agent'));
     
-    // Log de auditoria - login bem-sucedido
     await auditService.log({
       userId: user.id,
-      usernome: user.nome,
+      userName: user.name,
       userRole: user.role,
       acao: 'LOGIN_SUCCESS',
       entidade: 'Autenticacao',
@@ -156,15 +219,15 @@ app.post('/api/auth/login', async (req, res) => {
       detalhes: { email: user.email }
     });
     
-    console.log('? Login bem sucedido, token gerado');
+    console.log('✅ Login bem sucedido, token gerado');
     res.json({ 
       success: true, 
       token, 
-      user: { id: user.id, nome: user.nome, email: user.email, role: user.role } 
+      user: { id: user.id, name: user.name, email: user.email, role: user.role } 
     });
     
   } catch (error) {
-    console.error('? Erro no login:', error);
+    console.error('🔥 Erro no login:', error);
     res.status(500).json({ success: false, message: 'Erro interno do servidor' });
   }
 });
@@ -178,7 +241,7 @@ app.post('/api/auth/logout', async (req, res) => {
       const jwt = require('jsonwebtoken');
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'hotel-paradise-secret');
       const duracao = await registrarLogout(decoded.id, req.ip);
-      console.log(`? Logout: usuário ${decoded.id} ficou online por ${duracao} segundos`);
+      console.log(`⏱️ Logout: usuário ${decoded.id} ficou online por ${duracao} segundos`);
     } catch(e) {
       console.error('Erro no logout:', e.message);
     }
@@ -210,71 +273,6 @@ app.post('/api/auth/heartbeat', async (req, res) => {
   }
 });
 
-
-// ==================== ROTA PÚBLICA PARA CLIENTE ====================
-app.post('/api/clientes/identificar', async (req, res) => {
-  console.log('📝 Identificando cliente:', req.body);
-  
-  const pool = require('./config/database');
-  
-  try {
-    const { nome, telefone, documento, email } = req.body;
-    
-    // Validar campos obrigatórios
-    if (!nome || !telefone) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Nome e telefone são obrigatórios' 
-      });
-    }
-    
-    // Buscar cliente existente pelo telefone
-    let result = await pool.query(
-      'SELECT * FROM clientes WHERE telefone = $1',
-      [telefone]
-    );
-    
-    let client;
-    
-    if (result.rows.length === 0) {
-      // Criar novo cliente
-      console.log('📝 Criando novo cliente:', nome);
-      const insertResult = await pool.query(
-        `        INSERT INTO clientes (nome, telefone, documento, email, data_cadastro)
-         VALUES ($1, $2, $3, $4, NOW())
-         RETURNING *`,
-        [nome, telefone, documento || null, email || null]
-      );
-      client = insertResult.rows[0];
-    } else {
-      client = result.rows[0];
-      console.log('✅ Cliente encontrado:', client.nome);
-    }
-    
-    // Gerar token JWT para o cliente
-    const jwt = require('jsonwebtoken');
-    const token = jwt.sign(
-      { id: client.id, telefone: client.telefone, nome: client.nome },
-      process.env.JWT_SECRET || 'hotel-paradise-secret',
-      { expiresIn: '7d' }
-    );
-    
-    res.json({
-      success: true,
-      data: client,
-      token: token
-    });
-    
-  } catch (error) {
-    console.error('❌ Erro ao identificar cliente:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Erro ao processar requisição' 
-    });
-  }
-});
-
-
 // ==================== ROTAS PROTEGIDAS ====================
 
 // Importar rotas
@@ -294,7 +292,7 @@ const performanceRoutes = require('./routes/admin/performanceRoutes');
 const auditRoutes = require('./routes/admin/auditRoutes');
 const twoFactorRoutes = require('./routes/auth/2faRoutes');
 
-// Rotas 2FA
+// Rotas 2FA (públicas)
 app.use('/api/auth', twoFactorRoutes);
 
 // Aplicar middleware de autenticação em TODAS as rotas protegidas
@@ -319,38 +317,31 @@ if (process.env.NODE_ENV !== 'test') {
   const { exec } = require('child_process');
   
   cron.schedule('0 * * * *', () => {
-    console.log('?? Executando refresh agendado das Materialized Views...');
-    exec('node scripts/refreshViews.js', { cwd: __dirnome }, (error, stdout, stderr) => {
+    console.log('📊 Executando refresh agendado das Materialized Views...');
+    exec('node scripts/refreshViews.js', { cwd: __dirname }, (error, stdout, stderr) => {
       if (error) {
-        console.error('? Erro no refresh agendado:', error);
+        console.error('❌ Erro no refresh agendado:', error);
       } else {
-        console.log('? Refresh agendado concluído');
+        console.log('✅ Refresh agendado concluído');
       }
     });
   });
   
-  console.log('? Scheduler de Materialized Views ativado (refresh a cada hora)');
+  console.log('⏰ Scheduler de Materialized Views ativado (refresh a cada hora)');
 }
 
 // ==================== TRATAMENTO DE ERROS GLOBAL ====================
 app.use((err, req, res, next) => {
-  console.error('? Erro global:', err);
+  console.error('🔥 Erro global:', err);
   res.status(500).json({ success: false, message: 'Erro interno do servidor' });
 });
 
 // ==================== INICIAR SERVIDOR ====================
 if (require.main === module) {
   app.listen(PORT, () => { 
-    console.log(`?? Servidor rodando em http://localhost:${PORT}`);
-    console.log(`?? CORS permitindo: http://localhost:3000`);
+    console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+    console.log(`🌐 CORS permitindo: http://localhost:3000`);
   });
 }
 
 module.exports = app;
-
-
-
-
-
-
-
