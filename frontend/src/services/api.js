@@ -1,4 +1,4 @@
-import axios from 'axios';
+ï»¿import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -7,7 +7,7 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Interceptor para adicionar token de autenticação
+// Interceptor para adicionar token de autenticaï¿½ï¿½o
 api.interceptors.request.use((config) => {
   // ? TENTAR AMBAS AS CHAVES (admin e cliente)
   let token = localStorage.getItem('admin_token');
