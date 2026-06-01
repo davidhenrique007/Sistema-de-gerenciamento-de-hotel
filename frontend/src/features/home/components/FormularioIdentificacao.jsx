@@ -105,7 +105,7 @@ const FormularioIdentificacao = ({ onSubmit, isLoading, t }) => {
           {t('form.instructions') || 'Preencha as informaÃ§Ãµes para continuar com o checkout'}
         </p>
         <div className={styles.securityBadge}>
-          <span className={styles.lockIcon}>ðŸ”’</span>
+          <span className={styles.lockIcon}>🔒</span>
           <span className={styles.securityText}>{t('common.protected_data') || 'Seus dados sÃ£o protegidos'}</span>
         </div>
       </div>
