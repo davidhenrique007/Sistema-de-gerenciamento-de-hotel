@@ -114,18 +114,6 @@ const LoginCliente = () => {
             isLoading={loading}
             t={t}
           />
-
-          {cliente && (
-            <div className={styles.welcomeBack}>
-              <p>{t('auth.login.welcome_back', { name: cliente.name?.split(' ')[0] || cliente.name })}</p>
-              <button
-                onClick={() => navigate('/quartos/disponiveis')}
-                className={styles.continueButton}
-              >
-                {t('common.next')}
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>
