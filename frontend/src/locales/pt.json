@@ -28,7 +28,7 @@
     "retry": "Tentar novamente",
     "total": "Total",
     "optional": "opcional",
-    "protected_data": "Seus dados são protegidos",
+    "protected_data": "🔒 Seus dados são protegidos",
     "add": "Adicionar",
     "remove": "Remover",
     "select": "Selecionar",
@@ -355,6 +355,7 @@
   },
   "auth": {
     "login": {
+      "welcome_back": "Bem-vindo de volta",
       "title": "Bem-vindo de volta",
       "subtitle": "Faça login para acessar sua conta",
       "email": "E-mail",
