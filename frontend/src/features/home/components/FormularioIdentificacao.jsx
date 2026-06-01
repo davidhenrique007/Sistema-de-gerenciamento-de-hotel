@@ -170,7 +170,7 @@ const FormularioIdentificacao = ({ onSubmit, isLoading, t }) => {
         />
         {touched.email && errors.email && <span className={styles.error}>{errors.email}</span>}
         <p className={styles.fieldHint}>
-          âœ‰ï¸ {t('form.email_confirmation_hint') || 'Enviaremos sua confirmaÃ§Ã£o de reserva por e-mail'}
+          {t('form.email_confirmation_hint') || 'Enviaremos sua confirmaÃ§Ã£o de reserva por e-mail'}
         </p>
       </div>
 
