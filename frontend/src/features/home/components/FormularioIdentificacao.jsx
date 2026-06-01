@@ -106,7 +106,9 @@ const FormularioIdentificacao = ({ onSubmit, isLoading, t }) => {
         </p>
         <div className={styles.securityBadge}>
           <span className={styles.lockIcon}>🔒</span>
-          <span className={styles.securityText}>{t('common.protected_data') || 'Seus dados sÃ£o protegidos'}</span>
+          <span className={styles.securityText}>
+            {t('common.protected_data') || 'Seus dados sÃ£o protegidos'}
+          </span>
         </div>
       </div>
 
@@ -121,6 +123,7 @@ const FormularioIdentificacao = ({ onSubmit, isLoading, t }) => {
           onBlur={handleBlur}
           placeholder={t('form.full_name_placeholder')}
           disabled={isLoading}
+          autoComplete="off"
         />
         {touched.nome && errors.nome && <span className={styles.error}>{errors.nome}</span>}
       </div>
@@ -136,6 +139,7 @@ const FormularioIdentificacao = ({ onSubmit, isLoading, t }) => {
           onBlur={handleBlur}
           placeholder={t('form.phone_placeholder')}
           disabled={isLoading}
+          autoComplete="off"
         />
         {touched.telefone && errors.telefone && (
           <span className={styles.error}>{errors.telefone}</span>
@@ -143,7 +147,9 @@ const FormularioIdentificacao = ({ onSubmit, isLoading, t }) => {
       </div>
 
       <div className={styles.field}>
-        <label>{t('form.id_number')} ({t('common.optional')})</label>
+        <label>
+          {t('form.id_number')} ({t('common.optional')})
+        </label>
         <input
           name="documento"
           value={formData.documento}
@@ -151,6 +157,7 @@ const FormularioIdentificacao = ({ onSubmit, isLoading, t }) => {
           onBlur={handleBlur}
           placeholder={t('form.id_number_placeholder')}
           disabled={isLoading}
+          autoComplete="off"
         />
         {touched.documento && errors.documento && (
           <span className={styles.error}>{errors.documento}</span>
@@ -158,7 +165,9 @@ const FormularioIdentificacao = ({ onSubmit, isLoading, t }) => {
       </div>
 
       <div className={styles.field}>
-        <label>{t('form.email')} ({t('common.optional')})</label>
+        <label>
+          {t('form.email')} ({t('common.optional')})
+        </label>
         <input
           name="email"
           type="email"
@@ -167,10 +176,12 @@ const FormularioIdentificacao = ({ onSubmit, isLoading, t }) => {
           onBlur={handleBlur}
           placeholder={t('form.email_placeholder')}
           disabled={isLoading}
+          autoComplete="off"
         />
         {touched.email && errors.email && <span className={styles.error}>{errors.email}</span>}
         <p className={styles.fieldHint}>
-          {t('form.email_confirmation_hint') || 'Enviaremos sua confirmaÃ§Ã£o de reserva por e-mail'}
+          {t('form.email_confirmation_hint') ||
+            'Enviaremos sua confirmaÃ§Ã£o de reserva por e-mail'}
         </p>
       </div>
 
