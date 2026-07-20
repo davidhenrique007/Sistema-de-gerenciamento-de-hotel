@@ -1,0 +1,57 @@
+
+=== checkIn ===
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\hooks\usePermissions.js:10: receptionist: ['reservations', 'rooms', 'checkin', 'checkout'],
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:18: const [checkIn, setCheckIn] = useState(null);
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:31: setCheckIn(parsed.checkIn ? new Date(parsed.checkIn) : null);
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:43: if (room || checkIn || checkOut) {
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:45: reservation, room, checkIn, checkOut, guests, extras, totalPrice
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:48: }, [reservation, room, checkIn, checkOut, guests, extras, totalPrice]);
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:50: const selectRoom = (selectedRoom, selectedCheckIn, selectedCheckOut, selectedGuests) => {
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:51: console.log('selectRoom chamado!', { selectedRoom, selectedCheckIn, selectedCheckOut, selectedGuests });
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:53: const nights = Math.ceil((selectedCheckOut - selectedCheckIn) / (1000 * 60 * 60 * 24));
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:60: checkIn: selectedCheckIn,
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:72: setCheckIn(selectedCheckIn);
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:92: setCheckIn(null);
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:104: checkIn,
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\NotificationContext.jsx:10: checkIns: true,
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\WidgetContext.jsx:10: pendingCheckIns: true,
+
+=== checkOut ===
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\hooks\usePermissions.js:10: receptionist: ['reservations', 'rooms', 'checkin', 'checkout'],
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:19: const [checkOut, setCheckOut] = useState(null);
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:32: setCheckOut(parsed.checkOut ? new Date(parsed.checkOut) : null);
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:43: if (room || checkIn || checkOut) {
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:45: reservation, room, checkIn, checkOut, guests, extras, totalPrice
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:48: }, [reservation, room, checkIn, checkOut, guests, extras, totalPrice]);
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:50: const selectRoom = (selectedRoom, selectedCheckIn, selectedCheckOut, selectedGuests) => {
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:51: console.log('selectRoom chamado!', { selectedRoom, selectedCheckIn, selectedCheckOut, selectedGuests });
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:53: const nights = Math.ceil((selectedCheckOut - selectedCheckIn) / (1000 * 60 * 60 * 24));
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:61: checkOut: selectedCheckOut,
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:73: setCheckOut(selectedCheckOut);
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:93: setCheckOut(null);
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\CartContext.jsx:105: checkOut,
+C:\Users\dell\Desktop\Code 01\Versão Profissional 01\Sistema P1\hotel-paradise\frontend\src\contexts\NotificationContext.jsx:11: checkOuts: true,
+
+=== \.confirm\( ===
+(nenhum resultado)
+
+=== \.cancel\( ===
+(nenhum resultado)
+
+=== getStatistics ===
+(nenhum resultado)
+
+=== findByStatus ===
+(nenhum resultado)
+
+=== findActive ===
+(nenhum resultado)
+
+=== findUpcoming ===
+(nenhum resultado)
+
+=== findByGuestEmail ===
+(nenhum resultado)
+
+=== findByDateRange ===
+(nenhum resultado)

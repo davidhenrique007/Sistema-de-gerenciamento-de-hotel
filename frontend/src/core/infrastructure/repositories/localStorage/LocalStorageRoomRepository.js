@@ -1,21 +1,19 @@
 // ============================================
 // REPOSITORY: LocalStorageRoomRepository
 // ============================================
-// Responsabilidade: Implementação concreta do repositório de quartos
-// usando localStorage como mecanismo de persistência
-// VERSÃO CORRIGIDA - SEMPRE inicializa com dados frescos
-// ============================================
+
 
 // ============================================
 // IMPORTAÇÕES
 // ============================================
+import { IRoomRepository } from '../../../domain/interfaces/repositories/IRoomRepository.js';
 import { Room } from '../../../domain/entities/Room.js';
 import { Money } from '../../../domain/value-objects/Money.js';
 import { OccupancyStatuses } from '../../../domain/value-objects/OccupancyStatus.js';
 import { AppError, NotFoundError, ValidationError } from '../../../../shared/utils/errorUtils.js';
 import { storage } from '../../../../shared/utils/storage.js';
-import { createLogger } from '../../../utils.js';
 import { roomsData } from '../../../../data/roomsData.js';
+import { createLogger } from '../../../utils.js';
 
 // ============================================
 // CONSTANTES
@@ -27,23 +25,26 @@ const DEFAULT_LOGGER = createLogger('LocalStorageRoomRepository');
 // REPOSITÓRIO PRINCIPAL
 // ============================================
 
-export class LocalStorageRoomRepository {
+export class LocalStorageRoomRepository extends IRoomRepository {
   /**
    * @param {Object} options - Opções de configuração
    * @param {Object} options.storage - Wrapper de storage (opcional)
    * @param {Object} options.logger - Logger (opcional)
    * @param {boolean} options.initializeWithMockData - Inicializar com dados mock
+   *   apenas se o storage estiver vazio (nunca sobrescreve dados existentes)
    */
   constructor({
     storage: storageWrapper = storage.local,
     logger = DEFAULT_LOGGER,
     initializeWithMockData = true
   } = {}) {
+    super();
     this.storage = storageWrapper;
     this.logger = logger;
 
-    // SEMPRE inicializar, ignorando o parâmetro
-    this._initializeMockData();
+    if (initializeWithMockData) {
+      this._initializeMockData();
+    }
   }
 
   // ============================================
@@ -51,31 +52,29 @@ export class LocalStorageRoomRepository {
   // ============================================
 
   /**
-   * Inicializa dados mock no storage - SEMPRE sobrescreve
+   * Inicializa dados mock no storage.
+   * IMPORTANTE: só inicializa se não houver dados existentes, para nunca
+   * sobrescrever reservas/quartos reais já persistidos.
    * @private
    */
   _initializeMockData() {
     try {
-      this.logger.info('🔥 FORÇANDO inicialização dos dados mock de quartos...');
+      const existingData = this.storage.getItem(STORAGE_KEY);
 
-      // Converter dados mock para entidades Room
-      const rooms = roomsData.map(roomData => this._deserializeRoom(roomData));
+      if (!existingData) {
+        this.logger.info('Inicializando dados mock de quartos...');
 
-      // Salvar no storage (sempre sobrescreve)
-      this.storage.setItem(STORAGE_KEY, this._serializeRooms(rooms));
+        const rooms = roomsData.map(roomData => this._deserializeRoom(roomData));
 
-      this.logger.info(`✅ ${rooms.length} quartos inicializados com sucesso`);
+        this.storage.setItem(STORAGE_KEY, this._serializeRooms(rooms));
 
-      // Verificar se salvou
-      const saved = this.storage.getItem(STORAGE_KEY);
-      this.logger.debug(`📊 Dados salvos: ${saved ? saved.length : 0} itens no storage`);
-
-      if (saved) {
-        this.logger.debug(`📋 Quartos: ${saved.map(r => `${r.number} (${r.type})`).join(', ')}`);
+        this.logger.info(`${rooms.length} quartos inicializados com sucesso`);
       }
-
     } catch (error) {
-      this.logger.error('❌ Erro ao inicializar dados mock:', error);
+      this.logger.error('Erro ao inicializar dados mock:', error);
+      throw new AppError('Falha ao inicializar dados de quartos', 'STORAGE_INIT_ERROR', {
+        originalError: error.message
+      });
     }
   }
 
@@ -105,7 +104,6 @@ export class LocalStorageRoomRepository {
    */
   _deserializeRoom(data) {
     try {
-      // Mapear status
       const statusMap = {
         'AVAILABLE': OccupancyStatuses.AVAILABLE,
         'OCCUPIED': OccupancyStatuses.OCCUPIED,
@@ -116,10 +114,9 @@ export class LocalStorageRoomRepository {
 
       const status = statusMap[data.status] || OccupancyStatuses.AVAILABLE;
 
-      // Garantir que typeLabel exista
+      // Garantir que typeLabel exista (fallback para dados antigos sem o campo)
       const typeLabel = data.typeLabel || this._getTypeLabel(data.type);
 
-      // Criar entidade Room
       return new Room({
         id: data.id,
         number: data.number,
@@ -140,7 +137,7 @@ export class LocalStorageRoomRepository {
   }
 
   /**
-   * Retorna label para o tipo de quarto (fallback)
+   * Retorna label para o tipo de quarto (fallback para dados legados)
    * @private
    */
   _getTypeLabel(type) {
@@ -155,41 +152,34 @@ export class LocalStorageRoomRepository {
   }
 
   /**
-   * Obtém todos os quartos do storage
+   * Obtém todos os quartos do storage.
+   * Se não houver dados, tenta reinicializar uma vez (dados mock) antes
+   * de desistir. Erros reais de acesso ao storage são propagados.
    * @private
    */
   _getAllRooms() {
     try {
-      const data = this.storage.getItem(STORAGE_KEY);
+      let data = this.storage.getItem(STORAGE_KEY);
 
       if (!data) {
-        this.logger.warn('Nenhum dado encontrado no storage, tentando reinicializar...');
+        this.logger.warn('Nenhum dado encontrado no storage, tentando inicializar...');
         this._initializeMockData();
+        data = this.storage.getItem(STORAGE_KEY);
+      }
 
-        // Tentar obter novamente (apenas uma vez)
-        const newData = this.storage.getItem(STORAGE_KEY);
-        if (!newData) {
-          this.logger.error('Falha ao reinicializar dados');
-          return [];
-        }
-
-        if (Array.isArray(newData)) {
-          return newData.map(item => this._deserializeRoom(item));
-        }
+      if (!data || !Array.isArray(data)) {
         return [];
       }
 
-      // Se for array, é a lista serializada
-      if (Array.isArray(data)) {
-        return data.map(item => this._deserializeRoom(item));
-      }
-
-      return [];
+      return data.map(item => this._deserializeRoom(item));
     } catch (error) {
       this.logger.error('Erro ao obter quartos do storage:', error);
-      return []; // Retorna array vazio em vez de lançar erro
+      throw new AppError('Falha ao acessar storage de quartos', 'STORAGE_ERROR', {
+        originalError: error.message
+      });
     }
   }
+
   /**
    * Salva todos os quartos no storage
    * @private
@@ -213,32 +203,21 @@ export class LocalStorageRoomRepository {
    */
   _applyFilters(rooms, filters) {
     return rooms.filter(room => {
-      // Filtrar apenas disponíveis
       if (filters.onlyAvailable && !room.isAvailable()) {
         return false;
       }
-
-      // Filtrar por tipo
       if (filters.type && room.type.toLowerCase() !== filters.type.toLowerCase()) {
         return false;
       }
-
-      // Filtrar por capacidade mínima
       if (filters.minCapacity && room.capacity < filters.minCapacity) {
         return false;
       }
-
-      // Filtrar por preço máximo
       if (filters.maxPrice && room.pricePerNight.amount > filters.maxPrice) {
         return false;
       }
-
-      // Filtrar por preço mínimo
       if (filters.minPrice && room.pricePerNight.amount < filters.minPrice) {
         return false;
       }
-
-      // Filtrar por amenities
       if (filters.amenities && filters.amenities.length > 0) {
         const hasAllAmenities = filters.amenities.every(amenity =>
           room.amenities.some(a => a.toLowerCase().includes(amenity.toLowerCase()))
@@ -247,13 +226,12 @@ export class LocalStorageRoomRepository {
           return false;
         }
       }
-
       return true;
     });
   }
 
   // ============================================
-  // MÉTODOS PÚBLICOS
+  // MÉTODOS PÚBLICOS - IMPLEMENTAÇÃO DA INTERFACE
   // ============================================
 
   /**
@@ -263,18 +241,13 @@ export class LocalStorageRoomRepository {
    */
   async findAll(filters = {}) {
     this.logger.debug('findAll chamado com filtros:', filters);
-
     try {
       const allRooms = this._getAllRooms();
-
       if (Object.keys(filters).length === 0) {
         return allRooms;
       }
-
       const filteredRooms = this._applyFilters(allRooms, filters);
-
       this.logger.debug(`findAll retornou ${filteredRooms.length} quartos`);
-
       return filteredRooms;
     } catch (error) {
       this.logger.error('Erro em findAll:', error);
@@ -289,16 +262,13 @@ export class LocalStorageRoomRepository {
    */
   async findById(id) {
     this.logger.debug(`findById chamado com id: ${id}`);
-
     try {
       const allRooms = this._getAllRooms();
       const room = allRooms.find(r => r.id === id);
-
       if (!room) {
         this.logger.debug(`Quarto com id ${id} não encontrado`);
         return null;
       }
-
       return room;
     } catch (error) {
       this.logger.error(`Erro em findById para id ${id}:`, error);
@@ -313,16 +283,13 @@ export class LocalStorageRoomRepository {
    */
   async findByNumber(number) {
     this.logger.debug(`findByNumber chamado com número: ${number}`);
-
     try {
       const allRooms = this._getAllRooms();
       const room = allRooms.find(r => r.number === number);
-
       if (!room) {
         this.logger.debug(`Quarto com número ${number} não encontrado`);
         return null;
       }
-
       return room;
     } catch (error) {
       this.logger.error(`Erro em findByNumber para número ${number}:`, error);
@@ -337,14 +304,12 @@ export class LocalStorageRoomRepository {
    */
   async save(room) {
     this.logger.debug(`save chamado para quarto: ${room.number}`);
-
     try {
       if (!(room instanceof Room)) {
         throw new ValidationError('Objeto deve ser uma instância de Room');
       }
 
       const allRooms = this._getAllRooms();
-
       const exists = allRooms.some(r => r.id === room.id || r.number === room.number);
 
       if (exists) {
@@ -358,7 +323,6 @@ export class LocalStorageRoomRepository {
       this._saveAllRooms(allRooms);
 
       this.logger.info(`Quarto ${room.number} salvo com sucesso`);
-
       return room;
     } catch (error) {
       this.logger.error(`Erro ao salvar quarto ${room.number}:`, error);
@@ -373,7 +337,6 @@ export class LocalStorageRoomRepository {
    */
   async update(room) {
     this.logger.debug(`update chamado para quarto: ${room.number}`);
-
     try {
       if (!(room instanceof Room)) {
         throw new ValidationError('Objeto deve ser uma instância de Room');
@@ -402,7 +365,6 @@ export class LocalStorageRoomRepository {
       this._saveAllRooms(allRooms);
 
       this.logger.info(`Quarto ${room.number} atualizado com sucesso`);
-
       return room;
     } catch (error) {
       this.logger.error(`Erro ao atualizar quarto ${room.number}:`, error);
@@ -417,7 +379,6 @@ export class LocalStorageRoomRepository {
    */
   async delete(id) {
     this.logger.debug(`delete chamado para id: ${id}`);
-
     try {
       const allRooms = this._getAllRooms();
       const index = allRooms.findIndex(r => r.id === id);
@@ -439,7 +400,6 @@ export class LocalStorageRoomRepository {
       this._saveAllRooms(allRooms);
 
       this.logger.info(`Quarto ${id} removido com sucesso`);
-
       return true;
     } catch (error) {
       this.logger.error(`Erro ao remover quarto ${id}:`, error);
@@ -454,7 +414,6 @@ export class LocalStorageRoomRepository {
    */
   async exists(id) {
     this.logger.debug(`exists chamado para id: ${id}`);
-
     try {
       const allRooms = this._getAllRooms();
       return allRooms.some(r => r.id === id);
@@ -471,7 +430,6 @@ export class LocalStorageRoomRepository {
    */
   async findByType(type) {
     this.logger.debug(`findByType chamado para tipo: ${type}`);
-
     try {
       const allRooms = this._getAllRooms();
       return allRooms.filter(r => r.type.toLowerCase() === type.toLowerCase());
@@ -488,7 +446,6 @@ export class LocalStorageRoomRepository {
    */
   async findByMinCapacity(capacity) {
     this.logger.debug(`findByMinCapacity chamado para capacidade: ${capacity}`);
-
     try {
       const allRooms = this._getAllRooms();
       return allRooms.filter(r => r.capacity >= capacity);
@@ -504,7 +461,6 @@ export class LocalStorageRoomRepository {
    */
   async findAvailable() {
     this.logger.debug('findAvailable chamado');
-
     try {
       const allRooms = this._getAllRooms();
       return allRooms.filter(r => r.isAvailable());
@@ -520,7 +476,6 @@ export class LocalStorageRoomRepository {
    */
   async findOccupied() {
     this.logger.debug('findOccupied chamado');
-
     try {
       const allRooms = this._getAllRooms();
       return allRooms.filter(r => r.isOccupied());
@@ -536,12 +491,69 @@ export class LocalStorageRoomRepository {
    */
   async findUnderMaintenance() {
     this.logger.debug('findUnderMaintenance chamado');
-
     try {
       const allRooms = this._getAllRooms();
       return allRooms.filter(r => r.isUnderMaintenance());
     } catch (error) {
       this.logger.error('Erro em findUnderMaintenance:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Atualiza o status de vários quartos de uma vez.
+   * Recuperado da versão órfã (domain/interfaces) — não é chamado em
+   * nenhum lugar do código atual, mas implementa o contrato da interface
+   * e pode ser útil para operações em massa no futuro (ex: manutenção geral).
+   * @param {Array<string|number>} roomIds - IDs dos quartos
+   * @param {OccupancyStatus} status - Novo status
+   * @returns {Promise<Array<Room>>}
+   */
+  async bulkUpdateStatus(roomIds, status) {
+    this.logger.debug(`bulkUpdateStatus chamado para ${roomIds.length} quartos`);
+    try {
+      const allRooms = this._getAllRooms();
+      const updatedRooms = [];
+      const notFound = [];
+
+      for (const roomId of roomIds) {
+        const index = allRooms.findIndex(r => r.id === roomId);
+
+        if (index === -1) {
+          notFound.push(roomId);
+          continue;
+        }
+
+        const currentRoom = allRooms[index];
+
+        // Entidades Room são imutáveis: criamos uma nova instância com o
+        // status atualizado. Idealmente, Room teria um método dedicado
+        // para isso (ex: room.withStatus(status)).
+        const updatedRoom = new Room({
+          id: currentRoom.id,
+          number: currentRoom.number,
+          type: currentRoom.type,
+          typeLabel: currentRoom.typeLabel,
+          capacity: currentRoom.capacity,
+          pricePerNight: currentRoom.pricePerNight,
+          status,
+          amenities: currentRoom.amenities
+        });
+
+        allRooms[index] = updatedRoom;
+        updatedRooms.push(updatedRoom);
+      }
+
+      if (notFound.length > 0) {
+        this.logger.warn(`Quartos não encontrados para atualização: ${notFound.join(', ')}`);
+      }
+
+      this._saveAllRooms(allRooms);
+      this.logger.info(`${updatedRooms.length} quartos atualizados em massa`);
+
+      return updatedRooms;
+    } catch (error) {
+      this.logger.error('Erro em bulkUpdateStatus:', error);
       throw error;
     }
   }
